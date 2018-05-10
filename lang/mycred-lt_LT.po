@@ -1,0 +1,6570 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: myCRED\n"
+"Report-Msgid-Bugs-To: http://mycred.me\n"
+"POT-Creation-Date: 2017-08-29 08:47+0000\n"
+"PO-Revision-Date: 2017-08-29 08:47+0000\n"
+"Last-Translator: mycredlabs <gabriel.s@merovingi.com>\n"
+"Language-Team: Lithuanian\n"
+"Language: lt-LT\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10 >= 2 "
+"&&(n%100<10||n%100 >= 20)? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Loco - https://localise.biz/\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
+"__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
+"_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
+"esc_attr__:1;esc_html__:1;esc_attr_e:1;esc_html_e:1;esc_attr_x:1,2c;"
+"esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Loco-Target-Locale: lt_LT"
+
+#: mycred.php:568
+#, php-format
+msgid "%s Log Import"
+msgstr ""
+
+#: mycred.php:581
+msgid "Import balances via a CSV file."
+msgstr ""
+
+#: mycred.php:592
+#, php-format
+msgid "%s CubePoints Import"
+msgstr ""
+
+#: mycred.php:593
+msgid "Import CubePoints log entries and / or balances."
+msgstr ""
+
+#: abstracts/mycred-abstract-hook.php:90
+msgid "This Hook has no settings"
+msgstr ""
+
+#: modules/mycred-module-management.php:184
+msgid "Balance successfully updated"
+msgstr ""
+
+#: modules/mycred-module-management.php:189
+msgid "Request declined"
+msgstr ""
+
+#: modules/mycred-module-management.php:224
+msgid "No recent activity found."
+msgstr ""
+
+#: modules/mycred-module-management.php:237
+#: modules/mycred-module-management.php:775 modules/mycred-module-log.php:93
+#: modules/mycred-module-log.php:904
+#: includes/classes/class.query-export.php:263
+#: includes/classes/class.query-export.php:360
+#: includes/classes/class.query-log.php:904
+#: addons/transfer/includes/mycred-transfer-widgets.php:109
+msgid "Reference"
+msgstr ""
+
+#: modules/mycred-module-management.php:280
+msgid "View complete history"
+msgstr ""
+
+#: modules/mycred-module-management.php:555
+msgid "Balances"
+msgstr ""
+
+#: modules/mycred-module-management.php:747
+#: modules/mycred-module-export.php:432 modules/mycred-module-export.php:480
+#: addons/buy-creds/modules/buycred-module-core.php:1374
+msgid "Username"
+msgstr ""
+
+#: modules/mycred-module-management.php:759
+msgid "Total Balance"
+msgstr ""
+
+#: modules/mycred-module-management.php:785
+msgid "Log under a custom reference"
+msgstr ""
+
+#: modules/mycred-module-management.php:791
+msgid "lowercase without empty spaces"
+msgstr ""
+
+#: modules/mycred-module-management.php:804
+msgid "Update"
+msgstr ""
+
+#: modules/mycred-module-management.php:807
+msgid "Recent Activity"
+msgstr ""
+
+#: modules/mycred-module-settings.php:190
+msgid "No users found to export"
+msgstr ""
+
+#: modules/mycred-module-settings.php:290
+msgid "Log Updated"
+msgstr ""
+
+#: modules/mycred-module-settings.php:431
+msgid "Export %singular% Balances"
+msgstr ""
+
+#: modules/mycred-module-settings.php:432
+msgid ""
+"In order to adjust the number of decimal places you want to use we must "
+"update your log. It is highly recommended that you backup your current log "
+"before continuing!"
+msgstr ""
+
+#: modules/mycred-module-settings.php:457
+msgid "Update Database"
+msgstr ""
+
+#: modules/mycred-module-settings.php:530 modules/mycred-module-addons.php:330
+#: modules/mycred-module-addons.php:368 modules/mycred-module-log.php:544
+#: modules/mycred-module-network.php:241 modules/mycred-module-network.php:276
+#: modules/mycred-module-network.php:292
+#: includes/importers/mycred-cubepoints.php:305
+#: includes/importers/mycred-balances.php:245
+#: includes/importers/mycred-log-entries.php:239
+msgid "Documentation"
+msgstr ""
+
+#: modules/mycred-module-settings.php:548 includes/mycred-setup.php:279
+msgid "Singular"
+msgstr ""
+
+#: modules/mycred-module-settings.php:549
+#: modules/mycred-module-settings.php:555
+#: modules/mycred-module-settings.php:605
+#: modules/mycred-module-settings.php:612
+#: modules/mycred-module-settings.php:800
+#: modules/mycred-module-settings.php:806 includes/mycred-setup.php:280
+#: includes/mycred-setup.php:286 includes/mycred-setup.php:333
+#: includes/mycred-setup.php:340 addons/coupons/myCRED-addon-coupons.php:710
+#: addons/coupons/myCRED-addon-coupons.php:717
+#: addons/coupons/myCRED-addon-coupons.php:726
+#: addons/coupons/myCRED-addon-coupons.php:733
+#: addons/coupons/myCRED-addon-coupons.php:742
+#: addons/coupons/myCRED-addon-coupons.php:749
+#: addons/coupons/myCRED-addon-coupons.php:758
+#: addons/coupons/myCRED-addon-coupons.php:765
+#: addons/sell-content/myCRED-addon-sell-content.php:674
+#: addons/sell-content/myCRED-addon-sell-content.php:690
+#: addons/sell-content/myCRED-addon-sell-content.php:697
+#: addons/sell-content/myCRED-addon-sell-content.php:720
+#: addons/banking/services/mycred-service-central.php:111
+#: addons/banking/services/mycred-service-interest.php:482
+#: addons/banking/services/mycred-service-interest.php:500
+#: addons/buy-creds/modules/buycred-module-core.php:346
+#: addons/buy-creds/modules/buycred-module-core.php:427
+#: addons/buy-creds/modules/buycred-module-core.php:454
+msgid "Required"
+msgstr ""
+
+#: modules/mycred-module-settings.php:554 includes/mycred-setup.php:285
+msgid "Plural"
+msgstr ""
+
+#: modules/mycred-module-settings.php:559 includes/mycred-setup.php:290
+msgid ""
+"These labels are used throughout the admin area and when presenting points "
+"to your users."
+msgstr ""
+
+#: modules/mycred-module-settings.php:591
+msgid "Set decimals to zero if you prefer to use whole numbers."
+msgstr ""
+
+#: modules/mycred-module-settings.php:604 includes/mycred-setup.php:332
+msgid "Point Editors"
+msgstr ""
+
+#: modules/mycred-module-settings.php:606 includes/mycred-setup.php:334
+msgid "The capability of users who can edit balances."
+msgstr ""
+
+#: modules/mycred-module-settings.php:611 includes/mycred-setup.php:339
+msgid "Point Administrators"
+msgstr ""
+
+#: modules/mycred-module-settings.php:613 includes/mycred-setup.php:341
+msgid "The capability of users who can edit settings."
+msgstr ""
+
+#: modules/mycred-module-settings.php:619 includes/mycred-setup.php:346
+msgid "Max. Amount"
+msgstr ""
+
+#: modules/mycred-module-settings.php:621 includes/mycred-setup.php:348
+msgid "The maximum amount allowed to be paid out in a single instance."
+msgstr ""
+
+#: modules/mycred-module-settings.php:626 includes/mycred-setup.php:353
+msgid "Exclude by User ID"
+msgstr ""
+
+#: modules/mycred-module-settings.php:627 includes/mycred-setup.php:354
+msgid "Optional"
+msgstr ""
+
+#: modules/mycred-module-settings.php:628 includes/mycred-setup.php:355
+msgid "Comma separated list of user IDs to exclude from using this point type."
+msgstr ""
+
+#: modules/mycred-module-settings.php:632 includes/mycred-setup.php:359
+msgid "Exclude point editors"
+msgstr ""
+
+#: modules/mycred-module-settings.php:635 includes/mycred-setup.php:362
+msgid "Exclude point administrators"
+msgstr ""
+
+#: modules/mycred-module-settings.php:645
+msgid "Other Settings"
+msgstr ""
+
+#: modules/mycred-module-settings.php:697
+msgid "Balance Meta Key"
+msgstr ""
+
+#: modules/mycred-module-settings.php:712
+msgid "Export Balances"
+msgstr ""
+
+#: modules/mycred-module-settings.php:743
+#: modules/mycred-module-settings.php:769
+#: modules/mycred-module-settings.php:799
+msgid "Meta Key"
+msgstr ""
+
+#: modules/mycred-module-settings.php:811
+msgid ""
+"The meta key must be lowercase and only contain letters or underscores. All "
+"other characters will be deleted!"
+msgstr ""
+
+#: modules/mycred-module-settings.php:852
+msgid ""
+"Use ID if you intend to use this export as a backup of your current site "
+"while Email is recommended if you want to export to a different site."
+msgstr ""
+
+#: modules/mycred-module-settings.php:859
+#, php-format
+msgid ""
+"Optional log entry to use if you intend to import this file in a different "
+"%s installation."
+msgstr ""
+
+#: modules/mycred-module-addons.php:186
+msgid ""
+"Setup recurring payouts or offer / charge interest on user account balances."
+msgstr ""
+
+#: modules/mycred-module-addons.php:208
+msgid ""
+"The coupons add-on allows you to create coupons that users can use to add "
+"points to their accounts."
+msgstr ""
+
+#: modules/mycred-module-addons.php:219
+msgid "Create email notices for any type of myCRED instance."
+msgstr ""
+
+#: modules/mycred-module-addons.php:230
+msgid ""
+"Let your users pay using their <strong>my</strong>CRED points balance. "
+"Supported Carts: WooCommerce, MarketPress and WP E-Commerce. Supported Event "
+"Bookings: Event Espresso and Events Manager (free & pro)."
+msgstr ""
+
+#: modules/mycred-module-addons.php:241
+msgid "Create pop-up notifications for when users gain or loose points."
+msgstr ""
+
+#: modules/mycred-module-addons.php:253
+msgid ""
+"Create ranks for users reaching a certain number of %_plural% with the "
+"option to add logos for each rank."
+msgstr ""
+
+#: modules/mycred-module-addons.php:264
+msgid ""
+"This add-on allows you to sell posts, pages or any public post types on your "
+"website. You can either sell the entire content or using our shortcode, sell "
+"parts of your content allowing you to offer \"teasers\"."
+msgstr ""
+
+#: modules/mycred-module-addons.php:275
+msgid ""
+"Gives you access to your myCRED Statistics based on your users gains and "
+"loses."
+msgstr ""
+
+#: modules/mycred-module-addons.php:330
+#, php-format
+msgid "%s Add-ons"
+msgstr ""
+
+#: modules/mycred-module-addons.php:337
+msgid "Add-on Activated"
+msgstr ""
+
+#: modules/mycred-module-addons.php:340
+msgid "Add-on Deactivated"
+msgstr ""
+
+#: modules/mycred-module-log.php:215
+msgid "Invalid or empty reference"
+msgstr ""
+
+#: modules/mycred-module-log.php:220
+msgid "Log Entry cannot be empty"
+msgstr ""
+
+#: modules/mycred-module-log.php:241
+msgid "Could not save the new log entry"
+msgstr ""
+
+#: modules/mycred-module-log.php:262
+msgid "Log entry successfully updated"
+msgstr ""
+
+#: modules/mycred-module-log.php:307
+#, php-format
+msgid "1 Entry Deleted"
+msgid_plural "%d Entries Deleted"
+msgstr[0] ""
+msgstr[1] ""
+
+#: modules/mycred-module-log.php:466
+msgid "The log entry was successfully updated."
+msgstr ""
+
+#: modules/mycred-module-log.php:467
+msgid "The selected log entry could not be deleted."
+msgstr ""
+
+#: modules/mycred-module-log.php:501
+#, php-format
+msgctxt "e.g. Log entries from April 12th 2016"
+msgid "Log entries from %s"
+msgstr ""
+
+#: modules/mycred-module-log.php:544
+#, php-format
+msgid "%s Log"
+msgstr ""
+
+#: modules/mycred-module-log.php:554
+msgid ""
+"Warning. The required Mcrypt PHP Library is not installed on this server! "
+"Certain hooks and shortcodes will not work correctly!"
+msgstr ""
+
+#: modules/mycred-module-log.php:911
+msgid "Original Entry"
+msgstr ""
+
+#: modules/mycred-module-log.php:923
+msgid "Delete Entry"
+msgstr ""
+
+#: modules/mycred-module-log.php:928
+msgid "Update Entry"
+msgstr ""
+
+#: modules/mycred-module-network.php:141
+msgid "Blocked"
+msgstr ""
+
+#: modules/mycred-module-network.php:149
+msgid "Installed"
+msgstr ""
+
+#: modules/mycred-module-network.php:151
+msgid "Not Installed"
+msgstr ""
+
+#: modules/mycred-module-network.php:247
+msgid "I am sorry but your network is too big to use these features."
+msgstr ""
+
+#: modules/mycred-module-network.php:308
+msgid "Site Block"
+msgstr ""
+
+#: modules/mycred-module-network.php:312
+msgid "Blog IDs"
+msgstr ""
+
+#: modules/mycred-module-network.php:314
+#, php-format
+msgid "Comma separated list of blog ids where %s is to be disabled."
+msgstr ""
+
+#: modules/mycred-module-export.php:317 modules/mycred-module-export.php:364
+#: includes/classes/class.query-log.php:1687
+msgid ""
+"Log entries are exported to a CSV file and depending on the number of "
+"entries selected, the process may take a few seconds."
+msgstr ""
+
+#: modules/mycred-module-export.php:390
+msgid "Make both format options available."
+msgstr ""
+
+#: modules/mycred-module-export.php:392
+msgid "Exports"
+msgstr ""
+
+#: modules/mycred-module-export.php:398
+msgid "Front End Exports"
+msgstr ""
+
+#: modules/mycred-module-export.php:414 modules/mycred-module-export.php:462
+msgid "Export Format"
+msgstr ""
+
+#: modules/mycred-module-export.php:430 modules/mycred-module-export.php:478
+msgid "File Name"
+msgstr ""
+
+#: modules/mycred-module-export.php:439
+msgid ""
+"If enabled, users will only be able to export their own log entries! Export "
+"tools becomes available wherever you are using the mycred_history shortcode "
+"or in the users profile."
+msgstr ""
+
+#: modules/mycred-module-export.php:446
+msgid "Back End Exports"
+msgstr ""
+
+#: modules/mycred-module-export.php:487
+msgid ""
+"Raw format should be used when you intend to use the export tool to backup "
+"or import entries in another installation. Formatted exports reflect what "
+"users see in their history archive."
+msgstr ""
+
+#: modules/mycred-module-buddypress.php:352
+msgid "Show:"
+msgstr ""
+
+#: modules/mycred-module-buddypress.php:406
+#: addons/ranks/myCRED-addon-ranks.php:1482
+#: addons/badges/myCRED-addon-badges.php:1167
+msgid "Include under the \"Profile\" tab"
+msgstr ""
+
+#: modules/mycred-module-buddypress.php:407
+#: addons/badges/myCRED-addon-badges.php:1168
+msgid "Include under the \"Profile\" tab and Profile Header"
+msgstr ""
+
+#: modules/mycred-module-buddypress.php:447
+msgid "Members and visitors can view other members %_singular% balance."
+msgstr ""
+
+#: modules/mycred-module-buddypress.php:506
+msgid "History URL slug"
+msgstr ""
+
+#: modules/mycred-module-buddypress.php:508
+msgid "The history page slug. Must be URL friendly."
+msgstr ""
+
+#: plugins/mycred-hook-invite-anyone.php:205
+msgid "Sending Invites"
+msgstr ""
+
+#: plugins/mycred-hook-invite-anyone.php:222
+#: plugins/mycred-hook-invite-anyone.php:246
+#: plugins/mycred-hook-wp-polls.php:178
+#: plugins/mycred-hook-wp-postratings.php:208
+#: plugins/mycred-hook-wp-postratings.php:215
+#: plugins/mycred-hook-gravityforms.php:173
+#: plugins/mycred-hook-simplepress.php:308
+#: plugins/mycred-hook-simplepress.php:326
+#: plugins/mycred-hook-simplepress.php:350
+#: plugins/mycred-hook-simplepress.php:377
+#: plugins/mycred-hook-buddypress.php:630
+#: plugins/mycred-hook-buddypress.php:654
+#: plugins/mycred-hook-buddypress.php:678
+#: plugins/mycred-hook-buddypress.php:702
+#: plugins/mycred-hook-buddypress.php:726
+#: plugins/mycred-hook-buddypress.php:753
+#: plugins/mycred-hook-buddypress.php:777
+#: plugins/mycred-hook-buddypress.php:795
+#: plugins/mycred-hook-buddypress.php:819
+#: plugins/mycred-hook-buddypress.php:837
+#: plugins/mycred-hook-buddypress.php:861
+#: plugins/mycred-hook-buddypress.php:885
+#: plugins/mycred-hook-buddypress.php:1521
+#: plugins/mycred-hook-buddypress.php:1539
+#: plugins/mycred-hook-buddypress.php:1563
+#: plugins/mycred-hook-buddypress.php:1587
+#: plugins/mycred-hook-buddypress.php:1611
+#: plugins/mycred-hook-buddypress.php:1635
+#: plugins/mycred-hook-buddypress.php:1659
+#: plugins/mycred-hook-buddypress.php:1683
+#: plugins/mycred-hook-buddypress.php:1707
+#: plugins/mycred-hook-buddypress.php:1725
+#: plugins/mycred-hook-buddypress.php:1749
+#: plugins/mycred-hook-affiliatewp.php:299
+#: plugins/mycred-hook-affiliatewp.php:326
+#: plugins/mycred-hook-affiliatewp.php:370
+#: plugins/mycred-hook-affiliatewp.php:377
+#: plugins/mycred-hook-events-manager-light.php:218
+#: plugins/mycred-hook-events-manager-light.php:236
+#: plugins/mycred-hook-sharethis.php:274
+#: plugins/mycred-hook-buddypress-media.php:307
+#: plugins/mycred-hook-buddypress-media.php:331
+#: plugins/mycred-hook-buddypress-media.php:355
+#: plugins/mycred-hook-buddypress-media.php:373
+#: plugins/mycred-hook-buddypress-media.php:391
+#: plugins/mycred-hook-buddypress-media.php:409
+#: plugins/mycred-hook-wp-favorite-posts.php:249
+#: plugins/mycred-hook-wp-favorite-posts.php:256
+#: plugins/mycred-hook-wp-favorite-posts.php:274
+#: plugins/mycred-hook-wp-favorite-posts.php:289
+#: plugins/mycred-hook-contact-form7.php:179
+#: plugins/mycred-hook-jetpack.php:550 plugins/mycred-hook-jetpack.php:568
+#: plugins/mycred-hook-bbPress.php:450 plugins/mycred-hook-bbPress.php:468
+#: plugins/mycred-hook-bbPress.php:492 plugins/mycred-hook-bbPress.php:519
+#: plugins/mycred-hook-bbPress.php:543 plugins/mycred-hook-bbPress.php:567
+#: plugins/mycred-hook-bbPress.php:594 plugins/mycred-hook-woocommerce.php:521
+#: plugins/mycred-hook-badgeOS.php:328 plugins/mycred-hook-badgeOS.php:346
+#: addons/transfer/includes/mycred-transfer-widgets.php:102
+#: addons/transfer/includes/mycred-transfer-widgets.php:106
+#: addons/transfer/includes/mycred-transfer-widgets.php:110
+#: addons/transfer/includes/mycred-transfer-widgets.php:122
+msgid "required"
+msgstr ""
+
+#: plugins/mycred-hook-invite-anyone.php:229
+msgid "Accepted Invites"
+msgstr ""
+
+#: plugins/mycred-hook-wp-postratings.php:161
+msgid "Content Rating"
+msgstr ""
+
+#: plugins/mycred-hook-wp-postratings.php:165
+#: plugins/mycred-hook-wp-favorite-posts.php:222
+#: plugins/mycred-hook-wp-favorite-posts.php:267
+msgid "Member"
+msgstr ""
+
+#: plugins/mycred-hook-wp-postratings.php:177
+#: plugins/mycred-hook-wp-favorite-posts.php:234
+#: plugins/mycred-hook-wp-favorite-posts.php:282
+msgid "Content Author"
+msgstr ""
+
+#: plugins/mycred-hook-wp-postratings.php:207
+#: plugins/mycred-hook-wp-favorite-posts.php:248
+msgid "Member Log Template"
+msgstr ""
+
+#: plugins/mycred-hook-wp-postratings.php:214
+#: plugins/mycred-hook-wp-favorite-posts.php:255
+msgid "Content Author Log Template"
+msgstr ""
+
+#: plugins/mycred-hook-gravityforms.php:156
+#: plugins/mycred-hook-contact-form7.php:162
+#, php-format
+msgid "Form: %s"
+msgstr ""
+
+#: plugins/mycred-hook-simplepress.php:291 plugins/mycred-hook-bbPress.php:475
+#: plugins/mycred-hook-bbPress.php:550
+msgid "New Topic"
+msgstr ""
+
+#: plugins/mycred-hook-simplepress.php:315 plugins/mycred-hook-bbPress.php:508
+msgid "Deleted Topic"
+msgstr ""
+
+#: plugins/mycred-hook-simplepress.php:333
+msgid "New Topic Post"
+msgstr ""
+
+#: plugins/mycred-hook-simplepress.php:359
+msgid "Topic authors can receive %_plural% for posting on their own Topic."
+msgstr ""
+
+#: plugins/mycred-hook-simplepress.php:366
+msgid "Deleted Topic Post"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:613
+msgid "New Profile Activity"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:637
+msgid "Deleted Profile Activity"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:661
+msgid "New Profile Avatar Upload"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:685
+msgid "New Profile Cover Upload"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:709
+msgid "New Friendships"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:742
+msgid "Ending Friendships"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:760
+msgid "New Comment"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:802
+msgid "Favorite Activity"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:826
+msgid "Removing Favorit Activity"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:844
+msgid "New Private Message"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1502
+msgid "Group Creation"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1508
+msgid ""
+"If you use a negative value and the user does not have enough %_plural%, the "
+"\"Create Group\" button will be disabled."
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1513
+msgid "No. of Members"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1515
+msgid ""
+"The number of members a group must gain before awarding %_plural%. Use zero "
+"to award as soon as the group is created."
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1528
+msgid "Group Deletions"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1546
+msgid "New Group Avatar Upload"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1570
+msgid "New Group Cover Upload"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1594
+msgid "New Forum Topics"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1618
+msgid "Editing Forum Topics"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1642
+msgid "New Forum Posts"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1666
+msgid "Editing Forum Posts"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1690
+msgid "Joining Groups"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1714
+msgid "Leaving Groups"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress.php:1732
+msgid "New Group Comments"
+msgstr ""
+
+#: plugins/mycred-hook-affiliatewp.php:293
+#: plugins/mycred-hook-affiliatewp.php:312
+#: addons/banking/services/mycred-service-payouts.php:768
+#: addons/banking/services/mycred-service-payouts.php:775
+msgid "Use zero to disable."
+msgstr ""
+
+#: plugins/mycred-hook-affiliatewp.php:338
+msgid "Pay a set amount"
+msgstr ""
+
+#: plugins/mycred-hook-affiliatewp.php:342
+msgid "All referrals will pay the same amount."
+msgstr ""
+
+#: plugins/mycred-hook-affiliatewp.php:348
+msgid "Pay the referral amount"
+msgstr ""
+
+#: plugins/mycred-hook-affiliatewp.php:350
+msgid "Points Currency Code"
+msgstr ""
+
+#: plugins/mycred-hook-affiliatewp.php:352
+msgid "Requires AffiliateWP and your store to use points as currency."
+msgstr ""
+
+#: plugins/mycred-hook-affiliatewp.php:358
+msgid "Apply an exchange rate"
+msgstr ""
+
+#: plugins/mycred-hook-affiliatewp.php:369
+msgid "Log template - Payout"
+msgstr ""
+
+#: plugins/mycred-hook-affiliatewp.php:376
+msgid "Log template - Refund"
+msgstr ""
+
+#: plugins/mycred-hook-sharethis.php:216
+msgid "Your ShareThis public key is not set."
+msgstr ""
+
+#: plugins/mycred-hook-sharethis.php:221
+msgid "No ShareThis services detected. Please check your installation."
+msgstr ""
+
+#: plugins/mycred-hook-sharethis.php:257
+msgid "Publishing Posts"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress-media.php:362
+msgid "Photo Deletion"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress-media.php:380
+msgid "Video Deletion"
+msgstr ""
+
+#: plugins/mycred-hook-buddypress-media.php:398
+msgid "Music Deletion"
+msgstr ""
+
+#: plugins/mycred-hook-bbPress.php:433
+msgid "New Forums"
+msgstr ""
+
+#: plugins/mycred-hook-bbPress.php:457
+msgid "Deleting Forums"
+msgstr ""
+
+#: plugins/mycred-hook-bbPress.php:526
+msgid "Adding Topic to Favorites"
+msgstr ""
+
+#: plugins/mycred-hook-bbPress.php:576
+msgid "Topic authors can receive %_plural% for replying to their own Topic."
+msgstr ""
+
+#: plugins/mycred-hook-bbPress.php:583
+msgid "Deleted Reply"
+msgstr ""
+
+#: plugins/mycred-hook-bbPress.php:608
+msgid "Show users %_plural% balance in their bbPress profiles"
+msgstr ""
+
+#: plugins/mycred-hook-woocommerce.php:158
+msgid "Leave empty for no rewards"
+msgstr ""
+
+#: plugins/mycred-hook-badgeOS.php:15
+msgid "BadgeOS"
+msgstr ""
+
+#: plugins/mycred-hook-badgeOS.php:16
+msgid ""
+"Default settings for each BadgeOS Achievement type. These settings may be "
+"overridden for individual achievement type."
+msgstr ""
+
+#: plugins/mycred-hook-badgeOS.php:124
+#, php-format
+msgid ""
+"Please setup your <a href=\"%s\">default settings</a> before using this "
+"feature."
+msgstr ""
+
+#: plugins/mycred-hook-badgeOS.php:155
+msgid "Deduction Log Template"
+msgstr ""
+
+#: plugins/mycred-hook-badgeOS.php:317
+#, php-format
+msgid "Earning: %s"
+msgstr ""
+
+#: plugins/mycred-hook-badgeOS.php:335
+#, php-format
+msgid "Revoked: %s"
+msgstr ""
+
+#: includes/mycred-setup.php:50
+msgid "myCRED needs your attention."
+msgstr ""
+
+#: includes/mycred-setup.php:50
+msgid "Run Setup"
+msgstr ""
+
+#: includes/mycred-setup.php:106
+#, php-format
+msgid ""
+"Before you can begin using %s, you must setup your first point type. This "
+"includes what you want to call your points, how these points are presented "
+"and who has access to it."
+msgstr ""
+
+#: includes/mycred-setup.php:111
+msgid "Your First Point Type"
+msgstr ""
+
+#: includes/mycred-setup.php:127
+msgid "Advanced Settings"
+msgstr ""
+
+#: includes/mycred-setup.php:133
+msgid "Change Default Point Type Key"
+msgstr ""
+
+#: includes/mycred-setup.php:135
+msgid ""
+"You can change the meta key used to store the default point type using the "
+"MYCRED_DEFAULT_TYPE_KEY constant. Copy the above code to your wp-config.php "
+"file to use."
+msgstr ""
+
+#: includes/mycred-setup.php:136
+msgid ""
+"If you intend to change the default meta key, you should do so before "
+"continuing on in this setup!"
+msgstr ""
+
+#: includes/mycred-setup.php:139
+msgid "Whitelabel"
+msgstr ""
+
+#: includes/mycred-setup.php:141
+msgid ""
+"You can re-label myCRED using the MYCRED_DEFAULT_LABEL constant. Copy the "
+"above code to your wp-config.php file to use."
+msgstr ""
+
+#: includes/mycred-setup.php:149
+msgid "Create Point Type"
+msgstr ""
+
+#: includes/mycred-setup.php:149
+msgid "Hide"
+msgstr ""
+
+#: includes/mycred-setup.php:149 includes/mycred-setup.php:149
+#: addons/email-notices/myCRED-addon-email-notices.php:1445
+msgid "Advanced"
+msgstr ""
+
+#: includes/mycred-setup.php:155
+msgid "Processing ..."
+msgstr ""
+
+#: includes/mycred-setup.php:160
+msgid "Setup Complete!"
+msgstr ""
+
+#: includes/mycred-setup.php:161
+msgid "Congratulations! You are now ready to use myCRED. What's next?"
+msgstr ""
+
+#: includes/mycred-setup.php:166
+msgid "Enabling Hooks"
+msgstr ""
+
+#: includes/mycred-setup.php:167
+msgid ""
+"If you intend to give your users points for interacting with your website "
+"automatically, your next step should be to enable and setup the hooks you "
+"want to use."
+msgstr ""
+
+#: includes/mycred-setup.php:168
+msgid "Setup Hooks"
+msgstr ""
+
+#: includes/mycred-setup.php:172
+msgid ""
+"If you want to use advanced features such as Transfers, Point Purchases etc. "
+"your next step should be to enable and setup your add-ons."
+msgstr ""
+
+#: includes/mycred-setup.php:173
+msgid "Setup Add-ons"
+msgstr ""
+
+#: includes/mycred-setup.php:176
+msgid "Adjust Settings"
+msgstr ""
+
+#: includes/mycred-setup.php:177
+msgid ""
+"If you need to make further changes to your settings or add new point types, "
+"you can visit your default point type's settings."
+msgstr ""
+
+#: includes/mycred-setup.php:178
+msgid "View Settings"
+msgstr ""
+
+#: includes/mycred-setup.php:322
+msgid "Set to decimals to zero if you prefer to use whole numbers."
+msgstr ""
+
+#: includes/mycred-setup.php:394 includes/mycred-setup.php:453
+msgid "Please make sure you fill out all required fields!"
+msgstr ""
+
+#: includes/mycred-remote.php:581
+msgid "This feature requires WordPress Permalinks to be setup and enabled!"
+msgstr ""
+
+#: includes/mycred-remote.php:585
+msgid "Click Update Settings to load the Remote API settings."
+msgstr ""
+
+#: includes/mycred-remote.php:588
+msgid "Allow Remote Access"
+msgstr ""
+
+#: includes/mycred-remote.php:632
+msgid "Incoming URI"
+msgstr ""
+
+#: includes/mycred-remote.php:636
+msgid ""
+"The incoming call address. Remote calls made to any other URL will be "
+"ignored."
+msgstr ""
+
+#: includes/mycred-remote.php:639
+msgid "Debug Mode"
+msgstr ""
+
+#: includes/mycred-remote.php:642
+msgid ""
+"Remember to disable when not used to prevent mischievous calls from learning "
+"about your setup!"
+msgstr ""
+
+#: includes/mycred-install.php:63
+msgid "myCRED requires WordPress 4.0 or higher. Version detected:"
+msgstr ""
+
+#: includes/mycred-install.php:68
+msgid "myCRED requires PHP 5.3 or higher. Version detected: "
+msgstr ""
+
+#: includes/mycred-install.php:73
+msgid "myCRED requires SQL 5.0 or higher. Version detected: "
+msgstr ""
+
+#: includes/mycred-install.php:78
+msgid ""
+"The mcrypt PHP library must be enabled in order to use this plugin! Please "
+"check your PHP configuration or contact your host and ask them to enable it "
+"for you!"
+msgstr ""
+
+#: includes/mycred-widgets.php:22
+msgid "Show the current users balance and history."
+msgstr ""
+
+#: includes/mycred-widgets.php:192
+msgid "Balance Layout"
+msgstr ""
+
+#: includes/mycred-widgets.php:211 includes/mycred-widgets.php:386
+msgid "Row layout"
+msgstr ""
+
+#: includes/mycred-widgets.php:218 includes/mycred-widgets.php:586
+msgid "Show message when not logged in"
+msgstr ""
+
+#: includes/mycred-widgets.php:285
+msgid "Leaderboard based on instances or balances."
+msgstr ""
+
+#: includes/mycred-widgets.php:375
+msgid ""
+"Use \"balance\" to base the leaderboard on your users current balances or "
+"use a specific reference."
+msgstr ""
+
+#: includes/mycred-widgets.php:375
+msgid "Reference Guide"
+msgstr ""
+
+#: includes/mycred-widgets.php:391
+msgid "Offset"
+msgstr ""
+
+#: includes/mycred-widgets.php:393
+msgid "Optional offset of order. Use zero to return the first in the list."
+msgstr ""
+
+#: includes/mycred-widgets.php:415
+msgid "Append current users position"
+msgstr ""
+
+#: includes/mycred-widgets.php:416
+msgid ""
+"If the current user is not in this leaderboard, you can select to append "
+"them at the end with their current position."
+msgstr ""
+
+#: includes/mycred-widgets.php:419
+msgid "Timeframe"
+msgstr ""
+
+#: includes/mycred-widgets.php:421
+msgid ""
+"Option to limit the leaderboard based on a specific timeframe. Leave empty "
+"if not used."
+msgstr ""
+
+#: includes/mycred-widgets.php:472
+msgid "Shows multiple balances."
+msgstr ""
+
+#: includes/mycred-widgets.php:579
+msgid "Row Layout"
+msgstr ""
+
+#: includes/mycred-functions.php:2828
+#, php-format
+msgctxt "e.g. 5 th"
+msgid "%d th"
+msgstr ""
+
+#: includes/mycred-functions.php:2832
+#, php-format
+msgctxt "e.g. 1 st"
+msgid "%d st"
+msgstr ""
+
+#: includes/mycred-functions.php:2833
+#, php-format
+msgctxt "e.g. 2 nd"
+msgid "%d nd"
+msgstr ""
+
+#: includes/mycred-functions.php:2834
+#, php-format
+msgctxt "e.g. 3 rd"
+msgid "%d rd"
+msgstr ""
+
+#: includes/importers/mycred-cubepoints.php:85
+msgid "Could not find a CubePoints installation."
+msgstr ""
+
+#: includes/importers/mycred-cubepoints.php:282
+msgid "No balances were imported."
+msgstr ""
+
+#: includes/importers/mycred-cubepoints.php:282
+msgid "No log entries were imported!"
+msgstr ""
+
+#: includes/importers/mycred-cubepoints.php:288
+#: includes/importers/mycred-balances.php:229
+#, php-format
+msgid ""
+"Import complete - A total of <strong>%d</strong> balances were successfully "
+"imported. <strong>%d</strong> was skipped."
+msgstr ""
+
+#: includes/importers/mycred-cubepoints.php:289
+#: includes/importers/mycred-balances.php:230
+msgid "View Users"
+msgstr ""
+
+#: includes/importers/mycred-cubepoints.php:305
+msgid "Import CubePoints"
+msgstr ""
+
+#: includes/importers/mycred-cubepoints.php:340
+#: includes/importers/mycred-cubepoints.php:364
+#: includes/importers/mycred-balances.php:323
+#: includes/importers/mycred-log-entries.php:308
+msgid "Import"
+msgstr ""
+
+#: includes/importers/mycred-cubepoints.php:344
+msgid "Select what to import"
+msgstr ""
+
+#: includes/importers/mycred-cubepoints.php:346
+msgid "CubePoints Balances Only"
+msgstr ""
+
+#: includes/importers/mycred-balances.php:117
+#: includes/importers/mycred-balances.php:144
+#: includes/importers/mycred-log-entries.php:117
+#: includes/importers/mycred-log-entries.php:142
+msgid "The file does not exist or could not be read."
+msgstr ""
+
+#: includes/importers/mycred-balances.php:220
+#: includes/importers/mycred-log-entries.php:204
+msgid ""
+"Invalid CSV file. Please consult the documentation for further assistance."
+msgstr ""
+
+#: includes/importers/mycred-balances.php:245
+#, php-format
+msgid "Import Balances %s"
+msgstr ""
+
+#: includes/importers/mycred-balances.php:284
+#: includes/importers/mycred-log-entries.php:280
+msgid "Choose a file from your computer:"
+msgstr ""
+
+#: includes/importers/mycred-balances.php:295
+#: includes/importers/mycred-log-entries.php:291
+msgid "OR enter path to file:"
+msgstr ""
+
+#: includes/importers/mycred-balances.php:303
+#: includes/importers/mycred-log-entries.php:299
+msgid "Delimiter"
+msgstr ""
+
+#: includes/importers/mycred-balances.php:315
+msgid "Replace current balances with the amount in this CSV file"
+msgstr ""
+
+#: includes/importers/mycred-balances.php:316
+msgid "Adjust current balances according to the amount in this CSV file"
+msgstr ""
+
+#: includes/importers/mycred-log-entries.php:213
+#, php-format
+msgid ""
+"Import complete - A total of <strong>%d</strong> log entries were "
+"successfully imported. <strong>%d</strong> was skipped."
+msgstr ""
+
+#: includes/importers/mycred-log-entries.php:239
+#, php-format
+msgid "Import Log Entries %s"
+msgstr ""
+
+#: includes/shortcodes/mycred_exchange.php:27
+#: includes/shortcodes/mycred_hook_table.php:24
+msgid "Point type not found."
+msgstr ""
+
+#: includes/shortcodes/mycred_exchange.php:76
+#, php-format
+msgid "1 %s = <span class=\"rate\">%s</span> %s"
+msgstr ""
+
+#: includes/shortcodes/mycred_hook_table.php:77
+msgid "Instance"
+msgstr ""
+
+#: includes/classes/class.query-export.php:263
+msgid "Reference ID"
+msgstr ""
+
+#: includes/classes/class.query-export.php:263
+msgid "Data"
+msgstr ""
+
+#: includes/classes/class.query-export.php:464
+msgid "Export log entries raw"
+msgstr ""
+
+#: includes/classes/class.query-export.php:465
+msgid "Export log entries formatted"
+msgstr ""
+
+#: includes/classes/class.query-export.php:482
+msgid "All Log Entries"
+msgstr ""
+
+#: includes/classes/class.query-export.php:492
+msgid "Users Log Entries"
+msgstr ""
+
+#: includes/classes/class.query-export.php:493
+msgid "Export History"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1016
+msgid "Bulk Actions"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1017
+msgid "Export Raw"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1018
+msgid "Export Formatted"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1034
+msgid "Apply"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1139
+msgid "Log entries navigation"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1269
+#, php-format
+msgid "1 entry"
+msgid_plural "%d entries"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/classes/class.query-log.php:1408
+#: includes/classes/class.query-log.php:1458
+msgid "Select all"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1518
+msgid "Select entry"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1539
+msgid "Show more details"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1563
+msgid "Filter by Date"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1612
+msgid "Filter by User"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1614
+msgid "Filter by ID"
+msgstr ""
+
+#: includes/classes/class.query-log.php:1694
+msgid "No export options available."
+msgstr ""
+
+#: includes/classes/class.query-log.php:2200
+msgid "Profile Cover Upload"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2205
+msgid "Add Activity to Favorites"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2206
+msgid "Remove Activity from Favorites"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2218
+msgid "New Group Cover"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2281
+msgid "Recurring Payout"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2285
+msgid "Badge Reward"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2293
+msgid "buyCRED Purchase (Bank Transfer)"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2298
+#: addons/coupons/myCRED-addon-coupons.php:460
+msgid "Coupon Usage"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2317
+msgid "Event Payment (Event Espresso)"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2318
+msgid "Event Sale (Event Espresso)"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2322
+msgid "Event Payment (Events Manager)"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2323
+msgid "Event Sale (Events Manager)"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2327
+msgid "Content Purchase"
+msgstr ""
+
+#: includes/classes/class.query-log.php:2328
+msgid "Content Sale"
+msgstr ""
+
+#: addons/banking/myCRED-addon-banking.php:142
+msgid ""
+"Instead of creating %_plural% out of thin-air, all payouts are made from a "
+"nominated \"Central Bank\" account. Any %_plural% a user spends or loses are "
+"deposited back into this account. If the central bank runs out of %_plural%, "
+"no %_plural% will be paid out."
+msgstr ""
+
+#: addons/banking/myCRED-addon-banking.php:151
+msgid ""
+"Offer your users interest on the %_plural% they earn on your website. The "
+"interest is compounded daily."
+msgstr ""
+
+#: addons/banking/myCRED-addon-banking.php:202
+msgid "New Recurring Payout"
+msgstr ""
+
+#: addons/banking/myCRED-addon-banking.php:203
+msgid "Edit Recurring Payout"
+msgstr ""
+
+#: addons/banking/myCRED-addon-banking.php:205
+msgid "Please fill out all required fields that are highlighted in red."
+msgstr ""
+
+#: addons/banking/myCRED-addon-banking.php:206
+msgid "Are you sure you want to remove this schedule? This can not be undone!"
+msgstr ""
+
+#: addons/banking/myCRED-addon-banking.php:271
+msgid "Warning"
+msgstr ""
+
+#: addons/banking/myCRED-addon-banking.php:271
+msgid ""
+"This banking service uses the WordPress CRON to schedule events. If the "
+"WordPress CRON is disabled, this service will not work correctly."
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:173
+msgid ""
+"This myCRED Add-on has not yet been setup! No transfers are allowed until "
+"this has been done!"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:177
+msgid "The selected point type can not be transferred."
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:366
+#: addons/buy-creds/modules/buycred-module-core.php:329
+msgid "Features"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:393
+msgid "Should the page reload once a transfer has been completed?"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:398
+msgid "Message Length"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:400
+msgid ""
+"The maximum length of messages users can attach to a transfer. Use zero to "
+"disable."
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:405
+msgid "Autofill Recipient"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:417
+msgid "Select what user details recipients should be autofilled by."
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:449
+msgid "Default Button Label"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:451
+msgid ""
+"The default transfer button label. You can override this in the shortcode or "
+"widget if needed."
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:460
+msgid "Log template for sending"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:467
+msgid "Log template for receiving"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:474
+msgid "Warning Messages"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:478
+msgid "Insufficient Funds Warning"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:480
+msgid "Message to show the user if they try to send more then they can afford."
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:485
+msgid "Limit Reached Warning"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:487
+msgid ""
+"Message to show the user once they reach their transfer limit. Ignored if no "
+"limits are enforced."
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:493
+#: addons/sell-content/myCRED-addon-sell-content.php:762
+msgid "Visitors Template"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:494
+msgid ""
+"The template to use when the transfer shortcode or widget is viewed by "
+"someone who is not logged in."
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:507
+msgid "Limit Template"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:508
+msgid ""
+"The template to use if you select to show the transfer limit in the transfer "
+"shortcode or widget. Ignored if there is no limit enforced."
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:523
+msgid "Balance Template"
+msgstr ""
+
+#: addons/transfer/myCRED-addon-transfer.php:524
+msgid ""
+"The template to use if you select to show the users balance in the transfer "
+"shortcode or widget. Ignored if balances are not shown."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:230
+#: addons/ranks/myCRED-addon-ranks.php:1379
+msgid "Rank Logo"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:231
+msgid "Set rank logo"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:232
+msgid "Remove rank logo"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:233
+msgid "Use as Logo"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:288
+msgid "Rank Enabled."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:289
+msgid "Rank Saved."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:895
+msgid "No ranks exists."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1193
+msgid "Rank Setup"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1234
+msgid "Minimum Balance Requirement"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1240
+msgid "Maximum Balance Requirement"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1391
+msgid "Page Attributes"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1394
+msgid "Custom Fields"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1399
+msgid "Rank Post Type"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1402
+msgid "Make Ranks Public"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1406
+msgid "Rank SLUG"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1408
+msgid ""
+"If you have selected to make Ranks public, you can select what rank archive "
+"URL slug you want to use. Ignored if Ranks are not set to be public."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1429
+msgid "Option to set in which order Ranks should be shown on the archive page."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1436
+msgid "Rank Behaviour"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1441
+msgid "Based on Current Balances"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1443
+msgid ""
+"Users can be promoted or demoted depending on where their balance fits in "
+"amongst your ranks."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1449
+msgid "Based on Total Balances"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1451
+msgid ""
+"Users can only be promoted and gain higher ranks even if their balance "
+"decreases."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1458
+msgid "Tools"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1459
+msgid ""
+"Use this button to calculate or recalculate each individual users total "
+"balance if you think your users total balances are incorrect, or if you "
+"switch from Ranks being based on users current balance to total balance."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1464
+#: addons/badges/myCRED-addon-badges.php:1155
+msgid "Third-party Integrations"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1483
+msgid "Include under the \"Profile\" tab and Profile Header."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1499
+#: addons/ranks/myCRED-addon-ranks.php:1540
+msgid ""
+"Template to use when showing a users Rank in BuddyPress. Use %rank_title% "
+"for the title and %rank_logo% to show the rank logo. HTML is allowed."
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1503
+#: addons/ranks/myCRED-addon-ranks.php:1544
+#: addons/badges/myCRED-addon-badges.php:1187
+#: addons/badges/myCRED-addon-badges.php:1221
+msgid "Not installed"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1522
+msgid "Include in Topic Replies"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1524
+msgid "Include in Topic Replies and Profile"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1661
+msgid "User Meta Key"
+msgstr ""
+
+#: addons/ranks/myCRED-addon-ranks.php:1665
+msgid "No. of ranks"
+msgstr ""
+
+#: addons/notifications/myCRED-addon-notifications.php:200
+msgid ""
+"Use %entry% to show the log entry in the notice and %amount% for the amount."
+msgstr ""
+
+#: addons/notifications/myCRED-addon-notifications.php:207
+msgid "Transient Lifespan"
+msgstr ""
+
+#: addons/notifications/myCRED-addon-notifications.php:216
+msgid ""
+"Number of seconds before a notice is automatically removed after being shown "
+"to user. Use zero to disable."
+msgstr ""
+
+#: addons/notifications/myCRED-addon-notifications.php:224
+msgid "Use the included CSS Styling for notifications."
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:128
+#: addons/email-notices/myCRED-addon-email-notices.php:134
+#: addons/email-notices/myCRED-addon-email-notices.php:140
+#: addons/email-notices/myCRED-addon-email-notices.php:196
+#: addons/email-notices/myCRED-addon-email-notices.php:197
+msgid "Email Notifications"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:129
+msgid "Email Notification"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:132
+msgid "Edit Email Notification"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:133
+msgid "New Email Notification"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:136
+msgid "Search Email Notifications"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:137
+msgid "No email notifications found"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:138
+msgid "No email notifications found in Trash"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:176
+msgid "Email Notice Activated."
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:709
+msgid "Instance Related"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:744
+#, php-format
+msgid "You can also use %s."
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:744
+msgid "user related template tags"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1418
+msgid "Plain Text"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1426
+#: addons/banking/services/mycred-service-payouts.php:825
+msgid "Schedule"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1430
+msgid "WordPress Cron is disabled. Emails will be sent immediately."
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1448
+msgid "Filter Email Subjects"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1451
+msgid "Filter Email Body"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1460
+msgid ""
+"SMTP Debug. Enable if you are experiencing issues with wp_mail() or if you "
+"use a SMTP plugin for emails."
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1473
+msgid "Defaults"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1506
+msgid "Default CSS Styling"
+msgstr ""
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1508
+msgid ""
+"Default email CSS styling. Note that if you intend to send HTML emails, you "
+"should use inline CSS styling for best results."
+msgstr ""
+
+#: addons/stats/myCRED-addon-stats.php:172
+msgid "Statistics Color"
+msgstr ""
+
+#: addons/stats/myCRED-addon-stats.php:176
+msgid "Positive Values"
+msgstr ""
+
+#: addons/stats/myCRED-addon-stats.php:182
+msgid "Negative Values"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:275
+msgid "Badge Enabled."
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:276
+msgid "Badge Saved."
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:423
+msgid "First Level"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:536
+#: addons/badges/myCRED-addon-badges.php:827
+msgid "Remove Level"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:537
+#: addons/badges/myCRED-addon-badges.php:780
+#: addons/badges/myCRED-addon-badges.php:843
+#: addons/badges/myCRED-addon-badges.php:848
+msgid "Set Image"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:538
+#: addons/badges/myCRED-addon-badges.php:780
+#: addons/badges/myCRED-addon-badges.php:848
+msgid "Change Image"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:539
+msgid "Are you sure you want to remove this level?"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:543
+#: addons/badges/myCRED-addon-badges.php:946
+#: addons/badges/includes/mycred-badge-functions.php:272
+msgctxt "Comparison of badge requirements. A AND B"
+msgid "AND"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:544
+#: addons/badges/myCRED-addon-badges.php:946
+#: addons/badges/includes/mycred-badge-functions.php:270
+msgctxt "Comparison of badge requirements. A OR B"
+msgid "OR"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:605
+msgid "Default Badge Image"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:747
+#: addons/badges/includes/mycred-badge-functions.php:288
+msgid "This badge is manually awarded."
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:783
+msgid "Optional image to show when a user has not earned this badge."
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:874
+msgid "Select Point Type"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:888
+msgid "Select Reference"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:964
+msgid "Reward"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:1276
+msgid "No image set"
+msgstr ""
+
+#: addons/badges/myCRED-addon-badges.php:1431
+#, php-format
+msgid "A total of %d users have received this badge."
+msgstr ""
+
+#: addons/coupons/myCRED-addon-coupons.php:486
+msgid ""
+"Warning. The previous expiration date set for this coupon was formatted "
+"incorrectly and was deleted. If you still want the coupon to expire, please "
+"enter a new date or leave empty to disable."
+msgstr ""
+
+#: addons/coupons/myCRED-addon-coupons.php:515
+msgid "The amount of %plural% a user receives when redeeming this coupon."
+msgstr ""
+
+#: addons/coupons/myCRED-addon-coupons.php:566
+msgid "Global Maximum"
+msgstr ""
+
+#: addons/coupons/myCRED-addon-coupons.php:568
+msgid ""
+"The maximum number of times this coupon can be used in total. Once this is "
+"reached, the coupon is automatically trashed."
+msgstr ""
+
+#: addons/coupons/myCRED-addon-coupons.php:705
+msgid "Message Templates"
+msgstr ""
+
+#: addons/coupons/myCRED-addon-coupons.php:748
+msgid "Excluded Message"
+msgstr ""
+
+#: addons/coupons/myCRED-addon-coupons.php:750
+msgid ""
+"Message to show when a user is excluded from the point type the coupon gives."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:153
+msgid "Error"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:378
+msgid "Users profit share when their content is purchased."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:394
+#: addons/sell-content/myCRED-addon-sell-content.php:409
+#, php-format
+msgctxt "Points Name"
+msgid "%s Profit Share"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:397
+msgid "Not accepted as payment."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:412
+#, php-format
+msgctxt "Points Name"
+msgid "User can not pay using %s"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:424
+#, php-format
+msgctxt "Buying Points"
+msgid "%s Profit Share"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:427
+msgid "Leave empty to use the default."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:512
+msgid "Which post type(s) content field do you want to sell access to?"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:582
+msgid "Which point type(s) can be used as payment for accessing content?"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:635
+#: addons/sell-content/myCRED-addon-sell-content.php:1019
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:198
+msgid "Hour(s)"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:643
+msgid "Default Status"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:651
+msgid "Default Price"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:657
+#: addons/sell-content/myCRED-addon-sell-content.php:1079
+msgid "Expiration"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:659
+#, php-format
+msgid ""
+"Option to automatically expire purchases after certain number of %s. Use "
+"zero to disable."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:666
+msgid "Option to pay a percentage of each sale with the content author."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:680
+msgid "Button CSS Classes"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:689
+msgid "Payment log entry template"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:696
+msgid "Profit Share payout log entry template"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:710
+msgid "Transactions"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:714
+msgid "Reload page after successful payments."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:721
+msgid ""
+"Option to show a custom button label while the payment is being processed. "
+"HTML is allowed."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:728
+msgid "Purchase Template"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:729
+msgid ""
+"The content will be replaced with this template when viewed by a user that "
+"has not paid for the content but can afford to pay."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:745
+msgid "Insufficient Funds Template"
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:746
+msgid ""
+"The content will be replaced with this template when viewed by a user that "
+"has not paid for the content and can not afford to pay."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:763
+msgid ""
+"The content will be replaced with this template when viewed by someone who "
+"is not logged in on your website."
+msgstr ""
+
+#: addons/sell-content/myCRED-addon-sell-content.php:1056
+msgid "Never expires"
+msgstr ""
+
+#: addons/banking/services/mycred-service-central.php:110
+msgid "Central Bank Account"
+msgstr ""
+
+#: addons/banking/services/mycred-service-central.php:113
+msgid "The ID of the user representing the central bank."
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:429
+msgid "Daily Compound Schedule"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:432
+#: addons/banking/services/mycred-service-interest.php:457
+#: addons/banking/services/mycred-service-payouts.php:728
+msgid "Year"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:433
+#: addons/banking/services/mycred-service-interest.php:458
+#: addons/banking/services/mycred-service-payouts.php:734
+#: addons/banking/includes/mycred-banking-functions.php:95
+msgid "Month"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:434
+#: addons/banking/services/mycred-service-interest.php:459
+#: addons/banking/includes/mycred-banking-functions.php:85
+msgid "Day"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:454
+msgid "Payout Schedule"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:493
+msgid "Payout Frequency"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:506
+msgid "Payout Log Table"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:519
+msgid ""
+"Changing the payout period once the service is enabled, will only take "
+"effect once the currently scheduled payout runs. To change this, you will "
+"also need to adjust the payout schedule above."
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:524
+msgid "Exclude by ID"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:535
+msgid "Exclude by Role"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:539
+msgid "Roles to exclude"
+msgstr ""
+
+#: addons/banking/services/mycred-service-interest.php:655
+msgid "Leave empty to pay the default rate."
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:30
+msgid "Waiting to Start"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:32
+msgid "Running"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:33
+msgid "Finished"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:34
+msgid "Stopped"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:446
+msgid "Not yet started"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:457
+msgid "Currently Running"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:472
+msgid "View Schedule"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:472
+msgid "Delete Schedule"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:523
+#: addons/banking/services/mycred-service-payouts.php:766
+msgid "Min. Balance"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:526
+#: addons/banking/services/mycred-service-payouts.php:773
+msgid "Max. Balance"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:531
+msgid "Exclude Users"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:533
+msgid "Include Users"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:540
+msgid "Exclude Roles"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:542
+msgid "Include Roles"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:559
+#: addons/banking/services/mycred-service-payouts.php:879
+msgid "Job Title"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:573
+msgid "Start Date"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:579
+msgid "Eligible"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:580
+#, php-format
+msgid "1 User"
+msgid_plural "%d Users"
+msgstr[0] ""
+msgstr[1] ""
+
+#: addons/banking/services/mycred-service-payouts.php:585
+msgid "Runs"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:586
+msgid "Infinite"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:609
+msgid "Will payout even if the central bank account has run out of funds."
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:614
+msgid "Paid Out"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:615
+msgid "Completed"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:616
+msgid "Misses"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:617
+msgid "Runs Left"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:637
+msgid ""
+"A miss is when a payout was declined by the plugin. This can be due to "
+"custom code declining the payout or if the user is excluded."
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:682
+msgid "Schedule Title"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:694
+#: addons/banking/services/mycred-service-payouts.php:881
+msgid "Frequency"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:715
+msgid "Payout even if the central bank account runs out of funds."
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:722
+msgid "First Payout"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:754
+msgid "Repeat"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:756
+msgid "Use -1 for infinite runs."
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:784
+msgid "Limit by ID"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:798
+msgid "Limit by Role(s)"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:846
+msgid "Include:"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:847
+msgid "Exclude:"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:872
+msgid ""
+"As long as this service remains disabled, none of your scheduled payouts "
+"will run!"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:875
+msgid "Schedules"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:882
+msgid "Last Ran"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:883
+msgid "Next Run"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:891
+msgid "No schedules found."
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:955
+msgid "Schedule Added"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:962
+msgid ""
+"While the recurring payout has been successfully saved, based on the limits "
+"you set, right now there are no users that are eligible for a payout!"
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:974
+#: addons/banking/services/mycred-service-payouts.php:988
+msgid "Schedule not found. Please refresh this page and try again."
+msgstr ""
+
+#: addons/banking/services/mycred-service-payouts.php:993
+msgid "Schedule Deleted"
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:80
+msgid "Hour"
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:90
+msgid "Week"
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:100
+msgid "Quarter"
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:105
+msgid "Semiannual"
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:110
+msgid "Annual"
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:283
+msgid "A title must be set."
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:290
+msgid "The amount to payout can not be zero."
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:296
+msgid "Start date can not be in the past."
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:303
+msgid "Repeat can not be zero."
+msgstr ""
+
+#: addons/banking/includes/mycred-banking-functions.php:309
+msgid "Duplicate schedule."
+msgstr ""
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:530
+msgid ""
+"Message to show users on the payment page before they are charged. Leave "
+"empty to hide."
+msgstr ""
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:535
+msgid "Message to show users who do not have enough points to pay."
+msgstr ""
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:540
+msgid "Message to show visitors (users not logged in) on the payment page."
+msgstr ""
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:664
+msgid ""
+"The payment link shows / hides the payment form under \"My Bookings\". No "
+"HTML allowed."
+msgstr ""
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:671
+msgid "Shown on top of the payment form. No HTML allowed."
+msgstr ""
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:678
+msgid "The button label for payments. No HTML allowed!"
+msgstr ""
+
+#: addons/gateway/carts/mycred-woocommerce.php:30
+msgid "Let users pay using points."
+msgstr ""
+
+#: addons/gateway/carts/mycred-woocommerce.php:114
+#: addons/gateway/carts/mycred-woocommerce.php:189
+msgid "Refund Log Template"
+msgstr ""
+
+#: addons/gateway/carts/mycred-woocommerce.php:270
+#, php-format
+msgid "%s Payment"
+msgstr ""
+
+#: addons/transfer/includes/mycred-transfer-widgets.php:113
+#: addons/transfer/includes/mycred-transfer-shortcodes.php:32
+#: addons/buy-creds/modules/buycred-module-pending.php:576
+#: addons/buy-creds/modules/buycred-module-core.php:1487
+msgid "Recipient"
+msgstr ""
+
+#: addons/transfer/includes/mycred-transfer-widgets.php:117
+msgid "Recipient Placeholder"
+msgstr ""
+
+#: addons/transfer/includes/mycred-transfer-widgets.php:125
+msgid "Message for Excluded Users"
+msgstr ""
+
+#: addons/badges/includes/mycred-badge-functions.php:266
+#, php-format
+msgctxt "\"Points\" for \"reference\" x times"
+msgid "%s for \"%s\" x %d"
+msgstr ""
+
+#: addons/badges/includes/mycred-badge-functions.php:268
+#, php-format
+msgctxt "\"Gained/Lost\" \"x points\" for \"reference\""
+msgid "%s %s for \"%s\""
+msgstr ""
+
+#: addons/coupons/includes/mycred-coupon-functions.php:393
+msgid "An unknown error occurred. Coupon not used."
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:525
+#, php-format
+msgctxt "Point type name"
+msgid "You can not pay using %s"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:786
+#, php-format
+msgctxt "all post type name"
+msgid "All %s"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:790
+#, php-format
+msgctxt "all post type name"
+msgid "%s I manually select"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:794
+#, php-format
+msgctxt "%s = post type name"
+msgid "All %s except"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:795
+#, php-format
+msgctxt "%s = post type name"
+msgid "Comma separated list of %s IDs to exclude"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:798
+#, php-format
+msgctxt "%s = post type name"
+msgid "Only %s"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:799
+#, php-format
+msgctxt "%s = post type name"
+msgid "Comma separated list of %s IDs"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:811
+#, php-format
+msgctxt "e.g. Only \"Posts\" in \"Categories\""
+msgid "Only %s in %s"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:812
+#: addons/sell-content/includes/mycred-sell-functions.php:816
+#: addons/sell-content/includes/mycred-sell-functions.php:822
+#: addons/sell-content/includes/mycred-sell-functions.php:826
+#, php-format
+msgctxt "%s = taxonomy name"
+msgid "Comma separated list of %s slugs"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:815
+#, php-format
+msgctxt "e.g. Only \"Posts\" not in \"Categories\""
+msgid "Only %s not in %s"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:821
+#, php-format
+msgctxt "e.g. Only \"Posts\" with \"Tags\""
+msgid "Only %s with %s"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-functions.php:825
+#, php-format
+msgctxt "e.g. Only \"Posts\" without \"Tags\""
+msgid "Only %s without %s"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:68
+msgid ""
+"This shortcode can not be used in content that has not been set for sale!"
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:70
+msgid ""
+"This content is currently unattainable. Apologies for the inconvenience."
+msgstr ""
+
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:250
+#, php-format
+msgctxt "e.g. 10 hours"
+msgid "Purchase expires in %s"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:225
+#, php-format
+msgctxt "%s is replaced with the point amount and name."
+msgid "Received new request to purchase %s."
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:576
+msgid "First Name"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:582
+msgid "Last Name"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:590
+msgid "Address Line 1"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:598
+msgid "Address Line 2"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:606
+msgid "City"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:612
+msgid "Zip"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:620
+msgid "State"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:628
+msgid "Country"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:633
+msgid "Choose Country"
+msgstr ""
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:691
+msgctxt "buyCRED order description"
+msgid "Item"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-pending.php:182
+#: addons/buy-creds/modules/buycred-module-pending.php:183
+#: addons/buy-creds/modules/buycred-module-pending.php:184
+#: addons/buy-creds/modules/buycred-module-pending.php:185
+#: addons/buy-creds/modules/buycred-module-pending.php:186
+#: addons/buy-creds/modules/buycred-module-pending.php:187
+#: addons/buy-creds/modules/buycred-module-pending.php:188
+#: addons/buy-creds/modules/buycred-module-pending.php:189
+#: addons/buy-creds/modules/buycred-module-pending.php:190
+msgid "Payment Updated."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-pending.php:218
+msgid "Pending payment successfully credited to account."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-pending.php:220
+msgid "Failed to credit the pending payment to account."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-pending.php:468
+msgid "Pending Payment"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-pending.php:506
+msgid "Trash"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-pending.php:570
+msgid "Payer"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-pending.php:679
+msgid "Pending request created."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-pending.php:727
+#, php-format
+msgid "Pending payment updated by %s"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:138
+msgid "Bank Transfer"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:347
+msgid ""
+"Minimum amount of %plural% a user must purchase. Will default to %cred%."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:361
+msgid "Redirects"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:365
+msgid ""
+"Where should users be redirected to upon successfully completing a purchase. "
+"You can nominate a specific URL or a page."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:368
+#: addons/buy-creds/modules/buycred-module-core.php:393
+msgid "Redirect to Page"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:384
+#: addons/buy-creds/modules/buycred-module-core.php:409
+msgid "Redirect to URL"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:390
+msgid ""
+"Where should users be redirected to if they cancel a transaction. You can "
+"nominate a specific URL or a page."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:419
+msgid "Login Message"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:421
+msgid ""
+"Message to show in shortcodes when viewed by someone who is not logged in."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:1104
+msgid "Users exchange rate when buying points."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:1115
+msgid "buyCRED Exchange Rates"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:1125
+#, php-format
+msgctxt "Points Name"
+msgid "Buying %s"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:1128
+msgid "This point type is not for sale."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:1140
+#: addons/buy-creds/modules/buycred-module-core.php:1155
+#, php-format
+msgctxt "Buying Points"
+msgid "Buying %s"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:1143
+#, php-format
+msgctxt "Points Name"
+msgid "User can not buy %s"
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:1158
+msgid "Leave empty to use the default rate."
+msgstr ""
+
+#: addons/buy-creds/modules/buycred-module-core.php:1531
+msgid "Pay Using"
+msgstr ""
+
+#: addons/buy-creds/includes/buycred-functions.php:115
+msgid "Unknown Gateway"
+msgstr ""
+
+#: addons/buy-creds/gateways/bank-transfer.php:168
+msgid "Continue"
+msgstr ""
+
+#: addons/buy-creds/gateways/bank-transfer.php:196
+msgid "Checkout Logo"
+msgstr ""
+
+#: addons/buy-creds/gateways/bank-transfer.php:202
+msgid "Bank Account Information"
+msgstr ""
+
+#: addons/buy-creds/gateways/bank-transfer.php:206
+msgid "Bank transfer details to show the user on the checkout page."
+msgstr ""
+
+#: addons/buy-creds/gateways/netbilling.php:238
+msgid "Postback CGI URL"
+msgstr ""
+
+#: addons/buy-creds/gateways/netbilling.php:242
+msgid ""
+"For this gateway to work, you must login to your NETbilling account and edit "
+"your site. Under \"Default payment form settings\" make sure the Postback "
+"CGI URL is set to the above address and \"Return method\" is set to POST."
+msgstr ""
+
+#: addons/buy-creds/gateways/zombaio.php:210
+#, php-format
+msgid "Live transaction while debug mode is enabled! Received: %s"
+msgstr ""
+
+#: addons/buy-creds/gateways/zombaio.php:333
+#: addons/buy-creds/gateways/skrill.php:338
+msgid "Logo URL"
+msgstr ""
+
+#: addons/buy-creds/gateways/zombaio.php:342
+msgid "Do not verify that callbacks are coming from Zombaio."
+msgstr ""
+
+#: addons/buy-creds/gateways/zombaio.php:352
+msgid "Postback URL (ZScript)"
+msgstr ""
+
+#: addons/buy-creds/gateways/zombaio.php:356
+msgid ""
+"For this gateway to work, login to ZOA and set the Postback URL to the above "
+"address and click validate."
+msgstr ""
+
+#: mycred.php:569
+msgid "Import log entries via a CSV file."
+msgstr "Įkelti įvykių sąrašą per CSV failą."
+
+#: mycred.php:580
+#, php-format
+msgid "%s Balance Import"
+msgstr "%s Balanso importavimas"
+
+#: mycred.php:635 modules/mycred-module-management.php:316
+#: modules/mycred-module-settings.php:425 modules/mycred-module-log.php:463
+#: addons/transfer/myCRED-addon-transfer.php:159
+#: addons/ranks/myCRED-addon-ranks.php:986
+#: addons/ranks/myCRED-addon-ranks.php:1572
+#: addons/badges/myCRED-addon-badges.php:727
+#: addons/gateway/event-booking/mycred-eventsmanager.php:537
+msgid "Processing..."
+msgstr "Vykdoma..."
+
+#: mycred.php:636
+msgid "Sent"
+msgstr "Siųsti"
+
+#: mycred.php:637
+msgid "Error - Try Again"
+msgstr "Klaida - bandykite dar kartą"
+
+#: mycred.php:812 mycred.php:813
+#, php-format
+msgid "About %s"
+msgstr "Apie %s"
+
+#: mycred.php:821 mycred.php:822
+msgid "Awesome People"
+msgstr "Nuostabūs žmonės"
+
+#: mycred.php:859 modules/mycred-module-management.php:558
+#: addons/transfer/includes/mycred-transfer-shortcodes.php:34
+msgid "Balance"
+msgstr "Balansas"
+
+#: mycred.php:926 modules/mycred-module-management.php:473
+#: modules/mycred-module-log.php:282 modules/mycred-module-log.php:283
+#: addons/buy-creds/modules/buycred-module-pending.php:471
+msgid "History"
+msgstr "Istorija"
+
+#: mycred.php:997 mycred.php:1018
+#: addons/notifications/myCRED-addon-notifications.php:194
+#: addons/email-notices/myCRED-addon-email-notices.php:277
+#: addons/banking/services/mycred-service-interest.php:477
+#: addons/gateway/event-booking/mycred-eventsmanager.php:591
+msgid "Setup"
+msgstr "Nustatymai"
+
+#: mycred.php:999 modules/mycred-module-settings.php:21
+#: modules/mycred-module-settings.php:22 modules/mycred-module-settings.php:23
+#: modules/mycred-module-network.php:270
+#: addons/stats/abstracts/mycred-abstract-stat-widget.php:106
+#: addons/buy-creds/modules/buycred-module-core.php:592
+msgid "Settings"
+msgstr "Nustatymai"
+
+#: mycred.php:1039
+msgid ""
+"Make sure to backup your database and files before updating, in case "
+"anything goes wrong!"
+msgstr ""
+"Prieš diegiant atnaujinimus, rekomenduojama pasidaryti atsargines duomenų "
+"bazių ir failų kopijas."
+
+#: abstracts/mycred-abstract-hook.php:293
+#: abstracts/mycred-abstract-hook.php:364 includes/mycred-functions.php:2784
+msgid "No limit"
+msgstr "Be limito"
+
+#: abstracts/mycred-abstract-hook.php:294
+msgid "/ Day"
+msgstr "Diena"
+
+#: abstracts/mycred-abstract-hook.php:295
+msgid "/ Week"
+msgstr "Savaitė"
+
+#: abstracts/mycred-abstract-hook.php:296
+msgid "/ Month"
+msgstr "Mėnuo"
+
+#: abstracts/mycred-abstract-hook.php:297
+msgid "in Total"
+msgstr "Viso"
+
+#: abstracts/mycred-abstract-hook.php:365
+msgid "Once every 24 hours"
+msgstr "Kartą per parą"
+
+#: abstracts/mycred-abstract-hook.php:366
+msgid "Once every 7 days"
+msgstr "Kartą per savaitę"
+
+#: abstracts/mycred-abstract-hook.php:367
+msgid "Once per day (reset at midnight)"
+msgstr "Kartą per dieną (perkrovimas vidurnakty)"
+
+#: abstracts/mycred-abstract-hook.php:374
+#: addons/email-notices/myCRED-addon-email-notices.php:531
+#: addons/email-notices/myCRED-addon-email-notices.php:862
+#: addons/badges/myCRED-addon-badges.php:905
+#: addons/banking/abstracts/mycred-abstract-service.php:351
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1126
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1151
+#: addons/buy-creds/modules/buycred-module-core.php:376
+#: addons/buy-creds/modules/buycred-module-core.php:401
+#: addons/buy-creds/gateways/zombaio.php:406
+msgid "Select"
+msgstr "Pasrinkti"
+
+#: abstracts/mycred-abstract-module.php:400
+#: abstracts/mycred-abstract-module.php:410
+msgid "Surprise"
+msgstr "Siurprizas"
+
+#: abstracts/mycred-abstract-module.php:520
+#: modules/mycred-module-network.php:218
+msgid "click to close"
+msgstr "Paspauskite norėdami uždaryti "
+
+#: abstracts/mycred-abstract-module.php:521
+#: modules/mycred-module-network.php:219
+msgid "click to open"
+msgstr "Paspauskite norėdami atidaryti"
+
+#: abstracts/mycred-abstract-module.php:554
+#: modules/mycred-module-network.php:261
+#: addons/email-notices/myCRED-addon-email-notices.php:1556
+#: addons/gateway/event-booking/mycred-eventespresso3.php:451
+#: addons/buy-creds/modules/buycred-module-core.php:597
+msgid "Settings Updated"
+msgstr "Nustatymai papildyti"
+
+#: modules/mycred-module-management.php:101
+msgid "Update Balance"
+msgstr "Atnaujinti balansą"
+
+#: modules/mycred-module-management.php:114
+msgid "User is excluded"
+msgstr "Vartotojas pašalintas"
+
+#: modules/mycred-module-management.php:122
+msgid "Log Entry can not be empty"
+msgstr "Sąrašas negali būti tuščias"
+
+#: modules/mycred-module-management.php:130 modules/mycred-module-log.php:225
+msgid "Amount can not be zero"
+msgstr "Kiekis negali būti lygus nuliui"
+
+#: modules/mycred-module-management.php:235 modules/mycred-module-log.php:94
+#: modules/mycred-module-log.php:896
+#: includes/classes/class.query-export.php:263
+#: includes/classes/class.query-export.php:399
+#: includes/classes/class.query-log.php:892
+#: includes/classes/class.query-log.php:905
+#: addons/banking/services/mycred-service-payouts.php:740
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:202
+#: addons/buy-creds/modules/buycred-module-core.php:768
+msgid "Date"
+msgstr "Data"
+
+#: modules/mycred-module-management.php:236
+#: addons/banking/services/mycred-service-interest.php:435
+#: addons/banking/services/mycred-service-interest.php:460
+#: addons/banking/services/mycred-service-payouts.php:746
+msgid "Time"
+msgstr "Laikas"
+
+#: modules/mycred-module-management.php:238 modules/mycred-module-log.php:96
+#: includes/classes/class.query-export.php:263
+#: includes/classes/class.query-export.php:406
+#: includes/classes/class.query-log.php:894
+#: includes/classes/class.query-log.php:907
+msgid "Entry"
+msgstr "Veiksmas"
+
+#: modules/mycred-module-management.php:314
+msgid "Edit Users Balance"
+msgstr "Redaguoti vartotojo balansą"
+
+#: modules/mycred-module-management.php:315
+#: modules/mycred-module-settings.php:430 modules/mycred-module-log.php:462
+#: addons/banking/myCRED-addon-banking.php:204
+msgid "Close"
+msgstr "Uždaryti"
+
+#: modules/mycred-module-management.php:453
+#: modules/mycred-module-management.php:571
+#: addons/sell-content/myCRED-addon-sell-content.php:411
+#: addons/buy-creds/modules/buycred-module-core.php:1142
+msgid "Excluded"
+msgstr "Atmesti"
+
+#: modules/mycred-module-management.php:463
+#: addons/coupons/myCRED-addon-coupons.php:309
+msgid "Total"
+msgstr "Viso"
+
+#: modules/mycred-module-management.php:474
+msgid "Adjust"
+msgstr "Reguliuoti"
+
+#: modules/mycred-module-management.php:583
+#: modules/mycred-module-management.php:583
+#: includes/classes/class.query-log.php:1621
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:68
+msgid "Edit"
+msgstr "Keisti"
+
+#: modules/mycred-module-management.php:583
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:479
+#: addons/buy-creds/modules/buycred-module-pending.php:745
+msgid "Cancel"
+msgstr "Atšaukti"
+
+#: modules/mycred-module-management.php:741
+#: addons/banking/services/mycred-service-payouts.php:553
+msgid "ID"
+msgstr "ID"
+
+#: modules/mycred-module-management.php:753
+#: addons/gateway/event-booking/mycred-eventespresso3.php:307
+#: addons/gateway/event-booking/mycred-eventespresso3.php:332
+#: addons/gateway/event-booking/mycred-eventsmanager.php:464
+msgid "Current Balance"
+msgstr "Balansas"
+
+#: modules/mycred-module-management.php:768
+#: plugins/mycred-hook-affiliatewp.php:291
+#: plugins/mycred-hook-affiliatewp.php:310
+#: plugins/mycred-hook-affiliatewp.php:340
+#: includes/shortcodes/mycred_exchange.php:69
+#: includes/shortcodes/mycred_hook_table.php:78
+#: includes/classes/class.query-export.php:263
+#: includes/classes/class.query-export.php:383
+#: includes/classes/class.query-log.php:917
+#: addons/transfer/includes/mycred-transfer-widgets.php:105
+#: addons/transfer/includes/mycred-transfer-shortcodes.php:33
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:692
+#: addons/buy-creds/modules/buycred-module-pending.php:296
+#: addons/buy-creds/modules/buycred-module-pending.php:642
+#: addons/buy-creds/modules/buycred-module-pending.php:760
+msgid "Amount"
+msgstr "Kiekis"
+
+#: modules/mycred-module-management.php:770
+msgid "A positive or negative value"
+msgstr "Teigiama arba neigiama reikšmė"
+
+#: modules/mycred-module-management.php:796 modules/mycred-module-log.php:915
+#: addons/gateway/event-booking/mycred-eventespresso3.php:518
+msgid "Log Entry"
+msgstr "Veiksmų žurnalas"
+
+#: modules/mycred-module-management.php:797
+#: addons/transfer/includes/mycred-transfer-widgets.php:92
+#: addons/transfer/includes/mycred-transfer-widgets.php:114
+#: addons/transfer/includes/mycred-transfer-widgets.php:118
+#: addons/transfer/includes/mycred-transfer-widgets.php:126
+msgid "optional"
+msgstr "pasirinktinai"
+
+#: modules/mycred-module-settings.php:138
+msgid "Accounts successfully reset"
+msgstr "Paskyra sįkmingai perkrauta"
+
+#: modules/mycred-module-settings.php:240
+msgid "Invalid decimal value."
+msgstr "Netinkama dešimtainė reikšmė."
+
+#: modules/mycred-module-settings.php:426
+msgid ""
+"Warning! All entries in your log will be permanently removed! This can not "
+"be undone!"
+msgstr "Dėmesio! Visi įrašai bus ištrinti negrįžtamai!"
+
+#: modules/mycred-module-settings.php:427
+msgid ""
+"All log entries belonging to deleted users will be permanently deleted! This "
+"can not be undone!"
+msgstr ""
+"Dėmesio! Visi įrašai priklausantys pašalintiems naudotojams bus ištrinti "
+"negrįžtamai!"
+
+#: modules/mycred-module-settings.php:428
+msgid "Warning! All user balances will be set to zero! This can not be undone!"
+msgstr "Dėmesio! Visi vartotojų balansai bus nunulinti negrįžtamai!"
+
+#: modules/mycred-module-settings.php:429
+msgid "Done!"
+msgstr "Atlikta!"
+
+#: modules/mycred-module-settings.php:468
+#: modules/mycred-module-settings.php:480
+msgid "No decimals"
+msgstr "Be dešimtainių"
+
+#: modules/mycred-module-settings.php:492
+#, php-format
+msgid "<a href=\"%s\">Click here</a> to change your default point types setup."
+msgstr ""
+"<a href=\"%s\">Paspauskite čia</a>norėdami pakeisti nustatytas taškų rūšis."
+
+#: modules/mycred-module-settings.php:530
+#, php-format
+msgid "%s Settings"
+msgstr "%s Nustatymai"
+
+#: modules/mycred-module-settings.php:539
+msgid "Core Settings"
+msgstr "Pagrindiniai nustatymai"
+
+#: modules/mycred-module-settings.php:544 includes/mycred-setup.php:275
+#: addons/gateway/event-booking/mycred-eventespresso3.php:460
+#: addons/gateway/event-booking/mycred-eventsmanager.php:658
+msgid "Labels"
+msgstr "Etiketės"
+
+#: modules/mycred-module-settings.php:562 includes/mycred-setup.php:293
+#: addons/email-notices/myCRED-addon-email-notices.php:1415
+msgid "Format"
+msgstr "Formatas"
+
+#: modules/mycred-module-settings.php:566 includes/mycred-setup.php:297
+msgid "Prefix"
+msgstr "Priešdėlis"
+
+#: modules/mycred-module-settings.php:572 includes/mycred-setup.php:303
+msgid "Separators"
+msgstr "Atskyrėjai"
+
+#: modules/mycred-module-settings.php:580 includes/mycred-setup.php:311
+msgid "Decimals"
+msgstr "Dešimtainės"
+
+#: modules/mycred-module-settings.php:586 includes/mycred-setup.php:317
+msgid "Suffix"
+msgstr "Priesaga"
+
+#: modules/mycred-module-settings.php:593
+msgid "Tip"
+msgstr "Patarimas"
+
+#: modules/mycred-module-settings.php:593
+msgid ""
+"As this is your main point type, the value you select here will be the "
+"largest number of decimals your installation will support."
+msgstr ""
+"Kadangi tai yra jūsų pagrindinės rūšies taškai, jūsų pasirinkta reikšmė bus "
+"didžiausias dešimtainis skaičius, kurį palaiko sistema."
+
+#: modules/mycred-module-settings.php:600 includes/mycred-setup.php:328
+msgid "Security"
+msgstr "Saugumas"
+
+#: modules/mycred-module-settings.php:647
+msgid "Delete log entries when user is deleted."
+msgstr "Ištrinti veiksmų sąrašus kai ištrintas vartotojas"
+
+#: modules/mycred-module-settings.php:666
+msgid "Management"
+msgstr "Valdymas"
+
+#: modules/mycred-module-settings.php:678 modules/mycred-module-log.php:427
+msgid "Entries"
+msgstr "Veiksmai"
+
+#: modules/mycred-module-settings.php:684
+#: modules/mycred-module-settings.php:709
+#: addons/ranks/myCRED-addon-ranks.php:1669
+#: addons/buy-creds/modules/buycred-module-pending.php:477
+#: addons/buy-creds/modules/buycred-module-pending.php:763
+msgid "Actions"
+msgstr "Įvykiai"
+
+#: modules/mycred-module-settings.php:687
+msgid "Empty Log"
+msgstr "Tuščias sąrašas"
+
+#: modules/mycred-module-settings.php:703
+#: addons/ranks/myCRED-addon-ranks.php:1080
+#: addons/badges/myCRED-addon-badges.php:425
+msgid "Users"
+msgstr "Vartotojai"
+
+#: modules/mycred-module-settings.php:711
+msgid "Set all to zero"
+msgstr "Nunulinti"
+
+#: modules/mycred-module-settings.php:729 includes/mycred-widgets.php:573
+#: addons/transfer/myCRED-addon-transfer.php:370
+#: addons/sell-content/myCRED-addon-sell-content.php:581
+#: addons/transfer/includes/mycred-transfer-widgets.php:121
+#: addons/buy-creds/modules/buycred-module-core.php:333
+msgid "Point Types"
+msgstr "Taškų rūšys"
+
+#: modules/mycred-module-settings.php:749
+#: modules/mycred-module-settings.php:775
+#: modules/mycred-module-settings.php:805
+#: addons/email-notices/myCRED-addon-email-notices.php:578
+#: addons/gateway/carts/mycred-woocommerce.php:155
+msgid "Label"
+msgstr "Etiketė"
+
+#: modules/mycred-module-settings.php:756
+#: modules/mycred-module-settings.php:782
+#: includes/classes/class.query-log.php:1019
+#: includes/classes/class.query-log.php:1622
+#: addons/banking/services/mycred-service-payouts.php:472
+msgid "Delete"
+msgstr "Ištrinti"
+
+#: modules/mycred-module-settings.php:795
+msgid "Add New Type"
+msgstr "Pridėti naują rūšį"
+
+#: modules/mycred-module-settings.php:823
+#: addons/gateway/event-booking/mycred-eventespresso3.php:551
+#: addons/buy-creds/modules/buycred-module-core.php:650
+msgid "Update Settings"
+msgstr "Aktyvuoti nustatymus"
+
+#: modules/mycred-module-settings.php:836
+msgid "Identify users by"
+msgstr "Identifikuokite vartotoją pagal"
+
+#: modules/mycred-module-settings.php:842
+msgid "User ID"
+msgstr "Vartotojo ID"
+
+#: modules/mycred-module-settings.php:843
+msgid "User Email"
+msgstr "Vartotojo el. paštas"
+
+#: modules/mycred-module-settings.php:844
+msgid "User Login"
+msgstr "Vartotojo prisijungimas"
+
+#: modules/mycred-module-settings.php:857
+msgid "Import Log Entry"
+msgstr "Importuoti veiksmų sąrašą"
+
+#: modules/mycred-module-settings.php:866 modules/mycred-module-export.php:268
+#: modules/mycred-module-export.php:295 modules/mycred-module-export.php:345
+msgid "Export"
+msgstr "Eksportuoti"
+
+#: modules/mycred-module-addons.php:25 modules/mycred-module-addons.php:26
+#: includes/mycred-setup.php:171
+msgid "Add-ons"
+msgstr "Papildiniai"
+
+#: modules/mycred-module-addons.php:175
+msgid "Give your users badges based on their interaction with your website."
+msgstr "Suteikite naudotojams ženklelius pagal jų veiklą tinklapyje."
+
+#: modules/mycred-module-addons.php:197
+msgid ""
+"The <strong>buy</strong>CRED Add-on allows your users to buy points using "
+"PayPal, Skrill (Moneybookers) or NETbilling. <strong>buy</strong>CRED can "
+"also let your users buy points for other members."
+msgstr ""
+"The <strong>pirkti</strong>CRED papildinys leidžia jūsų vartotojams pirkti "
+"kreditus per PayPal, Skrill (Moneybookers) ar NETbilling. <strong>"
+"pirkti</strong>CRED taip pat leidžia pirkti kreditus kitiems dalyviams."
+
+#: modules/mycred-module-addons.php:286
+msgid ""
+"Allow your users to send or \"donate\" points to other members by either "
+"using the mycred_transfer shortcode or the myCRED Transfer widget."
+msgstr ""
+"Sudaro galimybę naudotojams siųsti ar aukoti auksinus kitiems dalyviams arba "
+"per  \n"
+"mycred_transfer trumpąjį kodą arba per myCred Pervedimai valdiklį."
+
+#: modules/mycred-module-addons.php:405
+msgid "Activate Add-on"
+msgstr "Aktyvuokite papildinį"
+
+#: modules/mycred-module-addons.php:406
+msgid "Activate"
+msgstr "Aktyvuoti"
+
+#: modules/mycred-module-addons.php:412
+msgid "Deactivate Add-on"
+msgstr "Išjungti papildinį"
+
+#: modules/mycred-module-addons.php:413
+msgid "Deactivate"
+msgstr "Išjungti"
+
+#: modules/mycred-module-log.php:24 modules/mycred-module-log.php:25
+#: addons/gateway/event-booking/mycred-eventespresso3.php:515
+msgid "Log"
+msgstr "Sąrašas"
+
+#: modules/mycred-module-log.php:92 modules/mycred-module-log.php:892
+#: includes/classes/class.query-export.php:263
+#: includes/classes/class.query-export.php:371
+#: includes/classes/class.query-log.php:891
+#: includes/classes/class.query-log.php:903
+#: addons/email-notices/myCRED-addon-email-notices.php:336
+#: addons/email-notices/myCRED-addon-email-notices.php:568
+msgid "User"
+msgstr "Vartotojas"
+
+#: modules/mycred-module-log.php:173
+msgid "Row Deleted"
+msgstr "Eilutė ištrinta"
+
+#: modules/mycred-module-log.php:232
+msgid "Log entry not found"
+msgstr "Veiksmų sąrašas nerastas"
+
+#: modules/mycred-module-log.php:461
+msgid "Edit Log Entry"
+msgstr "Redaguoti prisijungimų žurnalą"
+
+#: modules/mycred-module-log.php:465
+msgid "Are you sure you want to delete this log entry? This can not be undone!"
+msgstr ""
+"Ar jūs tikrai norite ištrinti sąrašą? Atkurti ištrinto sąrašo negalėsite!"
+
+#: modules/mycred-module-log.php:496
+msgid "Search results for"
+msgstr "Ieškoti rezultatų"
+
+#: modules/mycred-module-log.php:652
+#, php-format
+msgid "My %s History"
+msgstr ""
+"Mano \n"
+"%s \n"
+"istorija"
+
+#: modules/mycred-module-network.php:156 modules/mycred-module-network.php:275
+msgid "Master Template"
+msgstr "Tėvinis šablonas"
+
+#: modules/mycred-module-network.php:156 modules/mycred-module-network.php:280
+#: modules/mycred-module-network.php:296 modules/mycred-module-export.php:386
+#: addons/sell-content/myCRED-addon-sell-content.php:481
+msgid "Enabled"
+msgstr "Įjungta"
+
+#: modules/mycred-module-network.php:187 modules/mycred-module-network.php:188
+msgid "Network Settings"
+msgstr "Tinklo nustatymai"
+
+#: modules/mycred-module-network.php:241
+#, php-format
+msgid "%s Network"
+msgstr "Tinklas"
+
+#: modules/mycred-module-network.php:257
+#, php-format
+msgid "Note! %s has not yet been setup."
+msgstr ""
+"Dėmesio! \n"
+"%s nenustatytas!"
+
+#: modules/mycred-module-network.php:285 modules/mycred-module-network.php:301
+#: modules/mycred-module-export.php:385 plugins/mycred-hook-affiliatewp.php:362
+#: addons/sell-content/myCRED-addon-sell-content.php:396
+#: addons/sell-content/myCRED-addon-sell-content.php:480
+#: addons/buy-creds/modules/buycred-module-core.php:1127
+msgid "Disabled"
+msgstr "Išjungta"
+
+#: modules/mycred-module-network.php:291
+msgid "Central Logging"
+msgstr "Pagrindinis prisijungimas"
+
+#: modules/mycred-module-network.php:327
+msgid "Save Network Settings"
+msgstr "Išsaugoti tinklo nustatymus"
+
+#: modules/mycred-module-export.php:432 modules/mycred-module-export.php:480
+#: includes/mycred-widgets.php:183 includes/mycred-widgets.php:365
+#: includes/importers/mycred-cubepoints.php:353
+#: includes/classes/class.query-export.php:263
+#: includes/classes/class.query-export.php:391
+#: addons/ranks/myCRED-addon-ranks.php:1083
+#: addons/ranks/myCRED-addon-ranks.php:1251
+#: addons/ranks/myCRED-addon-ranks.php:1258
+#: addons/email-notices/myCRED-addon-email-notices.php:280
+#: addons/email-notices/myCRED-addon-email-notices.php:585
+#: addons/coupons/myCRED-addon-coupons.php:256
+#: addons/coupons/myCRED-addon-coupons.php:520
+#: addons/gateway/event-booking/mycred-eventespresso3.php:483
+#: addons/gateway/event-booking/mycred-eventsmanager.php:604
+#: addons/gateway/carts/mycred-wpecommerce.php:383
+#: addons/gateway/carts/mycred-woocommerce.php:125
+#: addons/gateway/carts/mycred-woocommerce.php:166
+#: addons/buy-creds/modules/buycred-module-pending.php:584
+#: addons/buy-creds/modules/buycred-module-pending.php:762
+msgid "Point Type"
+msgstr "Taškų rūšis"
+
+#: modules/mycred-module-buddypress.php:31
+msgid "My History"
+msgstr "Mano istorija"
+
+#: modules/mycred-module-buddypress.php:32
+#, php-format
+msgid "%s's History"
+msgstr "Istorija"
+
+#: modules/mycred-module-buddypress.php:131
+msgid "Current balance"
+msgstr "Balansas"
+
+#: modules/mycred-module-buddypress.php:236
+#: modules/mycred-module-buddypress.php:249
+#: includes/classes/class.query-log.php:1745
+msgid "All"
+msgstr "Visi"
+
+#: modules/mycred-module-buddypress.php:237
+#: includes/classes/class.query-log.php:1746
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:189
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:319
+msgid "Today"
+msgstr "Šiandien"
+
+#: modules/mycred-module-buddypress.php:238
+#: includes/classes/class.query-log.php:1747
+msgid "Yesterday"
+msgstr "Vakar"
+
+#: modules/mycred-module-buddypress.php:239
+#: includes/classes/class.query-log.php:1748
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:190
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:320
+msgid "This Week"
+msgstr "Šią savaitę"
+
+#: modules/mycred-module-buddypress.php:240
+#: includes/classes/class.query-log.php:1749
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:191
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:321
+msgid "This Month"
+msgstr "Šį mėnesį"
+
+#: modules/mycred-module-buddypress.php:352
+msgid "Go"
+msgstr "Eiti"
+
+#: modules/mycred-module-buddypress.php:404
+#: modules/mycred-module-buddypress.php:411
+#: addons/badges/myCRED-addon-badges.php:1165
+#: addons/badges/myCRED-addon-badges.php:1199
+#: addons/gateway/carts/mycred-woocommerce.php:147
+msgid "Do not show"
+msgstr "Nerodyti"
+
+#: modules/mycred-module-buddypress.php:405
+#: addons/badges/myCRED-addon-badges.php:1166
+msgid "Include in Profile Header"
+msgstr "Įdėti į profilio antraštę"
+
+#: modules/mycred-module-buddypress.php:412
+msgid "Show in Profile"
+msgstr "Rodyti profilyje"
+
+#: modules/mycred-module-buddypress.php:432
+msgid "%singular% Balance"
+msgstr "Balansas"
+
+#: modules/mycred-module-buddypress.php:453
+#: addons/ranks/myCRED-addon-ranks.php:1497
+#: addons/ranks/myCRED-addon-ranks.php:1538
+#: addons/notifications/myCRED-addon-notifications.php:198
+msgid "Template"
+msgstr "Šablonas"
+
+#: modules/mycred-module-buddypress.php:463
+msgid "%plural% History"
+msgstr "Istorija"
+
+#: modules/mycred-module-buddypress.php:477
+msgid "Members can view each others %_plural% history."
+msgstr "Dalyviai gali matyti vieni kitų %_plural% istoriją."
+
+#: modules/mycred-module-buddypress.php:482
+msgid "Menu Title"
+msgstr "Meniu pavadinimas"
+
+#: modules/mycred-module-buddypress.php:484
+msgid "Title shown to me"
+msgstr "Pavadinimas rodomas man"
+
+#: modules/mycred-module-buddypress.php:491
+#, php-format
+msgid "Title shown to others. Use %s to show the first name."
+msgstr ""
+"Pavadinimas rodomas kitiems. Naudokite\n"
+" %s norėdami rodyti pirmą vardą."
+
+#: modules/mycred-module-buddypress.php:499
+msgid "Menu Position"
+msgstr "Meniu padėtis"
+
+#: modules/mycred-module-buddypress.php:501
+msgid "Current menu positions:"
+msgstr "dabartinės meniu padėtys:"
+
+#: modules/mycred-module-buddypress.php:513
+msgid "Number of history entries to show"
+msgstr "Rodomų įrašų kiekis"
+
+#: plugins/mycred-hook-invite-anyone.php:15
+msgid "Invite Anyone Plugin"
+msgstr "\"Pakvieskite visus\" įskiepis"
+
+#: plugins/mycred-hook-invite-anyone.php:16
+msgid ""
+"Awards %_plural% for sending invitations and/or %_plural% if the invite is "
+"accepted."
+msgstr ""
+"Skiriama \n"
+"%_plural% už pakvietimų siuntimą ir/ar \n"
+"%_plural% jei kvietimas priimtas."
+
+#: plugins/mycred-hook-invite-anyone.php:215
+#: plugins/mycred-hook-invite-anyone.php:239
+#: plugins/mycred-hook-wp-postratings.php:171
+#: plugins/mycred-hook-wp-postratings.php:183
+#: plugins/mycred-hook-gravityforms.php:166
+#: plugins/mycred-hook-simplepress.php:301
+#: plugins/mycred-hook-simplepress.php:343
+#: plugins/mycred-hook-buddypress.php:623
+#: plugins/mycred-hook-buddypress.php:647
+#: plugins/mycred-hook-buddypress.php:671
+#: plugins/mycred-hook-buddypress.php:695
+#: plugins/mycred-hook-buddypress.php:719
+#: plugins/mycred-hook-buddypress.php:770
+#: plugins/mycred-hook-buddypress.php:812
+#: plugins/mycred-hook-buddypress.php:854
+#: plugins/mycred-hook-buddypress.php:878
+#: plugins/mycred-hook-buddypress.php:1556
+#: plugins/mycred-hook-buddypress.php:1580
+#: plugins/mycred-hook-buddypress.php:1604
+#: plugins/mycred-hook-buddypress.php:1628
+#: plugins/mycred-hook-buddypress.php:1652
+#: plugins/mycred-hook-buddypress.php:1676
+#: plugins/mycred-hook-buddypress.php:1700
+#: plugins/mycred-hook-buddypress.php:1742
+#: plugins/mycred-hook-affiliatewp.php:317
+#: plugins/mycred-hook-events-manager-light.php:211
+#: plugins/mycred-hook-sharethis.php:267
+#: plugins/mycred-hook-buddypress-media.php:300
+#: plugins/mycred-hook-buddypress-media.php:324
+#: plugins/mycred-hook-buddypress-media.php:348
+#: plugins/mycred-hook-wp-favorite-posts.php:228
+#: plugins/mycred-hook-wp-favorite-posts.php:240
+#: plugins/mycred-hook-contact-form7.php:172
+#: plugins/mycred-hook-bbPress.php:443 plugins/mycred-hook-bbPress.php:485
+#: plugins/mycred-hook-bbPress.php:536 plugins/mycred-hook-bbPress.php:560
+#: plugins/mycred-hook-woocommerce.php:514
+#: includes/shortcodes/mycred_hook_table.php:79
+msgid "Limit"
+msgstr "Limitas"
+
+#: plugins/mycred-hook-invite-anyone.php:221
+#: plugins/mycred-hook-invite-anyone.php:245
+#: plugins/mycred-hook-gravityforms.php:172
+#: plugins/mycred-hook-simplepress.php:307
+#: plugins/mycred-hook-simplepress.php:325
+#: plugins/mycred-hook-simplepress.php:349
+#: plugins/mycred-hook-simplepress.php:376
+#: plugins/mycred-hook-buddypress.php:629
+#: plugins/mycred-hook-buddypress.php:653
+#: plugins/mycred-hook-buddypress.php:677
+#: plugins/mycred-hook-buddypress.php:701
+#: plugins/mycred-hook-buddypress.php:725
+#: plugins/mycred-hook-buddypress.php:752
+#: plugins/mycred-hook-buddypress.php:776
+#: plugins/mycred-hook-buddypress.php:794
+#: plugins/mycred-hook-buddypress.php:818
+#: plugins/mycred-hook-buddypress.php:836
+#: plugins/mycred-hook-buddypress.php:860
+#: plugins/mycred-hook-buddypress.php:884
+#: plugins/mycred-hook-buddypress.php:1520
+#: plugins/mycred-hook-buddypress.php:1538
+#: plugins/mycred-hook-buddypress.php:1562
+#: plugins/mycred-hook-buddypress.php:1586
+#: plugins/mycred-hook-buddypress.php:1610
+#: plugins/mycred-hook-buddypress.php:1634
+#: plugins/mycred-hook-buddypress.php:1658
+#: plugins/mycred-hook-buddypress.php:1682
+#: plugins/mycred-hook-buddypress.php:1706
+#: plugins/mycred-hook-buddypress.php:1724
+#: plugins/mycred-hook-buddypress.php:1748
+#: plugins/mycred-hook-affiliatewp.php:298
+#: plugins/mycred-hook-affiliatewp.php:325
+#: plugins/mycred-hook-events-manager-light.php:217
+#: plugins/mycred-hook-events-manager-light.php:235
+#: plugins/mycred-hook-sharethis.php:273
+#: plugins/mycred-hook-buddypress-media.php:306
+#: plugins/mycred-hook-buddypress-media.php:330
+#: plugins/mycred-hook-buddypress-media.php:354
+#: plugins/mycred-hook-buddypress-media.php:372
+#: plugins/mycred-hook-buddypress-media.php:390
+#: plugins/mycred-hook-buddypress-media.php:408
+#: plugins/mycred-hook-contact-form7.php:178
+#: plugins/mycred-hook-jetpack.php:549 plugins/mycred-hook-jetpack.php:567
+#: plugins/mycred-hook-bbPress.php:449 plugins/mycred-hook-bbPress.php:467
+#: plugins/mycred-hook-bbPress.php:491 plugins/mycred-hook-bbPress.php:518
+#: plugins/mycred-hook-bbPress.php:542 plugins/mycred-hook-bbPress.php:566
+#: plugins/mycred-hook-bbPress.php:593
+#: addons/badges/myCRED-addon-badges.php:974
+msgid "Log template"
+msgstr "Sąrašo šablonas"
+
+#: plugins/mycred-hook-wp-polls.php:15
+msgid "WP-Polls"
+msgstr "WP-Apklausos"
+
+#: plugins/mycred-hook-wp-polls.php:16
+msgid "Awards %_plural% for users voting in polls."
+msgstr ""
+"Skiriama \n"
+"%_plural% už naudotojų balsavimą apklausose."
+
+#: plugins/mycred-hook-wp-polls.php:177
+#: plugins/mycred-hook-wp-favorite-posts.php:273
+#: plugins/mycred-hook-wp-favorite-posts.php:288
+#: plugins/mycred-hook-woocommerce.php:520 plugins/mycred-hook-badgeOS.php:144
+#: plugins/mycred-hook-badgeOS.php:146 plugins/mycred-hook-badgeOS.php:157
+#: plugins/mycred-hook-badgeOS.php:327 plugins/mycred-hook-badgeOS.php:345
+#: addons/coupons/myCRED-addon-coupons.php:764
+#: addons/banking/services/mycred-service-interest.php:510
+#: addons/banking/services/mycred-service-payouts.php:710
+#: addons/gateway/carts/mycred-wpecommerce.php:400
+#: addons/gateway/carts/mycred-woocommerce.php:108
+#: addons/gateway/carts/mycred-woocommerce.php:183
+#: addons/buy-creds/modules/buycred-module-core.php:426
+#: addons/buy-creds/modules/buycred-module-core.php:453
+msgid "Log Template"
+msgstr "Žurnalo šablonas"
+
+#: plugins/mycred-hook-wp-postratings.php:15
+msgid "Post Ratings"
+msgstr "Įrašų įvertinimai"
+
+#: plugins/mycred-hook-wp-postratings.php:16
+msgid ""
+"Awards %_plural% for post ratings. Supports awarding %_plural% both to post "
+"author and the user rating."
+msgstr ""
+"Skiriama  %_plural% už įrašo įvertinimus. Skiriama \n"
+"%_plural% ir įrašo autoriui ir įvertinimą atliekančiam naudotojui."
+
+#: plugins/mycred-hook-wp-postratings.php:85
+msgid "Based on rating"
+msgstr "Pagrįsta reitingavimu"
+
+#: plugins/mycred-hook-wp-postratings.php:192
+#: plugins/mycred-hook-wp-postratings.php:199
+msgid "Use the Rating Value instead of the amount set here."
+msgstr "naudoti Įvertinimo vertę vietoje čia nurodyto dydžio."
+
+#: plugins/mycred-hook-gravityforms.php:15
+msgid "Gravityform Submissions"
+msgstr "Gravityform pareiškimai"
+
+#: plugins/mycred-hook-gravityforms.php:16
+msgid "Awards %_plural% for successful form submissions."
+msgstr ""
+"Skiriama \n"
+"%_plural% už sėkmingą formos pateikimą."
+
+#: plugins/mycred-hook-gravityforms.php:130
+#: plugins/mycred-hook-contact-form7.php:134
+msgid "No forms found."
+msgstr "Formų nerasta."
+
+#: plugins/mycred-hook-simplepress.php:16
+msgid "Awards %_plural% for Simple:Press actions."
+msgstr ""
+"Skiriama \n"
+"%_plural% SimplePress veiksmus."
+
+#: plugins/mycred-hook-buddypress.php:16
+msgid "BuddyPress: Members"
+msgstr "BuddyPress: Dalyviai"
+
+#: plugins/mycred-hook-buddypress.php:17
+msgid "Awards %_plural% for profile related actions."
+msgstr "Skiriama %_plural% už veiksmus susijusius su profiliu."
+
+#: plugins/mycred-hook-buddypress.php:25
+msgid "BuddyPress: Groups"
+msgstr "BuddyPress: Grupės"
+
+#: plugins/mycred-hook-buddypress.php:26
+msgid ""
+"Awards %_plural% for group related actions. Use minus to deduct %_plural% or "
+"zero to disable a specific hook."
+msgstr ""
+"Skiriama \n"
+"%_plural% už veiksmus susijusius su grupe. Naudokite minusą nuskaityti \n"
+"%_plural% arba nulį atjungti tam tikrą hook-ą."
+
+#: plugins/mycred-hook-buddypress.php:310
+#: addons/gateway/event-booking/mycred-eventsmanager.php:692
+#: addons/gateway/carts/mycred-wpecommerce.php:415
+msgid "Insufficient Funds"
+msgstr "Nepakanka lėšų"
+
+#: plugins/mycred-hook-buddypress.php:735
+msgid ""
+"Users with zero balance can not add friends. Requires that you deduct "
+"%_plural% for adding a new friend."
+msgstr ""
+"Vartotojai su nuliniu balansu negali pridėti draugų. Reikalaujama pridedant "
+"naują draugą išskaityti auksinus."
+
+#: plugins/mycred-hook-buddypress.php:784
+#: includes/classes/class.query-log.php:2189
+msgid "Deleted Comment"
+msgstr "Ištrintas komentaras"
+
+#: plugins/mycred-hook-buddypress.php:868
+#: includes/classes/class.query-log.php:2208
+msgid "Sending Gift"
+msgstr "Dovanos pasiuntimas"
+
+#: plugins/mycred-hook-affiliatewp.php:15
+msgid "AffiliateWP"
+msgstr "Partneriai wP"
+
+#: plugins/mycred-hook-affiliatewp.php:16
+msgid ""
+"Awards %_plural% for affiliate signups, referring visitors and store sale "
+"referrals."
+msgstr ""
+"Skiriama %_plural% už partnerių prisiregistravimą, nukreiptus skaitytojus ir "
+"pirkimus parduotuvėje pagal nukreipimus."
+
+#: plugins/mycred-hook-affiliatewp.php:287
+msgid "Affiliate Signup"
+msgstr "Parnerių prisiregistravimas"
+
+#: plugins/mycred-hook-affiliatewp.php:306
+msgid "Referring Visitors"
+msgstr "Nukreipiantys lankytojai"
+
+#: plugins/mycred-hook-affiliatewp.php:333
+msgid "Referring Sales"
+msgstr "Pardavimai per partnerių nuorodas"
+
+#: plugins/mycred-hook-affiliatewp.php:360
+#: includes/shortcodes/mycred_exchange.php:75
+#: addons/gateway/event-booking/mycred-eventespresso3.php:498
+#: addons/gateway/event-booking/mycred-eventsmanager.php:634
+#: addons/gateway/carts/mycred-wpecommerce.php:389
+#: addons/gateway/carts/mycred-woocommerce.php:136
+msgid "Exchange Rate"
+msgstr "Keitimo kursas"
+
+#: plugins/mycred-hook-affiliatewp.php:362
+#: addons/gateway/carts/mycred-wpecommerce.php:390
+#, php-format
+msgid "How much is 1 %s worth in %s"
+msgstr "Kiek vertas 1 auksinas"
+
+#: plugins/mycred-hook-events-manager-light.php:15
+msgid "Events Manager"
+msgstr "Įvykių valdytojas"
+
+#: plugins/mycred-hook-events-manager-light.php:16
+msgid "Awards %_plural% for users attending events."
+msgstr "Auksinai vartotojams už dalyvavimą renginiuose."
+
+#: plugins/mycred-hook-events-manager-light.php:201
+msgid "Attending Event"
+msgstr "Dalyvavimas renginyje"
+
+#: plugins/mycred-hook-events-manager-light.php:225
+msgid "Cancelling Attendance"
+msgstr "Lankomumas atšaukiamas"
+
+#: plugins/mycred-hook-sharethis.php:15
+msgid "%plural% for Sharing"
+msgstr "%_plural% už dalinimasi"
+
+#: plugins/mycred-hook-sharethis.php:16
+msgid ""
+"Awards %_plural% for users sharing / liking your website content to popular "
+"social media sites."
+msgstr ""
+"Skiriama \n"
+"%_plural% už jūsų tinklapio turinio dalinimasi/patinka populiariuose "
+"socialiniuose tinkluose."
+
+#: plugins/mycred-hook-buddypress-media.php:15
+msgid "rtMedia Galleries"
+msgstr "rtMedia galerijos"
+
+#: plugins/mycred-hook-buddypress-media.php:16
+msgid ""
+"Award / Deduct %_plural% for users creating albums or uploading new photos."
+msgstr ""
+"Skiriama/Nuskaitoma %_plural% už naudotojų sukurtus albumus arba įkeliamas "
+"nuotraukas."
+
+#: plugins/mycred-hook-buddypress-media.php:290
+#: includes/classes/class.query-log.php:2223
+msgid "Photo Upload"
+msgstr "Nuotraukos įkėlimas"
+
+#: plugins/mycred-hook-buddypress-media.php:314
+#: includes/classes/class.query-log.php:2224
+msgid "Video Upload"
+msgstr "Video įkėlimas"
+
+#: plugins/mycred-hook-buddypress-media.php:338
+#: includes/classes/class.query-log.php:2225
+msgid "Music Upload"
+msgstr "Muzikos įkėlimas"
+
+#: plugins/mycred-hook-wp-favorite-posts.php:15
+msgid "WP Favorite Posts"
+msgstr "Populiariausi WP įrašai"
+
+#: plugins/mycred-hook-wp-favorite-posts.php:16
+msgid "Awards %_plural% for users adding posts to their favorites."
+msgstr ""
+"Skiriama \n"
+"%_plural% už tai, kad naudotojai prideda įrašą prie mėgstamų."
+
+#: plugins/mycred-hook-wp-favorite-posts.php:218
+msgid "Adding Content to Favorites"
+msgstr "Turinio pridėjimas prie mėgstamų"
+
+#: plugins/mycred-hook-wp-favorite-posts.php:263
+msgid "Removing Content from Favorites"
+msgstr "Turinio pašalinimas iš mėgstmų"
+
+#: plugins/mycred-hook-contact-form7.php:15
+msgid "Contact Form 7 Form Submissions"
+msgstr "Contact Form 7 formos pateikimai  "
+
+#: plugins/mycred-hook-contact-form7.php:16
+msgid "Awards %_plural% for successful form submissions (by logged in users)."
+msgstr ""
+"Auksinai už sėkmingą formos pateikimą (prisiregistravusiems vartotojams). "
+
+#: plugins/mycred-hook-jetpack.php:15
+msgid "Jetpack Subscriptions"
+msgstr "Jetpack prenumerata"
+
+#: plugins/mycred-hook-jetpack.php:16
+msgid ""
+"Awards %_plural% for users signing up for site or comment updates using "
+"Jetpack."
+msgstr ""
+"Skiriama \n"
+" %_plural% už prisiregistravimą prie tinklapio arba komentavimą per Jetpack."
+
+#: plugins/mycred-hook-jetpack.php:539
+msgid "Site Subscriptions"
+msgstr "Svetainės prenumerata"
+
+#: plugins/mycred-hook-jetpack.php:557
+msgid "Comment Subscriptions"
+msgstr "Komentarų prenumeratos"
+
+#: plugins/mycred-hook-bbPress.php:16
+msgid "Awards %_plural% for bbPress actions."
+msgstr "Skiriama %_plural% už veiksmus bbPress forumuose"
+
+#: plugins/mycred-hook-bbPress.php:501
+msgid "Forum authors can receive %_plural% for creating new topics."
+msgstr " Forumo autoriai gali gauti %_plural% už naujų temų sukūrimą"
+
+#: plugins/mycred-hook-bbPress.php:605
+msgid "Show users %_plural% balance in replies"
+msgstr "Rodyti vartotojų balansu atsakymuose"
+
+#: plugins/mycred-hook-woocommerce.php:91
+#: plugins/mycred-hook-woocommerce.php:157
+msgid "Reward with %plural%"
+msgstr ""
+"Apdovanijimas \n"
+"%_plural%"
+
+#: plugins/mycred-hook-woocommerce.php:388
+msgid "WooCommerce Product Reviews"
+msgstr "WooCommerce produktų apžiūra"
+
+#: plugins/mycred-hook-woocommerce.php:389
+msgid ""
+"Awards %_plural% for users leaving reviews on your WooCommerce products."
+msgstr ""
+"Skiriama \n"
+"%_plural% už naudotojų paliktus atsiliepimus apie jūsų WooCommerce produktus."
+
+#: plugins/mycred-hook-badgeOS.php:138 plugins/mycred-hook-badgeOS.php:140
+msgid "%plural% to Award"
+msgstr "Paskirta %plural% "
+
+#: plugins/mycred-hook-badgeOS.php:142
+msgid "Use zero to disable"
+msgstr "Naudokite 0 norėdami atjungti"
+
+#: includes/mycred-setup.php:63 includes/mycred-setup.php:64
+msgid "myCRED Setup"
+msgstr "myCred nustatymas"
+
+#: includes/mycred-setup.php:105
+#: addons/sell-content/myCRED-addon-sell-content.php:639
+#, php-format
+msgid "%s Setup"
+msgstr "%s nustatymas"
+
+#: includes/mycred-remote.php:613
+msgid "Remote Access"
+msgstr "Nuotolinė prieiga"
+
+#: includes/mycred-remote.php:615 addons/buy-creds/gateways/bitpay.php:245
+msgid "API Key"
+msgstr "API raktas"
+
+#: includes/mycred-remote.php:618
+msgid "Key"
+msgstr "Raktas"
+
+#: includes/mycred-remote.php:619
+msgid "16, 24 or 32 characters"
+msgstr "16, 24 or 32 skaičiai"
+
+#: includes/mycred-remote.php:620
+msgid "Required for this feature to work!<br />Minimum 12 characters."
+msgstr ""
+"Reikalinga, kad priemonė veiktų! \n"
+"<br />Ma=iausiai 12 ženklų."
+
+#: includes/mycred-remote.php:623
+msgid "Key Length"
+msgstr "Rakto ilgumas"
+
+#: includes/mycred-remote.php:628
+msgid "Generate New Key"
+msgstr "Sugeneruoti naują raktą"
+
+#: includes/mycred-remote.php:630
+msgid "Warning!"
+msgstr "Dėmesio!"
+
+#: includes/mycred-remote.php:630
+msgid ""
+"Keep this key safe! Those you share this key with will be able to remotely "
+"deduct / add / transfer %plural%!"
+msgstr ""
+"Saugokite šį raktą saugiai! Asmenys žinantys raktą gali pervesti auksinus!"
+
+#: includes/mycred-about.php:32
+#, php-format
+msgid "Welcome to %s %s"
+msgstr "Sveiki prisijungę %s %s"
+
+#: includes/mycred-overview.php:25
+#, php-format
+msgid "%s Overview"
+msgstr "%s apžvalga"
+
+#: includes/mycred-overview.php:83
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:136
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:264
+msgid "Total amount in circulation"
+msgstr "Viso cirkuliuoja"
+
+#: includes/mycred-overview.php:86
+msgid "Awarded"
+msgstr "Apdovanoti"
+
+#: includes/mycred-overview.php:89
+msgid "Deducted"
+msgstr "Nuskaičiuota"
+
+#: includes/mycred-install.php:83
+msgid ""
+"Sorry but your WordPress installation does not reach the minimum "
+"requirements for running myCRED. The following errors were given:"
+msgstr ""
+"Deja, jūsų Wordpress versija per sena naudoti myCred. Įvyko šios klaidos:"
+
+#: includes/mycred-widgets.php:19
+#, php-format
+msgid "(%s) My Balance"
+msgstr "Mano balansas"
+
+#: includes/mycred-widgets.php:176 includes/mycred-widgets.php:359
+#: includes/mycred-widgets.php:567 addons/ranks/myCRED-addon-ranks.php:1373
+#: addons/gateway/carts/mycred-woocommerce.php:96
+#: addons/transfer/includes/mycred-transfer-widgets.php:91
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:203
+#: addons/buy-creds/gateways/bank-transfer.php:190
+#: addons/buy-creds/gateways/skrill.php:333
+msgid "Title"
+msgstr "Pavadinimas"
+
+#: includes/mycred-widgets.php:199
+msgid "Include history"
+msgstr "terpti istorijąĮ"
+
+#: includes/mycred-widgets.php:203
+msgid "History Title"
+msgstr "Istorija"
+
+#: includes/mycred-widgets.php:207
+msgid "Number of entires"
+msgstr "Veiksmų skaičius"
+
+#: includes/mycred-widgets.php:222 includes/mycred-widgets.php:590
+#: addons/transfer/includes/mycred-transfer-shortcodes.php:35
+msgid "Message"
+msgstr "Pranešimas"
+
+#: includes/mycred-widgets.php:282
+#, php-format
+msgid "(%s) Leaderboard"
+msgstr "Lyderiai"
+
+#: includes/mycred-widgets.php:373
+msgid "Based On"
+msgstr "Pagrįsta"
+
+#: includes/mycred-widgets.php:379
+msgid "Visible to non-members"
+msgstr "Matoma ne nariams"
+
+#: includes/mycred-widgets.php:382
+msgid "Number of users"
+msgstr "Vartotojų skaičius"
+
+#: includes/mycred-widgets.php:396
+msgid "Order"
+msgstr "Užsakymas"
+
+#: includes/mycred-widgets.php:401 includes/classes/class.query-log.php:1081
+msgid "Ascending"
+msgstr "Didėjantis"
+
+#: includes/mycred-widgets.php:402 includes/classes/class.query-log.php:1081
+msgid "Descending"
+msgstr "Mažėjantis"
+
+#: includes/mycred-widgets.php:469
+#, php-format
+msgid "(%s) Wallet"
+msgstr "Piniginė"
+
+#: includes/mycred-functions.php:85
+msgid "Point"
+msgstr "Taškas"
+
+#: includes/mycred-functions.php:86
+msgid "Points"
+msgstr "Taškai"
+
+#: includes/mycred-functions.php:472
+msgid "Deleted"
+msgstr "Ištrinta"
+
+#: includes/mycred-functions.php:613
+msgid "Deleted Item"
+msgstr "Ištrinti pirkiniai"
+
+#: includes/mycred-functions.php:677
+#: addons/email-notices/myCRED-addon-email-notices.php:864
+#: addons/gateway/carts/mycred-wpecommerce.php:370
+msgid "General"
+msgstr "Bendras"
+
+#: includes/mycred-functions.php:684
+msgid "User Related"
+msgstr "Susiję su naudotoju"
+
+#: includes/mycred-functions.php:691
+msgid "Post Related"
+msgstr "Susiję su įrašu"
+
+#: includes/mycred-functions.php:698
+msgid "Comment Related"
+msgstr "Susiję su komentaru"
+
+#: includes/mycred-functions.php:705
+msgid "Widget Related"
+msgstr "Susiję su valdikliu"
+
+#: includes/mycred-functions.php:712
+msgid "Amount Related"
+msgstr "Susiję su kiekiu"
+
+#: includes/mycred-functions.php:719
+msgid "Video Related"
+msgstr "Susiję su video"
+
+#: includes/mycred-functions.php:730
+msgid "and"
+msgstr "ir"
+
+#: includes/mycred-functions.php:732
+msgid "Available Template Tags:"
+msgstr "Galimos žymos:"
+
+#: includes/mycred-functions.php:2790
+msgid "in total"
+msgstr "viso"
+
+#: includes/mycred-functions.php:2792
+msgid "per day"
+msgstr "per dieną"
+
+#: includes/mycred-functions.php:2795
+msgid "per week"
+msgstr "per savaitę"
+
+#: includes/mycred-functions.php:2798
+msgid "per month"
+msgstr "per mėnesį"
+
+#: includes/mycred-functions.php:2800 includes/mycred-functions.php:2806
+#, php-format
+msgid "Maximum once"
+msgid_plural "Maximum %d times"
+msgstr[0] "Daugiausiai kartą"
+msgstr[1] "Daugiausiai kartus"
+msgstr[2] "Daugiausiai kartų"
+
+#: includes/importers/mycred-cubepoints.php:345
+msgid "Log Entries Only"
+msgstr "Vien tik veiksmų sąrašai"
+
+#: includes/importers/mycred-cubepoints.php:347
+msgid "Log Entries and Balances"
+msgstr "Veiksmų sąrašai ir balansai"
+
+#: includes/importers/mycred-balances.php:290
+#: includes/importers/mycred-log-entries.php:286
+#, php-format
+msgid "Maximum size: %s"
+msgstr "Didžiausias dydis: %s"
+
+#: includes/importers/mycred-balances.php:311
+msgid "Method"
+msgstr "Metodas"
+
+#: includes/importers/mycred-log-entries.php:214
+#: addons/stats/abstracts/mycred-abstract-stat-widget.php:100
+msgid "View Log"
+msgstr "Peržiūrėti sąrašą"
+
+#: includes/shortcodes/mycred_exchange.php:33
+#: includes/shortcodes/mycred_exchange.php:41
+#: includes/shortcodes/mycred_exchange.php:136
+#: includes/shortcodes/mycred_exchange.php:156
+#, php-format
+msgid "You are excluded from using %s."
+msgstr ""
+"Jūs esate nušalintas nuo \n"
+"%s naudojimo"
+
+#: includes/shortcodes/mycred_exchange.php:37
+#: includes/shortcodes/mycred_exchange.php:146
+msgid "Your balance is too low to use this feature."
+msgstr "Jūsų balansas yra per mažas naudotis šia priemone."
+
+#: includes/shortcodes/mycred_exchange.php:63
+#, php-format
+msgid "Your current %s balance"
+msgstr "Dabartinis jūsų balansas"
+
+#: includes/shortcodes/mycred_exchange.php:70
+#, php-format
+msgid "Minimum %s"
+msgstr "Mažiausiai %s"
+
+#: includes/shortcodes/mycred_exchange.php:124
+msgid "Point types not found."
+msgstr "Taškų rūšis nerasta."
+
+#: includes/shortcodes/mycred_exchange.php:169
+#, php-format
+msgid "You must exchange at least %s!"
+msgstr "Jūs turite iškeisti mažiausiai %s!"
+
+#: includes/shortcodes/mycred_exchange.php:178
+#: addons/transfer/myCRED-addon-transfer.php:174
+msgid "Insufficient Funds. Please try a lower amount."
+msgstr "Nepakanka lėšų. Prašome nustatyti mažesnę sumą."
+
+#: includes/shortcodes/mycred_exchange.php:191
+#, php-format
+msgid "Exchange from %s"
+msgstr "Iškeisti iš %s"
+
+#: includes/shortcodes/mycred_exchange.php:203
+#, php-format
+msgid "Exchange to %s"
+msgstr ""
+"Iškeisti į \n"
+"%s"
+
+#: includes/shortcodes/mycred_exchange.php:211
+#, php-format
+msgid "You have successfully exchanged %s into %s."
+msgstr ""
+"Jūs sėkmingai iškeitėte iš \n"
+"%s į \n"
+"%s."
+
+#: includes/shortcodes/mycred_hook_table.php:21
+msgid "No instances found for this point type"
+msgstr "Nerasta sąsajų su šios rūšies taškais"
+
+#: includes/shortcodes/mycred_video.php:44
+msgid "A video ID is required for this shortcode"
+msgstr "Šiam trumpajam kodui reikia video ID"
+
+#: includes/classes/class.query-export.php:374
+#: includes/classes/class.query-log.php:1526
+msgid "User Missing"
+msgstr "Vartotojas nerastas"
+
+#: includes/classes/class.query-export.php:487
+msgid "Search Results"
+msgstr "Ieškoti rezultatų"
+
+#: includes/classes/class.query-log.php:954
+msgid "No log entries found"
+msgstr "Sąrašų nerasta"
+
+#: includes/classes/class.query-log.php:1055
+msgid "Show all references"
+msgstr "Rodyti visas nuorodas"
+
+#: includes/classes/class.query-log.php:1072
+msgid "User ID, Username, Email or Nicename"
+msgstr "Naudotojo ID, Naudotojo vardas, el.paštas arba slapyvardis"
+
+#: includes/classes/class.query-log.php:1080
+msgid "Show in order"
+msgstr "Rodyti eolėje"
+
+#: includes/classes/class.query-log.php:1101
+msgid "Filter"
+msgstr "Filtras"
+
+#: includes/classes/class.query-log.php:1727
+#: includes/classes/class.query-log.php:1729
+msgid "Search Log"
+msgstr "Ieškoti sąrašo"
+
+#: includes/classes/class.query-log.php:1728
+msgid "search log entries"
+msgstr "ieškoti veiksmų sąrašų"
+
+#: includes/classes/class.query-log.php:2180
+msgid "Website Registration"
+msgstr "Registracija į svetainę"
+
+#: includes/classes/class.query-log.php:2181
+msgid "Website Visit"
+msgstr "Apsilankymas tinklapyje"
+
+#: includes/classes/class.query-log.php:2182
+msgid "Viewing Content (Member)"
+msgstr "Turinio peržiūra (dalyvis)"
+
+#: includes/classes/class.query-log.php:2183
+msgid "Viewing Content (Author)"
+msgstr "Turinio peržiūra (autorius)"
+
+#: includes/classes/class.query-log.php:2184
+msgid "Logging in"
+msgstr "Prisijungimas"
+
+#: includes/classes/class.query-log.php:2185
+msgid "Publishing Content"
+msgstr "Turinio paskelbimas"
+
+#: includes/classes/class.query-log.php:2186
+msgid "Approved Comment"
+msgstr "patvirtintas komentaras"
+
+#: includes/classes/class.query-log.php:2187
+msgid "Unapproved Comment"
+msgstr "nepatvirtintas komentaras"
+
+#: includes/classes/class.query-log.php:2188
+msgid "SPAM Comment"
+msgstr "Brukalai"
+
+#: includes/classes/class.query-log.php:2190
+msgid "Link Click"
+msgstr "Nuorodos aktyvavimas"
+
+#: includes/classes/class.query-log.php:2191
+msgid "Watching Video"
+msgstr "Video peržiūrėjimas"
+
+#: includes/classes/class.query-log.php:2192
+msgid "Visitor Referral"
+msgstr "Lankytojo nuoroda"
+
+#: includes/classes/class.query-log.php:2193
+msgid "Signup Referral"
+msgstr "Prisiregistravimo nuoroda"
+
+#: includes/classes/class.query-log.php:2197
+msgid "New Profile Update"
+msgstr "Naujo profilio papildymas"
+
+#: includes/classes/class.query-log.php:2198
+msgid "Profile Update Removal"
+msgstr "Profilio papildymo pašalinimas"
+
+#: includes/classes/class.query-log.php:2199
+msgid "Avatar Upload"
+msgstr "Avataro pridėjimas"
+
+#: includes/classes/class.query-log.php:2201
+msgid "New Friendship"
+msgstr "Nauja draugystė"
+
+#: includes/classes/class.query-log.php:2202
+msgid "Ended Friendship"
+msgstr "Nutraukta draugystė"
+
+#: includes/classes/class.query-log.php:2203
+msgid "New Profile Comment"
+msgstr "Naujas profilio komentaras"
+
+#: includes/classes/class.query-log.php:2204
+msgid "Profile Comment Deletion"
+msgstr "Profilio komentaro ištrynimas"
+
+#: includes/classes/class.query-log.php:2207
+msgid "New Message"
+msgstr "Naujas pranešimas"
+
+#: includes/classes/class.query-log.php:2209
+msgid "New Group"
+msgstr "Nauja grupė"
+
+#: includes/classes/class.query-log.php:2210
+msgid "Deleted Group"
+msgstr "Ištrinta grupė"
+
+#: includes/classes/class.query-log.php:2211
+msgid "New Group Forum Topic"
+msgstr "Nauja grupės forumo tema"
+
+#: includes/classes/class.query-log.php:2212
+msgid "Edit Group Forum Topic"
+msgstr "Grupės forumo temos redagavimas"
+
+#: includes/classes/class.query-log.php:2213
+msgid "New Group Forum Post"
+msgstr "Naujo grupės forumo paskelbimas"
+
+#: includes/classes/class.query-log.php:2214
+msgid "Edit Group Forum Post"
+msgstr "Grupės forumo įrašo redagavimas"
+
+#: includes/classes/class.query-log.php:2215
+msgid "Joining Group"
+msgstr "prisijungimas prie grupės"
+
+#: includes/classes/class.query-log.php:2216
+msgid "Leaving Group"
+msgstr "Išėjimas iš grupės"
+
+#: includes/classes/class.query-log.php:2217
+msgid "New Group Avatar"
+msgstr "Naujas grupės avataras"
+
+#: includes/classes/class.query-log.php:2219
+msgid "New Group Comment"
+msgstr "naujas grupės komentaras"
+
+#: includes/classes/class.query-log.php:2229
+msgid "New Link"
+msgstr "Nauja nuoroda"
+
+#: includes/classes/class.query-log.php:2230
+msgid "Link Voting"
+msgstr "Nuorodos balsavimas"
+
+#: includes/classes/class.query-log.php:2231
+msgid "Link Update"
+msgstr "Nuorodos atnaujinimas"
+
+#: includes/classes/class.query-log.php:2235
+msgid "New Forum (bbPress)"
+msgstr "Naujas forumas (bbPress)"
+
+#: includes/classes/class.query-log.php:2236
+msgid "New Forum Topic (bbPress)"
+msgstr "Nauja forumo tema (bbPress)"
+
+#: includes/classes/class.query-log.php:2237
+msgid "Favorited Topic (bbPress)"
+msgstr "poluliari tema (bbPress)"
+
+#: includes/classes/class.query-log.php:2238
+msgid "New Topic Reply (bbPress)"
+msgstr "Naujas atsakymas į temą (bbPress)"
+
+#: includes/classes/class.query-log.php:2242
+msgid "Form Submission (Contact Form 7)"
+msgstr "Formos pateikimas (ContactForm7)"
+
+#: includes/classes/class.query-log.php:2245
+msgid "Form Submission (Gravity Form)"
+msgstr "Formos pateikimas (Gravity Form)"
+
+#: includes/classes/class.query-log.php:2248
+msgid "New Forum Topic (SimplePress)"
+msgstr "Nauja forumo tema (Simple Press)"
+
+#: includes/classes/class.query-log.php:2249
+msgid "New Forum Post (SimplePress)"
+msgstr "Naujas forumo įrašas (SimplePress)"
+
+#: includes/classes/class.query-log.php:2258
+msgid "Affiliate Signup (AffiliateWP)"
+msgstr "Partnerio prisiregistravimas (AffiliateWP)"
+
+#: includes/classes/class.query-log.php:2259
+msgid "Referred Visit (AffiliateWP)"
+msgstr "Apsilankymas pagal nukreipimą (AffiliateWP)"
+
+#: includes/classes/class.query-log.php:2260
+msgid "Affiliate Referral (AffiliateWP)"
+msgstr "Partnerio nukreipimas (AffiliateWP)"
+
+#: includes/classes/class.query-log.php:2261
+msgid "Referral Refund (AffiliateWP)"
+msgstr "Išmoka už nukreipimą"
+
+#: includes/classes/class.query-log.php:2265
+msgid "Adding a Rating"
+msgstr "Reitingavimo pridėjimas"
+
+#: includes/classes/class.query-log.php:2266
+msgid "Receiving a Rating"
+msgstr "Gaunamas reitingavimas"
+
+#: includes/classes/class.query-log.php:2270
+msgid "Poll Voting"
+msgstr "Balsavimas apklausoje"
+
+#: includes/classes/class.query-log.php:2273
+msgid "Sending an Invite"
+msgstr "Pakvietimo siuntimas"
+
+#: includes/classes/class.query-log.php:2274
+msgid "Accepting an Invite"
+msgstr "Pakvietimo priėmimas"
+
+#: includes/classes/class.query-log.php:2280
+#: addons/banking/myCRED-addon-banking.php:150
+msgid "Compound Interest"
+msgstr "Bendrosios palūkanos"
+
+#: includes/classes/class.query-log.php:2288
+msgid "buyCRED Purchase (PayPal Standard)"
+msgstr "buyCred Pirkimas (Standartinis PayPal)"
+
+#: includes/classes/class.query-log.php:2289
+msgid "buyCRED Purchase (Skrill)"
+msgstr "buyCred Pirkimas (Skrill)"
+
+#: includes/classes/class.query-log.php:2290
+msgid "buyCRED Purchase (Zombaio)"
+msgstr "buyCred Pirkimas (Zombaio)"
+
+#: includes/classes/class.query-log.php:2291
+msgid "buyCRED Purchase (NETBilling)"
+msgstr "buyCred Pirkimas (NetBilling)"
+
+#: includes/classes/class.query-log.php:2292
+msgid "buyCRED Purchase (BitPay)"
+msgstr "buyCred Pirkimas (BitPay)"
+
+#: includes/classes/class.query-log.php:2302
+msgid "Store Purchase (WooCommerce)"
+msgstr "Pirkimas parduotuvėje (WooCommerce)"
+
+#: includes/classes/class.query-log.php:2303
+msgid "Store Reward (WooCommerce)"
+msgstr "Parduotuvės atsidėkojimas (Woocommerce)"
+
+#: includes/classes/class.query-log.php:2304
+msgid "Product Review (WooCommerce)"
+msgstr "Prekių peržiūra (WooCommerce)"
+
+#: includes/classes/class.query-log.php:2307
+msgid "Store Purchase (MarketPress)"
+msgstr "Pirkimas parduotuvėje (MarketPress)"
+
+#: includes/classes/class.query-log.php:2308
+msgid "Store Reward (MarketPress)"
+msgstr "parduotuvės atsidėkojimas (MarketPress)"
+
+#: includes/classes/class.query-log.php:2311
+msgid "Store Purchase (WP E-Commerce)"
+msgstr "Pirkimas parduotuvėje"
+
+#: includes/classes/class.query-log.php:2332
+#: addons/transfer/myCRED-addon-transfer.php:48
+msgid "Transfer"
+msgstr "Pervesti"
+
+#: includes/classes/class.query-log.php:2336
+msgid "Manual Adjustment by Admin"
+msgstr "rankinis administratoriaus nustatymas"
+
+#: addons/banking/myCRED-addon-banking.php:45
+#: addons/banking/myCRED-addon-banking.php:46
+#: addons/banking/myCRED-addon-banking.php:47
+msgid "Banking"
+msgstr "Bankininkystė"
+
+#: addons/banking/myCRED-addon-banking.php:141
+msgid "Central Banking"
+msgstr "Centrinė bankininkystė"
+
+#: addons/banking/myCRED-addon-banking.php:159
+msgid "Recurring Payouts"
+msgstr "Pasikartojančios išmokos"
+
+#: addons/banking/myCRED-addon-banking.php:160
+msgid "Setup mass %_singular% payouts for your users."
+msgstr ""
+"Nustatyti masines \n"
+"%_singular% išmokas jūsų naudotojams."
+
+#: addons/banking/myCRED-addon-banking.php:253
+#, php-format
+msgid "%s Banking"
+msgstr "%s bankininkystė"
+
+#: addons/banking/myCRED-addon-banking.php:273
+#: addons/buy-creds/modules/buycred-module-core.php:618
+msgid "Enable"
+msgstr "Įjungti"
+
+#: addons/banking/myCRED-addon-banking.php:292
+msgid "Update Changes"
+msgstr "Aktyvuoti pakeitimus"
+
+#: addons/transfer/myCRED-addon-transfer.php:41
+msgid "You do not have enough %plural% to send."
+msgstr ""
+"Jūs neturite pakankamai \n"
+"%plural% siųsti."
+
+#: addons/transfer/myCRED-addon-transfer.php:42
+msgid "You have exceeded your %limit% transfer limit."
+msgstr "Jūs esate išnaudoję pervedimų limitą."
+
+#: addons/transfer/myCRED-addon-transfer.php:167
+msgid "Transaction completed."
+msgstr "Pervedimas baigtas."
+
+#: addons/transfer/myCRED-addon-transfer.php:168
+msgid ""
+"Security token could not be verified. Please contact your site administrator!"
+msgstr ""
+"saugumo žetonas negali būti patvirtintas. Prašome susisiekti su jūsų "
+"svetainės administratoriumi!"
+
+#: addons/transfer/myCRED-addon-transfer.php:169
+#: addons/transfer/myCRED-addon-transfer.php:176
+msgid "Communications error. Please try again later."
+msgstr "Komunikacijos klaida. Bandykite dar kartą."
+
+#: addons/transfer/myCRED-addon-transfer.php:170
+msgid "Recipient not found. Please try again."
+msgstr "Gavėjas nerastas. Pabandykite dar kartą."
+
+#: addons/transfer/myCRED-addon-transfer.php:171
+msgid "Transaction declined by recipient."
+msgstr "Pervedimą atmetė gavėjas."
+
+#: addons/transfer/myCRED-addon-transfer.php:172
+msgid "Incorrect amount. Please try again."
+msgstr "Netinkama suma. Prašome bandyti dar kartą."
+
+#: addons/transfer/myCRED-addon-transfer.php:175
+msgid "Transfer Limit exceeded."
+msgstr "Pervedimų limitas išnaudotas."
+
+#: addons/transfer/myCRED-addon-transfer.php:340
+msgid "No limits."
+msgstr "Be limitų."
+
+#: addons/transfer/myCRED-addon-transfer.php:341
+msgid "Impose daily limit."
+msgstr "Nustatykite dienos limitą."
+
+#: addons/transfer/myCRED-addon-transfer.php:342
+msgid "Impose weekly limit."
+msgstr "Nustatykite savaitės limitą."
+
+#: addons/transfer/myCRED-addon-transfer.php:349
+msgid "User Login (user_login)"
+msgstr "Naudotojo prisijungimas"
+
+#: addons/transfer/myCRED-addon-transfer.php:350
+msgid "User Email (user_email)"
+msgstr "Naudotojo el. paštas"
+
+#: addons/transfer/myCRED-addon-transfer.php:355
+#: addons/buy-creds/gateways/bitpay.php:299
+msgid "Yes"
+msgstr "Taip"
+
+#: addons/transfer/myCRED-addon-transfer.php:356
+#: addons/buy-creds/gateways/bitpay.php:298
+msgid "No"
+msgstr "Ne"
+
+#: addons/transfer/myCRED-addon-transfer.php:363
+msgid "Transfers"
+msgstr "Pervedimai"
+
+#: addons/transfer/myCRED-addon-transfer.php:381
+msgid "Reload"
+msgstr "Perkrauti"
+
+#: addons/transfer/myCRED-addon-transfer.php:424
+#: addons/coupons/myCRED-addon-coupons.php:252
+#: addons/banking/services/mycred-service-payouts.php:599
+#: addons/banking/services/mycred-service-payouts.php:760
+msgid "Limits"
+msgstr "Limitai"
+
+#: addons/transfer/myCRED-addon-transfer.php:443
+msgid "Limit Amount"
+msgstr "Ribotas kiekis"
+
+#: addons/transfer/myCRED-addon-transfer.php:456
+#: addons/sell-content/myCRED-addon-sell-content.php:685
+#: addons/gateway/event-booking/mycred-eventsmanager.php:641
+msgid "Log Templates"
+msgstr "Sąrašo šablonai"
+
+#: addons/ranks/myCRED-addon-ranks.php:216
+#, php-format
+msgid "Ranks for %s"
+msgstr "Rangai "
+
+#: addons/ranks/myCRED-addon-ranks.php:218
+#: addons/ranks/myCRED-addon-ranks.php:227
+#: addons/ranks/myCRED-addon-ranks.php:237
+#: addons/ranks/myCRED-addon-ranks.php:339
+#: addons/ranks/myCRED-addon-ranks.php:340
+#: addons/ranks/myCRED-addon-ranks.php:724
+#: addons/ranks/myCRED-addon-ranks.php:1363
+#: addons/ranks/myCRED-addon-ranks.php:1658
+msgid "Ranks"
+msgstr "Rangai"
+
+#: addons/ranks/myCRED-addon-ranks.php:222
+#: addons/ranks/myCRED-addon-ranks.php:724
+#: addons/ranks/myCRED-addon-ranks.php:873
+#: addons/ranks/myCRED-addon-ranks.php:876
+#: addons/ranks/myCRED-addon-ranks.php:904
+msgid "Rank"
+msgstr "Rangas"
+
+#: addons/ranks/myCRED-addon-ranks.php:223
+#: addons/ranks/myCRED-addon-ranks.php:224
+#: addons/email-notices/myCRED-addon-email-notices.php:130
+#: addons/email-notices/myCRED-addon-email-notices.php:131
+#: addons/badges/myCRED-addon-badges.php:150
+#: addons/badges/myCRED-addon-badges.php:151
+#: addons/banking/services/mycred-service-payouts.php:896
+msgid "Add New"
+msgstr "Pridėti naują"
+
+#: addons/ranks/myCRED-addon-ranks.php:225
+msgid "Edit Rank"
+msgstr "Redaguoti rangą"
+
+#: addons/ranks/myCRED-addon-ranks.php:226
+msgid "New Rank"
+msgstr "Naujas rangas"
+
+#: addons/ranks/myCRED-addon-ranks.php:228
+msgid "View Rank"
+msgstr "Peržiūrėti rangą"
+
+#: addons/ranks/myCRED-addon-ranks.php:229
+msgid "Search Ranks"
+msgstr "Ieškoti rangų"
+
+#: addons/ranks/myCRED-addon-ranks.php:234
+#: addons/ranks/myCRED-addon-ranks.php:1290
+msgid "No ranks found"
+msgstr "Rangų nerasta"
+
+#: addons/ranks/myCRED-addon-ranks.php:235
+msgid "No ranks found in Trash"
+msgstr "Šiukšliadėžėje rangų nerasta"
+
+#: addons/ranks/myCRED-addon-ranks.php:283
+#: addons/ranks/myCRED-addon-ranks.php:284
+#: addons/ranks/myCRED-addon-ranks.php:285
+#: addons/ranks/myCRED-addon-ranks.php:286
+#: addons/ranks/myCRED-addon-ranks.php:287
+#: addons/ranks/myCRED-addon-ranks.php:290
+#: addons/ranks/myCRED-addon-ranks.php:291
+msgid "Rank Updated."
+msgstr "Rangas pakeistas"
+
+#: addons/ranks/myCRED-addon-ranks.php:481
+#, php-format
+msgid "Completed - Total of %d users effected"
+msgstr ""
+"Baigta - viso  paveikė\n"
+" %d vartotojų "
+
+#: addons/ranks/myCRED-addon-ranks.php:987
+msgid "Warning! All ranks will be deleted! This can not be undone!"
+msgstr "Dėmesio! Visi rangai bus ištrinti neatstatomai!"
+
+#: addons/ranks/myCRED-addon-ranks.php:988
+msgid "Are you sure you want to re-assign user ranks?"
+msgstr "Ar tikrai norite pakeisti vartotojo rangą?"
+
+#: addons/ranks/myCRED-addon-ranks.php:1077
+#: addons/ranks/myCRED-addon-ranks.php:1178
+msgid "Rank Title"
+msgstr "Rango pavadinimas"
+
+#: addons/ranks/myCRED-addon-ranks.php:1078
+msgid "Logo"
+msgstr "Logotipas"
+
+#: addons/ranks/myCRED-addon-ranks.php:1079
+#: addons/badges/myCRED-addon-badges.php:853
+#: addons/badges/myCRED-addon-badges.php:854
+msgid "Requirement"
+msgstr "Reikalavimai"
+
+#: addons/ranks/myCRED-addon-ranks.php:1105
+msgid "No Logo Set"
+msgstr "Logotipas nepasirinktas"
+
+#: addons/ranks/myCRED-addon-ranks.php:1120
+#: addons/ranks/myCRED-addon-ranks.php:1125
+msgid "Any Value"
+msgstr "Jokios vertės"
+
+#: addons/ranks/myCRED-addon-ranks.php:1122
+#: addons/buy-creds/modules/buycred-module-core.php:345
+msgid "Minimum %plural%"
+msgstr ""
+"Mažiausiai \n"
+"%plural%"
+
+#: addons/ranks/myCRED-addon-ranks.php:1127
+msgid "Maximum %plural%"
+msgstr "Daugiausia %plural%"
+
+#: addons/ranks/myCRED-addon-ranks.php:1279
+#: addons/ranks/myCRED-addon-ranks.php:1280
+msgid "Not Set"
+msgstr "Nenustatyta"
+
+#: addons/ranks/myCRED-addon-ranks.php:1370
+msgid "Rank Features"
+msgstr "Rangų elementai"
+
+#: addons/ranks/myCRED-addon-ranks.php:1376
+msgid "%plural% requirement"
+msgstr "reikalavimai"
+
+#: addons/ranks/myCRED-addon-ranks.php:1382
+msgid "Content"
+msgstr "Tūrinys"
+
+#: addons/ranks/myCRED-addon-ranks.php:1385
+msgid "Excerpt"
+msgstr "Ištrauka"
+
+#: addons/ranks/myCRED-addon-ranks.php:1388
+msgid "Comments"
+msgstr "Komentarai"
+
+#: addons/ranks/myCRED-addon-ranks.php:1411
+msgid "Display Order"
+msgstr "Rodymo tvarka"
+
+#: addons/ranks/myCRED-addon-ranks.php:1417
+msgid "Ascending - Lowest rank to highest"
+msgstr "Didėjančia tvarka - žemiausi rangai viršuje"
+
+#: addons/ranks/myCRED-addon-ranks.php:1418
+msgid "Descending - Highest rank to lowest"
+msgstr "Mažėjančia tvarka - aukščiausi rangai viršuje"
+
+#: addons/ranks/myCRED-addon-ranks.php:1460
+msgid "Calculate Totals"
+msgstr "suskaičiuoti viso"
+
+#: addons/ranks/myCRED-addon-ranks.php:1480
+#: addons/ranks/myCRED-addon-ranks.php:1521
+msgid "Do not show."
+msgstr "Nerodyti."
+
+#: addons/ranks/myCRED-addon-ranks.php:1481
+msgid "Include in Profile Header."
+msgstr "Įterpti į profilio antraštę."
+
+#: addons/ranks/myCRED-addon-ranks.php:1523
+#: addons/badges/myCRED-addon-badges.php:1200
+msgid "Include in Profile"
+msgstr "Idėti į profilį"
+
+#: addons/ranks/myCRED-addon-ranks.php:1550
+#: addons/email-notices/myCRED-addon-email-notices.php:1466
+#: addons/badges/myCRED-addon-badges.php:1227
+#: addons/buy-creds/modules/buycred-module-core.php:460
+msgid "Available Shortcodes"
+msgstr "Galimi trumpieji kodai"
+
+#: addons/ranks/myCRED-addon-ranks.php:1670
+msgid "Remove All Ranks"
+msgstr "Pašalinti visus rangus"
+
+#: addons/ranks/myCRED-addon-ranks.php:1670
+msgid "Assign Ranks to Users"
+msgstr "Priskirti rangus naudotojams"
+
+#: addons/notifications/myCRED-addon-notifications.php:191
+msgid "Notifications"
+msgstr "Pranešimai"
+
+#: addons/notifications/myCRED-addon-notifications.php:200
+msgid "Restore to default"
+msgstr "Atstatyti pradinius nustatymus"
+
+#: addons/notifications/myCRED-addon-notifications.php:209
+msgid ""
+"The number of days a users notification is saved before being automatically "
+"deleted."
+msgstr ""
+"Dienų skaičius, kurį saugomi vartotojų pranešimai iki automationio "
+"sunaikinimo."
+
+#: addons/notifications/myCRED-addon-notifications.php:214
+msgid "Duration"
+msgstr "Trukmė"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:171
+#: addons/email-notices/myCRED-addon-email-notices.php:172
+#: addons/email-notices/myCRED-addon-email-notices.php:173
+#: addons/email-notices/myCRED-addon-email-notices.php:174
+#: addons/email-notices/myCRED-addon-email-notices.php:177
+#: addons/email-notices/myCRED-addon-email-notices.php:178
+#: addons/email-notices/myCRED-addon-email-notices.php:179
+#: addons/email-notices/myCRED-addon-email-notices.php:180
+msgid "Email Notice Updated."
+msgstr "El. pašto pranešimas atnaujintas."
+
+#: addons/email-notices/myCRED-addon-email-notices.php:258
+#: addons/email-notices/myCRED-addon-email-notices.php:275
+msgid "Email Subject"
+msgstr "El. laiško tema"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:276
+#: addons/banking/services/mycred-service-payouts.php:565
+#: addons/banking/services/mycred-service-payouts.php:880
+msgid "Status"
+msgstr "Statusas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:302
+msgid "Not Active"
+msgstr "Neaktyvus"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:305
+#, php-format
+msgid "Scheduled:<br /><strong>%1$s</strong>"
+msgstr "Tvarkaraštis:<br /><strong>%1$s</strong>"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:310
+#: addons/banking/services/mycred-service-payouts.php:31
+msgid "Active"
+msgstr "Aktyvus"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:312
+#, php-format
+msgid "Active - Last run:<br /><strong>%1$s</strong>"
+msgstr "Aktyvus - paskutinis veiksmas:<br /><strong>%1$s</strong>"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:325
+msgid "Email is sent when"
+msgstr "El. laiškas siunčiamas kai"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:327
+msgid "Missing instance for this notice!"
+msgstr "Trūksta pranešimo turinio!"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:336
+#: addons/email-notices/myCRED-addon-email-notices.php:338
+#: addons/email-notices/myCRED-addon-email-notices.php:340
+msgid "Sent To"
+msgstr "Siųsti"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:338
+#: addons/email-notices/myCRED-addon-email-notices.php:571
+msgid "Administrator"
+msgstr "Administratorius"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:340
+msgid "Both Administrator and User"
+msgstr "Administratorius ir vartotojas kartu"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:351
+#: addons/email-notices/myCRED-addon-email-notices.php:591
+msgid "All types"
+msgstr "Visos rūšys"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:388
+msgid "Email Settings"
+msgstr "El. pašto nustatymai"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:397
+msgid "Available Template Tags"
+msgstr "Galimos šablono žymės"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:408
+msgid "Email Header"
+msgstr "El. laiško antraštė"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:494
+msgid ""
+"Once a notice is \"published\" it becomes active! Select \"Save Draft\" if "
+"you are not yet ready to use this email notice!"
+msgstr ""
+"Jei pranešimas \"paskelbtas\" jis tampa aktyvus! Pasirinkite \"Išsaugoti "
+"juodraštį\" jei jūs nepasiruošęs naudoti šio pranešimo!"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:496
+#, php-format
+msgid "This notice will become active on:<br /><strong>%1$s</strong>"
+msgstr "Šis pranešimas taps aktyvus:<br /><strong>%1$s</strong>"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:498
+msgid "This email notice is active."
+msgstr "Šis el.pašto pranešimas yra aktyvus."
+
+#: addons/email-notices/myCRED-addon-email-notices.php:524
+msgid "Send this email notice when..."
+msgstr "Siųsti pranešimą el. paštu kai.."
+
+#: addons/email-notices/myCRED-addon-email-notices.php:566
+msgid "Recipient:"
+msgstr "Gavėjas:"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:574
+msgid "Both"
+msgstr "Abu"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:610
+#: addons/email-notices/myCRED-addon-email-notices.php:1477
+msgid "Senders Name:"
+msgstr "Siuntėjų vardai:"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:614
+#: addons/email-notices/myCRED-addon-email-notices.php:1483
+msgid "Senders Email:"
+msgstr "Siuntėjų el.paštas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:618
+msgid "Reply-To Email:"
+msgstr "Atsakyti į el. laišką:"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:643
+msgid "CSS Styling"
+msgstr "CSS Stilius"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:666
+msgid "Site Related"
+msgstr "Susijusios svetainės"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:672
+msgid "Your websites title"
+msgstr "Jūsų svetainės pavadinimas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:680
+msgid "Your websites address"
+msgstr "Jūsų svetainės adresas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:688
+msgid "Your websites tagline (description)"
+msgstr "Jūsų tinklapio šūkis (aprašymas)"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:696
+msgid "Your websites admin email"
+msgstr "Jūsų tinklapio administratoriaus el. laiškas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:704
+msgid "Total number of blog members"
+msgstr "Bendras blogo dalyvių skaičius"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:715
+msgid "The users new balance"
+msgstr "Naujas vartotojo balansas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:723
+msgid "The users old balance"
+msgstr "Senas vartotojo balansas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:731
+msgid "The amount of points gained or lost in this instance"
+msgstr "Šioje srityje gautų ir prarastų taškų kiekis"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:739
+msgid "The log entry"
+msgstr "Veiksmų žurnalas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:865
+msgid "users balance changes"
+msgstr "vartotojo balanso pasikeitimas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:866
+msgid "user gains %_plural%"
+msgstr "vartotojo pajamos"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:867
+msgid "user lose %_plural%"
+msgstr "vartotojo nuostoliai"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:868
+msgid "users balance reaches zero"
+msgstr "vartotojo balansas pasiekė nulį"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:869
+msgid "users balance goes minus"
+msgstr "vartotojo balansas įgija neigiamą reikšmę"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:875
+msgid "Badge Add-on"
+msgstr "Ženklelio papildinys"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:876
+msgid "user gains a badge"
+msgstr "vartotojas gauna ženklelį"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:883
+msgid "Sell Content Add-on"
+msgstr "Turinio pardavimo papildinys"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:884
+msgid "user buys content"
+msgstr "vartotojas perka turinį"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:885
+msgid "authors content gets sold"
+msgstr "autoriaus turinys parduodamas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:892
+msgid "buyCREDs Add-on"
+msgstr "buyCred papildinys"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:893
+msgid "user buys %_plural%"
+msgstr "vartotojo pirkimai"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:900
+msgid "Transfer Add-on"
+msgstr "Pervedimų papildinys"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:901
+msgid "user sends %_plural%"
+msgstr "vartotojo pervedimai"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:902
+msgid "user receives %_plural%"
+msgstr "vartotojo gauti pervedimai"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:909
+msgid "Ranks Add-on"
+msgstr "Rangų papildinys"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:910
+msgid "user is demoted"
+msgstr "vartotojas baudžiamas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:911
+msgid "user is promoted"
+msgstr "vartotojas skatinamas"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1410
+#: addons/coupons/myCRED-addon-coupons.php:114
+msgid "Email Notices"
+msgstr "El. pašto pranešimai"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1433
+msgid "Send emails immediately"
+msgstr "Siųsti el. laiškus nedelsiant"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1436
+msgid "Send emails once an hour"
+msgstr "Siųsti el. laiškus vieną kartą per valandą"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1439
+msgid "Send emails once a day"
+msgstr "Siųsti el. laiškus vieną kartą per dieną"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1489
+msgid "Reply-To:"
+msgstr "Atsakyti:"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1497
+msgid "Default Email Content"
+msgstr "Pradinis el.laiško turinys"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1499
+msgid "Default email content."
+msgstr "Numatytasis el. pašto turinys."
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1606
+msgid "Unsubscribe"
+msgstr "Atsisakyti prenumeratos"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1607
+msgid "Email Notice"
+msgstr "Pranešimas el. paštu"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1628
+msgid "There are no email notifications yet."
+msgstr "Pranešimų el. paštu kol kas nėra."
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1635
+#: addons/buy-creds/modules/buycred-module-pending.php:517
+msgid "Save Changes"
+msgstr "Išsaugoti pakeitimus"
+
+#: addons/stats/myCRED-addon-stats.php:58
+msgid "Statistics"
+msgstr "Statistika"
+
+#: addons/stats/myCRED-addon-stats.php:248
+msgid "Overview"
+msgstr "Apžvalga"
+
+#: addons/stats/myCRED-addon-stats.php:310
+msgid "Refresh"
+msgstr "Atnaujinti"
+
+#: addons/stats/myCRED-addon-stats.php:417
+msgid "Your log is empty. No statistics can be shown."
+msgstr "Jūsų žurnalas yra tuščias. Statistika negali būti parodyta."
+
+#: addons/badges/myCRED-addon-badges.php:148
+#: addons/badges/myCRED-addon-badges.php:154
+#: addons/badges/myCRED-addon-badges.php:160
+#: addons/badges/myCRED-addon-badges.php:295
+#: addons/badges/myCRED-addon-badges.php:296
+#: addons/badges/myCRED-addon-badges.php:1152
+#: addons/badges/myCRED-addon-badges.php:1281
+#: addons/badges/myCRED-addon-badges.php:1284
+msgid "Badges"
+msgstr "Ženkleliai"
+
+#: addons/badges/myCRED-addon-badges.php:149
+msgid "Badge"
+msgstr "Ženklelis"
+
+#: addons/badges/myCRED-addon-badges.php:152
+msgid "Edit Badge"
+msgstr "Keisti ženklelio nustatymus"
+
+#: addons/badges/myCRED-addon-badges.php:153
+msgid "New Badge"
+msgstr "Naujas ženklelis"
+
+#: addons/badges/myCRED-addon-badges.php:155
+msgid "View Badge"
+msgstr "Rinktis ženklelį"
+
+#: addons/badges/myCRED-addon-badges.php:156
+msgid "Search Badge"
+msgstr "Ženklelių paieška"
+
+#: addons/badges/myCRED-addon-badges.php:157
+msgid "No badges found"
+msgstr "Ženklelis nerastas"
+
+#: addons/badges/myCRED-addon-badges.php:158
+msgid "No badges found in Trash"
+msgstr "Šiukšlių dėžėje ženklelių nėra"
+
+#: addons/badges/myCRED-addon-badges.php:270
+#: addons/badges/myCRED-addon-badges.php:271
+#: addons/badges/myCRED-addon-badges.php:272
+#: addons/badges/myCRED-addon-badges.php:273
+#: addons/badges/myCRED-addon-badges.php:277
+#: addons/badges/myCRED-addon-badges.php:278
+#: addons/badges/myCRED-addon-badges.php:279
+msgid "Badge Updated."
+msgstr "Ženklelis papildytas"
+
+#: addons/badges/myCRED-addon-badges.php:421
+#: addons/badges/myCRED-addon-badges.php:505
+msgid "Badge Name"
+msgstr "Ženklelio pavadinimas"
+
+#: addons/badges/myCRED-addon-badges.php:422
+msgid "Default Image"
+msgstr "Pirminis paveikslėlis"
+
+#: addons/badges/myCRED-addon-badges.php:424
+msgid "Requirements"
+msgstr "Reikalavimai"
+
+#: addons/badges/myCRED-addon-badges.php:535
+#: addons/badges/myCRED-addon-badges.php:826
+msgid "Add Level"
+msgstr "Pridėti lygį"
+
+#: addons/badges/myCRED-addon-badges.php:540
+#: addons/badges/myCRED-addon-badges.php:844
+#: addons/badges/myCRED-addon-badges.php:1313
+msgid "Level"
+msgstr "Lygis"
+
+#: addons/badges/myCRED-addon-badges.php:541
+msgid "Badge Image"
+msgstr "Ženklelio išvaizda"
+
+#: addons/badges/myCRED-addon-badges.php:542
+msgid "Use as Badge"
+msgstr "Naudoti ženklelį"
+
+#: addons/badges/myCRED-addon-badges.php:596
+msgid "Badge Setup"
+msgstr "Ženklelių nustatymai"
+
+#: addons/badges/myCRED-addon-badges.php:703
+msgid "Assign Badge"
+msgstr "Priskirti ženklelį"
+
+#: addons/badges/myCRED-addon-badges.php:704
+msgid "Remove Connections"
+msgstr "Pašalinti ryšius"
+
+#: addons/badges/myCRED-addon-badges.php:802
+msgid "Time(s)"
+msgstr "Laikas"
+
+#: addons/badges/myCRED-addon-badges.php:803
+msgid "In total"
+msgstr "Viso"
+
+#: addons/badges/myCRED-addon-badges.php:850
+#, php-format
+msgid "Level %d"
+msgstr "Lygis %d"
+
+#: addons/badges/myCRED-addon-badges.php:1183
+#: addons/badges/myCRED-addon-badges.php:1217
+msgid "Show all badges, including badges users have not yet earned."
+msgstr "Rodyti visus ženklelius, įskaitant vartotojų dar neįgytus ženklelius."
+
+#: addons/badges/myCRED-addon-badges.php:1201
+msgid "Include in Forum Replies"
+msgstr "Įterpti į forumų pasisakymus"
+
+#: addons/badges/myCRED-addon-badges.php:1202
+msgid "Include in Profile and Forum Replies"
+msgstr "Įterpti į profilius ir forumų pasisakymus"
+
+#: addons/badges/myCRED-addon-badges.php:1308
+msgid "Select a level"
+msgstr "Pasirinkti lygį"
+
+#: addons/badges/myCRED-addon-badges.php:1322
+msgid "Earned"
+msgstr "Jau įgyti"
+
+#: addons/badges/myCRED-addon-badges.php:1433
+msgid "No users has yet earned this badge."
+msgstr "Iki šiol niekas neįgijo šio ženklelio."
+
+#: addons/badges/myCRED-addon-badges.php:1458
+msgid "No connections where removed."
+msgstr "Sąsajos nepašalintos"
+
+#: addons/badges/myCRED-addon-badges.php:1460
+#, php-format
+msgid "%s connections where removed."
+msgstr "%s sąsajos buvo pašalintos"
+
+#: addons/coupons/myCRED-addon-coupons.php:102
+#: addons/coupons/myCRED-addon-coupons.php:108
+#: addons/coupons/myCRED-addon-coupons.php:170
+#: addons/coupons/myCRED-addon-coupons.php:171
+#: addons/coupons/myCRED-addon-coupons.php:702
+msgid "Coupons"
+msgstr "Kuponai"
+
+#: addons/coupons/myCRED-addon-coupons.php:103
+msgid "Coupon"
+msgstr "Kuponas"
+
+#: addons/coupons/myCRED-addon-coupons.php:104
+#: addons/coupons/myCRED-addon-coupons.php:105
+msgid "Create New"
+msgstr "Sukurti naują"
+
+#: addons/coupons/myCRED-addon-coupons.php:106
+msgid "Edit Coupon"
+msgstr "Redaguoti kuponą"
+
+#: addons/coupons/myCRED-addon-coupons.php:107
+msgid "New Coupon"
+msgstr "Naujas kuponas"
+
+#: addons/coupons/myCRED-addon-coupons.php:110
+msgid "Search coupons"
+msgstr "Ieškoti kuponų"
+
+#: addons/coupons/myCRED-addon-coupons.php:111
+msgid "No coupons found"
+msgstr "Kuponų nerasta"
+
+#: addons/coupons/myCRED-addon-coupons.php:112
+msgid "No coupons found in Trash"
+msgstr "Šiukšliadėžėje kuponų nėra"
+
+#: addons/coupons/myCRED-addon-coupons.php:145
+#: addons/coupons/myCRED-addon-coupons.php:146
+#: addons/coupons/myCRED-addon-coupons.php:147
+#: addons/coupons/myCRED-addon-coupons.php:148
+#: addons/coupons/myCRED-addon-coupons.php:151
+#: addons/coupons/myCRED-addon-coupons.php:152
+#: addons/coupons/myCRED-addon-coupons.php:153
+#: addons/coupons/myCRED-addon-coupons.php:154
+msgid "Coupon updated."
+msgstr "Kuponas papildytas."
+
+#: addons/coupons/myCRED-addon-coupons.php:150
+msgid "Coupon published."
+msgstr "Kupoas paskelbtas."
+
+#: addons/coupons/myCRED-addon-coupons.php:232
+#: addons/coupons/myCRED-addon-coupons.php:249
+msgid "Coupon Code"
+msgstr "Kupono kodas"
+
+#: addons/coupons/myCRED-addon-coupons.php:250
+#: addons/coupons/myCRED-addon-coupons.php:513
+msgid "Value"
+msgstr "Vertė"
+
+#: addons/coupons/myCRED-addon-coupons.php:251
+msgid "Used"
+msgstr "Panaudota"
+
+#: addons/coupons/myCRED-addon-coupons.php:253
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:205
+msgid "Expires"
+msgstr "Pasibaigia"
+
+#: addons/coupons/myCRED-addon-coupons.php:298
+#: addons/coupons/myCRED-addon-coupons.php:649
+#, php-format
+msgid "1 time"
+msgid_plural "%d times"
+msgstr[0] "1 kartą"
+msgstr[1] ""
+
+#: addons/coupons/myCRED-addon-coupons.php:309
+msgid "Per User"
+msgstr "Vienam vartotojui"
+
+#: addons/coupons/myCRED-addon-coupons.php:326
+msgid "Expired"
+msgstr "Pasibaigęs"
+
+#: addons/coupons/myCRED-addon-coupons.php:332
+#, php-format
+msgid "In %s time"
+msgstr "%s kartų"
+
+#: addons/coupons/myCRED-addon-coupons.php:432
+msgid "Coupon Setup"
+msgstr "Kupono nustatymai"
+
+#: addons/coupons/myCRED-addon-coupons.php:441
+msgid "Coupon Limits"
+msgstr "Kupono limitai"
+
+#: addons/coupons/myCRED-addon-coupons.php:450
+msgid "Coupon Requirements"
+msgstr "Kupono reikalavimai"
+
+#: addons/coupons/myCRED-addon-coupons.php:524
+msgid "Select the point type that this coupon is applied."
+msgstr "pasirinkite taškų rušį tinkamą šiems kuponams."
+
+#: addons/coupons/myCRED-addon-coupons.php:536
+msgid "Expire"
+msgstr "Pasibaigia"
+
+#: addons/coupons/myCRED-addon-coupons.php:538
+msgid ""
+"Optional date when this coupon expires. Expired coupons will be trashed."
+msgstr ""
+"Pasirenkama kupono galiojimo pabaigos data. Kuponai su pasibaigusiu "
+"galiojimo terminu bus sunaikinti."
+
+#: addons/coupons/myCRED-addon-coupons.php:573
+msgid "User Maximum"
+msgstr "Vartotojų maksimumas"
+
+#: addons/coupons/myCRED-addon-coupons.php:575
+msgid "The maximum number of times this coupon can be used by a user."
+msgstr "Maksimalus kupono panaudojimo kartų skaičius."
+
+#: addons/coupons/myCRED-addon-coupons.php:603
+#: addons/banking/services/mycred-service-interest.php:499
+msgid "Minimum Balance"
+msgstr "Minimalus balansas"
+
+#: addons/coupons/myCRED-addon-coupons.php:608
+msgid ""
+"Optional minimum balance a user must have in order to use this coupon. Use "
+"zero to disable."
+msgstr ""
+"Pasirenkamas balanso minimumas, kurį turi turėti vartotojas, norintis "
+"panaudoti šį kuponą. Norėdami atjungti, rašykite nulį."
+
+#: addons/coupons/myCRED-addon-coupons.php:615
+msgid "Maximum Balance"
+msgstr "Maksimalus balansas"
+
+#: addons/coupons/myCRED-addon-coupons.php:620
+msgid ""
+"Optional maximum balance a user can have in order to use this coupon. Use "
+"zero to disable."
+msgstr "Ro"
+
+#: addons/coupons/myCRED-addon-coupons.php:709
+msgid "Invalid Coupon Message"
+msgstr "Negaliojantis kupono pranešimas"
+
+#: addons/coupons/myCRED-addon-coupons.php:711
+msgid "Message to show when users try to use a coupon that does not exists."
+msgstr ""
+"Žinutė, rodoma, kai vartotojas bando pasinaudoti neegzistuojančiu kuponu."
+
+#: addons/coupons/myCRED-addon-coupons.php:716
+msgid "Expired Coupon Message"
+msgstr "Pranešimas apie nebegaliojantį kuponą."
+
+#: addons/coupons/myCRED-addon-coupons.php:718
+msgid "Message to show when users try to use that has expired."
+msgstr "Rodoma žinutė, kai naudotojas bano panaudoti pasibaigusį."
+
+#: addons/coupons/myCRED-addon-coupons.php:725
+msgid "Minimum Balance Message"
+msgstr "Pranešimas apie minimalų balansą"
+
+#: addons/coupons/myCRED-addon-coupons.php:727
+msgid ""
+"Message to show when a user does not meet the minimum balance requirement. "
+"(if used)"
+msgstr ""
+"Pranešimas apie tai, kad vartotojas neatitinka minimalaus balanso "
+"reikalavimo. (jei toks naudojamas)"
+
+#: addons/coupons/myCRED-addon-coupons.php:732
+msgid "Maximum Balance Message"
+msgstr "Pranešimas apie maksimalų balansą"
+
+#: addons/coupons/myCRED-addon-coupons.php:734
+msgid ""
+"Message to show when a user does not meet the maximum balance requirement. "
+"(if used)"
+msgstr ""
+"Pranešimas apie tai, kad vartotojas neatitinka maksimalaus balanso "
+"reikalavimų (jei toks naudojamas)"
+
+#: addons/coupons/myCRED-addon-coupons.php:741
+msgid "User Limit Message"
+msgstr "Pranešimas apie vartotojo limitą"
+
+#: addons/coupons/myCRED-addon-coupons.php:743
+msgid "Message to show when the user limit has been reached for the coupon."
+msgstr "Pranešimas, kai vartotojas pasiekia kuponų limitą."
+
+#: addons/coupons/myCRED-addon-coupons.php:757
+msgid "Success Message"
+msgstr "Pranešimas apie sėkmę"
+
+#: addons/coupons/myCRED-addon-coupons.php:759
+msgid ""
+"Message to show when a coupon was successfully deposited to a users account."
+msgstr ""
+"Pranešimas apie tai, kad kuponas sėkmingai pervestas į vartotojo sąskaitą."
+
+#: addons/coupons/myCRED-addon-coupons.php:766
+msgid ""
+"Log entry for successful coupon redemption. Use %coupon% to show the coupon "
+"code."
+msgstr ""
+"Sėkmingo kuponų išpirkimo veiksmų sąrašas. Naudokite \n"
+" %coupon% parodyti kupono kodą."
+
+#: addons/sell-content/myCRED-addon-sell-content.php:381
+#: addons/sell-content/myCRED-addon-sell-content.php:384
+#: addons/sell-content/myCRED-addon-sell-content.php:664
+msgid "Profit Share"
+msgstr "Pelno dalis"
+
+#: addons/sell-content/myCRED-addon-sell-content.php:508
+#: addons/sell-content/myCRED-addon-sell-content.php:1000
+msgid "Sell Content"
+msgstr "Parduoti turinį"
+
+#: addons/sell-content/myCRED-addon-sell-content.php:511
+msgid "Post Types"
+msgstr "Straipsnių rūšys"
+
+#: addons/sell-content/myCRED-addon-sell-content.php:673
+#: addons/sell-content/myCRED-addon-sell-content.php:719
+#: addons/gateway/event-booking/mycred-eventespresso3.php:473
+#: addons/gateway/event-booking/mycred-eventsmanager.php:675
+#: addons/transfer/includes/mycred-transfer-widgets.php:101
+msgid "Button Label"
+msgstr "Mygtuko pavadinimas"
+
+#: addons/sell-content/myCRED-addon-sell-content.php:1073
+#: addons/gateway/event-booking/mycred-eventespresso3.php:495
+#: addons/gateway/event-booking/mycred-eventsmanager.php:369
+#: addons/gateway/event-booking/mycred-eventsmanager.php:373
+msgid "Price"
+msgstr "Kaina"
+
+#: addons/banking/services/mycred-service-central.php:117
+msgid "Ignore Manual Adjustments"
+msgstr "Ignoruoti rankinį reguliavimą"
+
+#: addons/banking/services/mycred-service-interest.php:28
+msgid "%plural% interest rate payment"
+msgstr "%plural% palūkanų normos mokėjimas"
+
+#: addons/banking/services/mycred-service-interest.php:481
+#: addons/banking/services/mycred-service-interest.php:652
+msgid "Interest Rate"
+msgstr "Palūkanų dydis"
+
+#: addons/banking/services/mycred-service-interest.php:528
+#: addons/banking/services/mycred-service-interest.php:529
+#: addons/banking/services/mycred-service-payouts.php:791
+msgid "Comma separated list of user IDs"
+msgstr "Kableliais atskirtų vartotojų ID sąrašas"
+
+#: addons/banking/services/mycred-service-payouts.php:472
+#: addons/stats/widgets/mycred-stats-widget-daily-loses.php:151
+#: addons/stats/widgets/mycred-stats-widget-daily-gains.php:151
+msgid "View"
+msgstr "Peržiūrėti"
+
+#: addons/banking/services/mycred-service-payouts.php:573
+msgid "Last Run"
+msgstr "Paskutinis veiksmas"
+
+#: addons/banking/services/mycred-service-payouts.php:591
+#: addons/gateway/carts/mycred-wpecommerce.php:396
+msgid "Payout"
+msgstr "Išmoka"
+
+#: addons/banking/includes/mycred-banking-functions.php:79
+msgid "Hourly"
+msgstr "Valandinis"
+
+#: addons/banking/includes/mycred-banking-functions.php:84
+msgid "Daily"
+msgstr "Dienos"
+
+#: addons/banking/includes/mycred-banking-functions.php:89
+msgid "Weekly"
+msgstr "Savaitinis"
+
+#: addons/banking/includes/mycred-banking-functions.php:94
+msgid "Monthly"
+msgstr "Mėnesio"
+
+#: addons/banking/includes/mycred-banking-functions.php:99
+msgid "Quarterly"
+msgstr "Ketvirčio"
+
+#: addons/banking/includes/mycred-banking-functions.php:104
+msgid "Semiannually"
+msgstr "Pusmečio"
+
+#: addons/banking/includes/mycred-banking-functions.php:109
+msgid "Annually"
+msgstr "Metinis"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:26
+#: addons/gateway/event-booking/mycred-eventsmanager.php:594
+#: addons/buy-creds/modules/buycred-module-core.php:710
+msgid "Payments"
+msgstr "Mokėjimai"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:27
+#: addons/gateway/event-booking/mycred-eventsmanager.php:36
+#: addons/buy-creds/modules/buycred-module-pending.php:744
+msgid "Pay Now"
+msgstr "Mokėkite dabar"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:32
+msgid "Payment for Event Registration"
+msgstr "Mokėjimas už registraciją į renginį"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:311
+#: addons/gateway/event-booking/mycred-eventespresso3.php:336
+#: addons/gateway/event-booking/mycred-eventsmanager.php:468
+#: addons/gateway/carts/mycred-wpecommerce.php:120
+msgid "Total Cost"
+msgstr "Bendra kaina"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:315
+#: addons/gateway/event-booking/mycred-eventespresso3.php:340
+msgid "Balance After Purchase"
+msgstr "Balansas po pirkimo"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:380
+#, php-format
+msgid "Activate %s"
+msgstr " Aktyvuoti %s"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:389
+#, php-format
+msgid "Deactivate %s"
+msgstr ""
+"Atjungti \n"
+" %s"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:402
+msgid "Gateway Settings"
+msgstr "Operatoriaus nustatymai"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:442
+#: addons/gateway/event-booking/mycred-eventsmanager.php:580
+#, php-format
+msgid "How many %s is 1 %s worth?"
+msgstr ""
+"Kiek \n"
+" %s yra 1 %s vertas?"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:463
+msgid "Gateway Title"
+msgstr "Operatoriaus pavadinimas"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:465
+msgid "Title to show on Payment page"
+msgstr "Pavadinimas rodomas mokėjimo puslapyje."
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:468
+msgid "Payment Type"
+msgstr "Mokėjimo rūšis"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:470
+msgid "Title to show on receipts and logs"
+msgstr "Pavadinimas rodomas ant kvito ir sąraše"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:475
+msgid "Pay Button"
+msgstr "Mokėjimo mygtukas"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:503
+msgid "Important!"
+msgstr "Svarbu!"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:505
+msgid ""
+"You can disable purchases using this gateway by adding a custom Event Meta: "
+"<code>mycred_no_sale</code>"
+msgstr ""
+"Jūs galite atjungti pirkimus per šį operatorių pridėdami Įvykio Meta: <code>"
+"mycred_no_sale</code>"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:506
+msgid "Users must be logged in to use this gateway!"
+msgstr "Vartotojas norintis naudotis šiuo operatoriumi turi būti prisijungęs!"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:510
+#: addons/gateway/event-booking/mycred-eventsmanager.php:625
+#: addons/gateway/carts/mycred-wpecommerce.php:393
+#: addons/gateway/carts/mycred-woocommerce.php:176
+msgid "Profit Sharing"
+msgstr "Pelno dalinimasis"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:512
+#: addons/gateway/event-booking/mycred-eventsmanager.php:628
+#: addons/gateway/carts/mycred-wpecommerce.php:397
+#: addons/gateway/carts/mycred-woocommerce.php:178
+msgid "Option to share sales with the product owner. Use zero to disable."
+msgstr ""
+"Pasirinkimas pasidalinti pajamomis su produkto savininku. Norėdami išjungti "
+"nustatykite nulį."
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:525
+#: addons/buy-creds/modules/buycred-module-core.php:415
+msgid "Templates"
+msgstr "Šablonai"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:528
+msgid "Solvent users"
+msgstr "Mokūs naudotojai"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:533
+msgid "Insolvent users"
+msgstr "Nemokūs naudotojai"
+
+#: addons/gateway/event-booking/mycred-eventespresso3.php:538
+#: addons/gateway/carts/mycred-wpecommerce.php:411
+msgid "Visitors"
+msgstr "Lankytojai"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:30
+msgid "Payment for tickets to %link_with_title%"
+msgstr ""
+"Mokėjimas už bilietus \n"
+"%link_with_title%"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:31
+msgid "Ticket refund for %link_with_title%"
+msgstr ""
+"Gražinimas už bilietus \n"
+"%link_with_title%"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:35
+msgid "Pay using your %_plural% balance"
+msgstr "Mokėkite naudodamiesi savo balansu"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:37
+msgid "Pay"
+msgstr "Mokėti"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:40
+msgid "Thank you for your payment!"
+msgstr "Ačiū už apmokėjimą!"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:41
+msgid "I'm sorry but you can not pay for these tickets using %_plural%"
+msgstr ""
+"Atsipašome, tačiau už šiuos bilietus šiais vienetais atsiskaityti negalite"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:366
+msgid "Ticket Type"
+msgstr "Bilieto tipas"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:377
+msgid "Spaces"
+msgstr "Langeliai"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:472
+msgid "Balance After Payment"
+msgstr "Balansas po mokėjimo"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:585
+msgid "Click to toggle"
+msgstr "Norėdami perjungti paspauskite"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:586
+#, php-format
+msgid "%s Payments"
+msgstr "%s Mokėjimai"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:596
+msgid "Disabled - Users CAN NOT pay for tickets using %plural%."
+msgstr ""
+"Atjungta - naudotojai negali mokėti už bilietus naudodamiesi \n"
+"%plural%."
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:597
+msgid "Single - Users can ONLY pay for tickets using %plural%."
+msgstr ""
+"Vienintelis būdas -Naudotojai gali atsiskaityti už bilietus tik naudodamiesi "
+"\n"
+"%plural%."
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:598
+msgid "Multi - Users can pay for tickets using other gateways or %plural%."
+msgstr ""
+"Keletas būdų - Naudotojai gali apmokėti bilietus naudodamiesi kitais "
+"operatoriais arba \n"
+" %plural%."
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:618
+#: addons/gateway/event-booking/mycred-eventsmanager.php:651
+msgid "Refunds"
+msgstr "Sugrąžinimai"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:621
+msgid ""
+"The percentage of the paid amount to refund if a booking gets cancelled. Use "
+"zero for no refunds. No refunds are given to \"Rejected\" bookings."
+msgstr ""
+"Grąžinamas procentas užsakymo atšaukimo atveju. Naudokite nulį jei "
+"negrąžinama. Negrąžinama už atmestus užsakymus."
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:644
+msgid "Purchases"
+msgstr "Pirkimai"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:661
+msgid "Payment Link Label"
+msgstr "Mokėjimo nuorodos pavadinimas"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:668
+msgid "Payment Header"
+msgstr "Mokėjimo antraštė"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:682
+#: addons/gateway/carts/mycred-wpecommerce.php:404
+msgid "Messages"
+msgstr "Žinutės"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:685
+msgid "Successful Payments"
+msgstr "Sėkmingi mokėjimai"
+
+#: addons/gateway/event-booking/mycred-eventsmanager.php:688
+#: addons/gateway/event-booking/mycred-eventsmanager.php:695
+msgid "No HTML allowed!"
+msgstr "HTML negalimas!"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:20
+msgid "Payment for Order: #%order_id%"
+msgstr "Mokėjimas už užsakymą: #%order_id%"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:23
+msgid "Store sale"
+msgstr "Pardavimas"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:25
+msgid "You must be logged in to use this gateway"
+msgstr "Norint naudotis šiuo operatoriumi, reikia prisijungti"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:26
+msgid "Insufficient Funds."
+msgstr "Nepakanka lėšų"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:27
+msgid "Deduct the amount from your balance."
+msgstr "Išimti iš jūsų balanso"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:107
+#: addons/buy-creds/gateways/bank-transfer.php:139
+msgid "Item"
+msgstr "Pirkinys"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:128
+#: addons/gateway/carts/mycred-woocommerce.php:808
+msgid "Your current balance"
+msgstr "Dabartinis jūsų balansas"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:202
+msgid "You can not use this gateway."
+msgstr "Jūs negalite naudotis šiuo operatoriumi."
+
+#: addons/gateway/carts/mycred-wpecommerce.php:373
+msgid "Log Template for Payments"
+msgstr "Sąrašo šablonas mokėjimams"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:407
+msgid "Instructions"
+msgstr "Instrukcijos"
+
+#: addons/gateway/carts/mycred-wpecommerce.php:408
+msgid ""
+"Optional instructions to show users when selecting this gateway. Leave empty "
+"to hide."
+msgstr ""
+"Pasirenkama instrukcija rodoma naudotojams, pasirinkusiems šį operatorių. "
+"Jei norite paslėpti palikite tuščią."
+
+#: addons/gateway/carts/mycred-wpecommerce.php:412
+msgid "Message to show visitors who are not logged in."
+msgstr "Pranešimas rodomas neprisijungusiems lankytojams."
+
+#: addons/gateway/carts/mycred-wpecommerce.php:416
+msgid ""
+"Message to show when users does not have enough %plural% to pay using this "
+"gateway."
+msgstr ""
+"Žinutė rodoma naudotojui, kai jis neturi pakankamai \n"
+" %plural%  mokėti per šį operatorių."
+
+#: addons/gateway/carts/mycred-woocommerce.php:89
+msgid "Enable/Disable"
+msgstr "Įjungti/Išjungti"
+
+#: addons/gateway/carts/mycred-woocommerce.php:91
+msgid "Enable myCRED Payment"
+msgstr "Įjungti myCred mokėjimą"
+
+#: addons/gateway/carts/mycred-woocommerce.php:93
+msgid ""
+"Users who are not logged in or excluded from using myCRED will not have "
+"access to this gateway!"
+msgstr ""
+"Neprisijungę naudotojai ar atriboti nuo myCred naudojimo neturės prieigos "
+"prie šio operatoriaus!"
+
+#: addons/gateway/carts/mycred-woocommerce.php:98
+msgid "Title to show for this payment option."
+msgstr "Pavadinimas rodomas šiam mokėjimo variantui."
+
+#: addons/gateway/carts/mycred-woocommerce.php:99
+msgid "Pay with myCRED"
+msgstr "Mokėti per myCred"
+
+#: addons/gateway/carts/mycred-woocommerce.php:103
+msgid "Customer Message"
+msgstr "Vartotojo žinutė"
+
+#: addons/gateway/carts/mycred-woocommerce.php:127
+msgid "Select the point type users can use to pay."
+msgstr "Pasirinkite vienetų tipą, kuriais nadotojai galės mokėti."
+
+#: addons/gateway/carts/mycred-woocommerce.php:132
+msgid "How much is 1 %_singular% worth in %currency%?"
+msgstr "Kokia 1 %_singular% vertė %currency%?"
+
+#: addons/gateway/carts/mycred-woocommerce.php:143
+msgid "Show Total"
+msgstr "Rodyti viso"
+
+#: addons/gateway/carts/mycred-woocommerce.php:145
+msgid "Show the final price in %_plural% ."
+msgstr ""
+"Rodyti galutinę kainą \n"
+"%_plural% ."
+
+#: addons/gateway/carts/mycred-woocommerce.php:148
+msgid "Show in Cart"
+msgstr "Rodyti krepšelyje"
+
+#: addons/gateway/carts/mycred-woocommerce.php:149
+msgid "Show on Checkout Page"
+msgstr "Rodyti atsiskaitymų puslapyje"
+
+#: addons/gateway/carts/mycred-woocommerce.php:150
+msgid "Show in Cart and on Checkout Page"
+msgstr "Rodyti krepšelyje ir atsiskaitymų puslapyje"
+
+#: addons/gateway/carts/mycred-woocommerce.php:157
+msgid "Order Total in %_plural%"
+msgstr ""
+"Viso užsakyta už \n"
+" %_plural%"
+
+#: addons/gateway/carts/mycred-woocommerce.php:185
+msgid "Log entry template for profit sharing."
+msgstr "Veiksmų žurnalo šablonas pelno dalinimuisi."
+
+#: addons/gateway/carts/mycred-woocommerce.php:191
+msgid "Log entry template for refunds of profit shares."
+msgstr "Veiksmų žurnalo šablonas sugrąžinti pelno dalį."
+
+#: addons/gateway/carts/mycred-woocommerce.php:294
+msgid "You must be logged in to pay with %_plural%"
+msgstr "Norėdami apmokėti turite prisijungti"
+
+#: addons/gateway/carts/mycred-woocommerce.php:302
+msgid "You can not use this gateway. Please try a different payment option."
+msgstr ""
+"Jūs negalite apmokėti per šį operatorių. Prašome išbandyti kitą galimybę."
+
+#: addons/gateway/carts/mycred-woocommerce.php:319
+#: addons/sell-content/includes/mycred-sell-functions.php:534
+msgid "Insufficient funds."
+msgstr "Nepakanka lėšų"
+
+#: addons/gateway/carts/mycred-woocommerce.php:422
+#, php-format
+msgctxt "%s = Point amount formatted"
+msgid "Refunded %s"
+msgstr ""
+"Sugrąžinta \n"
+" %s"
+
+#: addons/gateway/carts/mycred-woocommerce.php:472
+msgid "Your account has successfully been charged."
+msgstr "Nuskaitymas  iš jūsų sąskaitos pavyko."
+
+#: addons/transfer/includes/mycred-transfer-widgets.php:19
+#, php-format
+msgid "(%s) Transfer"
+msgstr "Pervedimas"
+
+#: addons/transfer/includes/mycred-transfer-widgets.php:22
+msgid "Allow transfers between users."
+msgstr "Leisti pervedimus tarp vartotojų."
+
+#: addons/transfer/includes/mycred-transfer-widgets.php:95
+msgid "Show users balance"
+msgstr "Rodyti vartotojų balansą"
+
+#: addons/transfer/includes/mycred-transfer-widgets.php:98
+msgid "Show users limit"
+msgstr "Rodyti vartotojų limitą"
+
+#: addons/transfer/includes/mycred-transfer-shortcodes.php:157
+msgid "username"
+msgstr "vartotojo vardas"
+
+#: addons/transfer/includes/mycred-transfer-shortcodes.php:160
+msgid "email"
+msgstr "el. paštas"
+
+#: addons/transfer/includes/mycred-transfer-shortcodes.php:162
+#, php-format
+msgid "recipients %s"
+msgstr "gavėjai "
+
+#: addons/ranks/includes/mycred-rank-shortcodes.php:128
+#: addons/ranks/includes/mycred-rank-shortcodes.php:211
+msgid "No users found with this rank"
+msgstr "naudotojų su šiuo rangu nerasta"
+
+#: addons/ranks/includes/mycred-rank-shortcodes.php:135
+msgid "Rank ID is required!"
+msgstr "Reikalingas rango ID"
+
+#: addons/stats/abstracts/mycred-abstract-stat-widget.php:103
+msgid "Hooks"
+msgstr "Hook-ai"
+
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:44
+#, php-format
+msgid "Total %s:"
+msgstr ""
+"Viso \n"
+"%s:"
+
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:138
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:266
+#, php-format
+msgid "Total amount of %s in circulation"
+msgstr ""
+"Bendras \n"
+"%s \n"
+"kiekis cirkuliacijoje"
+
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:171
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:301
+msgid "Total gains (%)"
+msgstr ""
+"Bendras uždarbis \n"
+" (%)"
+
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:174
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:305
+msgid "Total loses (%)"
+msgstr ""
+"Bendrieji nuostoliai \n"
+" (%)"
+
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:178
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:308
+#, php-format
+msgid "Total Gained: %s"
+msgstr ""
+"Viso uždirbta: \n"
+"%s"
+
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:178
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:308
+#, php-format
+msgid "Total Spent: %s"
+msgstr ""
+"Viso išleista \n"
+"%s"
+
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:192
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:322
+msgid "This Year"
+msgstr "Šiais metais"
+
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:196
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:198
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:200
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:202
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:326
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:328
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:330
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:332
+#: addons/badges/includes/mycred-badge-functions.php:268
+msgid "Gained"
+msgstr "Pelnas"
+
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:197
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:199
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:201
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:203
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:327
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:329
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:331
+#: addons/stats/widgets/mycred-stats-widget-circulation.php:333
+#: addons/badges/includes/mycred-badge-functions.php:268
+msgid "Lost"
+msgstr "Nuostoliai"
+
+#: addons/stats/widgets/mycred-stats-widget-daily-loses.php:118
+msgid ""
+"Most common ways your users have lost or spent points during this period."
+msgstr ""
+"Dažniausi būdai kaip vartotojai netenka arba išleidžia taškus per šį periodą."
+
+#: addons/stats/widgets/mycred-stats-widget-daily-loses.php:120
+msgid ""
+"Most common ways your users have lost or spent %_plural% during this period."
+msgstr ""
+"Dažniausi būdai kaip vartotojai netenka arba išleidžia taškus per šį periodą."
+
+#: addons/stats/widgets/mycred-stats-widget-daily-loses.php:127
+msgid "Loses in the last 10 days"
+msgstr "Nuostoliai per paskutines 10 dienų"
+
+#: addons/stats/widgets/mycred-stats-widget-daily-loses.php:166
+#: addons/stats/widgets/mycred-stats-widget-daily-gains.php:166
+msgid "No data found"
+msgstr "Nerasta duomenų"
+
+#: addons/stats/widgets/mycred-stats-widget-daily-gains.php:118
+msgid "Most common ways your users have gained points during this period."
+msgstr "Pagrindiniai taškų uždirbimo būdai per šį periodą"
+
+#: addons/stats/widgets/mycred-stats-widget-daily-gains.php:120
+msgid "Most common ways your users have gained %_plural% during this period."
+msgstr ""
+"Dažniausi \n"
+" %_plural% uždirbimo būdai per šį laikotarpį."
+
+#: addons/stats/widgets/mycred-stats-widget-daily-gains.php:127
+msgid "Gains in the last 10 days"
+msgstr "Uždirbta per paskutines 10 dienų"
+
+#: addons/badges/includes/mycred-badge-functions.php:249
+#, php-format
+msgid "Level %s"
+msgstr "Lygis %s"
+
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:204
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:693
+#: addons/buy-creds/modules/buycred-module-pending.php:297
+#: addons/buy-creds/modules/buycred-module-pending.php:648
+#: addons/buy-creds/modules/buycred-module-pending.php:761
+#: addons/buy-creds/gateways/bank-transfer.php:141
+msgid "Cost"
+msgstr "Kaina"
+
+#: addons/sell-content/includes/mycred-sell-shortcodes.php:248
+msgid "Never"
+msgstr "Niekada"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:163
+msgid "Select currency"
+msgstr "Pasirinkti valiutą"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:445
+#: addons/buy-creds/gateways/bank-transfer.php:125
+msgid "Test Payment"
+msgstr "Bandomasis mokėjimas"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:451
+#: addons/buy-creds/gateways/bank-transfer.php:129
+msgid "Payment"
+msgstr "Mokėjimas"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:685
+#: addons/buy-creds/gateways/bank-transfer.php:147
+#, php-format
+msgid "%s Purchase"
+msgstr "%s Pirkimas"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:786
+#, php-format
+msgid "Continue to %s"
+msgstr "Tęsti"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:787
+#: addons/buy-creds/gateways/bitpay.php:225
+msgid "Click here if you are not automatically redirected"
+msgstr "Paspauskite čia jei jūsų nenukreipė automatiškai"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1501
+msgid "January"
+msgstr "Sausis"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1502
+msgid "February"
+msgstr "Vasaris"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1503
+msgid "March"
+msgstr "Kovas"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1504
+msgid "April"
+msgstr "Balandis"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1505
+msgid "May"
+msgstr "Gegužis"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1506
+msgid "June"
+msgstr "Birželis"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1507
+msgid "July"
+msgstr "Liepa"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1508
+msgid "August"
+msgstr "Rugpjūtis"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1509
+msgid "September"
+msgstr "Rugsėjis"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1510
+msgid "October"
+msgstr "Spalis"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1511
+msgid "November"
+msgstr "Lapkritis"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1512
+msgid "December"
+msgstr "Gruodis"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:140
+msgctxt "Post Type General Name"
+msgid "Pending Payments"
+msgstr "Vykdomi mokėjimai"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:141
+msgctxt "Post Type Singular Name"
+msgid "Pending Payment"
+msgstr "Vykdomas mokėjimas"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:142
+#: addons/buy-creds/modules/buycred-module-pending.php:144
+#: addons/buy-creds/modules/buycred-module-pending.php:234
+#: addons/buy-creds/modules/buycred-module-pending.php:235
+msgid "Pending Payments"
+msgstr "Vykdomi  mokėjimai"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:148
+msgid "Edit Pending Payment"
+msgstr "Redaguoti vykdomus mokėjimus"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:151
+#: addons/buy-creds/modules/buycred-module-pending.php:152
+msgid "Not found in Trash"
+msgstr "Šiukšliadėžėje nėra"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:293
+#: addons/buy-creds/modules/buycred-module-pending.php:758
+#: addons/buy-creds/modules/buycred-module-core.php:771
+#: addons/buy-creds/gateways/bank-transfer.php:142
+msgid "Transaction ID"
+msgstr "Pervedimo numeris"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:295
+#: addons/buy-creds/modules/buycred-module-core.php:767
+msgid "Buyer"
+msgstr "Pirkėjas"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:298
+#: addons/buy-creds/modules/buycred-module-pending.php:623
+#: addons/buy-creds/modules/buycred-module-pending.php:759
+#: addons/buy-creds/modules/buycred-module-core.php:766
+#: addons/buy-creds/includes/buycred-functions.php:119
+msgid "Gateway"
+msgstr "Operatorius"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:299
+msgid "Type"
+msgstr "Tipas"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:396
+#: addons/buy-creds/modules/buycred-module-pending.php:505
+msgid "Pay Out"
+msgstr "Išmoka"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:500
+msgid "Save"
+msgstr "Išsaugoti"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:654
+#: addons/buy-creds/gateways/bank-transfer.php:209
+#: addons/buy-creds/gateways/bitpay.php:251
+#: addons/buy-creds/gateways/paypal-standard.php:279
+#: addons/buy-creds/gateways/skrill.php:294
+msgid "Currency"
+msgstr "Valiuta"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:825
+msgid "No pending payments found"
+msgstr "Nėra "
+
+#: addons/buy-creds/modules/buycred-module-core.php:28
+#: addons/buy-creds/modules/buycred-module-core.php:29
+#: addons/buy-creds/modules/buycred-module-core.php:30
+msgid "Payment Gateways"
+msgstr "Mokėjimų operatoriai"
+
+#: addons/buy-creds/modules/buycred-module-core.php:301
+msgid "Please login to purchase %_plural%"
+msgstr "Jei norite pirkti, prisijunkite %_plural%"
+
+#: addons/buy-creds/modules/buycred-module-core.php:316
+msgid "Gift purchase from %display_name%."
+msgstr "Dovanos pirkimas iš %display_name%."
+
+#: addons/buy-creds/modules/buycred-module-core.php:336
+msgid ""
+"Select the point types that users can buy. You must select at least one!"
+msgstr ""
+"Nustatykite taškus, kuriuos gali pirkti vartotojai. Privaloma nustatyti bent "
+"vieną!"
+
+#: addons/buy-creds/modules/buycred-module-core.php:355
+msgid "Show seperate log for %_plural% purchases."
+msgstr ""
+"Rodyti atskirą \n"
+"%_plural% pirkimų sąrašą."
+
+#: addons/buy-creds/modules/buycred-module-core.php:433
+msgid "Gifting"
+msgstr "Dovanojimas"
+
+#: addons/buy-creds/modules/buycred-module-core.php:438
+msgid "Allow users to buy %_plural% for other users."
+msgstr "Leidžia naudotojams pirkti  %_plural% kitiems naudotojams."
+
+#: addons/buy-creds/modules/buycred-module-core.php:445
+msgid "Allow users to buy %_plural% for content authors."
+msgstr ""
+"Leidžia naudotojam pirkti \n"
+"%_plural% turinio autoriams."
+
+#: addons/buy-creds/modules/buycred-module-core.php:547
+msgid "buyCRED Purchase Log"
+msgstr "buyCRED Pirkimų sąrašas"
+
+#: addons/buy-creds/modules/buycred-module-core.php:548
+#: addons/buy-creds/modules/buycred-module-core.php:778
+msgid "Purchase Log"
+msgstr "Pirkinių sąrašas"
+
+#: addons/buy-creds/modules/buycred-module-core.php:592
+#, php-format
+msgid "%s Payment Gateways"
+msgstr "Mokėjimų operatoriai"
+
+#: addons/buy-creds/modules/buycred-module-core.php:627
+msgid "Sandbox Mode"
+msgstr "Smėliadėžė"
+
+#: addons/buy-creds/modules/buycred-module-core.php:630
+msgid "Enable for test purchases."
+msgstr "Įjungti testinius pirkimus."
+
+#: addons/buy-creds/modules/buycred-module-core.php:650
+msgid "More Gateways"
+msgstr "Daugiau operatorių"
+
+#: addons/buy-creds/modules/buycred-module-core.php:770
+msgid "Payed"
+msgstr "Užmokėta"
+
+#: addons/buy-creds/modules/buycred-module-core.php:982
+msgid "No purchases found"
+msgstr "Pirkinių nėra"
+
+#: addons/buy-creds/modules/buycred-module-core.php:1369
+msgid "Buy Now"
+msgstr "Pirkite dabar"
+
+#: addons/buy-creds/gateways/bank-transfer.php:88
+#: addons/buy-creds/gateways/bitpay.php:163
+#: addons/buy-creds/gateways/netbilling.php:144
+#: addons/buy-creds/gateways/zombaio.php:267
+#: addons/buy-creds/gateways/paypal-standard.php:207
+#: addons/buy-creds/gateways/skrill.php:186
+msgid "Please setup this gateway before attempting to make a purchase!"
+msgstr "Prašome atlikti operatoriaius nustatymus prieš bandant pirkti!"
+
+#: addons/buy-creds/gateways/bank-transfer.php:215
+#: addons/buy-creds/gateways/bitpay.php:265
+#: addons/buy-creds/gateways/netbilling.php:234
+#: addons/buy-creds/gateways/paypal-standard.php:298
+#: addons/buy-creds/gateways/skrill.php:320
+msgid "Exchange Rates"
+msgstr "Keitimo kursai"
+
+#: addons/buy-creds/gateways/bitpay.php:62
+#: addons/buy-creds/gateways/netbilling.php:92
+#: addons/buy-creds/gateways/paypal-standard.php:145
+#: addons/buy-creds/gateways/skrill.php:124
+#, php-format
+msgid "Price mismatch. Expected: %s Received: %s"
+msgstr "Kainos neatitikimas. Tikėtasi: %s Gauta: %s"
+
+#: addons/buy-creds/gateways/bitpay.php:68
+#: addons/buy-creds/gateways/paypal-standard.php:151
+#: addons/buy-creds/gateways/skrill.php:130
+#, php-format
+msgid "Currency mismatch. Expected: %s Received: %s"
+msgstr ""
+"Valiutos neatitikimas. Tikėtasi: \n"
+"%s Gauta: \n"
+"%s"
+
+#: addons/buy-creds/gateways/bitpay.php:74
+#: addons/buy-creds/gateways/netbilling.php:98
+#: addons/buy-creds/gateways/paypal-standard.php:157
+#: addons/buy-creds/gateways/skrill.php:136
+#, php-format
+msgid "Payment not completed. Received: %s"
+msgstr ""
+"Mokėjimas neužbaigtas. Gauta: \n"
+"%s"
+
+#: addons/buy-creds/gateways/bitpay.php:85
+#: addons/buy-creds/gateways/netbilling.php:109
+#: addons/buy-creds/gateways/zombaio.php:237
+#: addons/buy-creds/gateways/paypal-standard.php:168
+#: addons/buy-creds/gateways/skrill.php:147
+msgid "Failed to credit users account."
+msgstr "Nepavyko papildyti vartotojo sąskaitos."
+
+#: addons/buy-creds/gateways/bitpay.php:208
+#: addons/buy-creds/gateways/bitpay.php:219
+#: addons/buy-creds/gateways/netbilling.php:190
+#: addons/buy-creds/gateways/zombaio.php:297
+#: addons/buy-creds/gateways/paypal-standard.php:261
+#: addons/buy-creds/gateways/skrill.php:275
+msgid "Processing payment &hellip;"
+msgstr ""
+"Vykdomas mokėjimas \n"
+"&hellip;"
+
+#: addons/buy-creds/gateways/bitpay.php:211
+msgid ""
+"Could not create a BitPay Invoice. Please contact the site administrator!"
+msgstr ""
+"Nepavyksta sukurti BitPay sąskaitos. Prašome susisiekti su svetainės "
+"administratoriumi!"
+
+#: addons/buy-creds/gateways/bitpay.php:212
+msgid "Bitpay returned the following error message:"
+msgstr "BitPay  atsiuntė šį klaidos pranešimą:"
+
+#: addons/buy-creds/gateways/bitpay.php:254
+msgid "Currency Code"
+msgstr "Valiutos kodas"
+
+#: addons/buy-creds/gateways/bitpay.php:258
+#: addons/buy-creds/gateways/netbilling.php:227
+#: addons/buy-creds/gateways/paypal-standard.php:291
+#: addons/buy-creds/gateways/skrill.php:313
+msgid "Item Name"
+msgstr "Pirkinio pavadinimas"
+
+#: addons/buy-creds/gateways/bitpay.php:262
+#: addons/buy-creds/gateways/netbilling.php:231
+#: addons/buy-creds/gateways/paypal-standard.php:295
+#: addons/buy-creds/gateways/skrill.php:317
+msgid "Description of the item being purchased by the user."
+msgstr "Vartotojo perkamo pirkinio aprašymas."
+
+#: addons/buy-creds/gateways/bitpay.php:269
+msgid "Transaction Speed"
+msgstr "Pervedimo greitis"
+
+#: addons/buy-creds/gateways/bitpay.php:276
+msgid "High"
+msgstr "Aukštas"
+
+#: addons/buy-creds/gateways/bitpay.php:277
+msgid "Medium"
+msgstr "Vidutinis"
+
+#: addons/buy-creds/gateways/bitpay.php:278
+msgid "Low"
+msgstr "Žemas"
+
+#: addons/buy-creds/gateways/bitpay.php:291
+msgid "Full Notifications"
+msgstr "Pilni pranešimai"
+
+#: addons/buy-creds/gateways/netbilling.php:208
+msgid "Account ID"
+msgstr "Sąskaitos numeris"
+
+#: addons/buy-creds/gateways/netbilling.php:214
+msgid "Site Tag"
+msgstr "Tinklapio žyma"
+
+#: addons/buy-creds/gateways/netbilling.php:220
+msgid "Order Integrity Key"
+msgstr "Užsakymo patvirtinimo raktas"
+
+#: addons/buy-creds/gateways/netbilling.php:224
+msgid "Found under Step 12 on the Fraud Defense page."
+msgstr "12 žingsnis Apsaugos nuo sukčiavimo  puslapyje."
+
+#: addons/buy-creds/gateways/netbilling.php:290
+msgid "Incorrect Credit Card number"
+msgstr "Neteisingas kredito kortelės numeris"
+
+#: addons/buy-creds/gateways/netbilling.php:296
+msgid "The credit card entered is past its expiration date."
+msgstr "Pasibaigęs naudotos kredito kortelės galiojimo laikas."
+
+#: addons/buy-creds/gateways/netbilling.php:299
+msgid "The CVV2 number entered is not valid."
+msgstr "%vestas netinkamas CVV2 numeris."
+
+#: addons/buy-creds/gateways/netbilling.php:306
+msgid "The bank routing number entered is not valid."
+msgstr "Įvestas banko nukreipimo numeris yra neteisingas."
+
+#: addons/buy-creds/gateways/netbilling.php:310
+msgid "The bank account number entered is not valid."
+msgstr "Įvestas banko sąskaitos numeris netinkamas."
+
+#: addons/buy-creds/gateways/zombaio.php:204
+#, php-format
+msgid "Duplicate transaction. Received: %s"
+msgstr ""
+"Dubliuotas pervedimas: Gauta: \n"
+"%s"
+
+#: addons/buy-creds/gateways/zombaio.php:315
+msgid "Site ID"
+msgstr "Svetainės identifikatorius"
+
+#: addons/buy-creds/gateways/zombaio.php:321
+msgid "GW Password"
+msgstr "GW slaptažodis"
+
+#: addons/buy-creds/gateways/zombaio.php:327
+msgid "Pricing ID"
+msgstr "Kainų identifikatorius"
+
+#: addons/buy-creds/gateways/zombaio.php:339
+msgid "IP Verification"
+msgstr "IP patvirtinimas"
+
+#: addons/buy-creds/gateways/zombaio.php:345
+msgid "Language"
+msgstr "Kalba"
+
+#: addons/buy-creds/gateways/paypal-standard.php:192
+#: addons/buy-creds/gateways/skrill.php:171
+msgid "Success"
+msgstr "Sėkmingai"
+
+#: addons/buy-creds/gateways/paypal-standard.php:193
+#: addons/buy-creds/gateways/skrill.php:172
+msgid "Thank you for your purchase"
+msgstr "Ačiū už pirkinius"
+
+#: addons/buy-creds/gateways/paypal-standard.php:256
+#, php-format
+msgctxt "Return label. %s = Website name"
+msgid "Return to %s"
+msgstr "Grįžti į"
+
+#: addons/buy-creds/gateways/paypal-standard.php:285
+msgid "Account Email"
+msgstr "Sąskaitos el. pašto adresas"
+
+#: addons/buy-creds/gateways/skrill.php:226
+msgid "Return to "
+msgstr "Grįžti į"
+
+#: addons/buy-creds/gateways/skrill.php:258
+msgid "Product:"
+msgstr "Produktai:"
+
+#: addons/buy-creds/gateways/skrill.php:267
+msgid "Gift to:"
+msgstr "Dovana:"
+
+#: addons/buy-creds/gateways/skrill.php:268
+msgid "(author)"
+msgstr "(autorius)"
+
+#: addons/buy-creds/gateways/skrill.php:301
+msgid "Merchant Account Email"
+msgstr "Pardavėjo sąskaitos el. paštas"
+
+#: addons/buy-creds/gateways/skrill.php:307
+msgid "Secret Word"
+msgstr "Slaptas žodis"
+
+#: addons/buy-creds/gateways/skrill.php:324
+msgid "Confirmation Email"
+msgstr "Patvirtinimo el. laiškas"
+
+#: addons/buy-creds/gateways/skrill.php:327
+msgid ""
+"Ask Skrill to send me a confirmation email for each successful purchase."
+msgstr ""
+"Paparašyti, kad Skrill atsiųstų patvirtinantį el.laišką po kiekvieno "
+"sėkmingo pirkimo. "
+
+#: addons/buy-creds/gateways/skrill.php:330
+msgid "Checkout Page"
+msgstr "Atsiskaitymo puslapis"
+
+#: addons/buy-creds/gateways/skrill.php:335
+msgid ""
+"If left empty, your account email is used as title on the Skill Payment Page."
+msgstr ""
+"Jei paliktas tuščias, jūsų el.pašto adresas bus naudojamas Skrill mokėjimų "
+"puslapyje kaip pavadinimas."
+
+#: addons/buy-creds/gateways/skrill.php:340
+msgid ""
+"The URL to the image you want to use on the top of the gateway. For best "
+"integration results we recommend you use logos with dimensions up to 200px "
+"in width and 50px in height."
+msgstr ""
+"Vaizdo, kurį norite naudoti operatoriaus viršuje, URL. Siekiant geresnių "
+"integravimo rezultatų, mes rekomenduojame naudoti logotipus iki 200 px "
+"pločio ir 50 px aukščio."
+
+#: addons/buy-creds/gateways/skrill.php:343
+msgid "Confirmation Note"
+msgstr "Patvirtinimo pranešimas"
+
+#: addons/buy-creds/gateways/skrill.php:345
+msgid ""
+"Optional text to show user once a transaction has been successfully "
+"completed. This text is shown by Skrill."
+msgstr ""
+"Pasirenkamas tekstas, rodomas sėkmingai įvykus naudotojo mokėjimui. Šis "
+"tekstas rodomas Skrill."

@@ -1,0 +1,22 @@
+.mycred-stat-widget {
+	
+}
+.mycred-stat-widget canvas {
+	margin-top: 12px;
+}
+.mycred-stat-widget h1 {
+	margin: 0 0 24px 0;
+}
+.mycred-stat-widget ul {
+	margin: 0 0 24px 0;
+	padding: 0 0 0 0;
+}
+.mycred-stat-widget ul li {
+	display: inline;
+	margin: 0 12px 0 0;
+	padding: 0 0 0 0;
+	list-style-type: none;
+}
+.mycred-stats-table table {
+	background-color: transparent;
+}
