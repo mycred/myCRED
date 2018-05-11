@@ -18,31 +18,30 @@ myCRED is an adaptive points management system that lets you build a broad range
 Store reward systems, community leaderboards, online banking or monetizing your websites content, are a few examples of the ways myCRED is used.
 
 
-**Points
+**Points**
 
 Each user on your WordPress websites gets their own point balance which you can manually [adjust](https://mycred.me/about/features/#points-management) at any time. You can use just one point balance or setup multiple types of balances. How these balances are accessed, used or shows is entirely up to you.
 
 
-**Log
+**Log**
 
 Each time myCRED adds or deducts points from a user, the adjustment is [logged](https://mycred.me/about/features/#account-history) in a dedicated log, allowing your users to browse their history. The log is also used to provide you with statistics, accountability, badges, ranks and to enforce limits you might set.
 
 
-= Awarding or Deducting Points Automatically =
+**Awarding or Deducting Points Automatically**
 
 myCRED supports a vast set of ways you can automatically give / take points from a user. Everything from new comments to store purchases. These automatic adjustments are managed by so called [Hooks](https://mycred.me/about/features/#automatic-points) which you can setup in your admin area.
 
 
-= Third-party plugin Support =
+**Third-party plugin Support**
 
 myCRED supports some of the most [popular plugins](https://mycred.me/about/supported-plugins/) for WordPress like BuddyPress, WooCommerce, Jetpack, Contact Form 7 etc. To prevent to much cluttering in the admin area with settings, myCRED will only show features/settings for third-party plugins that are installed and enabled.
 
 
-= Add-ons =
-
+**Add-ons**
 There is so much more to myCRED then just adjusting balances. The plugin comes with several [built-in add-ons](https://mycred.me/add-ons/) which enabled more complex features such as allowing point transfers, buying points for real money, allow payments in stores etc.
 
-**Documentation
+**Documentation**
 
 You can find extensive [documentation](http://codex.mycred.me/) on everything myCRED related in the myCRED Codex. You can also find a list of [frequently asked](https://mycred.me/about/faq/) questions on the myCRED website.
 
@@ -61,9 +60,9 @@ The most commonly asked customizations for myCRED are available as code snippets
 I provide [free support](https://mycred.me/support/) if you can not get myCRED to work as described in the documentation, and pay myCRED Store Tokens as a reward for reporting bugs and/or bug fixes. There is also a [community forum](https://mycred.me/support/forums/) where you can post your questions or [contact me directly](https://mycred.me/contact/).
 
 
-**Installation
+**Installation**
 
-**myCRED Guides
+**myCRED Guides**
 
 - [Chapter I - Introduction](http://codex.mycred.me/chapter-i/)
 
