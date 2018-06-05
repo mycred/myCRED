@@ -172,7 +172,7 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 			if ( $data === false || ! is_array( $data ) ) return;
 
 			foreach ( $data as $notice )
-				add_filter( 'mycred_notifications', create_function( '$query', '$query[]=\'' . $notice . '\'; return $query;' ) );
+				add_filter( 'mycred_notifications', function( $query){ $query[]= $notice ; return $query;}  );
 
 			delete_transient( 'mycred_notice_' . $user_id );
 

@@ -121,7 +121,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			check_ajax_referer( 'mycred-management-actions', 'token' );
 
 			// Access
-			if ( ! is_user_logged_in() || ! $this->core->user_is_point_admin() )
+			if ( ! is_user_logged_in() || ! current_user_can('administrator') )
 				wp_send_json_error( 'Access denied' );
 
 			global $wpdb;

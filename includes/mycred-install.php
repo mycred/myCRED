@@ -72,10 +72,6 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 			if ( version_compare( $sql_version, '5.0', '<' ) )
 				$message[] = __( 'myCRED requires SQL 5.0 or higher. Version detected: ', 'mycred' ) . ' ' . $sql_version;
 
-			// mcrypt library check (if missing, this will cause a fatal error)
-			$extensions = get_loaded_extensions();
-			if ( ! in_array( 'mcrypt', $extensions ) && MYCRED_DISABLE_PROTECTION === false )
-				$message[] = __( 'The mcrypt PHP library must be enabled in order to use this plugin! Please check your PHP configuration or contact your host and ask them to enable it for you!', 'mycred' );
 
 			// Not empty $message means there are issues
 			if ( ! empty( $message ) ) {

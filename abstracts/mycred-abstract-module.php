@@ -136,16 +136,16 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 			if ( $this->register === false ) {
 
 				// If settings does not exist apply defaults
-				if ( ! isset( $this->core->$module ) )
-					$this->$module = $this->default_prefs;
+				if ( ! isset( $this->core->{$module} ) )
+					$this->{$module} = $this->default_prefs;
 
 				// Else append settings
 				else
-					$this->$module = $this->core->$module;
+					$this->{$module} = $this->core->{$module};
 
 				// Apply defaults in case new settings have been applied
 				if ( ! empty( $this->default_prefs ) )
-					$this->$module = wp_parse_args( $this->$module, $this->default_prefs );
+					$this->{$module} = wp_parse_args( $this->{$module}, $this->default_prefs );
 
 			}
 
@@ -162,7 +162,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 						$pattern = 'mycred_pref_core';
 						//$matches = array_filter( $this->option_id, function( $a ) use ( $pattern ) { return preg_grep( $a, $pattern ); } );
 						//if ( ! empty( $matches ) )
-							$this->$module = $this->core;
+							$this->{$module} = $this->core;
 
 						// Loop and grab
 						foreach ( $this->option_id as $option_id => $option_name ) {
@@ -170,13 +170,13 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 							$settings = mycred_get_option( $option_name, false );
 
 							if ( $settings === false && array_key_exists( $option_id, $defaults ) )
-								$this->$module[ $option_name ] = $this->default_prefs[ $option_id ];
+								$this->{$module[ $option_name ]} = $this->default_prefs[ $option_id ];
 							else
-								$this->$module[ $option_name ] = $settings;
+								$this->{$module[ $option_name ]} = $settings;
 
 							// Apply defaults in case new settings have been applied
 							if ( array_key_exists( $option_id, $this->default_prefs ) )
-								$this->$module[ $option_name ] = wp_parse_args( $this->$module[ $option_name ], $this->default_prefs[ $option_id ] );
+								$this->{$module[ $option_name ]} = wp_parse_args( $this->{$module[ $option_name ]}, $this->default_prefs[ $option_id ] );
 
 						}
 
@@ -187,27 +187,27 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 
 						// General settings needs not to be loaded
 						if ( str_replace( 'mycred_pref_core', '', $this->option_id ) == '' )
-							$this->$module = $this->core;
+							$this->{$module} = $this->core;
 
 						// Grab the requested option
 						else {
 
-							$this->$module = mycred_get_option( $this->option_id, false );
+							$this->{$module} = mycred_get_option( $this->option_id, false );
 
-							if ( $this->$module === false && ! empty( $this->default_prefs ) )
-								$this->$module = $this->default_prefs;
+							if ( $this->{$module} === false && ! empty( $this->default_prefs ) )
+								$this->{$module} = $this->default_prefs;
 
 							// Apply defaults in case new settings have been applied
 							if ( ! empty( $this->default_prefs ) )
-								$this->$module = wp_parse_args( $this->$module, $this->default_prefs );
+								$this->{$module} = wp_parse_args( $this->{$module}, $this->default_prefs );
 
 						}
 
 					}
 
-					if ( is_array( $this->$module ) ) {
+					if ( is_array( $this->{$module} ) ) {
 
-						foreach ( $this->$module as $key => $value ) {
+						foreach ( $this->{$module} as $key => $value ) {
 							$this->$key = $value;
 						}
 
@@ -341,7 +341,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		function is_installed() {
 
 			$module_name = $this->module_name;
-			if ( $this->$module_name === false ) return false;
+			if ( $this->module_name === false ) return false;
 			return true;
 
 		}
@@ -360,8 +360,8 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 
 			if ( ! isset( $this->active ) && ! empty( $key ) ) {
 
-				if ( isset( $this->$module['active'] ) )
-					$active = $this->$module['active'];
+				if ( isset( $this->{$module['active']} ) )
+					$active = $this->{$module['active']};
 
 				if ( in_array( $key, $active ) )
 					$is_active = true;
