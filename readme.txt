@@ -2,7 +2,8 @@
 Contributors: mycred ,wpexpertsio
 Tags: point, credit, loyalty program, engagement, reward
 Requires at least: 4.5
-Tested up to: 4.9
+Tested up to: 5.0
+Requires PHP: 7.0
 Stable tag: 1.7.9.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -128,19 +129,6 @@ FIX - Reward points on WooCommerce order completed
 FIX – Points for clicking on links
 FIX – Point for viewing videos
 FIX – Exchange points from one point type to another point type
-
-= 1.7.9.6 =
-FIX - Version error
-
-= 1.7.9.5 =
-FIX - Notification error.
-
-
-= 1.7.9.4 =
-FIX - Compatible with php 7.2.
-FIX - Points Log pagination issue.
-FIX - Reset all to zero myCred default balance meta key .
-Tested with WordPress 4.9 beta3
 
 = Previous Versions =
 https://mycred.me/support/changelog/
