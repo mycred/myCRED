@@ -3,7 +3,7 @@ Contributors: mycred ,wpexpertsio
 Tags: point, credit, loyalty program, engagement, reward
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 1.7.9.3
+Stable tag: 1.7.9.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,7 +92,7 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 # Upgrade Notice
 
-**1.7.9.3** 
+**1.7.9.8** 
 Bug fixes.
 
 
@@ -116,6 +116,11 @@ Bug fixes.
 
 
 # Changelog 
+
+**1.7.9.8**
+- Tested with WordPress 4.9 beta 2.
+- FIX – Refund points on WooCommerce order refund
+- FIX - Reward points on WooCommerce order completed
 
 **1.7.9.3**
 - FIX - Manual badges are not removed when editing a users profile.

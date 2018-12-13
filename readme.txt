@@ -1,9 +1,9 @@
-=== myCRED ===
-Contributors: designbymerovingi
+=== myCred - Points, Rewards & Badges | Loyalty Plugin ===
+Contributors: mycred ,wpexpertsio
 Tags: point, credit, loyalty program, engagement, reward
 Requires at least: 4.5
 Tested up to: 4.9
-Stable tag: 1.7.9.4
+Stable tag: 1.7.9.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,13 +11,10 @@ An adaptive and powerful points management system for WordPress powered websites
 
 == Description ==
 
-> #### Plugin Support
-> Free support is offered via the [myCRED website](https://mycred.me/support/) Monday to Friday 9AM - 5PM (GMT+1). You can consult the [online community](https://mycred.me/support/forums/) for customisations or open a [free support ticket](https://mycred.me/support/) if you can not get myCRED to work as described in the documentation. No support is provided here on the wordpress.org support forum or on any social media account.
-
-
 myCRED is an adaptive points management system that lets you build a broad range of point related applications for your WordPress powered website.
 Store reward systems, community leaderboards, online banking or monetizing your websites content, are a few examples of the ways myCRED is used.
 
+**[List your self as beta tester for 1.8 (upcoming version)](https://goo.gl/forms/CMjGFpOEByfse9j52)**
 
 = Points =
 
@@ -61,7 +58,7 @@ The most commonly asked customizations for myCRED are available as code snippets
 
 = Support =
 
-I provide [free support](https://mycred.me/support/) if you can not get myCRED to work as described in the documentation, and pay myCRED Store Tokens as a reward for reporting bugs and/or bug fixes. There is also a [community forum](https://mycred.me/support/forums/) where you can post your questions or [contact me directly](https://mycred.me/contact/).
+Support is offered on our [myCRED website](https://mycred.me/support/)  from Monday to Friday 9AM - 5PM (GMT+5). Submit [customization request](https://mycred.me/customize/request-quote/) or open a [support ticket](https://mycred.me/support/) If you have trouble with myCRED which is not described in documentation also you can consult the [online community](https://mycred.me/support/forums/) for your question. We pay myCRED Store Tokens as a reward on reporting bugs and their fixes as well. Support is not entertained here on the wordpress.org support forum or on any social media account. 
 
 
 == Installation ==
@@ -96,7 +93,8 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-= 1.7.9.4 =
+
+= 1.7.9.8 =
 Bug fixes.
 
 
@@ -120,6 +118,23 @@ Bug fixes.
 
 
 == Changelog ==
+
+= 1.7.9.8 =
+Tested with WordPress 5.0
+FIX – Refund points on WooCommerce order refund
+FIX - Reward points on WooCommerce order completed
+
+= 1.7.9.7 =
+FIX – Points for clicking on links
+FIX – Point for viewing videos
+FIX – Exchange points from one point type to another point type
+
+= 1.7.9.6 =
+FIX - Version error
+
+= 1.7.9.5 =
+FIX - Notification error.
+
 
 = 1.7.9.4 =
 FIX - Compatible with php 7.2.

@@ -52,7 +52,7 @@ if ( ! class_exists( 'myCRED_Protect' ) ) :
 				$text  = $value;
 				$ivlen = openssl_cipher_iv_length( $cipher);
 				$iv    = openssl_random_pseudo_bytes($ivlen);
-				$crypttext = openssl_encrypt( $text, $cipher, $this->skey, 0, $iv );
+				$crypttext = openssl_encrypt( $text, $cipher, $this->skey, 0, 'hkjhsfidfghuqwer' );
 
 				return trim( $this->do_safe_b64encode( $crypttext ) );
 
@@ -74,7 +74,7 @@ if ( ! class_exists( 'myCRED_Protect' ) ) :
 				$cipher      =	"AES-256-CBC";
 				$iv_size     = openssl_cipher_iv_length( $cipher);
 				$iv          = openssl_random_pseudo_bytes($iv_size);
-				$decrypttext = openssl_decrypt( $crypttext, $cipher, $this->skey, 0, $iv );
+				$decrypttext = openssl_decrypt( $crypttext, $cipher, $this->skey, 0, 'hkjhsfidfghuqwer' );
 
 				return trim( $decrypttext );
 			}
@@ -95,7 +95,7 @@ if ( ! class_exists( 'myCRED_Protect' ) ) :
 				$cipher      =	"AES-256-CBC";
 				$iv_size     = openssl_cipher_iv_length( $cipher);
 				$iv          = openssl_random_pseudo_bytes($iv_size);
-				$decrypttext = openssl_decrypt( $crypttext, $cipher, $this->skey,  0, $iv );
+				$decrypttext = openssl_decrypt( $crypttext, $cipher, $this->skey,  0, 'hkjhsfidfghuqwer' );
 				$string      = trim( $decrypttext );
 
 				parse_str( $string, $output );
