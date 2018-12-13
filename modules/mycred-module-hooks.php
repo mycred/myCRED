@@ -2426,8 +2426,9 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 			add_action( 'mycred_front_enqueue_footer', array( $this, 'enqueue_footer' ) );
 			add_filter( 'mycred_parse_tags_link',      array( $this, 'parse_custom_tags' ), 10, 2 );
 
-			if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-click-points' && isset( $_POST['token'] ) && wp_verify_nonce( $_POST['token'], 'mycred-link-points' ) )
+			if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-click-points' && isset( $_POST['token'] ) && wp_verify_nonce( $_POST['token'], 'mycred-link-points' ) ){
 				$this->ajax_call_link_points();
+			}
 
 		}
 

@@ -170,9 +170,13 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 			$data    = get_transient( 'mycred_notice_' . $user_id );
 
 			if ( $data === false || ! is_array( $data ) ) return;
-
-			foreach ( $data as $notice )
-				add_filter( 'mycred_notifications', function( $query){ $query[]= $notice ; return $query;}  );
+               /*fixed notification error create_function replase this*/
+			foreach ( $data as $notice ){
+                $notice_query = function ($query) use ($notice) {
+                    $query[]= $notice ; return $query;
+                };
+                add_filter( 'mycred_notifications', $notice_query );
+            }
 
 			delete_transient( 'mycred_notice_' . $user_id );
 
