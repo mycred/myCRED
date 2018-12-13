@@ -2,7 +2,7 @@
 Contributors: mycred ,wpexpertsio
 Tags: point, credit, loyalty program, engagement, reward
 Requires at least: 4.0
-Tested up to: 5.0
+Tested up to: 5.0.1
 Requires PHP: 7.0
 Stable tag: 1.7.9.8
 License: GPLv2 or later
@@ -119,7 +119,7 @@ Bug fixes.
 # Changelog 
 
 **1.7.9.8**
-- Tested with WordPress 4.9 beta 2.
+- Tested with WordPress 5.0.1
 - FIX – Refund points on WooCommerce order refund
 - FIX - Reward points on WooCommerce order completed
 
