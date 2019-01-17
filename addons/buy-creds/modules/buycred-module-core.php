@@ -573,6 +573,10 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 		 */
 		public function settings_header() {
 
+			wp_enqueue_style( 'mycred-admin' );
+			wp_enqueue_style( 'mycred-bootstrap-grid' );
+			wp_enqueue_style( 'mycred-forms' );
+
 		}
 
 		/**
@@ -588,7 +592,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 			$installed = $this->get();
 
 ?>
-<div class="wrap list" id="myCRED-wrap">
+<div class="wrap list mycred-metabox" id="myCRED-wrap">
 	<h1><?php printf( __( '%s Payment Gateways', 'mycred' ), '<strong>buy</strong>CRED' ); ?> <a href="<?php echo esc_url( add_query_arg( array( 'page' => MYCRED_SLUG . '-settings', 'open-tab' => 'buycred_module' ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action"><?php _e( 'Settings', 'mycred' ); ?></a></h1>
 <?php
 
@@ -597,7 +601,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 				echo '<div class="updated settings-error"><p>' . __( 'Settings Updated', 'mycred' ) . '</p></div>';
 
 ?>
-	<form method="post" action="options.php">
+	<form method="post" action="options.php" class="form">
 
 		<?php settings_fields( $this->settings_name ); ?>
 

@@ -29,7 +29,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		 * Preps the class for getting a leaderboard based on the
 		 * given arguments. Validates these arguments.
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function __construct( $args = array() ) {
 
@@ -55,7 +55,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 				$this->limit = 'LIMIT ' . $this->args['number'];
 				if ( $this->args['offset'] != 0 )
-					$this->limit .= ',' . $this->args['offset'];
+					$this->limit = 'LIMIT ' . $this->args['offset'] . ', ' . $this->args['number'];
 
 			}
 

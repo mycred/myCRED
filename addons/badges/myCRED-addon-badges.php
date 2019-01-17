@@ -1365,7 +1365,7 @@ jQuery(function($) {
 		/**
 		 * Save Manual Badges
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function save_manual_badges( $user_id ) {
 
@@ -1404,6 +1404,9 @@ jQuery(function($) {
 
 						}
 					}
+
+					if ( $added > 0 || $removed > 0 || $updated > 0 )
+						mycred_delete_user_meta( $user_id, 'mycred_badge_ids' );
 
 				}
 

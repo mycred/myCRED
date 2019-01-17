@@ -64,12 +64,14 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 		public function get_image( $image = NULL ) {
 
 			$image_identification = false;
+			$level = 0;
 
 			if ( $image === 'main' )
 				$image_identification = get_post_meta( $this->post_id, 'main_image', true );
 
 			elseif ( $image !== NULL && is_numeric( $image ) && isset( $this->levels[ $image ]['attachment_id'] ) ) {
 
+				$level = $image;
 				$image_identification = $this->levels[ $image ]['image_url'];
 				if ( $this->levels[ $image ]['attachment_id'] > 0 )
 					$image_identification = $this->levels[ $image ]['attachment_id'];

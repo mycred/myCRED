@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Allows database queries in the history table to determen the
  * "best user" based on references, time and point types.
  * @since 1.6.7
- * @version 1.0.4
+ * @version 1.0.5
  */
 if ( ! function_exists( 'mycred_render_shortcode_best_user' ) ) :
 	function mycred_render_shortcode_best_user( $attr, $content = '' ) {
@@ -93,6 +93,11 @@ if ( ! function_exists( 'mycred_render_shortcode_best_user' ) ) :
 			elseif ( $from != '' && $until != '' )
 				$wheres[] = $wpdb->prepare( "time BETWEEN %d AND %d", $from, $until );
 
+		}
+
+		if ( empty( $wheres ) ) {
+			$wheres[] = 'id != %d';
+			$preps[] = 0;
 		}
 
 		$where   = 'WHERE ' . implode( ' AND ', $wheres );

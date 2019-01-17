@@ -3,10 +3,10 @@
  * Plugin Name: myCRED
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 1.7.9.2
+ * Version: 1.7.9.3
  * Tags: points, credit, balance, finance, rewards, engagement, woocommerce, bbpress, buddypress
- * Author: Gabriel S Merovingi
- * Author URI: http://www.merovingi.com
+ * Author: MyCred
+ * Author URI: https://mycred.me
  * Author Email: support@mycred.me
  * Requires at least: WP 4.0
  * Tested up to: WP 4.8.2
@@ -19,7 +19,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '1.7.9.2';
+		public $version             = '1.7.9.3';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -808,7 +808,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			}
 
 			// Add about page
-			$pages[] = add_dashboard_page(
+			$pages[]   = add_dashboard_page(
 				sprintf( __( 'About %s', 'mycred' ), $name ),
 				sprintf( __( 'About %s', 'mycred' ), $name ),
 				'moderate_comments',
@@ -816,17 +816,8 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				'mycred_about_page'
 			);
 
-			// Add credits page
-			$pages[] = add_dashboard_page(
-				__( 'Awesome People', 'mycred' ),
-				__( 'Awesome People', 'mycred' ),
-				'moderate_comments',
-				MYCRED_SLUG . '-credit',
-				'mycred_about_credit_page'
-			);
-
 			// Add styling to our admin screens
-			$pages = apply_filters( 'mycred_admin_pages', $pages, $mycred );
+			$pages     = apply_filters( 'mycred_admin_pages', $pages, $mycred );
 			foreach ( $pages as $page )
 				add_action( 'admin_print_styles-' . $page, array( $this, 'fix_admin_page_styles' ) );
 
@@ -965,12 +956,11 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		/**
 		 * FIX: Remove About and Credit Page
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function fix_remove_about_page() {
 
 			remove_submenu_page( 'index.php', MYCRED_SLUG . '-about' );
-			remove_submenu_page( 'index.php', MYCRED_SLUG . '-credit' );
 
 		}
 
@@ -1023,7 +1013,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			// Usefull links
 			$links[] = '<a href="' . admin_url( 'index.php?page=' . MYCRED_SLUG . '-about' ) . '">About</a>';
 			$links[] = '<a href="http://codex.mycred.me/" target="_blank">Documentation</a>';
-			$links[] = '<a href="http://mycred.me/store/" target="_blank">Store</a>';
+			$links[] = '<a href="https://mycred.me/store/" target="_blank">Store</a>';
 
 			return $links;
 

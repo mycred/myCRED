@@ -63,9 +63,16 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				'order'    => 'DESC',
 				'ids'      => false,  // depreciated as of 1.7.5
 				'fields'   => 'all',  // in favor for fields
-				'paged'    => $this->get_pagenum()
+				'paged'    => '',
+				'page_arg' => 'page'
 			);
 			$this->args = apply_filters( 'mycred_query_log_args', wp_parse_args( $args, $defaults ), $defaults );
+
+			// Need to be sure the page_arg argument is set.
+			if ( ! array_key_exists( 'page_arg', $this->args ) ) $this->args['page_arg'] = 'page';
+
+			if ( $this->args['paged'] == '' )
+				$this->args['paged'] = $this->get_pagenum();
 
 			/**
 			 * Setup Point Format
@@ -958,20 +965,21 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		/**
 		 * Get Page Number
 		 * @since 1.4
-		 * @version 1.0.2
+		 * @version 1.0.3
 		 */
 		public function get_pagenum() {
 
 			global $wp;
 
-			if ( isset( $wp->query_vars['page'] ) && $wp->query_vars['page'] != '' )
-				$pagenum = absint( $wp->query_vars['page'] );
+			$page_key = ( isset( $this->args['page_arg'] ) && $this->args['page_arg'] !== NULL && $this->args['page_arg'] != '' ) ? $this->args['page_arg'] : 'page';
+			if ( isset( $wp->query_vars[ $page_key ] ) && $wp->query_vars[ $page_key ] != '' )
+				$pagenum = absint( $wp->query_vars[ $page_key ] );
 
-			elseif ( isset( $_REQUEST['paged'] ) )
-				$pagenum = absint( $_REQUEST['paged'] );
+			elseif ( isset( $_REQUEST[ $page_key ] ) )
+				$pagenum = absint( $_REQUEST[ $page_key ] );
 
-			elseif ( isset( $_REQUEST['page'] ) )
-				$pagenum = absint( $_REQUEST['page'] );
+			elseif ( isset( $_REQUEST[ $page_key ] ) )
+				$pagenum = absint( $_REQUEST[ $page_key ] );
 
 			else return 1;
 
@@ -1150,7 +1158,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		/**
 		 * Front Pagination
 		 * @since 1.7
-		 * @version 1.0.3
+		 * @version 1.0.5
 		 */
 		public function front_pagination( $pages_to_show = 5 ) {
 
@@ -1165,6 +1173,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$current_url          = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
 			$current_url          = remove_query_arg( $removable_query_args, $current_url );
 			$current_url          = str_replace( '/' . $current . '/', '/', $current_url );
+			$current_url          = apply_filters( 'mycred_log_front_nav_url', $current_url, $this );
 
 			$pages_to_show        = absint( $pages_to_show );
 			if ( $pages_to_show === 0 ) $pages_to_show = 5;
@@ -1185,7 +1194,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'first-page',
-					esc_url( remove_query_arg( 'page', $current_url ) ),
+					esc_url( remove_query_arg( $this->args['page_arg'], $current_url ) ),
 					'&laquo;'
 				);
 			}
@@ -1195,7 +1204,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'prev-page',
-					esc_url( add_query_arg( 'page', max( 1, $current-1 ), $current_url ) ),
+					esc_url( add_query_arg( $this->args['page_arg'], max( 1, $current-1 ), $current_url ) ),
 					'&lsaquo;'
 				);
 			}
@@ -1212,7 +1221,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				if ( $i != $current )
 					$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 						'mycred-nav',
-						esc_url( add_query_arg( 'page', $i, $current_url ) ),
+						esc_url( add_query_arg( $this->args['page_arg'], $i, $current_url ) ),
 						$i
 					);
 
@@ -1226,7 +1235,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'next-page' . $disable_last,
-					esc_url( add_query_arg( 'page', min( $total_pages, $current+1 ), $current_url ) ),
+					esc_url( add_query_arg( $this->args['page_arg'], min( $total_pages, $current+1 ), $current_url ) ),
 					'&rsaquo;'
 				);
 			}
@@ -1236,7 +1245,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'last-page' . $disable_last,
-					esc_url( add_query_arg( 'page', $total_pages, $current_url ) ),
+					esc_url( add_query_arg( $this->args['page_arg'], $total_pages, $current_url ) ),
 					'&raquo;'
 				);
 			}
@@ -1248,7 +1257,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		/**
 		 * Pagination
 		 * @since 1.4
-		 * @version 1.1.1
+		 * @version 1.1.2
 		 */
 		public function pagination( $location = 'top', $id = '' ) {
 
@@ -1264,12 +1273,10 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				$current_url = str_replace( '/page/' . $current . '/', '/', $current_url );
 
 			$current_url        = remove_query_arg( array( 'hotkeys_highlight_last', 'hotkeys_highlight_first' ), $current_url );
+			$current_url        = apply_filters( 'mycred_log_pagination_url', $current_url, $this );
 
 			if ( $this->have_entries() )
 				$output = '<span class="displaying-num">' . sprintf( _n( '1 entry', '%d entries', $this->num_rows, 'mycred' ), $this->num_rows ) . '</span>';
-
-			$current_url        = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
-			$current_url        = remove_query_arg( array( 'hotkeys_highlight_last', 'hotkeys_highlight_first' ), $current_url );
 	
 			$total_pages_before = '<span class="paging-input">';
 			$total_pages_after  = '</span>';

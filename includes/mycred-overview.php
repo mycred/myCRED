@@ -5,7 +5,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Dashboard Widget: Overview
  * @see https://codex.wordpress.org/Example_Dashboard_Widget
  * @since 1.3.3
- * @version 1.3.1
+ * @version 1.3.3
  */
 if ( ! class_exists( 'myCRED_Dashboard_Widget_Overview' ) ) :
 	class myCRED_Dashboard_Widget_Overview {
@@ -17,7 +17,7 @@ if ( ! class_exists( 'myCRED_Dashboard_Widget_Overview' ) ) :
 		 */
 		public static function init() {
 
-			if ( ! current_user_can( apply_filters( 'mycred_overview_capability', 'edit_users' ) ) ) return;
+			if ( ! current_user_can( apply_filters( 'mycred_overview_capability', 'edit_theme_options' ) ) ) return;
 
 			// Add widget
 			wp_add_dashboard_widget(
@@ -35,7 +35,8 @@ if ( ! class_exists( 'myCRED_Dashboard_Widget_Overview' ) ) :
 
 			global $wpdb;
 
-			$types = mycred_get_types();
+			$counter = 0;
+			$types   = mycred_get_types();
 
 ?>
 <style type="text/css">
@@ -60,33 +61,39 @@ div.overview-module-wrap div.mycred-type .overview .section strong { padding: 0 
 
 			do_action( 'mycred_overview_before', $types );
 
-			$counter = 0;
-			foreach ( $types as $type => $label ) {
+			foreach ( $types as $point_type => $label ) {
 
-				$mycred = mycred( $type );
+				$mycred       = mycred( $point_type );
 
-				$page = MYCRED_SLUG;
-				if ( $type != MYCRED_DEFAULT_TYPE_KEY )
-					$page .= '_' . $type;
+				$page         = MYCRED_SLUG;
+				if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
+					$page .= '_' . $point_type;
 
-				$url       = admin_url( 'admin.php?page=' . $page );
-				$total     = $wpdb->get_var( "SELECT SUM( meta_value ) FROM {$wpdb->usermeta} WHERE meta_key = '{$type}';" );
+				$url          = admin_url( 'admin.php?page=' . $page );
+				$total        = $wpdb->get_var( $wpdb->prepare( "SELECT SUM( meta_value ) FROM {$wpdb->usermeta} WHERE meta_key = %s;", mycred_get_meta_key( $point_type ) ) );
 
-				$gained    = $wpdb->get_var( "SELECT SUM( creds ) FROM {$mycred->log_table} WHERE creds > 0 AND ctype = '{$type}';" );
-				$gain_url  = add_query_arg( array( 'num' => 0, 'compare' => urlencode( '>' ) ), $url );
+				if ( $total === NULL ) $total = $mycred->zero();
 
-				$lost      = $wpdb->get_var( "SELECT SUM( creds ) FROM {$mycred->log_table} WHERE creds < 0 AND ctype = '{$type}';" );
-				$loose_url = add_query_arg( array( 'num' => 0, 'compare' => urlencode( '<' ) ), $url );
+				$data         = $wpdb->get_row( "
+					SELECT SUM( CASE WHEN creds > 0 THEN creds END) as gains,
+						SUM( CASE WHEN creds < 0 THEN creds END) as losses
+					FROM {$mycred->log_table};" );
+
+				$awarded      = ( isset( $data->gains ) ) ? $data->gains : 0;
+				$awarded_url  = add_query_arg( array( 'num' => 0, 'compare' => urlencode( '>' ) ), $url );
+
+				$deducted     = ( isset( $data->losses ) ) ? $data->losses : 0;
+				$deducted_url = add_query_arg( array( 'num' => 0, 'compare' => urlencode( '<' ) ), $url );
 
 ?>
 	<div class="mycred-type clear<?php if ( $counter == 0 ) echo ' first'; ?>">
 		<div class="module-title"><div class="type-icon"><div class="dashicons dashicons-star-filled"></div></div><?php echo $mycred->plural(); ?><a href="<?php echo $url; ?>" title="<?php _e( 'Total amount in circulation', 'mycred' ); ?>"><?php echo $mycred->format_creds( $total ); ?></a></div>
 		<div class="overview clear">
 			<div class="section border" style="width: 50%;">
-				<p><strong style="color:green;"><?php _e( 'Awarded', 'mycred' ); ?>:</strong> <a href="<?php echo esc_url( $gain_url ); ?>"><?php echo $mycred->format_creds( $gained ); ?></a></p>
+				<p><strong style="color:green;"><?php _e( 'Awarded', 'mycred' ); ?>:</strong> <a href="<?php echo esc_url( $awarded_url ); ?>"><?php echo $mycred->format_creds( $awarded ); ?></a></p>
 			</div>
 			<div class="section border" style="width: 50%; margin-left: -1px;">
-				<p><strong style="color:red;"><?php _e( 'Deducted', 'mycred' ); ?>:</strong> <a href="<?php echo esc_url( $loose_url ); ?>"><?php echo $mycred->format_creds( $lost ); ?></a></p>
+				<p><strong style="color:red;"><?php _e( 'Deducted', 'mycred' ); ?>:</strong> <a href="<?php echo esc_url( $deducted_url ); ?>"><?php echo $mycred->format_creds( $deducted ); ?></a></p>
 			</div>
 		</div>
 	</div>
