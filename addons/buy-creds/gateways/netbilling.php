@@ -316,3 +316,4 @@ if ( ! class_exists( 'myCRED_NETbilling' ) ) :
 
 	}
 endif;
+?>

@@ -50,9 +50,9 @@ endif;
 /**
  * myCRED Shortcode: mycred_my_ranks
  * Returns the given users ranks.
- * @see http://mycred.me/shortcodes/mycred_my_ranks/
+ * @see http://mycred.me/shortcodes/mycred_my_rank/
  * @since 1.6
- * @version 1.2.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_render_my_ranks' ) ) :
 	function mycred_render_my_ranks( $atts, $content = '' ) {
@@ -84,18 +84,18 @@ if ( ! function_exists( 'mycred_render_my_ranks' ) ) :
 			if ( $rank !== false ) {
 
 				if ( $show_logo == 1 && $rank->has_logo )
-					$row[] = mycred_get_rank_logo( $rank->post_id, $logo_size );
+					$show[] = mycred_get_rank_logo( $rank->post_id, $logo_size );
 
 				if ( $show_title == 1 )
-					$row[] = $rank->title;
+					$show[] = $rank->title;
 		
 				if ( $first != 'logo' )
-					$row = array_reverse( $row );
+					$show = array_reverse( $show );
 
 			}
 
 			if ( ! empty( $row ) )
-				$show[] = '<div class="mycred-my-rank ' . $type_id . '">' . implode( ' ', $row ) . '</div>';
+				$show = array_merge( '<div class="mycred-my-rank ' . $type_id . '">' . $row . '</div>', $show );
 
 			$ranks[] = $rank;
 
@@ -318,3 +318,5 @@ if ( ! function_exists( 'mycred_render_rank_list' ) ) :
 
 	}
 endif;
+
+?>

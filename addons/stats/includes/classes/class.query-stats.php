@@ -25,3 +25,5 @@ if ( ! class_exists( 'myCRED_Query_Stats' ) ) :
 
 	}
 endif;
+
+?>

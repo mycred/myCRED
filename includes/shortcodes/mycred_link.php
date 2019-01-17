@@ -12,7 +12,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  *
  * @see http://codex.mycred.me/shortcodes/mycred_link/
  * @since 1.1
- * @version 1.4
+ * @version 1.2.1
  */
 if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 	function mycred_render_shortcode_link( $atts, $link_title = '' ) {
@@ -65,7 +65,7 @@ if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 		}
 
 		// Add point type as a data attribute
-		$attr[] = 'data-type="' . esc_attr( $atts['ctype'] ) . '"';
+		$attr[] = 'data-type="' . $atts['ctype'] . '"';
 
 		// Only usable for members
 		if ( is_user_logged_in() ) {
@@ -86,17 +86,23 @@ if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 			}
 
 			// Add key
-			$token  = mycred_create_token( array( $atts['amount'], $atts['ctype'], $atts['id'], urlencode( $atts['href'] ) ) );
-			$attr[] = 'data-token="' . $token . '"';
+			if ( $atts['amount'] != 0 ) {
 
-			// Make sure jQuery script is called
-			$mycred_link_points = true;
+				$token  = mycred_create_token( array( $atts['amount'], $atts['ctype'], $atts['id'] ) );
+				$attr[] = 'data-token="' . $token . '"';
+
+				// Make sure jQuery script is called
+				$mycred_link_points = true;
+
+			}
 
 		}
 
 		// Return result
-		return apply_filters( 'mycred_link', '<a ' . implode( ' ', $attr ) . '>' . do_shortcode( $link_title ) . '</a>', $atts, $link_title );
+		return '<a ' . implode( ' ', $attr ) . '>' . do_shortcode( $link_title ) . '</a>';
 
 	}
 endif;
 add_shortcode( 'mycred_link', 'mycred_render_shortcode_link' );
+
+?>

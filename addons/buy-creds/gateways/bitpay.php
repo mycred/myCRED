@@ -156,7 +156,7 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 		/**
 		 * Buy Creds
 		 * @since 1.4
-		 * @version 1.2.1
+		 * @version 1.2
 		 */
 		public function buy() {
 
@@ -200,8 +200,7 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 				'fullNotifications' => ( $this->prefs['notifications'] ) ? true : false,
 				'posData'           => $this->transaction_id,
 				'buyerName'         => $this->get_buyers_name( $from ),
-				'itemDesc'          => $item_name,
-				'redirectURL'       => $this->get_thankyou()
+				'itemDesc'          => $item_name
 			) );
 
 			// Request Failed
@@ -342,3 +341,4 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 
 	}
 endif;
+?>

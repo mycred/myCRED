@@ -197,3 +197,4 @@ if ( ! function_exists( 'mycred_inverse_rgb_color' ) ) :
 
 	}
 endif;
+?>

@@ -4,46 +4,50 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Import: Log Entries
  * @since 1.2
- * @version 1.3.1
+ * @version 1.2
  */
-if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
+if ( class_exists( 'WP_Importer' ) ) :
 	class myCRED_Importer_Log_Entires extends WP_Importer {
 
-		var $id            = '';
-		var $file_url      = '';
-		var $import_page   = '';
-		var $delimiter     = '';
-		var $posts         = array();
-		var $imported      = 0;
-		var $skipped       = 0;
-		var $documentation = '';
+		var $id;
+		var $file_url;
+		var $import_page;
+		var $delimiter;
+		var $posts = array();
+		var $imported;
+		var $skipped;
 
 		/**
 		 * Construct
-		 * @version 1.0
 		 */
 		public function __construct() {
 
-			$this->import_page   = MYCRED_SLUG . '-import-log';
-			$this->delimiter     = empty( $_POST['delimiter'] ) ? ',' : (string) strip_tags( trim( $_POST['delimiter'] ) );
-			$this->documentation = 'http://codex.mycred.me/chapter-ii/import-data/importing-log-entries/';
+			$this->import_page = 'mycred_import_log';
 
 		}
 
 		/**
 		 * Registered callback function for the WordPress Importer
 		 * Manages the three separate stages of the CSV import process
-		 * @version 1.0
 		 */
-		public function load() {
+		function load() {
 
 			$this->header();
 
-			$load = true;
-			$step = ( ! isset( $_GET['step'] ) ) ? 0 : absint( $_GET['step'] );
-			if ( $step > 1 ) $step = 0;
+			if ( ! empty( $_POST['delimiter'] ) )
+				$this->delimiter = stripslashes( trim( $_POST['delimiter'] ) );
 
+			if ( ! $this->delimiter )
+				$this->delimiter = ',';
+
+			$step = empty( $_GET['step'] ) ? 0 : (int) $_GET['step'];
 			switch ( $step ) {
+
+				case 0 :
+
+					$this->greet();
+
+				break;
 
 				case 1 :
 
@@ -56,13 +60,16 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 						else
 							$file = ABSPATH . $this->file_url;
 
-						if ( $file !== false ) {
+						add_filter( 'http_request_timeout', array( $this, 'bump_request_timeout' ) );
 
-							add_filter( 'http_request_timeout', array( $this, 'bump_request_timeout' ) );
+						if ( function_exists( 'gc_enable' ) )
+							gc_enable();
 
-							$load = $this->import( $file );
+						@set_time_limit(0);
+						@ob_flush();
+						@flush();
 
-						}
+						$this->import( $file );
 
 					}
 
@@ -70,28 +77,118 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 
 			}
 
-			if ( $load )
-				$this->greet();
-
 			$this->footer();
 
 		}
 
 		/**
-		 * UTF-8 encode the data if `$enc` value isn't UTF-8.
-		 * @version 1.0
+		 * format_data_from_csv function.
 		 */
-		public function format_data_from_csv( $data, $enc ) {
+		function format_data_from_csv( $data, $enc ) {
+
 			return ( $enc == 'UTF-8' ) ? $data : utf8_encode( $data );
+
+		}
+
+		/**
+		 * import function.
+		 */
+		function import( $file ) {
+
+			global $wpdb, $mycred;
+
+			$this->imported = $this->skipped = 0;
+
+			if ( ! is_file( $file ) ) {
+
+				echo '<p><strong>' . __( 'Sorry, there has been an error.', 'mycred' ) . '</strong><br />';
+				echo __( 'The file does not exist, please try again.', 'mycred' ) . '</p>';
+
+				$this->footer();
+
+				die;
+
+			}
+
+			ini_set( 'auto_detect_line_endings', '1' );
+
+			if ( ( $handle = fopen( $file, "r" ) ) !== FALSE ) {
+
+				$header = fgetcsv( $handle, 0, $this->delimiter );
+
+				if ( sizeof( $header ) == 8 ) {
+
+					$loop = 0;
+
+					while ( ( $row = fgetcsv( $handle, 0, $this->delimiter ) ) !== FALSE ) {
+
+						list( $ref, $ref_id, $user_id, $creds, $ctype, $time, $entry, $data ) = $row;
+
+						if ( empty( $ref ) || empty( $user_id ) || empty( $creds ) || $creds === 0 || empty( $time ) ) {
+							$this->skipped ++;
+							continue;
+						}
+
+						$wpdb->insert(
+							$mycred->log_table,
+							array(
+								'ref'     => $ref,
+								'ref_id'  => absint( $ref_id ),
+								'user_id' => absint( $user_id ),
+								'creds'   => $mycred->number( $creds ),
+								'ctype'   => sanitize_text_field( $ctype ),
+								'time'    => absint( $time ),
+								'entry'   => trim( $entry ),
+								'data'    => maybe_serialize( $data )
+							)
+						);
+
+						$loop ++;
+						$this->imported++;
+
+					}
+
+				} else {
+
+					echo '<p><strong>' . __( 'Sorry, there has been an error.', 'mycred' ) . '</strong><br />';
+					echo __( 'The CSV is invalid.', 'mycred' ) . '</p>';
+
+					$this->footer();
+
+					die;
+
+				}
+
+				fclose( $handle );
+
+			}
+
+			// Show Result
+			echo '<div class="updated settings-error below-h2"><p>
+				'.sprintf( __( 'Import complete - A total of <strong>%d</strong> entries were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), $this->imported, $this->skipped ).'
+			</p></div>';
+
+			$this->import_end();
+
+		}
+
+		/**
+		 * Performs post-import cleanup of files and the cache
+		 */
+		function import_end() {
+
+			echo '<p><a href="' . admin_url( 'admin.php?page=myCRED' ) . '" class="button button-large button-primary">' . __( 'View Log', 'mycred' ) . '</a> <a href="' . admin_url( 'import.php' ) . '" class="button button-large button-primary">' . __( 'Import More', 'mycred' ) . '</a></p>';
+
+			do_action( 'import_end' );
+
 		}
 
 		/**
 		 * Handles the CSV upload and initial parsing of the file to prepare for
 		 * displaying author import options
 		 * @return bool False if error uploading or invalid file, true otherwise
-		 * @version 1.1
 		 */
-		public function handle_upload() {
+		function handle_upload() {
 
 			if ( empty( $_POST['file_url'] ) ) {
 
@@ -99,7 +196,9 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 
 				if ( isset( $file['error'] ) ) {
 
-					echo '<div class="error notice notice-error is-dismissible"><p>' . esc_html( $file['error'] ) . '</p></div>';
+					echo '<p><strong>' . __( 'Sorry, there has been an error.', 'mycred' ) . '</strong><br />';
+					echo esc_html( $file['error'] ) . '</p>';
+
 					return false;
 
 				}
@@ -114,7 +213,7 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 
 				} else {
 
-					echo '<div class="error notice notice-error is-dismissible"><p>' . __( 'The file does not exist or could not be read.', 'mycred' ) . '</p></div>';
+					echo '<p><strong>' . __( 'Sorry, there has been an error.', 'mycred' ) . '</strong></p>';
 					return false;
 
 				}
@@ -126,153 +225,49 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 		}
 
 		/**
-		 * import function.
+		 * header function.
 		 */
-		function import( $file ) {
+		function header() {
 
-			global $wpdb;
-
-			$ran        = false;
-			$show_greet = true;
-			$loop       = 0;
-
-			// Make sure the file exists
-			if ( ! is_file( $file ) ) {
-
-				echo '<div class="error notice notice-error is-dismissible"><p>' . __( 'The file does not exist or could not be read.', 'mycred' ) . '</p></div>';
-				return true;
-
-			}
-
-			if ( function_exists( 'gc_enable' ) )
-				gc_enable();
-
-			@set_time_limit(0);
-			@ob_flush();
-			@flush();
-
-			// Begin by opening the file
-			if ( ( $handle = fopen( $file, "r" ) ) !== FALSE ) {
-
-				// Need to get the header of the CSV file so we know how many columns we are using
-				$header = fgetcsv( $handle, 0, $this->delimiter );
-
-				// Make sure we have the correct number of columns
-				if ( sizeof( $header ) == 8 ) {
-
-					// Begin import loop
-					while ( ( $row = fgetcsv( $handle, 0, $this->delimiter ) ) !== false ) {
-
-						list ( $reference, $ref_id, $identification, $amount, $point_type, $time, $entry, $data ) = $row;
-
-						// Minimum requirements for this to work
-						if ( empty( $reference ) || empty( $identification ) || empty( $amount ) || empty( $time ) ) {
-							$this->skipped ++;
-							continue;
-						}
-
-						// Attempt to identify the user
-						$user_id = mycred_get_user_id( $identification );
-
-						// Failed to find the user - Next!
-						if ( $user_id === false ) {
-							$this->skipped ++;
-							continue;
-						}
-
-						if ( ! mycred_point_type_exists( $point_type ) ) $point_type = MYCRED_DEFAULT_TYPE_KEY;
-
-						$mycred     = mycred( $point_type );
-						$this->time = $time;
-
-						add_filter( 'mycred_log_time',    array( $this, 'log_time' ) );
-
-						$mycred->add_to_log( $reference, $user_id, $amount, $entry, $ref_id, $data, $point_type );
-
-						remove_filter( 'mycred_log_time', array( $this, 'log_time' ) );
-
-						$loop ++;
-						$this->imported++;
-
-					}
-
-					$show_greet = false;
-					$ran        = true;
-
-				} else {
-
-					echo '<div class="error notice notice-error is-dismissible"><p>' . __( 'Invalid CSV file. Please consult the documentation for further assistance.', 'mycred' ) . '</p></div>';
-
-				}
-
-				fclose( $handle );
-
-			}
-
-			if ( $ran ) {
-				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( __( 'Import complete - A total of <strong>%d</strong> log entries were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), $this->imported, $this->skipped ) . '</p></div>';
-				echo '<p><a href="' . admin_url( 'admin.php?page=' . MYCRED_SLUG ) . '" class="button button-large button-primary">' . __( 'View Log', 'mycred' ) . '</a></p>';
-			}
-
-			do_action( 'import_end' );
-
-			return $show_greet;
+			echo '<div class="wrap"><h2>' . __( 'Import Log Entries', 'mycred' ) . '</h2>';
 
 		}
 
 		/**
-		 * Log Time
-		 * @version 1.0
+		 * footer function.
 		 */
-		public function log_time( $time ) {
-
-			return $this->time;
-
-		}
-
-		/**
-		 * Render Screen Header
-		 * @version 1.0
-		 */
-		public function header() {
-
-			echo '<div class="wrap"><h1>' . sprintf( __( 'Import Log Entries %s', 'mycred' ), '<a href="' . $this->documentation . '" target="_blank" class="page-title-action">' . __( 'Documentation', 'mycred' ) . '</a>' ) . '</h1>';
-
-		}
-
-		/**
-		 * Render Screem Fppter
-		 * @version 1.0
-		 */
-		public function footer() {
+		function footer() {
 
 			echo '</div>';
 
 		}
 
 		/**
-		 * Greet Screen
-		 * @version 1.0
+		 * greet function.
 		 */
-		public function greet() {
+		function greet() {
 
 			global $mycred;
+
+			echo '<div class="narrow">';
+			echo '<p>' . __( 'Import log entries from a CSV file.', 'mycred' ).'</p>';
+
+			$action = 'admin.php?import=mycred_import_log&step=1';
 
 			$bytes      = apply_filters( 'import_upload_size_limit', wp_max_upload_size() );
 			$size       = size_format( $bytes );
 			$upload_dir = wp_upload_dir();
-			$action_url = add_query_arg( array( 'import' => $this->import_page, 'step' => 1 ), admin_url( 'admin.php' ) );
-
 			if ( ! empty( $upload_dir['error'] ) ) :
 
 ?>
-<div class="error notice notice-error"><p><?php echo $upload_dir['error']; ?></p></div>
+<div class="error"><p><?php _e( 'Before you can upload your import file, you will need to fix the following error:', 'mycred' ); ?></p>
+<p><strong><?php echo $upload_dir['error']; ?></strong></p></div>
 <?php
 
 			else :
 
 ?>
-<form enctype="multipart/form-data" id="import-upload-form" method="post" action="<?php echo esc_attr( wp_nonce_url( $action_url, 'import-upload' ) ); ?>">
+<form enctype="multipart/form-data" id="import-upload-form" method="post" action="<?php echo esc_attr( wp_nonce_url( $action, 'import-upload' ) ); ?>">
 	<table class="form-table">
 		<tbody>
 			<tr>
@@ -291,26 +286,24 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 					<label for="file_url"><?php _e( 'OR enter path to file:', 'mycred' ); ?></label>
 				</th>
 				<td>
-					<?php echo ABSPATH . ' '; ?><input type="text" id="file_url" name="file_url" size="25" />
+					<?php echo ' ' . ABSPATH . ' '; ?><input type="text" id="file_url" name="file_url" size="25" />
 				</td>
 			</tr>
 			<tr>
-				<th>
-					<label for="delimiter"><?php _e( 'Delimiter', 'mycred' ); ?></label>
-				</th>
-				<td>
-					<input type="text" name="delimiter" id="delimiter" placeholder="," size="2" />
-				</td>
+				<th><label><?php _e( 'Delimiter', 'mycred' ); ?></label><br/></th>
+				<td><input type="text" name="delimiter" placeholder="," size="2" /></td>
 			</tr>
 		</tbody>
 	</table>
 	<p class="submit">
-		<input type="submit" class="button button-primary" value="<?php _e( 'Import', 'mycred' ); ?>" />
+		<input type="submit" class="button" value="<?php esc_attr_e( 'Upload file and import' ); ?>" />
 	</p>
 </form>
 <?php
 
 			endif;
+
+			echo '</div>';
 
 		}
 
@@ -318,7 +311,7 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 		 * Added to http_request_timeout filter to force timeout at 60 seconds during import
 		 * @return int 60
 		 */
-		public function bump_request_timeout( $val ) {
+		function bump_request_timeout( $val ) {
 
 			return 60;
 
@@ -326,3 +319,5 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 
 	}
 endif;
+
+?>

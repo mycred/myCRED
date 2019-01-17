@@ -689,3 +689,5 @@ if ( ! class_exists( 'myCRED_Banking_Service_Interest' ) ) :
 
 	}
 endif;
+
+?>

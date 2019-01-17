@@ -23,16 +23,17 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 
 		if ( ! mycred_point_type_exists( $type ) ) return __( 'Point type not found.', 'mycred' );
 
-		$mycred     = mycred( $type );
-		$id         = str_replace( '_', '-', $type );
-		$prefs_key  = 'mycred_pref_hooks';
+		$mycred = mycred( $type );
 
+		$id = str_replace( '_', '-', $type );
+
+		$prefs_key = 'mycred_pref_hooks';
 		if ( $type != MYCRED_DEFAULT_TYPE_KEY )
 			$prefs_key .= '_' . $type;
 
 		$applicable = array();
 
-		$hooks      = get_option( $prefs_key, false );
+		$hooks = get_option( $prefs_key, false );
 		if ( isset( $hooks['active'] ) && ! empty( $hooks['active'] ) ) {
 
 			foreach ( $hooks['active'] as $active_hook_id ) {
@@ -64,6 +65,7 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 			}
 
 		}
+
 
 		ob_start();
 
@@ -128,3 +130,5 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_hook_table', 'mycred_render_shortcode_hook_table' );
+
+?>

@@ -81,3 +81,5 @@ if ( ! function_exists( 'mycred_render_shortcode_total' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_total_balance', 'mycred_render_shortcode_total' );
+
+?>

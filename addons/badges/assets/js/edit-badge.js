@@ -351,7 +351,6 @@ jQuery(function($){
 			// Render a fresh level
 			var template = Mustache.render( BadgeLevel, {
 				level        : TotalBadgeLevels,
-				levelone     : ( parseInt( TotalBadgeLevels ) + 1 ),
 				requirements : reqtemplate
 			});
 

@@ -7,7 +7,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Custom Payment Gateway for WooCommerce.
  * @see http://docs.woothemes.com/document/payment-gateway-api/
  * @since 0.1
- * @version 1.4.4
+ * @version 1.4.3
  */
 if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 	function mycred_init_woo_gateway() {
@@ -26,30 +26,25 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 				$this->id                        = 'mycred';
 				$this->icon                      = '';
 				$this->has_fields                = true;
-				$this->method_title              = mycred_label();
-				$this->method_description        = __( 'Let users pay using points.', 'mycred' );
+				$this->method_title              = __( 'myCRED', 'mycred' );
+				$this->method_description        = __( 'Let users pay using their myCRED balance.', 'mycred' );
 				$this->supports                  = array(
 					'products',
 					'refunds'
 				);
 
-				if ( ! $this->use_exchange() )
-					$this->mycred_type = get_woocommerce_currency();
+				$this->mycred_type = $this->get_option( 'point_type' );
+				if ( $this->mycred_type === NULL || $this->mycred_type == '' )
+					$this->mycred_type = MYCRED_DEFAULT_TYPE_KEY;
 
-				else {
-					$this->mycred_type = $this->get_option( 'point_type' );
-					if ( ! mycred_point_type_exists( $this->mycred_type ) )
-						$this->mycred_type = MYCRED_DEFAULT_TYPE_KEY;
-				}
-
-				$this->mycred                    = mycred( $this->mycred_type );
+				$this->mycred      = mycred( $this->mycred_type );
 
 				// Load the settings.
 				$this->init_form_fields();
 				$this->init_settings();
 
 				// Define user set variables
-				$this->title                     = $this->get_option( 'title' );
+				$this->title 		             = $this->get_option( 'title' );
 				$this->description               = $this->get_option( 'description' );
 
 				if ( $this->use_exchange() )
@@ -80,31 +75,31 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			/**
 			 * Initialise Gateway Settings Form Fields
 			 * @since 0.1
-			 * @version 1.4.1
+			 * @version 1.4
 			 */
 			function init_form_fields() {
 
 				// Fields
-				$fields['enabled']             = array(
+				$fields['enabled'] = array(
 					'title'   => __( 'Enable/Disable', 'mycred' ),
 					'type'    => 'checkbox',
 					'label'   => __( 'Enable myCRED Payment', 'mycred' ),
 					'default' => 'no',
 					'description' => __( 'Users who are not logged in or excluded from using myCRED will not have access to this gateway!', 'mycred' )
 				);
-				$fields['title']               = array(
+				$fields['title'] = array(
 					'title'       => __( 'Title', 'mycred' ),
 					'type'        => 'text',
 					'description' => __( 'Title to show for this payment option.', 'mycred' ),
 					'default'     => __( 'Pay with myCRED', 'mycred' ),
 					'desc_tip'    => true
 				);
-				$fields['description']         = array(
+				$fields['description'] = array(
 					'title'       => __( 'Customer Message', 'mycred' ),
 					'type'        => 'textarea',
 					'default'     => $this->mycred->template_tags_general( 'Deduct the amount from your %_plural% balance.' )
 				);
-				$fields['log_template']        = array(
+				$fields['log_template'] = array(
 					'title'       => __( 'Log Template', 'mycred' ),
 					'type'        => 'text',
 					'description' => $this->mycred->available_template_tags( array( 'general' ), '%order_id%, %order_link%' ),
@@ -117,29 +112,38 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 					'default'     => 'Payment refund for order #%order_id% Reason: %reason%'
 				);
 
-				// Only add exchange rate if the currecy is not set to mycred
-				if ( $this->use_exchange() ) {
-
-					$mycred_types = mycred_get_types();
-					$fields['point_type']      = array(
+				// Multiple Point Types Setup
+				$mycred_types = mycred_get_types();
+				if ( count( $mycred_types ) > 1 )  {
+					$fields['point_type'] = array(
 						'title'       => __( 'Point Type', 'mycred' ),
 						'type'        => 'select',
 						'label'       => __( 'Select the point type users can use to pay.', 'mycred' ),
 						'options'     => $mycred_types,
 						'default'     => MYCRED_DEFAULT_TYPE_KEY
 					);
+				}
+				else {
+					$fields['point_type'] = array(
+						'type'        => 'hidden',
+						'value'       => MYCRED_DEFAULT_TYPE_KEY
+					);
+				}
 
-					$exchange_desc = $this->mycred->template_tags_general( __( 'How much is 1 %_singular% worth in %currency%?', 'mycred' ) );
+				// Only add exchange rate if the currecy is not set to mycred
+				if ( $this->use_exchange() ) {
+					$exchange_desc = __( 'How much is 1 %_singular% worth in %currency%?', 'mycred' );
+					$exchange_desc = $this->mycred->template_tags_general( $exchange_desc );
 					$exchange_desc = str_replace( '%currency%', get_woocommerce_currency(), $exchange_desc );
 
-					$fields['exchange_rate']   = array(
+					$fields['exchange_rate'] = array(
 						'title'       => __( 'Exchange Rate', 'mycred' ),
 						'type'        => 'text',
 						'description' => $exchange_desc,
 						'default'     => 1,
 						'desc_tip'    => true
 					);
-					$fields['show_total']      = array(
+					$fields['show_total'] = array(
 						'title'       => __( 'Show Total', 'mycred' ),
 						'type'        => 'select',
 						'label'       => $this->mycred->template_tags_general( __( 'Show the final price in %_plural% .', 'mycred' ) ),
@@ -151,35 +155,23 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 						),
 						'default'     => ''
 					);
-					$fields['total_label']     = array(
+					$fields['total_label'] = array(
 						'title'       => __( 'Label', 'mycred' ),
 						'type'        => 'text',
 						'default'     => $this->mycred->template_tags_general( __( 'Order Total in %_plural%', 'mycred' ) ),
 						'desc_tip'    => true
 					);
-
-				}
-
-				else {
-
-					$fields['point_type']      = array(
-						'title'       => __( 'Point Type', 'mycred' ),
-						'type'        => 'currency',
-						'description' => $this->mycred->plural(),
-						'default'     => $this->mycred_type
-					);
-
 				}
 
 				// Profit Sharing added in 1.3
-				$fields['profit_sharing_percent']    = array(
+				$fields['profit_sharing_percent'] = array(
 					'title'       => __( 'Profit Sharing', 'mycred' ),
 					'type'        => 'text',
 					'description' => __( 'Option to share sales with the product owner. Use zero to disable.', 'mycred' ),
 					'default'     => 0,
 					'desc_tip'    => true
 				);
-				$fields['profit_sharing_log']        = array(
+				$fields['profit_sharing_log'] = array(
 					'title'       => __( 'Log Template', 'mycred' ),
 					'type'        => 'text',
 					'description' => __( 'Log entry template for profit sharing.', 'mycred' ) . ' ' . $this->mycred->available_template_tags( array( 'general', 'post' ) ),
@@ -197,55 +189,6 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			}
 
 			/**
-			 * Generate Text Input HTML.
-			 * @since 1.7.6
-			 * @version 1.0
-			 */
-			public function generate_text_html( $key, $data ) {
-
-				$field_key = $this->get_field_key( $key );
-				$defaults  = array(
-					'title'             => '',
-					'disabled'          => false,
-					'class'             => '',
-					'css'               => '',
-					'placeholder'       => '',
-					'type'              => 'text',
-					'desc_tip'          => false,
-					'description'       => '',
-					'custom_attributes' => array(),
-				);
-
-				$data     = wp_parse_args( $data, $defaults );
-				$currency = get_woocommerce_currency();
-
-				ob_start();
-?>
-<tr valign="top">
-	<th scope="row" class="titledesc">
-		<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?></label>
-		<?php echo $this->get_tooltip_html( $data ); ?>
-	</th>
-	<td class="forminp">
-		<?php if ( $data['type'] == 'currency' ) : $mycred = mycred( $currency ); ?>
-		<input type="hidden" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo get_woocommerce_currency(); ?>" />
-		<p><?php echo $mycred->plural(); ?></p>
-		<?php else : ?>
-		<fieldset>
-			<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-			<input class="input-text regular-input <?php echo esc_attr( $data['class'] ); ?>" type="<?php echo esc_attr( $data['type'] ); ?>" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" placeholder="<?php echo esc_attr( $data['placeholder'] ); ?>" <?php disabled( $data['disabled'], true ); ?> <?php echo $this->get_custom_attribute_html( $data ); ?> />
-			<?php echo $this->get_description_html( $data ); ?>
-		</fieldset>
-		<?php endif; ?>
-	</td>
-</tr>
-<?php
-
-				return ob_get_clean();
-
-			}
-
-			/**
 			 * Use Exchange
 			 * Checks to see if exchange is needed.
 			 * @since 0.1
@@ -254,7 +197,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			function use_exchange() {
 
 				$currency = get_woocommerce_currency();
-				if ( mycred_point_type_exists( $currency ) || $currency == 'MYC' ) return false;
+				if ( $currency == 'MYC' ) return false;
 				return true;
 
 			}
@@ -262,12 +205,12 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			/**
 			 * Admin Panel Options
 			 * @since 0.1
-			 * @version 1.1
+			 * @version 1.0
 			 */
 			public function admin_options() {
 
 ?>
-		<h3><?php printf( __( '%s Payment', 'mycred' ), mycred_label() ); ?></h3>
+		<h3><?php _e( 'myCRED Payment', 'mycred' ); ?></h3>
 		<table class="form-table">
 <?php
 
@@ -283,7 +226,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			/**
 			 * Process Payment
 			 * @since 0.1
-			 * @version 1.4.3
+			 * @version 1.4.2
 			 */
 			function process_payment( $order_id ) {
 
@@ -295,7 +238,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 					return;
 				}
 
-				$user_id     = get_current_user_id();
+				$user_id = get_current_user_id();
 
 				// Make sure we have not been excluded
 				if ( $this->mycred->exclude_user( $user_id ) ) {
@@ -304,26 +247,24 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 				}
 
 				// Grab Order
-				$order       = wc_get_order( $order_id );
-
-				$order_total = ( version_compare( $woocommerce->version, '3.0', '>=' ) ) ? $order->get_total() : $order->order_total;
+				$order = wc_get_order( $order_id );
 
 				// Cost
-				$cost        = $order_total;
 				if ( $this->use_exchange() )
-					$cost = $this->mycred->number( ( $order_total / $this->exchange_rate ) );
+					$cost = $this->mycred->number( ( $order->order_total / $this->exchange_rate ) );
+				else
+					$cost = $order->order_total;
 
-				$cost        = apply_filters( 'mycred_woo_order_cost', $cost, $order, false, $this );
+				$cost = apply_filters( 'mycred_woo_order_cost', $cost, $order, false, $this );
 
 				// Check funds
 				if ( $this->mycred->get_users_balance( $user_id, $this->mycred_type ) < $cost ) {
-					$message = apply_filters( 'mycred_woo_error_insufficient_funds', __( 'Insufficient funds.', 'mycred' ) );
-					wc_add_notice( $message, 'error' );
+					wc_add_notice( __( 'Insufficient funds.', 'mycred' ), 'error' );
 					return;
 				}
 
 				// Let others decline a store order
-				$decline     = apply_filters( 'mycred_decline_store_purchase', false, $order, $this );
+				$decline = apply_filters( 'mycred_decline_store_purchase', false, $order, $this );
 				if ( $decline !== false ) {
 					wc_add_notice( $decline, 'error' );
 					return;
@@ -392,29 +333,28 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			/**
 			 * Process Refunds
 			 * @since 1.5.4
-			 * @version 1.0.2
+			 * @version 1.0.1
 			 */
 			public function process_refund( $order_id, $amount = null, $reason = '' ) {
 
-				$order       = wc_get_order( $order_id );
+				$order = wc_get_order( $order_id );
 
 				if ( ! isset( $order->order_total ) ) {
 					return false;
 				}
 
-				$order_total = ( version_compare( $woocommerce->version, '3.0', '>=' ) ) ? $order->get_total() : $order->order_total;
-
 				if ( $amount === NULL )
-					$amount = $order_total;
+					$amount = $order->order_total;
 
-				$refund      = $amount;
 				if ( $this->use_exchange() )
-					$refund = $this->mycred->number( ( $refund / $this->exchange_rate ) );
+					$refund = $amount / $this->exchange_rate;
+				else
+					$refund = $amount;
 
 				$this->mycred->add_creds(
 					'woocommerce_refund',
 					$order->user_id,
-					0 - $refund,
+					$refund,
 					$this->log_template_refund,
 					$order_id,
 					array( 'ref_type' => 'post', 'reason' => $reason ),
@@ -439,16 +379,14 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 						if ( $product === NULL ) continue;
 
 						// Calculate Share
-						$percentage = apply_filters( 'mycred_woo_profit_share_refund', $this->profit_sharing_percent, $order, $product, $this );
-						if ( $percentage == 0 ) continue;
-
-						$share      = ( $percentage / 100 ) * $item['line_total'];
+						// by: Leonie Heinle
+						$share   = ( $this->profit_sharing_percent / 100 ) * $item['line_total'];
 
 						// Payout
 						$this->mycred->add_creds(
 							'store_sale_refund',
 							$product->post_author,
-							0 - $share,
+							0-$share,
 							$this->profit_sharing_refund_log,
 							$product->ID,
 							array( 'ref_type' => 'post', 'order_id' => $order_id ),
@@ -473,7 +411,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			 */
 			function thankyou_page() {
 
-				echo apply_filters( 'mycred_woo_thank_you_message', '<p>' . __( 'Your account has successfully been charged.', 'mycred' ) . '</p>' );
+				echo __( 'Your account has successfully been charged.', 'mycred' );
 
 			}
 
@@ -482,149 +420,6 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 	}
 endif;
 add_action( 'after_setup_theme', 'mycred_init_woo_gateway' );
-
-/**
- * Register Gateway
- * @since 0.1
- * @version 1.0
- */
-if ( ! function_exists( 'mycred_register_woo_gateway' ) ) :
-	function mycred_register_woo_gateway( $methods ) {
-
-		$methods[] = 'WC_Gateway_myCRED';
-		return $methods;
-
-	}
-endif;
-add_filter( 'woocommerce_payment_gateways', 'mycred_register_woo_gateway' );
-
-/**
- * Available Gateways
- * "Removes" this gateway as a payment option if:
- * - User is not logged in
- * - User is excluded
- * - Users balance is too low
- *
- * @since 0.1
- * @version 1.2.1
- */
-if ( ! function_exists( 'mycred_woo_available_gateways' ) ) :
-	function mycred_woo_available_gateways( $gateways ) {
-
-		if ( ! isset( $gateways['mycred'] ) ) return $gateways;
-
-		// Easy override
-		if ( defined( 'SHOW_MYCRED_IN_WOOCOMMERCE' ) && SHOW_MYCRED_IN_WOOCOMMERCE ) return $gateways;
-
-		// Check if we are logged in
-		if ( ! is_user_logged_in() ) {
-
-			unset( $gateways['mycred'] );
-
-			return $gateways;
-
-		}
-
-		$type    = $gateways['mycred']->get_option( 'point_type' );
-		if ( $type === NULL )
-			$type = MYCRED_DEFAULT_TYPE_KEY;
-
-		// Get myCRED
-		$mycred  = mycred( $type );
-		$user_id = get_current_user_id();
-
-		// Check if we are excluded from myCRED usage
-		if ( $mycred->exclude_user( $user_id ) ) {
-
-			unset( $gateways['mycred'] );
-
-			return $gateways;
-
-		}
-
-		global $woocommerce;
-
-		// Calculate cost in CREDs
-		$currency = get_woocommerce_currency();
-		if ( ! mycred_point_type_exists( $currency ) && $currency != 'MYC' )
-			$cost = $mycred->apply_exchange_rate( $woocommerce->cart->total, $gateways['mycred']->get_option( 'exchange_rate' ) );
-		else
-			$cost = $woocommerce->cart->total;
-
-		$cost     = apply_filters( 'mycred_woo_order_cost', $cost, $woocommerce->cart, true, $mycred );
-
-		// Check if we have enough points
-		if ( $mycred->get_users_balance( $user_id, $type ) < $cost ) {
-			$gateways['mycred']->enabled = 'no';
-		}
-
-		return $gateways;
-
-	}
-endif;
-add_filter( 'woocommerce_available_payment_gateways', 'mycred_woo_available_gateways' );
-
-/**
- * Add Currency
- * Inserts all registered point types as a currency in WooCommerce.
- * @since 0.1
- * @version 1.2
- */
-if ( ! function_exists( 'mycred_woo_add_currency' ) ) :
-	function mycred_woo_add_currency( $currencies ) {
-
-		$point_types = mycred_get_types();
-
-		if ( ! empty( $point_types ) ) {
-			foreach ( $point_types as $type_id => $label ) {
-
-				if ( $type_id == 'mycred_default' )
-					$type_id = 'MYC';
-
-				$currencies[ $type_id ] = $label;
-
-			}
-		}
-
-		return $currencies;
-
-	}
-endif;
-add_filter( 'woocommerce_currencies', 'mycred_woo_add_currency' );
-
-/**
- * Currency Symbol
- * Appends the myCRED prefix or suffix to the amount.
- * @since 0.1
- * @version 1.2.1
- */
-if ( ! function_exists( 'mycred_woo_currency_symbol' ) ) :
-	function mycred_woo_currency_symbol( $currency_symbols ) {
-
-		$point_types = mycred_get_types();
-		if ( ! empty( $point_types ) ) {
-			foreach ( $point_types as $type_id => $label ) {
-
-				$mycred = mycred( $type_id );
-				$symbol = '';
-				if ( ! empty( $mycred->after ) )
-					$symbol = $mycred->after;
-				elseif ( ! empty( $mycred->before ) )
-					$symbol = $mycred->before;
-
-				if ( $type_id == 'mycred_default' )
-					$type_id = 'MYC';
-
-				$currency_symbols[ $type_id ] = $symbol;
-
-			}
-		}
-
-		return $currency_symbols;
-
-	}
-endif;
-add_filter( 'woocommerce_currency_symbols', 'mycred_woo_currency_symbol' );
 
 /**
  * Log Entry: Payment
@@ -738,10 +533,159 @@ endif;
 add_filter( 'mycred_email_before_send', 'mycred_woo_parse_email', 10 );
 
 /**
+ * Register Gateway
+ * @since 0.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_register_woo_gateway' ) ) :
+	function mycred_register_woo_gateway( $methods ) {
+
+		$methods[] = 'WC_Gateway_myCRED';
+		return $methods;
+
+	}
+endif;
+add_filter( 'woocommerce_payment_gateways', 'mycred_register_woo_gateway' );
+
+/**
+ * Available Gateways
+ * "Removes" this gateway as a payment option if:
+ * - User is not logged in
+ * - User is excluded
+ * - Users balance is too low
+ *
+ * @since 0.1
+ * @version 1.2.1
+ */
+if ( ! function_exists( 'mycred_woo_available_gateways' ) ) :
+	function mycred_woo_available_gateways( $gateways ) {
+
+		if ( ! isset( $gateways['mycred'] ) ) return $gateways;
+
+		// Easy override
+		if ( defined( 'SHOW_MYCRED_IN_WOOCOMMERCE' ) && SHOW_MYCRED_IN_WOOCOMMERCE ) return $gateways;
+
+		// Check if we are logged in
+		if ( ! is_user_logged_in() ) {
+
+			unset( $gateways['mycred'] );
+
+			return $gateways;
+
+		}
+
+		$type    = $gateways['mycred']->get_option( 'point_type' );
+		if ( $type === NULL )
+			$type = MYCRED_DEFAULT_TYPE_KEY;
+
+		// Get myCRED
+		$mycred  = mycred( $type );
+		$user_id = get_current_user_id();
+
+		// Check if we are excluded from myCRED usage
+		if ( $mycred->exclude_user( $user_id ) ) {
+
+			unset( $gateways['mycred'] );
+			unset( $mycred );
+
+			return $gateways;
+
+		}
+
+		global $woocommerce;
+
+		// Calculate cost in CREDs
+		$currency = get_woocommerce_currency();
+		if ( $currency != 'MYC' )
+			$cost = $mycred->apply_exchange_rate( $woocommerce->cart->total, $gateways['mycred']->get_option( 'exchange_rate' ) );
+		else
+			$cost = $woocommerce->cart->total;
+
+		$cost     = apply_filters( 'mycred_woo_order_cost', $cost, $woocommerce->cart, true, $mycred );
+
+		// Check if we have enough points
+		if ( $mycred->get_users_balance( $user_id, $type ) < $cost ) {
+			$gateways['mycred']->enabled = 'no';
+		}
+
+		// Clean up and return
+		unset( $mycred );
+
+		return $gateways;
+
+	}
+endif;
+add_filter( 'woocommerce_available_payment_gateways', 'mycred_woo_available_gateways' );
+
+/**
+ * Add Currency
+ * Adds myCRED as one form of currency.
+ * @since 0.1
+ * @version 1.1
+ */
+if ( ! function_exists( 'mycred_woo_add_currency' ) ) :
+	function mycred_woo_add_currency( $currencies ) {
+
+		$settings = get_option( 'woocommerce_mycred_settings', false );
+		if ( $settings === false ) return $currencies;
+
+		$type     = MYCRED_DEFAULT_TYPE_KEY;
+		if ( isset( $settings['point_type'] ) && ! empty( $settings['point_type'] ) )
+			$type = $settings['point_type'];
+
+		$mycred   = mycred( $type );
+
+		$currencies['MYC'] = $mycred->plural();
+
+		unset( $mycred );
+
+		return $currencies;
+
+	}
+endif;
+add_filter( 'woocommerce_currencies', 'mycred_woo_add_currency' );
+
+/**
+ * Currency Symbol
+ * Appends the myCRED prefix or suffix to the amount.
+ * @since 0.1
+ * @version 1.1
+ */
+if ( ! function_exists( 'mycred_woo_currency' ) ) :
+	function mycred_woo_currency( $currency_symbol, $currency ) {
+
+		$settings = get_option( 'woocommerce_mycred_settings', false );
+		if ( $settings === false ) return $currency_symbol;
+		
+		$type     = MYCRED_DEFAULT_TYPE_KEY;
+		if ( isset( $settings['point_type'] ) && ! empty( $settings['point_type'] ) )
+			$type = $settings['point_type'];
+
+		switch ( $currency ) {
+			case 'MYC':
+
+				$mycred = mycred( $type );
+
+				if ( ! empty( $mycred->before ) )
+					$currency_symbol = $mycred->before;
+
+				elseif ( ! empty( $mycred->after ) )
+					$currency_symbol = $mycred->after;
+
+			break;
+		}
+
+		return $currency_symbol;
+
+	}
+endif;
+add_filter( 'woocommerce_currency_symbol', 'mycred_woo_currency', 10, 2 );
+
+/**
  * Add CRED Cost
  * Appends the cost in myCRED format.
  * @since 0.1
- * @version 1.2.2
+ * @version 1.2.1
  */
 if ( ! function_exists( 'mycred_woo_after_order_total' ) ) :
 	function mycred_woo_after_order_total() {
@@ -772,7 +716,7 @@ if ( ! function_exists( 'mycred_woo_after_order_total' ) ) :
 
 		// Make sure myCRED is not the currency used
 		$currency = get_woocommerce_currency();
-		if ( ! mycred_point_type_exists( $currency ) && $currency != 'MYC' ) {
+		if ( $currency != 'MYC' ) {
 
 			// Apply Exchange Rate
 			$cost = $mycred->number( ( $woocommerce->cart->total / $available_gateways['mycred']->get_option( 'exchange_rate' ) ) );
@@ -816,9 +760,15 @@ if ( ! function_exists( 'mycred_woo_after_order_total' ) ) :
 			</tr>
 <?php
 
+			unset( $available_gateways );
+
 		}
+
+		unset( $mycred );
 
 	}
 endif;
 add_action( 'woocommerce_review_order_after_order_total', 'mycred_woo_after_order_total' );
 add_action( 'woocommerce_cart_totals_after_order_total',  'mycred_woo_after_order_total' );
+
+?>

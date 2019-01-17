@@ -5,7 +5,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * myCRED_Hook class
  * @see http://codex.mycred.me/classes/mycred_hook/
  * @since 0.1
- * @version 1.3.2
+ * @version 1.3.1
  */
 if ( ! class_exists( 'myCRED_Hook' ) ) :
 	abstract class myCRED_Hook {
@@ -29,7 +29,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		/**
 		 * Construct
 		 */
-		public function __construct( $args = array(), $hook_prefs = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		function __construct( $args = array(), $hook_prefs = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			if ( ! empty( $args ) ) {
 				foreach ( $args as $key => $value ) {
@@ -74,7 +74,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function run() {
+		function run() {
 
 			wp_die( 'function myCRED_Hook::run() must be over-ridden in a sub-class.' );
 
@@ -85,7 +85,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function preferences() {
+		function preferences() {
 
 			echo '<p>' . __( 'This Hook has no settings', 'mycred' ) . '</p>';
 
@@ -96,7 +96,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function sanitise_preferences( $data ) {
+		function sanitise_preferences( $data ) {
 
 			return $data;
 
@@ -143,11 +143,9 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * Get Field ID
 		 * Returns the field id for the current hook
 		 * @since 0.1
-		 * @version 1.2
+		 * @version 1.1
 		 */
 		function field_id( $field = '' ) {
-
-			global $mycred_field_id;
 
 			if ( is_array( $field ) ) {
 
@@ -176,19 +174,14 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 
 			$option_id = str_replace( '_', '-', $option_id );
 
-			// $mycred_field_id - This little trick is used when widgets are not in a sidebar
-			// Adding __i__ to IDs will prevent duplicate IDs ever existing on the same page, causing
-			// scripts or HTML structures from working, like having a checkbox/radio selected when you click on
-			// the label and not on the input field.
-
-			return $option_id . '-' . str_replace( '_', '-', $this->id ) . '-' . $field . $mycred_field_id;
+			return $option_id . '-' . str_replace( '_', '-', $this->id ) . '-' . $field;
 
 		}
 
 		/**
 		 * Check Limit
 		 * @since 1.6
-		 * @version 1.2
+		 * @version 1.1
 		 */
 		function over_hook_limit( $instance = '', $reference = '', $user_id = NULL, $ref_id = NULL ) {
 
@@ -226,9 +219,6 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 
 			if ( count( explode( '/', $prefs ) ) != 2 )
 				$prefs = '0/x';
-
-			// Set to "no limit"
-			if ( ! $exists_check && $prefs === '0/x' ) return false;
 
 			// Prep settings
 			list ( $amount, $period ) = explode( '/', $prefs );
@@ -368,7 +358,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 			);
 			$limits = apply_filters( 'mycred_hook_impose_limits', $limits, $this );
 
-			echo '<select name="' . $this->field_name( $pref_id ) . '" id="' . $this->field_id( $pref_id ) . '" class="form-control">';
+			echo '<select name="' . $this->field_name( $pref_id ) . '" id="' . $this->field_id( $pref_id ) . '">';
 
 			if ( $use_select )
 				echo '<option value="">' . __( 'Select', 'mycred' ) . '</option>';
@@ -445,22 +435,6 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		}
 
 		/**
-		 * Include Post Type
-		 * Checks if a given post type should be excluded
-		 * @since 0.1
-		 * @version 1.1
-		 */
-		public function include_post_type( $post_type ) {
-
-			// Exclude Core
-			$excludes = array( 'post', 'page' );
-			if ( in_array( $post_type, apply_filters( 'mycred_post_type_excludes', $excludes ) ) ) return false;
-
-			return true;
-
-		}
-
-		/**
 		 * Limit Query
 		 * Queries the myCRED log for the number of occurances of the specified
 		 * refernece and optional reference id for a specific user between two dates.
@@ -504,3 +478,5 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 
 	}
 endif;
+
+?>

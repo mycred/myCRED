@@ -6,18 +6,16 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * This shortcode is intended to be used when selling parts of a content.
  * Can only be used once per content.
  * @since 1.7
- * @version 1.0.3
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_render_sell_this' ) ) :
 	function mycred_render_sell_this( $atts, $content = '' ) {
 
 		global $mycred_partial_content_sale, $mycred_modules;
 
-		$post_id  = mycred_sell_content_post_id();
-		$post     = get_post( $post_id );
-		$user_id  = get_current_user_id();
-		$is_admin = mycred_is_admin( $user_id );
-		$is_owner = ( (int) $post->post_author === $user_id ) ? true : false;
+		$post_id = mycred_sell_content_post_id();
+		$post    = get_post( $post_id );
+		$user_id = get_current_user_id();
 
 		$mycred_partial_content_sale = true;
 
@@ -25,7 +23,9 @@ if ( ! function_exists( 'mycred_render_sell_this' ) ) :
 		if ( is_user_logged_in() ) {
 
 			// Authors and admins do not pay
-			if ( ! $is_admin && ! $is_owner ) {
+			if ( ! mycred_is_admin() && $post->post_author !== $user_id ) {
+
+				$status = 'mycred-sell-paid';
 
 				// In case we have not paid
 				if ( ! mycred_user_paid_for_content( $user_id, $post_id ) ) {
@@ -51,23 +51,6 @@ if ( ! function_exists( 'mycred_render_sell_this' ) ) :
 					}
 
 				}
-
-			}
-
-			/**
-			 * Incase the shortcode is used incorrectly
-			 * Since the shortcode is only used to indicate which part of the content that is for sale, we need to make sure it can only be used
-			 * on content that has been set to be purchasable. In manual mode, this means we must have clicked to enable sale in the metabox.
-			 * In auto modes, the particular post types setup must be enabled and the post must fit any filter criteria we might have set.
-			 * Since the content might have monetary value, we do not want to just show it, but to warn admin/post author and appologize to the user.
-			 * @since 1.7.8
-			 */
-			elseif ( ! mycred_post_is_for_sale( $post ) ) {
-
-				if ( $is_admin || $is_owner )
-					return '<p>' . sprintf( '%s %s', __( 'This shortcode can not be used in content that has not been set for sale!', 'mycred' ), '<a href="' . get_edit_post_link( $post_id ) ) . '">' . __( 'Edit', 'mycred' ) . '</a></p>';
-
-				return '<p>' . __( 'This content is currently unattainable. Apologies for the inconvenience.', 'mycred' ) . '</p>';
 
 			}
 
@@ -176,7 +159,7 @@ endif;
  * Will show a given users payment history with links to the posts
  * they have purchased.
  * @since 1.7
- * @version 1.1
+ * @version 1.0
  */
 if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 	function mycred_render_sell_history( $atts, $content = '' ) {
@@ -205,7 +188,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 			'col-expires' => __( 'Expires', 'mycred' )
 		), $atts );
 
-		if ( empty( $purchases ) && $nothing == '' ) return;
+		if ( empty( $purchases ) && $no_result == '' ) return;
 
 		ob_start();
 
@@ -227,8 +210,8 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 		if ( ! empty( $purchases ) ) {
 			foreach ( $purchases as $entry ) {
 
-				$mycred       = mycred( $entry->ctype );
-				$expirares_in = mycred_sell_content_get_expiration_length( $entry->ref_id, $entry->ctype );
+				$mycred  = mycred( $entry->ctype );
+				$prefs   = mycred_get_post_sale_setup( $entry->ref_id, $entry->ctype );
 
 				echo '<td class="mycred-sell-' . $column_id . ' ' . $column_id . '">';
 
@@ -247,15 +230,15 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 
 						$expires = __( 'Never', 'mycred' );
 						if ( $prefs['expire'] > 0 )
-							$expires = sprintf( _x( 'Purchase expires in %s', 'e.g. 10 hours', 'mycred' ), $expirares_in . ' ' . $expiration );
+							$expires = sprintf( _x( 'Purchase expires in %s', 'e.g. 10 hours', 'mycred' ), ' ' . $prefs['expire'] . ' ' . $expiration );
 
 						echo '<td class="">' . $expires . '</td>';
 
 					}
 					else {
 
-						do_action( 'mycred_sales_history_column', $column_id, $entry );
-						do_action( 'mycred_sales_history_column_' . $column_id, $entry );
+						do_action( 'mycred_sales_history_column', $column_id, $entry, $prefs );
+						do_action( 'mycred_sales_history_column_' . $column_id, $entry, $prefs );
 
 					}
 
@@ -267,7 +250,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 		}
 		else {
 
-			echo '<tr><td class="no-results" colspan="' . count( $columns ) . '">' . $nothing . '</td></tr>';
+			echo '<tr><td class="no-results" colspan="' . count( $columns ) . '">' . $no_result . '</td></tr>';
 
 		}
 
@@ -332,3 +315,5 @@ if ( ! function_exists( 'mycred_render_sell_buyer_avatars' ) ) :
 
 	}
 endif;
+
+?>

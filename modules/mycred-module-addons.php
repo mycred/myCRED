@@ -163,7 +163,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		/**
 		 * Get Addons
 		 * @since 0.1
-		 * @version 1.7.2
+		 * @version 1.7.1
 		 */
 		public function get( $save = false ) {
 
@@ -173,7 +173,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['badges'] = array(
 				'name'        => 'Badges',
 				'description' => __( 'Give your users badges based on their interaction with your website.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/badges/',
+				'addon_url'   => 'https://mycred.me/add-ons/badges/',
 				'version'     => '1.2',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
@@ -184,7 +184,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['banking'] = array(
 				'name'        => 'Banking',
 				'description' => __( 'Setup recurring payouts or offer / charge interest on user account balances.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/banking/',
+				'addon_url'   => 'https://mycred.me/add-ons/banking/',
 				'version'     => '2.0',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
@@ -195,7 +195,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['buy-creds'] = array(
 				'name'        => 'buyCRED',
 				'description' => __( 'The <strong>buy</strong>CRED Add-on allows your users to buy points using PayPal, Skrill (Moneybookers) or NETbilling. <strong>buy</strong>CRED can also let your users buy points for other members.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/buycred/',
+				'addon_url'   => 'https://mycred.me/add-ons/buycred/',
 				'version'     => '1.5',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
@@ -206,7 +206,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['coupons'] = array(
 				'name'        => 'Coupons',
 				'description' => __( 'The coupons add-on allows you to create coupons that users can use to add points to their accounts.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/coupons/',
+				'addon_url'   => 'https://mycred.me/add-ons/coupons/',
 				'version'     => '1.3.1',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
@@ -217,7 +217,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['email-notices'] = array(
 				'name'        => 'Email Notifications',
 				'description' => __( 'Create email notices for any type of myCRED instance.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/email-notice/',
+				'addon_url'   => 'https://mycred.me/add-ons/email-notices/',
 				'version'     => '1.3.1',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
@@ -228,7 +228,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['gateway'] = array(
 				'name'        => 'Gateway',
 				'description' => __( 'Let your users pay using their <strong>my</strong>CRED points balance. Supported Carts: WooCommerce, MarketPress and WP E-Commerce. Supported Event Bookings: Event Espresso and Events Manager (free & pro).', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/gateway/',
+				'addon_url'   => 'https://mycred.me/add-ons/gateway/',
 				'version'     => '1.4',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
@@ -239,7 +239,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['notifications'] = array(
 				'name'        => 'Notifications',
 				'description' => __( 'Create pop-up notifications for when users gain or loose points.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/notifications/',
+				'addon_url'   => 'https://mycred.me/add-ons/notifications/',
 				'version'     => '1.1.2',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
@@ -251,7 +251,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['ranks'] = array(
 				'name'        => 'Ranks',
 				'description' => __( 'Create ranks for users reaching a certain number of %_plural% with the option to add logos for each rank.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/ranks/',
+				'addon_url'   => 'https://mycred.me/add-ons/ranks/',
 				'version'     => '1.5',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
@@ -262,8 +262,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['sell-content'] = array(
 				'name'        => 'Sell Content',
 				'description' => __( 'This add-on allows you to sell posts, pages or any public post types on your website. You can either sell the entire content or using our shortcode, sell parts of your content allowing you to offer "teasers".', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/sell-content/',
-				'version'     => '2.0.1',
+				'addon_url'   => 'https://mycred.me/add-ons/sell-content/',
+				'version'     => '2.0',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
 				'screenshot'  => plugins_url( 'assets/images/sell-content-addon.png', myCRED_THIS )
@@ -273,8 +273,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['stats'] = array(
 				'name'        => 'Statistics',
 				'description' => __( 'Gives you access to your myCRED Statistics based on your users gains and loses.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/statistics/',
-				'version'     => '1.2.1',
+				'addon_url'   => 'https://mycred.me/add-ons/stats/',
+				'version'     => '1.1',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
 				'screenshot'  => plugins_url( 'assets/images/statistics-addon.png', myCRED_THIS )
@@ -284,8 +284,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['transfer'] = array(
 				'name'        => 'Transfers',
 				'description' => __( 'Allow your users to send or "donate" points to other members by either using the mycred_transfer shortcode or the myCRED Transfer widget.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/transfers/',
-				'version'     => '1.5',
+				'addon_url'   => 'https://mycred.me/add-ons/transfer/',
+				'version'     => '1.4',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
 				'pro_url'     => 'https://mycred.me/store/transfer-plus/',
@@ -310,7 +310,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		/**
 		 * Admin Page
 		 * @since 0.1
-		 * @version 1.2.3
+		 * @version 1.2.1
 		 */
 		public function admin_page() {
 
@@ -327,7 +327,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 .theme-browser .theme:hover a.more-details, .theme-browser .theme:hover a.more-details:hover { text-decoration: none; }
 </style>
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php echo sprintf( __( '%s Add-ons', 'mycred' ), mycred_label() ); ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a></h1>
+	<h1><?php echo sprintf( __( '%s Add-ons', 'mycred' ), mycred_label() ); ?> <a href="https://mycred.me/store/" class="page-title-action" target="_blank"><?php _e( 'Get More Add-ons', 'mycred' ); ?></a></h1>
 <?php
 
 			// Messages
@@ -367,18 +367,14 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 
 				<a class="more-details" id="<?php echo $aria_action; ?>" href="<?php echo $data['addon_url']; ?>" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a>
 
-				<div class="theme-id-container">
+				<?php if ( $this->is_active( $key ) ) : ?>
+				<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
+				<?php else : ?>
+				<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
+				<?php endif; ?>
 
-					<?php if ( $this->is_active( $key ) ) : ?>
-					<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
-					<?php else : ?>
-					<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
-					<?php endif; ?>
-
-					<div class="theme-actions">
-						<?php echo $this->activate_deactivate( $key ); ?>
-					</div>
-
+				<div class="theme-actions">
+					<?php echo $this->activate_deactivate( $key ); ?>
 				</div>
 
 			</div>
@@ -461,3 +457,5 @@ if ( ! function_exists( 'get_mycred_addon_deactivation_url' ) ) :
 
 	}
 endif;
+
+?>

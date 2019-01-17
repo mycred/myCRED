@@ -431,3 +431,5 @@ if ( ! function_exists( 'mycred_load_banking_addon' ) ) :
 	}
 endif;
 add_filter( 'mycred_load_modules', 'mycred_load_banking_addon', 20, 2 );
+
+?>

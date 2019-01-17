@@ -197,7 +197,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 		/**
 		 * AJAX: Recent Activity
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function ajax_get_recent_activity() {
 
@@ -270,7 +270,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 			if ( $ledger->num_rows > 5 ) {
 
-				$page = MYCRED_SLUG;
+				$page = 'mycred';
 				if ( $type != MYCRED_DEFAULT_TYPE_KEY )
 					$page .= '_' . $type;
 
@@ -291,13 +291,11 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 		/**
 		 * Enqueue Scripts & Styles
 		 * @since 0.1
-		 * @version 1.4.1
+		 * @version 1.4
 		 */
 		public function admin_header() {
 
 			$screen = get_current_screen();
-			if ( ! isset( $screen->id ) ) return;
-
 			if ( $screen->id == 'users' ) {
 
 				wp_enqueue_style( 'mycred-bootstrap-grid' );
@@ -830,3 +828,5 @@ jQuery(function($){
 
 	}
 endif;
+
+?>

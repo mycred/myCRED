@@ -383,3 +383,4 @@ if ( ! class_exists( 'myCRED_Skrill' ) ) :
 
 	}
 endif;
+?>

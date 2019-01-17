@@ -4,11 +4,26 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * myCRED About Page Header
  * @since 1.3.2
- * @version 1.3
+ * @version 1.2
  */
 function mycred_about_header() {
 
-	$name = mycred_label();
+	$new = $credit = '';
+	if ( isset( $_GET['page'] ) && $_GET['page'] == 'mycred-credit' )
+		$credit = ' nav-tab-active';
+	else
+		$new = ' nav-tab-active';
+
+	$name         = mycred_label();
+	$index_php    = admin_url( 'index.php' );
+	$about_page   = esc_url( add_query_arg( array( 'page' => MYCRED_SLUG . '-about' ), $index_php ) );
+	$credit_page  = esc_url( add_query_arg( array( 'page' => MYCRED_SLUG . '-credit' ), $index_php ) );
+
+	$admin_php    = admin_url( 'admin.php' );
+	$log_url      = esc_url( add_query_arg( array( 'page' => MYCRED_SLUG ), $admin_php ) );
+	$hook_url     = esc_url( add_query_arg( array( 'page' => MYCRED_SLUG . '-hooks' ), $admin_php ) );
+	$addons_url   = esc_url( add_query_arg( array( 'page' => MYCRED_SLUG . '-addons' ), $admin_php ) );
+	$settings_url = esc_url( add_query_arg( array( 'page' => MYCRED_SLUG . '-settings' ), $admin_php ) );
 
 ?>
 <style type="text/css">
@@ -16,12 +31,21 @@ function mycred_about_header() {
 </style>
 <h1><?php printf( __( 'Welcome to %s %s', 'mycred' ), $name, myCRED_VERSION ); ?></h1>
 <div class="about-text"><?php printf( 'An adaptive points management system for WordPress powered websites.', $name ); ?></div>
-<p><?php printf( __( 'Thank you for using %s. If you have a moment, please leave a %s.', 'mycred' ), $name, sprintf( '<a href="https://wordpress.org/support/plugin/mycred/reviews/?rate=5#new-post" target="_blank">%s</a>', __( 'review', 'mycred' ) ) ); ?></p>
+<p class="mycred-actions">
+	<a href="<?php echo $log_url; ?>" class="button">Log</a>
+	<a href="<?php echo $hook_url; ?>" class="button">Hooks</a>
+	<a href="<?php echo $addons_url; ?>" class="button">Add-ons</a>
+	<a href="<?php echo $settings_url; ?>" class="button button-primary">Settings</a>
+</p>
 <div class="wp-badge" id="mycred-badge">Version <?php echo myCRED_VERSION; ?></div>
+
 <h2 class="nav-tab-wrapper wp-clearfix">
-	<a class="nav-tab nav-tab-active" href="#">What&#8217;s New</a>
-	<a class="nav-tab" href="http://codex.mycred.me" target="_blank">Documentation</a>
-	<a class="nav-tab" href="https://mycred.me/store/" target="_blank">Store</a>
+	<a class="nav-tab<?php echo $new; ?>" href="<?php echo $about_page; ?>">What&#8217;s New</a>
+	<a class="nav-tab<?php echo $credit; ?>" href="<?php echo $credit_page; ?>">Credits</a>
+	<a class="nav-tab" href="http://mycred.me/documentation/" target="_blank">Documentation</a>
+	<a class="nav-tab" href="http://codex.mycred.me" target="_blank">Codex</a>
+	<a class="nav-tab" href="http://mycred.me/support/forums/" target="_blank">Support Forum</a>
+	<a class="nav-tab" href="http://mycred.me/store/" target="_blank">Store</a>
 </h2>
 <?php
 
@@ -58,9 +82,12 @@ function mycred_about_footer() {
 /**
  * About myCRED Page
  * @since 1.3.2
- * @version 1.3
+ * @version 1.2
  */
 function mycred_about_page() {
+
+	$mycred       = mycred();
+	$settings_url = esc_url( add_query_arg( array( 'page' => '-settings' ), admin_url( 'admin.php' ) ) );
 
 ?>
 <div class="wrap about-wrap" id="mycred-about-wrap">
@@ -68,8 +95,8 @@ function mycred_about_page() {
 	<?php mycred_about_header(); ?>
 
 	<div id="mycred-about">
-		<h2>Improved Management Tools</h2>
 		<div class="feature-section two-col">
+			<h2>Improved Management Tools</h2>
 			<div class="col">
 				<img src="<?php echo plugins_url( 'assets/images/mycred-about-balance.png', myCRED_THIS ); ?>" alt="" />
 				<h3>New Balance & Log Editor</h3>
@@ -82,8 +109,8 @@ function mycred_about_page() {
 			</div>
 		</div>
 		<hr />
-		<h2>Add-on Improvements</h2>
 		<div class="feature-section two-col">
+			<h2>Add-on Improvements</h2>
 			<div class="col">
 				<h3>Sell Content 2.0</h3>
 				<p>As of version 1.7, the sell content add-on supports sales using multiple point types! You can furthermore also set content for sale by default based on post type, category or tags.</p>
@@ -94,8 +121,8 @@ function mycred_about_page() {
 			</div>
 		</div>
 		<hr />
-		<h2>New Shortcodes</h2>
 		<div class="feature-section three-col">
+			<h2>New Shortcodes</h2>
 			<div class="col">
 				<h3><code>[mycred_show_if]</code></h3>
 				<p>This shortcode can be used to wrap around content that you want to show only to those who have a certain balance and / or rank.</p>
@@ -110,7 +137,7 @@ function mycred_about_page() {
 			</div>
 		</div>
 		<div class="feature-section one-col">
-			<p style="text-align: center;"><a href="https://mycred.me/support/changelog/" target="_blank">View All Changes</a></p>
+			<p style="text-align: center;"><a href="http://mycred.me/support/changelog/" target="_blank">View All Changes</a></p>
 		</div>
 		<hr />
 	</div>
@@ -121,3 +148,67 @@ function mycred_about_page() {
 <?php
 
 }
+
+/**
+ * myCRED Credit Page
+ * @since 1.3.2
+ * @version 1.7
+ */
+function mycred_about_credit_page() {
+
+?>
+<div class="wrap about-wrap" id="mycred-credit-wrap">
+
+	<?php mycred_about_header(); ?>
+
+	<div id="mycred-about">
+		<div class="feature-section two-col">
+			<h2>Awesome People!</h2>
+			<div class="col">
+				<h3>Bug Finders</h3>
+				<ul>
+					<li><a href="http://mycred.me/community/innergy4every1/">innergy4every1</a></li>
+					<li><a href="http://mycred.me/community/kristoff/">Kristoff</a></li>
+					<li><a href="http://mycred.me/community/colson/">colson</a></li>
+					<li><a href="http://mycred.me/community/Martin/">Martin</a></li>
+					<li><a href="http://mycred.me/community/orousal/">Orousal</a></li>
+					<li><a href="http://mycred.me/community/joseph/">Joseph</a></li>
+					<li>Maria Campbell</li>
+				</ul>
+			</div>
+			<div class="col">
+				<h3>Translators</h3>
+				<ul>
+					<li><a href="http://bp-fr.net/">Dan</a> <em>( French )</em></li>
+					<li>Mani Akhtar <em>( Persian )</em></li>
+					<li><a href="http://robertrowshan.com/">Robert Rowshan</a> <em>( Spanish )</em></li>
+					<li>Skladchik <em>( Russian )</em></li>
+					<li><a href="http://coolwp.com">suifengtec</a> <em>( Chinese )</em></li>
+					<li>Guilherme <em>( Portuguese - Brazil )</em></li>
+					<li>Mochizuki Hiroshi <em>( Japanese )</em></li>
+					<li><a href="http://www.merovingi.com/">Gabriel S Merovingi</a> <em>( Swedish )</em></li>
+				</ul>
+			</div>
+		</div>
+		<hr />
+		<div class="feature-section two-col">
+			<h2>Join the myCRED Community</h2>
+			<div class="col">
+				<h3>Earn Tokens</h3>
+				<p>Helping translating myCRED, report bugs / solutions or helping out in the support forum will earn you myCRED Tokens which you can use in the store as payment. Signup for a <a href="http://mycred.me/community/access/#signup" target="_blank">free account</a> today!</p>
+			</div>
+			<div class="col">
+				<h3>Premium Add-ons</h3>
+				<p>Community members gain access to the <a href="http://mycred.me/store/" target="_blank">myCRED store</a> where you can purchase premium add-ons to further expand myCRED.</p>
+			</div>
+		</div>
+	</div>
+
+	<?php mycred_about_footer(); ?>
+
+</div>
+<?php
+
+}
+
+?>

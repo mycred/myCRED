@@ -2,7 +2,7 @@
 /**
  * Addon: Badges
  * Addon URI: http://mycred.me/add-ons/badges/
- * Version: 1.2.1
+ * Version: 1.2
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
@@ -286,12 +286,12 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Add Admin Menu Item
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function add_to_menu() {
 
 			add_submenu_page(
-				MYCRED_SLUG,
+				'mycred',
 				__( 'Badges', 'mycred' ),
 				__( 'Badges', 'mycred' ),
 				$this->core->edit_creds_cap(),
@@ -303,7 +303,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Parent File
 		 * @since 1.6
-		 * @version 1.0.2
+		 * @version 1.0.1
 		 */
 		public function parent_file( $parent = '' ) {
 
@@ -311,13 +311,13 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
 			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_badge' ) {
 			
-				return MYCRED_SLUG;
+				return 'mycred';
 			
 			}
 
 			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_badge' ) {
 
-				return MYCRED_SLUG;
+				return 'mycred';
 
 			}
 
@@ -353,7 +353,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Add Finished
 		 * @since 1.0
-		 * @version 1.3
+		 * @version 1.2
 		 */
 		public function add_finished( $result, $request, $mycred ) {
 
@@ -369,33 +369,8 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 					foreach ( $badge_ids as $badge_id ) {
 
 						$level_reached = mycred_badge_level_reached( $user_id, $badge_id );
-						if ( $level_reached !== false ) {
-
-							$levels   = mycred_get_badge_levels( $badge_id );
-							$assigned = mycred_assign_badge_to_user( $user_id, $badge_id, $level_reached );
-
-							// Payout reward
-							if ( $assigned && $levels[ $level_reached ]['reward']['log'] != '' && $levels[ $level_reached ]['reward']['amount'] != 0 ) {
-
-								$reward_type = $levels[ $level_reached ]['reward']['type'];
-								if ( $reward_type != $mycred->cred_id )
-									$mycred = mycred( $reward_type );
-
-								// Make sure we only get points once for each level we reach for each badge
-								if ( ! $mycred->has_entry( 'badge_reward', $badge_id, $user_id, $level_reached, $reward_type ) )
-									$mycred->add_creds(
-										'badge_reward',
-										$user_id,
-										$levels[ $level_reached ]['reward']['amount'],
-										$levels[ $level_reached ]['reward']['log'],
-										$badge_id,
-										$level_reached,
-										$reward_type
-									);
-
-							}
-
-						}
+						if ( $level_reached !== false )
+							mycred_assign_badge_to_user( $user_id, $badge_id, $level_reached );
 
 					}
 
@@ -511,7 +486,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Enqueue Scripts
 		 * @since 1.0
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function enqueue_scripts() {
 
@@ -532,16 +507,16 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 					'myCREDBadge',
 					array(
 						'ajaxurl'      => admin_url( 'admin-ajax.php' ),
-						'addlevel'     => esc_js( __( 'Add Level', 'mycred' ) ),
-						'removelevel'  => esc_js( __( 'Remove Level', 'mycred' ) ),
-						'setimage'     => esc_js( __( 'Set Image', 'mycred' ) ),
-						'changeimage'  => esc_js( __( 'Change Image', 'mycred' ) ),
+						'addlevel'     => __( 'Add Level', 'mycred' ),
+						'removelevel'  => __( 'Remove Level', 'mycred' ),
+						'setimage'     => __( 'Set Image', 'mycred' ),
+						'changeimage'  => __( 'Change Image', 'mycred' ),
 						'remove'       => esc_js( esc_attr__( 'Are you sure you want to remove this level?', 'mycred' ) ),
 						'levellabel'   => esc_js( sprintf( '%s {{level}}', __( 'Level', 'mycred' ) ) ),
 						'uploadtitle'  => esc_js( esc_attr__( 'Badge Image', 'mycred' ) ),
 						'uploadbutton' => esc_js( esc_attr__( 'Use as Badge', 'mycred' ) ),
-						'compareAND'   => esc_js( _x( 'AND', 'Comparison of badge requirements. A AND B', 'mycred' ) ),
-						'compareOR'    => esc_js( _x( 'OR', 'Comparison of badge requirements. A OR B', 'mycred' ) )
+						'compareAND'   => _x( 'AND', 'Comparison of badge requirements. A AND B', 'mycred' ),
+						'compareOR'    => _x( 'OR', 'Comparison of badge requirements. A OR B', 'mycred' )
 					)
 				);
 
@@ -790,7 +765,7 @@ jQuery(function($) {
 		/**
 		 * Badge Setup Metabox
 		 * @since 1.7
-		 * @version 1.2
+		 * @version 1.1
 		 */
 		public function metabox_badge_setup( $post ) {
 
@@ -799,8 +774,8 @@ jQuery(function($) {
 			$point_types = mycred_get_types( true );
 
 			$sums = apply_filters( 'mycred_badge_requirement_sums', array(
-				'count' => esc_js( __( 'Time(s)', 'mycred' ) ),
-				'sum'   => esc_js( __( 'In total', 'mycred' ) )
+				'count' => __( 'Time(s)', 'mycred' ),
+				'sum'   => __( 'In total', 'mycred' )
 			), $badge );
 
 			// Badge rewards can no be used as a requirement
@@ -821,10 +796,10 @@ jQuery(function($) {
 			$level_counter = 0;
 			foreach ( $badge->levels as $level => $setup ) {
 
-				$level        = $level_counter;
+				$level = $level_counter;
 
-				$add_level    = '<button type="button" class="button button-seconary button-small top-right-corner" id="badges-add-new-level">' . esc_js( __( 'Add Level', 'mycred' ) ) . '</button>';
-				$remove_level = '<button type="button" class="button button-seconary button-small top-right-corner remove-badge-level" data-level="' . $level . '">' . esc_js( __( 'Remove Level', 'mycred' ) ) . '</button>';
+				$add_level    = '<button type="button" class="button button-seconary button-small top-right-corner" id="badges-add-new-level">' . __( 'Add Level', 'mycred' ) . '</button>';
+				$remove_level = '<button type="button" class="button button-seconary button-small top-right-corner remove-badge-level" data-level="' . $level . '">' . __( 'Remove Level', 'mycred' ) . '</button>';
 
 				$level_image  = $this->get_level_image( $setup, $level );
 				$empty_level  = 'empty dashicons';
@@ -840,18 +815,18 @@ jQuery(function($) {
 				$js_level = str_replace( '{{removelevelbutton}}', $remove_level, $js_level );
 				$js_level = str_replace( '{{emptylevelimage}}',   $empty_level, $js_level );
 				$js_level = str_replace( '{{levelimage}}',        '', $js_level );
-				$js_level = str_replace( '{{levelimagebutton}}',  esc_js( __( 'Set Image', 'mycred' ) ), $js_level );
-				$js_level = str_replace( '{{levelplaceholder}}',  esc_js( __( 'Level', 'mycred' ) ) . ' {{levelone}}', $js_level );
+				$js_level = str_replace( '{{levelimagebutton}}',  __( 'Set Image', 'mycred' ), $js_level );
+				$js_level = str_replace( '{{levelplaceholder}}',  __( 'Level', 'mycred' ) . ' {{level}}', $js_level );
 
 				$template = str_replace( '{{levelimage}}',        $level_image, $template );
 				$template = str_replace( '{{emptylevelimage}}',   $empty_level, $template );
-				$template = str_replace( '{{levelimagebutton}}',  ( ( $level_image === false ) ? esc_js( __( 'Set Image', 'mycred' ) ) : esc_js( __( 'Change Image', 'mycred' ) ) ), $template );
+				$template = str_replace( '{{levelimagebutton}}',  ( ( $level_image === false ) ? __( 'Set Image', 'mycred' ) : __( 'Change Image', 'mycred' ) ), $template );
 
-				$template = str_replace( '{{levelplaceholder}}',  esc_js( sprintf( __( 'Level %d', 'mycred' ), $level+1 ) ), $template );
-				$template = str_replace( '{{levellabel}}',        esc_js( $setup['label'] ), $template );
+				$template = str_replace( '{{levelplaceholder}}',  sprintf( __( 'Level %d', 'mycred' ), $level+1 ), $template );
+				$template = str_replace( '{{levellabel}}',        $setup['label'], $template );
 
-				$template = str_replace( '{{requirementslabel}}', esc_js( __( 'Requirement', 'mycred' ) ), $template );
-				$js_level = str_replace( '{{requirementslabel}}', esc_js( __( 'Requirement', 'mycred' ) ), $js_level );
+				$template = str_replace( '{{requirementslabel}}', __( 'Requirement', 'mycred' ), $template );
+				$js_level = str_replace( '{{requirementslabel}}', __( 'Requirement', 'mycred' ), $js_level );
 
 				$template = str_replace( '{{adnselected}}',       ( ( $setup['compare'] === 'AND' ) ? 'selected' : '' ), $template );
 				$template = str_replace( '{{orselected}}',        ( ( $setup['compare'] === 'OR' ) ? 'selected' : '' ), $template );
@@ -863,105 +838,105 @@ jQuery(function($) {
 
 				foreach ( $setup['requires'] as $req_level => $reqsetup ) {
 
-					$requirement         = $this->requirements_template( $level );
+					$requirement = $this->requirements_template( $level );
 
-					$requirement         = str_replace( '{{level}}',    $level, $requirement );
-					$requirement         = str_replace( '{{reqlevel}}', $req_level, $requirement );
+					$requirement = str_replace( '{{level}}',    $level, $requirement );
+					$requirement = str_replace( '{{reqlevel}}', $req_level, $requirement );
 
-					$point_type_options  = '';
+					$point_type_options = '';
 					$point_type_options .= '<option value=""';
 					if ( $reqsetup['type'] == '' ) $point_type_options .= ' selected="selected"';
-					$point_type_options .= '>' . esc_js( __( 'Select Point Type', 'mycred' ) ) . '</option>';
+					$point_type_options .= '>' . __( 'Select Point Type', 'mycred' ) . '</option>';
 					foreach ( $point_types as $type_id => $type_label ) {
-						$point_type_options .= '<option value="' . esc_attr( $type_id ) . '"';
+						$point_type_options .= '<option value="' . $type_id . '"';
 						if ( $reqsetup['type'] == $type_id ) $point_type_options .= ' selected="selected"';
-						$point_type_options .= '>' . esc_html( $type_label ) . '</option>';
+						$point_type_options .= '>' . $type_label . '</option>';
 					}
 
-					$requirement         = str_replace( '{{pointtypes}}', $point_type_options, $requirement );
-					$point_type_options  = str_replace( 'selected="selected"', '', $point_type_options );
-					$js_requirement      = str_replace( '{{pointtypes}}', $point_type_options, $js_requirement );
+					$requirement    = str_replace( '{{pointtypes}}', $point_type_options, $requirement );
+					$point_type_options = str_replace( 'selected="selected"', '', $point_type_options );
+					$js_requirement = str_replace( '{{pointtypes}}', $point_type_options, $js_requirement );
 
-					$reference_options   = '';
-					$reference_options  .= '<option value=""';
+					$reference_options = '';
+					$reference_options .= '<option value=""';
 					if ( $reqsetup['reference'] == '' ) $reference_options .= ' selected="selected"';
-					$reference_options  .= '>' . esc_js( __( 'Select Reference', 'mycred' ) ) . '</option>';
+					$reference_options .= '>' . __( 'Select Reference', 'mycred' ) . '</option>';
 					foreach ( $references as $ref_id => $ref_label ) {
-						$reference_options .= '<option value="' . esc_attr( $ref_id ) . '"';
+						$reference_options .= '<option value="' . $ref_id . '"';
 						if ( $reqsetup['reference'] == $ref_id ) $reference_options .= ' selected="selected"';
-						$reference_options .= '>' . esc_html( $ref_label ) . '</option>';
+						$reference_options .= '>' . $ref_label . '</option>';
 					}
 
-					$requirement         = str_replace( '{{references}}', $reference_options, $requirement );
-					$requirement         = str_replace( '{{reqamount}}',  $reqsetup['amount'], $requirement );
+					$requirement       = str_replace( '{{references}}', $reference_options, $requirement );
+					$requirement       = str_replace( '{{reqamount}}',  $reqsetup['amount'], $requirement );
 
-					$reference_options   = str_replace( 'selected="selected"', '', $reference_options );
-					$js_requirement      = str_replace( '{{references}}', $reference_options, $js_requirement );
-					$js_requirement      = str_replace( '{{reqamount}}',  $reqsetup['amount'], $js_requirement );
+					$reference_options = str_replace( 'selected="selected"', '', $reference_options );
+					$js_requirement    = str_replace( '{{references}}', $reference_options, $js_requirement );
+					$js_requirement    = str_replace( '{{reqamount}}',  $reqsetup['amount'], $js_requirement );
 
-					$by_options          = '';
-					$by_options         .= '<option value=""';
+					$by_options = '';
+					$by_options .= '<option value=""';
 					if ( $reqsetup['by'] == '' ) $by_options .= ' selected="selected"';
-					$by_options         .= '>' . __( 'Select', 'mycred' ) . '</option>';
+					$by_options .= '>' . __( 'Select', 'mycred' ) . '</option>';
 					foreach ( $sums as $sum_id => $sum_label ) {
 						$by_options .= '<option value="' . $sum_id . '"';
 						if ( $reqsetup['by'] == $sum_id ) $by_options .= ' selected="selected"';
 						$by_options .= '>' . $sum_label . '</option>';
 					}
 
-					$requirement         = str_replace( '{{requirementtype}}', $by_options, $requirement );
+					$requirement    = str_replace( '{{requirementtype}}', $by_options, $requirement );
 
-					$by_options          = str_replace( 'selected="selected"', '', $by_options );
-					$js_requirement      = str_replace( '{{requirementtype}}', $by_options, $js_requirement );
+					$by_options     = str_replace( 'selected="selected"', '', $by_options );
+					$js_requirement = str_replace( '{{requirementtype}}', $by_options, $js_requirement );
 
-					$selectedtype        = '-';
+					$selectedtype = '-';
 					if ( array_key_exists( $reqsetup['type'], $point_types ) )
 						$selectedtype = $point_types[ $reqsetup['type'] ];
 
 					$requirement = str_replace( '{{selectedtype}}', $selectedtype, $requirement );
 
-					$selectedreference   = '-';
+					$selectedreference = '-';
 					if ( array_key_exists( $reqsetup['reference'], $references ) )
 						$selectedreference = $references[ $reqsetup['reference'] ];
 
-					$requirement         = str_replace( '{{selectedref}}', $selectedreference, $requirement );
+					$requirement = str_replace( '{{selectedref}}', $selectedreference, $requirement );
 
-					$selectedby          = '-';
+					$selectedby = '-';
 					if ( array_key_exists( $reqsetup['by'], $sums ) )
 						$selectedby = $sums[ $reqsetup['by'] ];
 
-					$requirement         = str_replace( '{{selectedby}}', $selectedby, $requirement );
+					$requirement = str_replace( '{{selectedby}}', $selectedby, $requirement );
 
-					$requirement_button  = '<button type="button" class="button button-primary form-control remove-requirement" data-req="{{reqlevel}}">-</button>';
-					$js_requirement      = str_replace( '{{reqbutton}}', $requirement_button, $js_requirement );
+					$requirement_button = '<button type="button" class="button button-primary form-control remove-requirement" data-req="{{reqlevel}}">-</button>';
+					$js_requirement     = str_replace( '{{reqbutton}}', $requirement_button, $js_requirement );
 
-					$requirement_button  = '<button type="button" class="button button-primary form-control remove-requirement" data-req="' . $req_level . '">-</button>';
+					$requirement_button = '<button type="button" class="button button-primary form-control remove-requirement" data-req="' . $req_level . '">-</button>';
 					if ( $req_level == 0 )
 						$requirement_button = '<button type="button" class="button button-secondary form-control" id="badges-add-new-requirement">+</button>';
 
-					$requirement         = str_replace( '{{reqbutton}}', $requirement_button, $requirement );
+					$requirement = str_replace( '{{reqbutton}}', $requirement_button, $requirement );
 
-					$compare_label       = '';
+					$compare_label = '';
 					if ( $level > 0 && $req_level < $total_requirements )
 						$compare_label = ( ( $setup['compare'] === 'AND' ) ? _x( 'AND', 'Comparison of badge requirements. A AND B', 'mycred' ) : _x( 'OR', 'Comparison of badge requirements. A OR B', 'mycred' ) );
 
 					if ( $req_level+1 == $total_requirements )
 						$compare_label = '';
 
-					$requirement         = str_replace( '{{comparelabel}}', esc_js( $compare_label ), $requirement );
+					$requirement = str_replace( '{{comparelabel}}', $compare_label, $requirement );
 
 					$level_requirements .= $requirement;
 
 				}
 
-				$template           = str_replace( '{{{requirements}}}', $level_requirements, $template );
+				$template = str_replace( '{{{requirements}}}', $level_requirements, $template );
 
-				$rewards            = $this->rewards_template();
+				$rewards  = $this->rewards_template();
 
-				$js_level           = str_replace( '{{reqamount}}',     '', $js_level );
+				$js_level = str_replace( '{{reqamount}}',     '', $js_level );
 
-				$rewards            = str_replace( '{{level}}',          $level, $rewards );
-				$rewards            = str_replace( '{{rewardlabel}}',    esc_js( __( 'Reward', 'mycred' ) ), $rewards );
+				$rewards = str_replace( '{{level}}',          $level, $rewards );
+				$rewards = str_replace( '{{rewardlabel}}',    __( 'Reward', 'mycred' ), $rewards );
 
 				$point_type_options = '';
 				foreach ( $point_types as $type_id => $type_label ) {
@@ -970,13 +945,13 @@ jQuery(function($) {
 					$point_type_options .= '>' . $type_label . '</option>';
 				}
 
-				$rewards            = str_replace( '{{pointtypes}}',     $point_type_options, $rewards );
-				$rewards            = str_replace( '{{logplaceholder}}', esc_js( __( 'Log template', 'mycred' ) ), $rewards );
-				$rewards            = str_replace( '{{logtemplate}}',    esc_js( $setup['reward']['log'] ), $rewards );
-				$rewards            = str_replace( '{{rewardamount}}',   $setup['reward']['amount'], $rewards );
+				$rewards = str_replace( '{{pointtypes}}',     $point_type_options, $rewards );
+				$rewards = str_replace( '{{logplaceholder}}', __( 'Log template', 'mycred' ), $rewards );
+				$rewards = str_replace( '{{logtemplate}}',    $setup['reward']['log'], $rewards );
+				$rewards = str_replace( '{{rewardamount}}',   $setup['reward']['amount'], $rewards );
 
-				$template           = str_replace( '{{rewards}}',       $rewards, $template );
-				$js_level           = str_replace( '{{rewards}}',       $rewards, $js_level );
+				$template = str_replace( '{{rewards}}',       $rewards, $template );
+				$js_level = str_replace( '{{rewards}}',       $rewards, $js_level );
 
 				echo $template;
 
@@ -1139,26 +1114,32 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 		/**
 		 * Add to General Settings
 		 * @since 1.0
-		 * @version 1.1
+		 * @version 1.0.1
 		 */
 		public function after_general_settings( $mycred = NULL ) {
 
-			$settings   = $this->badges;
+			$settings = $this->badges;
 
-			$buddypress = ( ( class_exists( 'BuddyPress' ) ) ? true : false ); 
-			$bbpress    = ( ( class_exists( 'bbPress' ) ) ? true : false ); 
+			$buddypress = false; 
+			if ( class_exists( 'BuddyPress' ) )
+				$buddypress = true;
+			
+			$bbpress = false;
+			if ( class_exists( 'bbPress' ) )
+				$bbpress = true;
+
+			if ( ! $buddypress && ! $bbpress ) return;
 
 ?>
 <h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Badges', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
 
-	<h3><?php _e( 'Third-party Integrations', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'buddypress' ); ?>">BuddyPress</label>
-				<?php if ( $buddypress ) : ?>
-				<select name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>" class="form-control">
+	<?php if ( $buddypress ) : ?>
+
+	<label class="subheader" for="<?php echo $this->field_id( 'buddypress' ); ?>">BuddyPress</label>
+	<ol>
+		<li>
+			<select name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>">
 <?php
 
 			$buddypress_options = array(
@@ -1176,23 +1157,25 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 
 ?>
 
-				</select>
-			</div>
-			<div class="form-group">
-				<div class="checkbox">
-					<label for="<?php echo $this->field_id( 'show_all_bp' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bp' ); ?>" id="<?php echo $this->field_id( 'show_all_bp' ); ?>" <?php checked( $settings['show_all_bp'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
-				</div>
-				<?php else : ?>
-				<input type="hidden" name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>" value="" />
-				<p><span class="description"><?php _e( 'Not installed', 'mycred' ); ?></span></p>
-				<?php endif; ?>
-			</div>
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'bbpress' ); ?>">bbPress</label>
-				<?php if ( $bbpress ) : ?>
-				<select name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>" class="form-control">
+			</select>
+		</li>
+		<li>
+			<label for="<?php echo $this->field_id( 'show_all_bp' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bp' ); ?>" id="<?php echo $this->field_id( 'show_all_bp' ); ?>" <?php checked( $settings['show_all_bp'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
+		</li>
+	</ol>
+
+	<?php else : ?>
+
+	<input type="hidden" name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>" value="" />
+
+	<?php endif; ?>
+
+	<?php if ( $bbpress ) : ?>
+
+	<label class="subheader" for="<?php echo $this->field_id( 'bbpress' ); ?>">bbPress</label>
+	<ol>
+		<li>
+			<select name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>">
 <?php
 
 			$bbpress_options = array(
@@ -1210,26 +1193,18 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 
 ?>
 
-				</select>
-			</div>
-			<div class="form-group">
-				<div class="checkbox">
-					<label for="<?php echo $this->field_id( 'show_all_bb' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bb' ); ?>" id="<?php echo $this->field_id( 'show_all_bb' ); ?>" <?php checked( $settings['show_all_bb'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
-				</div>
-				<?php else : ?>
-					<input type="hidden" name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>" value="" />
-					<p><span class="description"><?php _e( 'Not installed', 'mycred' ); ?></span></p>
-				<?php endif; ?>
-			</div>
-		</div>
-	</div>
+			</select>
+		</li>
+		<li>
+			<label for="<?php echo $this->field_id( 'show_all_bb' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bb' ); ?>" id="<?php echo $this->field_id( 'show_all_bb' ); ?>" <?php checked( $settings['show_all_bb'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
+		</li>
+	</ol>
 
-	<h3 style="margin-bottom: 0;"><?php _e( 'Available Shortcodes', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<p><a href="http://codex.mycred.me/shortcodes/mycred_my_badges/" target="_blank">[mycred_my_badges]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_badges/" target="_blank">[mycred_badges]</a></p>
-		</div>
-	</div>
+	<?php else : ?>
+
+	<input type="hidden" name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>" value="" />
+
+	<?php endif; ?>
 
 </div>
 <?php
@@ -1365,7 +1340,7 @@ jQuery(function($) {
 		/**
 		 * Save Manual Badges
 		 * @since 1.0
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function save_manual_badges( $user_id ) {
 
@@ -1404,9 +1379,6 @@ jQuery(function($) {
 
 						}
 					}
-
-					if ( $added > 0 || $removed > 0 || $updated > 0 )
-						mycred_delete_user_meta( $user_id, 'mycred_badge_ids' );
 
 				}
 
@@ -1550,3 +1522,5 @@ if ( ! function_exists( 'mycred_load_badges_addon' ) ) :
 	}
 endif;
 add_filter( 'mycred_load_modules', 'mycred_load_badges_addon', 10, 2 );
+
+?>

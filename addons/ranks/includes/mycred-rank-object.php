@@ -76,3 +76,5 @@ if ( ! class_exists( 'myCRED_Rank' ) ) :
 
 	}
 endif;
+
+?>

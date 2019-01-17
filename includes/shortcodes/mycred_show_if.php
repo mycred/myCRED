@@ -120,3 +120,5 @@ if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_show_if', 'mycred_render_shortcode_show_if' );
+
+?>

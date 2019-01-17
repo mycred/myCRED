@@ -1000,3 +1000,5 @@ if ( ! class_exists( 'myCRED_Banking_Service_Payouts' ) ) :
 
 	}
 endif;
+
+?>

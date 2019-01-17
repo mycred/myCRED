@@ -77,3 +77,5 @@ if ( ! function_exists( 'mycred_render_shortcode_my_balance' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_my_balance', 'mycred_render_shortcode_my_balance' );
+
+?>

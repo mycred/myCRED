@@ -478,7 +478,7 @@ endif;
  * appropriate ranks.
  * @returns void
  * @since 1.3.2
- * @version 1.5.2
+ * @version 1.5.1
  */
 if ( ! function_exists( 'mycred_assign_ranks' ) ) :
 	function mycred_assign_ranks( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
@@ -501,10 +501,6 @@ if ( ! function_exists( 'mycred_assign_ranks' ) ) :
 
 		$ranks = mycred_get_ranks( 'publish', '-1', 'ASC', $point_type );
 
-		$balance_key =  mycred_get_meta_key( $point_type );
-		if ( mycred_rank_based_on_total( $point_type ) )
-			$balance_key =  mycred_get_meta_key( $point_type, '_total' );
-
 		$count = 0;
 		if ( ! empty( $ranks ) ) {
 			foreach ( $ranks as $rank ) {
@@ -514,7 +510,7 @@ if ( ! function_exists( 'mycred_assign_ranks' ) ) :
 						INNER JOIN {$wpdb->usermeta} balance ON ( ranks.user_id = balance.user_id AND balance.meta_key = %s )
 					SET ranks.meta_value = %d 
 					WHERE ranks.meta_key = %s 
-						AND balance.meta_value BETWEEN {$balance_format} AND {$balance_format};", $balance_key, $rank->post_id, mycred_get_meta_key( 'mycred_rank', $end ), $rank->minimum, $rank->maximum ) );
+						AND balance.meta_value BETWEEN {$balance_format} AND {$balance_format};", mycred_get_meta_key( $point_type ), $rank->post_id, mycred_get_meta_key( 'mycred_rank', $end ), $rank->minimum, $rank->maximum ) );
 
 			}
 		}
@@ -601,7 +597,7 @@ endif;
  * @version 1.5.1
  */
 if ( ! function_exists( 'mycred_get_users_of_rank' ) ) :
-	function mycred_get_users_of_rank( $rank_identifier = NULL, $number = '-1', $order = 'DESC', $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_get_users_of_rank( $rank_identifier = NULL, $number = NULL, $order = 'DESC', $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 		$rank_id = mycred_get_rank_object_id( $rank_identifier );
 		if ( $rank_id === false ) return false;
@@ -713,3 +709,5 @@ if ( ! function_exists( 'mycred_show_rank_in_bbpress' ) ) :
 
 	}
 endif;
+
+?>

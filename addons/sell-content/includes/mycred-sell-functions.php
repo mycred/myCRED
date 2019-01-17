@@ -147,7 +147,7 @@ endif;
  * Post Type for Sale
  * Returns either true (post type is for sale) or false (post type not for sale).
  * @since 1.7
- * @version 1.0.1
+ * @version 1.0
  */
 if ( ! function_exists( 'mycred_post_type_for_sale' ) ) :
 	function mycred_post_type_for_sale( $post_type = NULL ) {
@@ -163,11 +163,7 @@ if ( ! function_exists( 'mycred_post_type_for_sale' ) ) :
 
 		}
 
-		// BuddyPress support to prevent issues when we select to sell access to all pages.
-		if ( function_exists( 'bp_current_component' ) && bp_current_component() !== false )
-			$for_sale = false;
-
-		return apply_filters( 'mycred_post_type_for_sale', $for_sale, $post_type );
+		return $for_sale;
 
 	}
 endif;
@@ -176,7 +172,7 @@ endif;
  * Post is for Sale
  * Returns true (post is for sale) or false (post is not for sale).
  * @since 1.7
- * @version 1.0.1
+ * @version 1.0
  */
 if ( ! function_exists( 'mycred_post_is_for_sale' ) ) :
 	function mycred_post_is_for_sale( $post = NULL ) {
@@ -192,7 +188,7 @@ if ( ! function_exists( 'mycred_post_is_for_sale' ) ) :
 		$for_sale    = false;
 
 		// We start with checking the post type.
-		if ( mycred_post_type_for_sale( $post->post_type ) && array_key_exists( $post->post_type, $settings['filters'] ) ) {
+		if ( mycred_post_type_for_sale( $post->post_type ) ) {
 
 			$filter = $settings['filters'][ $post->post_type ]['by'];
 			$list   = explode( ',', $settings['filters'][ $post->post_type ]['list'] );
@@ -333,62 +329,33 @@ endif;
  * Checks if a given purchase has expired. Left this in place from the old version
  * for backwards comp.
  * @since 1.7
- * @version 1.1
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_content_purchase_has_expired' ) ) :
 	function mycred_content_purchase_has_expired( $payment = NULL ) {
 
-		$has_expired = false;
-		if ( ! is_object( $payment ) ) return $has_expired;
-
-		$length      = mycred_sell_content_get_expiration_length( $payment->ref_id, $payment->ctype );
-
-		// If expiration is set
-		if ( $length > 0 ) {
-
-			$expiration = apply_filters( 'mycred_sell_expire_calc', absint( $length * HOUR_IN_SECONDS ), $length, $payment->user_id, $payment->ref_id );
-			$expiration = $expiration + $payment->time;
-
-			if ( $expiration <= current_time( 'timestamp' ) )
-				$has_expired = true;
-
-		}
-
-		return apply_filters( 'mycred_sell_content_sale_expired', $has_expired, $payment->user_id, $payment->ref_id, $payment->time, $length );
-
-	}
-endif;
-
-/**
- * Get Expiration Length
- * @since 1.7.9.1
- * @version 1.0
- */
-if ( ! function_exists( 'mycred_sell_content_get_expiration_length' ) ) :
-	function mycred_sell_content_get_expiration_length( $post_id = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
-
-		$length      = 0;
-		if ( $post_id === NULL ) return $length;
+		if ( ! is_object( $payment ) ) return false;
 
 		$settings    = mycred_sell_content_settings();
-		$post        = get_post( $post_id );
+		$post        = get_post( $payment->ref_id );
 		$point_types = $settings['type'];
 		$has_expired = false;
+		$length      = 0;
 
 		// Invalid post
-		if ( ! isset( $post->ID ) ) return $length;
+		if ( ! isset( $post->ID ) ) return $has_expired;
 
 		$filter = $settings['filters'][ $post->post_type ]['by'];
 
 		// Manual mode - expiration settings are found in the post setting
 		if ( $filter === 'manual' ) {
 
-			$suffix = '_' . $type;
-			if ( $type == MYCRED_DEFAULT_TYPE_KEY )
+			$suffix = '_' . $payment->ctype;
+			if ( $payment->ctype == MYCRED_DEFAULT_TYPE_KEY )
 				$suffix = '';
 
 			$sale_setup = (array) get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix, true );
-			if ( ! empty( $sale_setup ) && array_key_exists( 'expire', $sale_setup ) && $sale_setup['expire'] > 0 )
+			if ( array_key_exists( 'expire', $sale_setup ) && $sale_setup['expire'] > 0 )
 				$length = $sale_setup['expire'];
 
 		}
@@ -396,13 +363,24 @@ if ( ! function_exists( 'mycred_sell_content_get_expiration_length' ) ) :
 		// Else we need to check the point type setup in our add-on settings.
 		else {
 
-			$point_type_setup = (array) mycred_get_option( 'mycred_sell_this_' . $type );
-			if ( ! empty( $point_type_setup ) && array_key_exists( 'expire', $point_type_setup ) && $point_type_setup['expire'] > 0 )
+			$point_type_setup = mycred_get_option( 'mycred_sell_this_' . $payment->ctype );
+			if ( array_key_exists( 'expire', $point_type_setup ) && $point_type_setup['expire'] > 0 )
 				$length = $point_type_setup['expire'];
 
 		}
 
-		return apply_filters( 'mycred_sell_content_expiration', $length, $post );
+		// If expiration is set
+		if ( $length > 0 ) {
+
+			$expiration = apply_filters( 'mycred_sell_expire_calc', absint( $length * HOUR_IN_SECONDS ), $length, $payment->user_id, $post->ID );
+			$expiration = $expiration + $payment->time;
+
+			if ( $expiration <= current_time( 'timestamp' ) )
+				$has_expired = true;
+
+		}
+
+		return apply_filters( 'mycred_sell_content_sale_expired', $has_expired, $payment->user_id, $post->ID, $payment->time, $length );
 
 	}
 endif;
@@ -411,7 +389,7 @@ endif;
  * Get Payment Buttons
  * Returns all payment buttons a user can use to pay for a given post.
  * @since 1.7
- * @version 1.1
+ * @version 1.0
  */
 if ( ! function_exists( 'mycred_sell_content_payment_buttons' ) ) :
 	function mycred_sell_content_payment_buttons( $user_id = NULL, $post_id = NULL ) {
@@ -429,23 +407,12 @@ if ( ! function_exists( 'mycred_sell_content_payment_buttons' ) ) :
 			foreach ( $settings['type'] as $point_type ) {
 
 				// Load point type
-				$mycred       = mycred( $point_type );
-				$setup        = mycred_get_option( 'mycred_sell_this_' . $point_type );
-				$price        = mycred_get_content_price( $post_id, $point_type, $user_id );
-				$status       = $setup['status'];
-
-				// Manual mode
-				if ( $settings['filters'][ $post->post_type ]['by'] == 'manual' ) {
-
-					$suffix       = ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? '_' . $point_type : '';
-					$manual_setup = (array) get_post_meta( $post_id, 'myCRED_sell_content' . $suffix, true );
-					if ( ! empty( $manual_setup ) && array_key_exists( 'status', $manual_setup ) )
-						$status = $manual_setup['status'];
-
-				}
+				$mycred = mycred( $point_type );
+				$setup  = mycred_get_option( 'mycred_sell_this_' . $point_type );
+				$price  = mycred_get_content_price( $post_id, $point_type, $user_id );
 
 				// Point type not enabled
-				if ( $status == 'disabled' ) continue;
+				if ( $setup['status'] === 'disabled' ) continue;
 
 				// Make sure we are not excluded from this type
 				if ( $mycred->exclude_user( $user_id ) ) continue;
@@ -475,33 +442,32 @@ endif;
  * Sell Content Template
  * Parses a particular template.
  * @since 1.7
- * @version 1.0.1
+ * @version 1.0
  */
 if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 	function mycred_sell_content_template( $template = '', $post = NULL, $type = 'mycred-sell-partial-content', $status = 'visitor' ) {
 
 		if ( ! is_object( $post ) || strlen( $template ) === 0 ) return $template;
 
-		$post_type         = get_post_type_object( $post->post_type );
-		$url               = get_permalink( $post->ID );
+		$post_type = get_post_type_object( $post->post_type );
+		$url       = get_permalink( $post->ID );
 
 		// Remove old tags that are no longer supported
-		$template          = str_replace( array( '%price%', '%expires%', ), '', $template );
+		$template  = str_replace( array( '%price%', '%expires%', ), '', $template );
 
-		$template          = str_replace( '%post_title%',      get_the_title( $post->ID ), $template );
-		$template          = str_replace( '%post_type%',       $post_type->labels->singular_name, $template );
-		$template          = str_replace( '%post_url%',        $url, $template );
-		$template          = str_replace( '%link_with_title%', '<a href="' . $url . '">' . $post->post_title . '</a>', $template );
+		$template  = str_replace( '%post_title%',      get_the_title( $post->ID ), $template );
+		$template  = str_replace( '%post_type%',       $post_type->labels->singular_name, $template );
+		$template  = str_replace( '%post_url%',        $url, $template );
+		$template  = str_replace( '%link_with_title%', '<a href="' . $url . '">' . $post->post_title . '</a>', $template );
 
-		$template          = apply_filters( 'mycred_sell_content_template', $template, $post, $type );
-		$template          = do_shortcode( $template );
+		$template  = apply_filters( 'mycred_sell_content_template', $template, $post, $type );
 
 		$wrapper_classes   = array();
 		$wrapper_classes[] = 'mycred-sell-this-wrapper';
-		$wrapper_classes[] = esc_attr( $type );
-		$wrapper_classes[] = esc_attr( $status );
+		$wrapper_classes[] = $type;
+		$wrapper_classes[] = $status;
 
-		$wrapper_classes   = apply_filters( 'mycred_sell_template_class', $wrapper_classes, $post );
+		$wrapper_classes = apply_filters( 'mycred_sell_template_class', $wrapper_classes, $post );
 
 		return '<div id="mycred-buy-content' . $post->ID . '" class="' . implode( ' ', $wrapper_classes ) . '" data-pid="' . $post->ID . '">' . $template . '</div>';
 
@@ -653,7 +619,7 @@ endif;
  * Get Users Purchased Content
  * Returns an array of log entries for content purchases.
  * @since 1.7
- * @version 1.0.1
+ * @version 1.0
  */
 if ( ! function_exists( 'mycred_get_users_purchased_content' ) ) :
 	function mycred_get_users_purchased_content( $user_id = NULL, $number = 25, $order = 'DESC', $point_type = NULL ) {
@@ -676,7 +642,7 @@ if ( ! function_exists( 'mycred_get_users_purchased_content' ) ) :
 		if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) )
 			$order = 'DESC';
 
-		$sql = apply_filters( 'mycred_get_users_purchased_content', "SELECT * FROM {$mycred->log_table} log INNER JOIN {$wpdb->posts} posts ON ( log.ref_id = posts.ID ) {$wheres} ORDER BY time {$order} {$limit};", $user_id, $number, $order, $point_type );
+		$sql = apply_filters( 'mycred_get_users_purchased_content', "SELECT * FROM {$mycred->log_table} {$wheres} ORDER BY time {$order} {$limit};", $user_id, $number, $order, $point_type );
 
 		return $wpdb->get_results( $sql );
 
@@ -846,3 +812,5 @@ if ( ! function_exists( 'mycred_get_post_type_options' ) ) :
 
 	}
 endif;
+
+?>

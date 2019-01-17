@@ -371,3 +371,5 @@ if ( ! class_exists( 'myCRED_Service' ) ) :
 
 	}
 endif;
+
+?>

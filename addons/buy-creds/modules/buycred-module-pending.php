@@ -50,13 +50,36 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 
 			add_action( 'mycred_add_menu',       array( $this, 'add_to_menu' ), $this->menu_pos );
 			add_action( 'template_redirect',     array( $this, 'intercept_cancellations' ) );
+			add_action( 'parse_comment_query',   array( $this, 'remove_frontend_updates' ), 90 );
+
+		}
+
+		/**
+		 * Remove Front End Updates
+		 * Make sure comments are not shown on the front end when it comes to buyCRED.
+		 * @since 1.7.4
+		 * @version 1.0
+		 */
+		public function remove_frontend_updates( $query ) {
+
+			$show_updates = true;
+			if ( ! function_exists( 'is_admin' ) || ! is_admin() )
+				$show_updates = false;
+
+			if ( apply_filters( 'mycred_buycred_show_updates', $show_updates, $this ) === true ) return;
+
+			if ( ! empty( $query->query_vars['author__not_in'] ) )
+				$query->query_vars['author__not_in'][] = 'buycred';
+
+			elseif ( empty( $query->query_vars['author__not_in'] ) )
+				$query->query_vars['author__not_in'] = array( 'buycred' );
 
 		}
 
 		/**
 		 * Intercept Cancellations
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function intercept_cancellations() {
 
@@ -69,9 +92,6 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 
 				// Make sure pending payment still exists and that we are cancelling our own and not someone elses
 				if ( $pending_payment === false || $pending_payment->buyer_id != get_current_user_id() ) return;
-
-				// Delete cache
-				delete_user_meta( $pending_payment->buyer_id, 'buycred_pending_payments' );
 
 				// Move item to trash
 				wp_trash_post( $pending_payment->payment_id );
@@ -87,14 +107,12 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		/**
 		 * Module Admin Init
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function module_admin_init() {
 
-			add_filter( 'parent_file',                                array( $this, 'parent_file' ) );
-			add_filter( 'submenu_file',                               array( $this, 'subparent_file' ), 10, 2 );
-
 			add_action( 'admin_notices',                              array( $this, 'admin_notices' ) );
+			add_filter( 'parent_file',                                array( $this, 'parent_file' ) );
 			add_filter( 'manage_buycred_payment_posts_columns',       array( $this, 'adjust_column_headers' ) );
 			add_action( 'manage_buycred_payment_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
 			add_filter( 'bulk_actions-edit-buycred_payment',          array( $this, 'bulk_actions' ) );
@@ -242,41 +260,16 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		/**
 		 * Parent File
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function parent_file( $parent = '' ) {
 
 			global $pagenow;
 
 			if ( isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'buycred_payment' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
-				return MYCRED_SLUG;
+				return 'mycred';
 
 			return $parent;
-
-		}
-
-		/**
-		 * Sub Parent File
-		 * @since 1.7.8
-		 * @version 1.0
-		 */
-		public function subparent_file( $subparent = '', $parent = '' ) {
-
-			global $pagenow;
-
-			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'buycred_payment' ) {
-
-				return 'edit.php?post_type=buycred_payment';
-			
-			}
-
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'buycred_payment' ) {
-
-				return 'edit.php?post_type=buycred_payment';
-
-			}
-
-			return $subparent;
 
 		}
 

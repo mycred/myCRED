@@ -225,3 +225,5 @@ if ( ! class_exists( 'myCRED_Point_Type' ) ) :
 
 	}
 endif;
+
+?>

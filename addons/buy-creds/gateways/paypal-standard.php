@@ -332,3 +332,4 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 
 	}
 endif;
+?>

@@ -47,36 +47,7 @@ if ( ! class_exists( 'myCRED_Bank_Transfer' ) ) :
 		 * @since 1.0
 		 * @version 1.0
 		 */
-		public function returning() {
-
-			add_filter( 'mycred_setup_gateways', array( $this, 'relable_gateway' ) );
-
-		}
-
-		/**
-		 * Admin Init Handler
-		 * @since 1.7
-		 * @version 1.0
-		 */
-		function admin_init() {
-
-			add_filter( 'mycred_setup_gateways', array( $this, 'relable_gateway' ) );
-
-		}
-
-		/**
-		 * Results Handler
-		 * @since 1.7.6
-		 * @version 1.0
-		 */
-		public function relable_gateway( $installed ) {
-
-			if ( ! empty( $this->prefs['title'] ) && $this->prefs['title'] != $installed['bank']['title'] )
-				$installed['bank']['title'] = $this->prefs['title'];
-
-			return $installed;
-
-		}
+		public function returning() { }
 
 		/**
 		 * Buy Handler
@@ -258,3 +229,5 @@ jQuery(function($){
 
 	}
 endif;
+
+?>

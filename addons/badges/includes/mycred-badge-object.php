@@ -64,14 +64,12 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 		public function get_image( $image = NULL ) {
 
 			$image_identification = false;
-			$level = 0;
 
 			if ( $image === 'main' )
 				$image_identification = get_post_meta( $this->post_id, 'main_image', true );
 
 			elseif ( $image !== NULL && is_numeric( $image ) && isset( $this->levels[ $image ]['attachment_id'] ) ) {
 
-				$level = $image;
 				$image_identification = $this->levels[ $image ]['image_url'];
 				if ( $this->levels[ $image ]['attachment_id'] > 0 )
 					$image_identification = $this->levels[ $image ]['attachment_id'];
@@ -84,14 +82,11 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 			if ( is_numeric( $image_identification ) &&  strpos( '://', $image_identification ) === false )
 				$image_url = wp_get_attachment_url( $image_identification );
 
-			$image_width  = ( $this->image_width !== false ) ? ' width="' . esc_attr( $this->image_width ) . '"' : '';
-			$image_height = ( $this->image_height !== false ) ? ' height="' . esc_attr( $this->image_height ) . '"' : '';
-
-			$html         = '<img src="' . esc_url( $image_url ) . '" class="' . MYCRED_SLUG . '-badge-image badge-level' . esc_attr( $level ) . '" title="' . esc_attr( $this->title ) . '" alt="' . esc_attr( $this->title ) . '"' . $image_width . $image_height . ' />';
-
-			return apply_filters( 'mycred_badge_image', $html, $image, $this );
+			return '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $this->title ) . '" width="' . $this->image_width . '" height="' . $this->image_height . '" />';
 
 		}
 
 	}
 endif;
+
+?>

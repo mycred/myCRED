@@ -1,9 +1,9 @@
 === myCRED ===
 Contributors: designbymerovingi
-Tags: point, credit, loyalty program, engagement, reward
-Requires at least: 4.5
-Tested up to: 4.9
-Stable tag: 1.7.9.4
+Tags: point, points, tokens, credit, management, reward, charge, community, contest, buddypress, jetpack, bbpress, simple press, woocommerce, wp e-commerce, contact-form-7
+Requires at least: 4.0
+Tested up to: 4.7
+Stable tag: 1.7.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,17 +11,21 @@ An adaptive and powerful points management system for WordPress powered websites
 
 == Description ==
 
+> #### Updating to 1.7
+> If you are using the Banking add-on, Sell Content add-on or the Badge add-on, I highly recommend you read [these](https://mycred.me/news/) update guides before you update to 1.7 from older versions!
+
+
 > #### Plugin Support
-> Free support is offered via the [myCRED website](https://mycred.me/support/) Monday to Friday 9AM - 5PM (GMT+1). You can consult the [online community](https://mycred.me/support/forums/) for customisations or open a [free support ticket](https://mycred.me/support/) if you can not get myCRED to work as described in the documentation. No support is provided here on the wordpress.org support forum or on any social media account.
+> Free support is offered via the [myCRED website](https://mycred.me/support/). No support is provided here on the wordpress.org support forum.
 
 
 myCRED is an adaptive points management system that lets you build a broad range of point related applications for your WordPress powered website.
-Store reward systems, community leaderboards, online banking or monetizing your websites content, are a few examples of the ways myCRED is used.
+Store reward systems, community leaderboards, online banking or monetizing your websites content, these are some of the ways you can use myCRED.
 
 
 = Points =
 
-Each user on your WordPress websites gets their own point balance which you can manually [adjust](https://mycred.me/about/features/#points-management) at any time. You can use just one point balance or setup multiple types of balances. How these balances are accessed, used or shows is entirely up to you.
+Each user on your WordPress websites gets their own point balance which you can manually [adjust](https://mycred.me/about/features/#points-management) at any time. As of version 1.4, myCRED also supports [multiple point types](https://mycred.me/about/features/#multiple-point-types) for those who need more then one type of points on their website.
 
 
 = Log =
@@ -96,15 +100,15 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-= 1.7.9.4 =
-Bug fixes.
+= 1.7.5 =
+Bug fixes, query improvements, Coupon add-on updates and WP 4.7 comp.
 
 
 == Other Notes ==
 
 = Requirements =
-* WordPress 4.5 or greater
-* PHP version 5.6 or greater
+* WordPress 4.0 or greater
+* PHP version 5.3 or greater
 * PHP mcrypt library enabled
 * MySQL version 5.0 or greater
 
@@ -112,7 +116,7 @@ Bug fixes.
 * Swedish - Gabriel S Merovingi
 * French - Chouf1 [Dan - BuddyPress France](http://bp-fr.net/)
 * Persian - Mani Akhtar
-* Spanish - Jose Maria Bescos [Website](http://www.ibidem-translations.com/spanish.php)
+* Spanish - Robert Rowshan [Website](http://robertrowshan.com)
 * Russian - Skladchik
 * Chinese - suifengtec [Website](http://coolwp.com)
 * Portuguese (Brazil) - Guilherme
@@ -121,11 +125,28 @@ Bug fixes.
 
 == Changelog ==
 
-= 1.7.9.4 =
-FIX - Compatible with php 7.2.
-FIX - Points Log pagination issue.
-FIX - Reset all to zero myCred default balance meta key .
-Tested with WordPress 4.9 beta3
+= 1.7.5 =
+FIX - rtMedia hook uses the has_entry() method incorrectly.
+FIX - Fixed issue with amount queries searching ref_id instead of creds column.
+FIX - Fixed issue with usernames / emails are not converted into correct IDs.
+FIX - When a new log entry is added the reference cache should be reset.
+FIX - Incorrect value for %new_balance% in Email Notifications add-on.
+FIX - Added missing bank transfer reference translation.
+FIX - Bank Transfers are not being shown in the buyCRED purchase log in the admin area.
+FIX - The leaderboard shortcode does not follow the same sorting of results as the leaderboard position shortcode. While we get to choose the order of our first sorting, the secondary sorting should be based on the users IDs.
+TWEAK - Updated inline documentation.
+TWEAK - Improved query construction and created a new structure for posting queries.
+TWEAK - Updated leaderboard query when leaderboard is based on total balance.
+TWEAK - When providing a timeframe, make sure the value of strtotime() is only used if it's a valid unix timestamp. This should prevent db query errors when using bad strings.
+UPDATE - myCRED_Query_Log class updated to version 1.7
+UPDATE - Updated the Coupons add-on to version 1.3.1
+NEW - Added new mycred_locate_template() function.
+NEW - Added support for order by multiple columns.
+NEW - Added support for multiple point type queries and display.
+NEW - Added support for multiple entry id queries.
+NEW - Added advanced query options which disabled the table rendering.
+NEW - Added new shortcode attribute for horizontal navigation when using the mycred_history shortcode.
+
 
 = Previous Versions =
 https://mycred.me/support/changelog/

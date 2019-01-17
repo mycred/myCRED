@@ -63,16 +63,9 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				'order'    => 'DESC',
 				'ids'      => false,  // depreciated as of 1.7.5
 				'fields'   => 'all',  // in favor for fields
-				'paged'    => '',
-				'page_arg' => 'page'
+				'paged'    => $this->get_pagenum()
 			);
 			$this->args = apply_filters( 'mycred_query_log_args', wp_parse_args( $args, $defaults ), $defaults );
-
-			// Need to be sure the page_arg argument is set.
-			if ( ! array_key_exists( 'page_arg', $this->args ) ) $this->args['page_arg'] = 'page';
-
-			if ( $this->args['paged'] == '' )
-				$this->args['paged'] = $this->get_pagenum();
 
 			/**
 			 * Setup Point Format
@@ -192,7 +185,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['entry_id']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['entry_id']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "id IN ( %d" . str_repeat( ", %d", ( count( $this->args['entry_id']['ids'] ) - 1 ) ) . " )", $this->args['entry_id']['ids'] );
+						$wheres[] = $wpdb->prepare( "id IN ( " . str_repeat( "%d,", ( count( $this->args['entry_id']['ids'] ) ) ) . " )", $this->args['entry_id']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['entry_id']['compare'], array( '=', '!=' ) ) && ! is_array( $this->args['entry_id']['ids'] ) ) {
@@ -236,7 +229,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['ctype']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['ctype']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "ctype IN ( %s" . str_repeat( ", %s", ( count( $this->args['ctype']['ids'] ) - 1 ) ) . " )", $this->args['ctype']['ids'] );
+						$wheres[] = $wpdb->prepare( "ctype IN ( %s" . str_repeat( ",%s", ( count( $this->args['ctype']['ids'] ) - 1 ) ) . " )", $this->args['ctype']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['ctype']['compare'], array( '=', '!=' ) ) && ! is_array( $this->args['ctype']['ids'] ) ) {
@@ -295,7 +288,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['user_id']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['user_id']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "user_id IN ( %d" . str_repeat( ", %d", ( count( $this->args['user_id']['ids'] ) - 1 ) ) . " )", $this->args['user_id']['ids'] );
+						$wheres[] = $wpdb->prepare( "user_id IN ( %d" . str_repeat( ",%d", ( count( $this->args['user_id']['ids'] ) - 1 ) ) . " )", $this->args['user_id']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['user_id']['compare'], array( '=', '!=' ) ) && ! is_array( $this->args['user_id']['ids'] ) ) {
@@ -354,7 +347,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['ref']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['ref']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "ref IN ( %s" . str_repeat( ", %s", ( count( $this->args['ref']['ids'] ) - 1 ) ) . " )", $this->args['ref']['ids'] );
+						$wheres[] = $wpdb->prepare( "ref IN ( %s" . str_repeat( ",%s", ( count( $this->args['ref']['ids'] ) - 1 ) ) . " )", $this->args['ref']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['ref']['compare'], array( '=', '!=' ) ) && ! is_array( $this->args['ref']['ids'] ) ) {
@@ -413,7 +406,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['ref_id']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['ref_id']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "ref_id IN ( %d" . str_repeat( ", %d", ( count( $this->args['ref_id']['ids'] ) - 1 ) ) . " )", $this->args['ref_id']['ids'] );
+						$wheres[] = $wpdb->prepare( "ref_id IN ( %d" . str_repeat( ",%d", ( count( $this->args['ref_id']['ids'] ) - 1 ) ) . " )", $this->args['ref_id']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['ref_id']['compare'], array( '=', '!=', '>', '>=', '<', '<=' ) ) && ! is_array( $this->args['ref_id']['ids'] ) ) {
@@ -573,12 +566,12 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 						if ( count( $dates ) == 1 )
 							$this->args['time'] = array( 'dates' => $dates[0], 'compare' => '=' );
 
-						// Keyword time query or between two dates
-						elseif ( count( $dates ) == 2 || in_array( $this->args['time'], array( 'today', 'yesterday', 'thisweek', 'thismonth' ) ) )
+						// Keyword time query
+						elseif ( count( $dates ) == 2 && in_array( $this->args['time'], array( 'today', 'yesterday', 'thisweek', 'thismonth' ) ) )
 							$this->args['time'] = array( 'dates' => $dates, 'compare' => 'BETWEEN' );
 
 						// Multiple time query
-						else
+						elseif ( count( $dates ) > 1 )
 							$this->args['time'] = array( 'dates' => $dates, 'compare' => 'IN' );
 
 					}
@@ -586,7 +579,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				}
 
 				// Make sure query is properly formatted
-				if ( is_array( $this->args['time'] ) && array_key_exists( 'dates', $this->args['time'] ) && array_key_exists( 'compare', $this->args['time'] ) ) {
+				if ( array_key_exists( 'dates', $this->args['time'] ) && array_key_exists( 'compare', $this->args['time'] ) ) {
 
 					// Between (requires dates to be an array)
 					if ( in_array( $this->args['time']['compare'], array( 'BETWEEN', 'NOT BETWEEN' ) ) && is_array( $this->args['time']['dates'] ) ) {
@@ -965,21 +958,20 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		/**
 		 * Get Page Number
 		 * @since 1.4
-		 * @version 1.0.3
+		 * @version 1.0.2
 		 */
 		public function get_pagenum() {
 
 			global $wp;
 
-			$page_key = ( isset( $this->args['page_arg'] ) && $this->args['page_arg'] !== NULL && $this->args['page_arg'] != '' ) ? $this->args['page_arg'] : 'page';
-			if ( isset( $wp->query_vars[ $page_key ] ) && $wp->query_vars[ $page_key ] != '' )
-				$pagenum = absint( $wp->query_vars[ $page_key ] );
+			if ( isset( $wp->query_vars['page'] ) && $wp->query_vars['page'] != '' )
+				$pagenum = absint( $wp->query_vars['page'] );
 
-			elseif ( isset( $_REQUEST[ $page_key ] ) )
-				$pagenum = absint( $_REQUEST[ $page_key ] );
+			elseif ( isset( $_REQUEST['paged'] ) )
+				$pagenum = absint( $_REQUEST['paged'] );
 
-			elseif ( isset( $_REQUEST[ $page_key ] ) )
-				$pagenum = absint( $_REQUEST[ $page_key ] );
+			elseif ( isset( $_REQUEST['page'] ) )
+				$pagenum = absint( $_REQUEST['page'] );
 
 			else return 1;
 
@@ -1048,7 +1040,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		/**
 		 * Filter Log options
 		 * @since 0.1
-		 * @version 1.3.3
+		 * @version 1.3.2
 		 */
 		public function filter_options( $is_profile = false ) {
 
@@ -1077,7 +1069,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			// Filter by user
 			if ( $this->core->can_edit_creds() && ! $is_profile && $this->num_rows > 0 ) {
 
-				echo '<input type="text" class="form-control" name="user" id="myCRED-user-filter" size="22" placeholder="' . __( 'User ID, Username, Email or Nicename', 'mycred' ) . '" value="' . ( ( isset( $_GET['user'] ) ) ? esc_attr( $_GET['user'] ) : '' ) . '" /> ';
+				echo '<input type="text" class="form-control" name="user" id="myCRED-user-filter" size="22" placeholder="' . __( 'User ID, Username, Email or Nicename', 'mycred' ) . '" value="' . ( ( isset( $_GET['user'] ) ) ? $_GET['user'] : '' ) . '" /> ';
 				$show = true;
 
 			}
@@ -1158,31 +1150,27 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		/**
 		 * Front Pagination
 		 * @since 1.7
-		 * @version 1.0.5
+		 * @version 1.0.2
 		 */
 		public function front_pagination( $pages_to_show = 5 ) {
 
 			if ( ! $this->have_entries() || ! $this->render_mode ) return;
 
-			$page_links           = array();
-			$total_pages          = $this->max_num_pages;
-			$current              = $this->get_pagenum();
+			$page_links    = array();
+			$total_pages   = $this->max_num_pages;
+			$current       = $this->get_pagenum();
 
-			$removable_query_args = wp_removable_query_args();
+			$current_url   = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+			$current_url   = str_replace( '/page/' . $current . '/', '/', $current_url );
 
-			$current_url          = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
-			$current_url          = remove_query_arg( $removable_query_args, $current_url );
-			$current_url          = str_replace( '/' . $current . '/', '/', $current_url );
-			$current_url          = apply_filters( 'mycred_log_front_nav_url', $current_url, $this );
-
-			$pages_to_show        = absint( $pages_to_show );
+			$pages_to_show = absint( $pages_to_show );
 			if ( $pages_to_show === 0 ) $pages_to_show = 5;
 
 			// We can not show more pages then whats available
 			if ( $pages_to_show > $total_pages )
 				$pages_to_show = $total_pages;
 
-			$disable_first        = $disable_last = '';
+			$disable_first = $disable_last = '';
 			if ( $current == 1 )
 				$disable_first = ' disabled';
 
@@ -1194,7 +1182,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'first-page',
-					esc_url( remove_query_arg( $this->args['page_arg'], $current_url ) ),
+					esc_url( remove_query_arg( 'page', $current_url ) ),
 					'&laquo;'
 				);
 			}
@@ -1204,12 +1192,12 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'prev-page',
-					esc_url( add_query_arg( $this->args['page_arg'], max( 1, $current-1 ), $current_url ) ),
+					esc_url( add_query_arg( 'page', max( 1, $current-1 ), $current_url ) ),
 					'&lsaquo;'
 				);
 			}
 
-			$start_from           = 1;
+			$start_from    = 1;
 			if ( $current > $pages_to_show ) {
 				$diff          = (int) ( $current / $pages_to_show );
 				$start_from    = $pages_to_show * $diff;
@@ -1221,7 +1209,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				if ( $i != $current )
 					$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 						'mycred-nav',
-						esc_url( add_query_arg( $this->args['page_arg'], $i, $current_url ) ),
+						esc_url( add_query_arg( 'page', $i, $current_url ) ),
 						$i
 					);
 
@@ -1235,7 +1223,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'next-page' . $disable_last,
-					esc_url( add_query_arg( $this->args['page_arg'], min( $total_pages, $current+1 ), $current_url ) ),
+					esc_url( add_query_arg( 'page', min( $total_pages, $current+1 ), $current_url ) ),
 					'&rsaquo;'
 				);
 			}
@@ -1245,7 +1233,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'last-page' . $disable_last,
-					esc_url( add_query_arg( $this->args['page_arg'], $total_pages, $current_url ) ),
+					esc_url( add_query_arg( 'page', $total_pages, $current_url ) ),
 					'&raquo;'
 				);
 			}
@@ -1257,7 +1245,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		/**
 		 * Pagination
 		 * @since 1.4
-		 * @version 1.1.2
+		 * @version 1.1.1
 		 */
 		public function pagination( $location = 'top', $id = '' ) {
 
@@ -1266,17 +1254,19 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$page_links         = array();
 			$output             = '';
 			$total_pages        = $this->max_num_pages;
-			$current            = (isset($_GET['paged']) && is_numeric($_GET['paged']) ) ? $_GET['paged'] : 1;
+			$current            = $this->get_pagenum();
 			$current_url        = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
 
-			if ( ! $this->is_admin )
+			if ( ! is_admin() )
 				$current_url = str_replace( '/page/' . $current . '/', '/', $current_url );
 
 			$current_url        = remove_query_arg( array( 'hotkeys_highlight_last', 'hotkeys_highlight_first' ), $current_url );
-			$current_url        = apply_filters( 'mycred_log_pagination_url', $current_url, $this );
 
 			if ( $this->have_entries() )
 				$output = '<span class="displaying-num">' . sprintf( _n( '1 entry', '%d entries', $this->num_rows, 'mycred' ), $this->num_rows ) . '</span>';
+
+			$current_url        = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+			$current_url        = remove_query_arg( array( 'hotkeys_highlight_last', 'hotkeys_highlight_first' ), $current_url );
 	
 			$total_pages_before = '<span class="paging-input">';
 			$total_pages_after  = '</span>';
@@ -1392,17 +1382,14 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$this->table_headers();
 
 			$table_class = 'table table-condensed mycred-table';
-			if ( $this->is_admin )
+			if ( is_admin() )
 				$table_class = 'mycred-table wp-list-table widefat fixed striped users';
 
-			$output  = '';
-			if ( ! $this->is_admin )
-				$output .= '<div class="table-responsive">';
-
-			$output .= '
-<table class="' . apply_filters( 'mycred_log_table_classes', $table_class, $this ) . '" cellspacing="0" cellspacing="0">
-	<thead>
-		<tr>';
+			$output = '
+<div class="table-responsive">
+	<table class="' . apply_filters( 'mycred_log_table_classes', $table_class, $this ) . '" cellspacing="0" cellspacing="0">
+		<thead>
+			<tr>';
 
 			// Table header
 			foreach ( $this->headers as $col_id => $col_title ) {
@@ -1420,24 +1407,44 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			}
 
 			$output .= '
-		</tr>
-	</thead>
-	<tbody id="the-list">';
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>';
+
+			// Table footer
+			foreach ( $this->headers as $col_id => $col_title ) {
+
+				$class = '';
+				if ( $col_id != 'username' && in_array( $col_id, $this->hidden_headers ) )
+					$class = ' hidden';
+
+				if ( $col_id == 'cb' )
+					$output .= '<td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-2">' . __( 'Select all', 'mycred' ) . '</label><input type="checkbox" id="cb-select-all-2" /></td>';
+
+				else
+					$output .= '<th scope="col" class="manage-column' . ( ( $col_id == 'username' ) ? ' column-primary' : '' ) . ' column-' . $col_id . $class . '">' . $col_title . '</th>';
+
+			}
+
+			$output .= '
+			</tr>
+		</tfoot>
+		<tbody id="the-list">';
 
 			// Loop
 			if ( $this->have_entries() ) {
-
 				$alt = 0;
 
 				foreach ( $this->results as $log_entry ) {
 
-					$row_class = apply_filters( 'mycred_log_row_classes', array( 'entry-' . $log_entry->id, 'type-log-entry', 'format-standard', 'hentry' ), $log_entry );
+					$row_class = apply_filters( 'mycred_log_row_classes', array( 'iedit', 'level-0', 'post-' . $log_entry->id, 'type-post', 'status-publish', 'format-standard', 'hentry' ), $log_entry );
 
 					$alt = $alt+1;
 					if ( $alt % 2 == 0 )
-						$row_class[] = 'alt';
+						$row_class[] = ' alt';
 
-					$output .= '<tr class="' . implode( ' ', $row_class ) . '" id="entry-' . $log_entry->id . '">' . $this->get_the_entry( $log_entry ) . '</tr>';
+					$output .= '<tr class="' . implode( ' ', $row_class ) . '" id="mycred-log-entry-row-' . $log_entry->id . '">' . $this->get_the_entry( $log_entry ) . '</tr>';
 
 				}
 
@@ -1450,32 +1457,9 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			}
 
 			$output .= '
-	</tbody>
-	<tfoot>
-		<tr>';
-
-			// Table footer
-			foreach ( $this->headers as $col_id => $col_title ) {
-
-				$class = '';
-				if ( $col_id != 'username' && in_array( $col_id, $this->hidden_headers ) )
-					$class = ' hidden';
-
-				if ( $col_id == 'cb' )
-					$output .= '<td class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-2">' . __( 'Select all', 'mycred' ) . '</label><input type="checkbox" id="cb-select-all-2" /></td>';
-
-				else
-					$output .= '<th scope="col" class="manage-column' . ( ( $col_id == 'username' ) ? ' column-primary' : '' ) . ' column-' . $col_id . $class . '">' . $col_title . '</th>';
-
-			}
-
-			$output .= '
-		</tr>
-	</tfoot>
-</table>';
-
-			if ( ! $this->is_admin )
-				$output .= '</div>';
+		</tbody>
+	</table>
+</div>' . "\n";
 
 			return $output;
 
@@ -1498,7 +1482,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		 * Generated a single entry row depending on the columns used / requested.
 		 * @filter mycred_log_date
 		 * @since 0.1
-		 * @version 1.4.4
+		 * @version 1.4.2
 		 */
 		public function get_the_entry( $log_entry, $wrap = 'td' ) {
 
@@ -1563,7 +1547,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 					// Date & Time Column
 					case 'time' :
 
-						$content = $time = apply_filters( 'mycred_log_date', date_i18n( $date_format, $log_entry->time ), $log_entry->time, $log_entry );
+						$content = $time = apply_filters( 'mycred_log_date', date( $date_format, $log_entry->time ), $log_entry->time, $log_entry );
 						$content = '<time>' . $content . '</time>';
 
 						if ( $this->is_admin )
@@ -1599,7 +1583,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				}
 
 				if ( $content !== false )
-					$entry_data .= '<' . $wrap . ' class="' . ( ( $column_id == 'username' ) ? 'column-primary ' : '' ) . 'column-' . $column_id . $hidden . '" data-colname="' . $column_name . '" ' . $data . '>' . $content . '</' . $wrap . '>';
+					$entry_data .= '<' . $wrap . ' class="' . ( ( $column_id == 'username' ) ? 'column-primary ' : '' ) . 'column-' . $column_id . $hidden . '"' . $data . '>' . $content . '</' . $wrap . '>';
 
 			}
 
@@ -2135,24 +2119,23 @@ endif;
  * @param $user_id (int), required user id
  * @param $type (string), required point type
  * @since 1.4.7
- * @version 1.1.2
+ * @version 1.1.1
  */
 if ( ! function_exists( 'mycred_query_users_total' ) ) :
-	function mycred_query_users_total( $user_id, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_query_users_total( $user_id, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 		if ( ! MYCRED_ENABLE_LOGGING ) return 0;
 
-		if ( ! mycred_point_type_exists( $point_type ) )
-			$point_type = MYCRED_DEFAULT_TYPE_KEY;
+		global $wpdb;
 
-		global $wpdb, $mycred;
+		$mycred = mycred( $type );
 
 		$total = $wpdb->get_var( $wpdb->prepare( "
 			SELECT SUM( creds ) 
 			FROM {$mycred->log_table} 
 			WHERE user_id = %d
 				AND ( ( creds > 0 ) OR ( creds < 0 AND ref = 'manual' ) )
-				AND ctype = %s;", $user_id, $point_type ) );
+				AND ctype = %s;", $user_id, mycred_get_meta_key( $type ) ) );
 
 		if ( $total === NULL ) {
 
@@ -2160,14 +2143,14 @@ if ( ! function_exists( 'mycred_query_users_total' ) ) :
 				SELECT meta_value 
 				FROM {$wpdb->usermeta} 
 				WHERE user_id = %d 
-					AND meta_key = %s;", $user_id, mycred_get_meta_key( $point_type ) ) );
+					AND meta_key = %s;", $user_id, mycred_get_meta_key( $type ) ) );
 
 			if ( $total === NULL )
 				$total = 0;
 
 		}
 
-		return apply_filters( 'mycred_query_users_total', $total, $user_id, $point_type );
+		return apply_filters( 'mycred_query_users_total', $total, $user_id, $type, $mycred );
 
 	}
 endif;
@@ -2399,6 +2382,39 @@ if ( ! function_exists( 'mycred_user_has_log_entries' ) ) :
 endif;
 
 /**
+ * Count Reference Instances
+ * Counts the total number of occurrences of a specific reference for a user.
+ * @see http://codex.mycred.me/functions/mycred_count_ref_instances/
+ * @param $reference (string) required reference to check
+ * @param $user_id (int) option to check references for a specific user
+ * @uses get_var()
+ * @since 1.1
+ * @version 1.0.2
+ */
+if ( ! function_exists( 'mycred_count_ref_instances' ) ) :
+	function mycred_count_ref_instances( $reference = '', $user_id = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+
+		if ( empty( $reference ) ) return 0;
+
+		$mycred = mycred( $type );
+
+		global $wpdb;
+
+		if ( $user_id !== NULL )
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$mycred->log_table} WHERE ref = %s AND user_id = %d AND ctype = %s;", $reference, $user_id, $mycred->cred_id ) );
+
+		else
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$mycred->log_table} WHERE ref = %s AND ctype = %s;", $reference, $mycred->cred_id ) );
+
+		if ( $count === NULL )
+			$count = 0;
+
+		return $count;
+
+	}
+endif;
+
+/**
  * Count All Reference Instances
  * Counts all the reference instances in the log returning the result
  * in an assosiative array.
@@ -2454,42 +2470,6 @@ if ( ! function_exists( 'mycred_count_all_ref_instances' ) ) :
 endif;
 
 /**
- * Count Reference Instances
- * Counts the total number of occurrences of a specific reference for a user.
- * @see http://codex.mycred.me/functions/mycred_count_ref_instances/
- * @param $reference (string) required reference to check
- * @param $user_id (int) option to check references for a specific user
- * @uses get_var()
- * @since 1.1
- * @version 1.1
- */
-if ( ! function_exists( 'mycred_count_ref_instances' ) ) :
-	function mycred_count_ref_instances( $reference = '', $user_id = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
-
-		if ( $reference == '' ) return 0;
-
-		global $wpdb, $mycred;
-
-		$wheres   = array();
-		$wheres[] = $wpdb->prepare( "ref = %s", $reference );
-
-		if ( $user_id !== NULL )
-			$wheres[] = $wpdb->prepare( "user_id = %d", $user_id );
-
-		if ( mycred_point_type_exists( $type ) )
-			$wheres[] = $wpdb->prepare( "ctype = %s", $type );
-
-		$wheres   = implode( ' AND ', $wheres );
-
-		$count    = $wpdb->get_var( "SELECT COUNT(*) FROM {$mycred->log_table} WHERE {$wheres};" );
-		if ( $count === NULL ) $count = 0;
-
-		return $count;
-
-	}
-endif;
-
-/**
  * Count Reference ID Instances
  * Counts the total number of occurrences of a specific reference combined with a reference ID for a user.
  * @see http://codex.mycred.me/functions/mycred_count_ref_id_instances/
@@ -2497,29 +2477,32 @@ endif;
  * @param $user_id (int) option to check references for a specific user
  * @uses get_var()
  * @since 1.5.3
- * @version 1.1
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_count_ref_id_instances' ) ) :
 	function mycred_count_ref_id_instances( $reference = '', $ref_id = NULL, $user_id = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		if ( $reference == '' || $ref_id === NULL ) return 0;
+		if ( $reference == '' || $ref_id == '' ) return 0;
 
-		global $wpdb, $mycred;
+		$mycred = mycred( $type );
 
-		$wheres   = array();
-		$wheres[] = $wpdb->prepare( "ref = %s",    $reference );
-		$wheres[] = $wpdb->prepare( "ref_id = %d", $ref_id );
+		global $wpdb;
 
-		if ( $user_id !== NULL )
-			$wheres[] = $wpdb->prepare( "user_id = %d", $user_id );
+		if ( $user_id !== NULL ) {
+			$count = $wpdb->get_var( $wpdb->prepare( "
+				SELECT COUNT(*) 
+				FROM {$mycred->log_table} 
+				WHERE ref = %s 
+				AND ref_id = %d 
+				AND user_id = %d 
+				AND ctype = %s;", $reference, $ref_id, $user_id, $mycred->cred_id ) );
+		}
+		else {
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$mycred->log_table} WHERE ref = %s AND ref_id = %d;", $reference, $ref_id ) );
+		}
 
-		if ( mycred_point_type_exists( $type ) )
-			$wheres[] = $wpdb->prepare( "ctype = %s", $type );
-
-		$wheres   = implode( ' AND ', $wheres );
-
-		$count    = $wpdb->get_var( "SELECT COUNT(*) FROM {$mycred->log_table} WHERE {$wheres};" );
-		if ( $count === NULL ) $count = 0;
+		if ( $count === NULL )
+			$count = 0;
 
 		return $count;
 
@@ -2562,31 +2545,28 @@ endif;
 /**
  * Get Users Reference Sum
  * @since 1.7
- * @version 1.1
+ * @version 1.0
  */
 if ( ! function_exists( 'mycred_get_users_reference_sum' ) ) :
-	function mycred_get_users_reference_sum( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY, $force = false ) {
+	function mycred_get_users_reference_sum( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 		if ( $user_id === NULL ) return false;
 
 		$references = (array) mycred_get_user_meta( $user_id, 'mycred_ref_sums-' . $point_type, '', true );
 		$references = maybe_unserialize( $references );
 
-		if ( $force || empty( $references ) || empty( $references[0] ) ) {
+		if ( empty( $references ) ) {
 
-			global $wpdb, $mycred_log_table;
+			global $wpdb;
 
-			$query = $wpdb->get_results( $wpdb->prepare( "SELECT SUM(creds) AS total, ref AS reference FROM {$mycred_log_table} WHERE user_id = %d AND ctype = %s GROUP BY ref ORDER BY total DESC;", $user_id, $point_type ) );
+			$query = $wpdb->get_results( $wpdb->prepare( "SELECT SUM(creds) AS total, ref AS reference FROM {$mycred->log_table} WHERE user_id = %d AND ctype = %s GROUP BY ref ORDER BY total DESC;", $user_id, $point_type ) );
 			if ( ! empty( $query ) ) {
-
-				$references = array();
 				foreach ( $query as $result ) {
 					$references[ $result->reference ] = $result->total;
 				}
-
-				mycred_update_user_meta( $user_id, 'mycred_ref_sums-' . $point_type, '', $references );
-
 			}
+
+			mycred_update_user_meta( $user_id, 'mycred_ref_sums-' . $point_type, '', $references );
 
 		}
 
@@ -2599,7 +2579,7 @@ endif;
  * Get Search Args
  * Converts URL arguments into an array of log query friendly arguments.
  * @since 1.7
- * @version 1.0.3
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_get_search_args' ) ) :
 	function mycred_get_search_args( $exclude = NULL ) {
@@ -2622,21 +2602,6 @@ if ( ! function_exists( 'mycred_get_search_args' ) ) :
 
 				elseif ( $key == 'user' )
 					$value = mycred_get_user_id( $value );
-
-				elseif ( is_array( $value ) ) {
-
-					$temp = array();
-					if ( ! empty( $value ) ) {
-						foreach ( $value as $sub_key => $sub_value ) {
-							if ( ! is_array( $sub_value ) )
-								$temp[ $sub_key ] = sanitize_text_field( $sub_value );
-							else
-								$temp[ $sub_key ] = $sub_value;
-						}
-					}
-					$value = $temp;
-
-				}
 
 				else {
 					$value = sanitize_text_field( $value );

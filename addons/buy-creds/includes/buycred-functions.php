@@ -136,7 +136,7 @@ endif;
 /**
  * Get Cancel URL
  * @since 1.7
- * @version 1.0.1
+ * @version 1.0
  */
 if ( ! function_exists( 'buycred_get_cancel_transaction_url' ) ) :
 	function buycred_get_cancel_transaction_url( $transaction_id = NULL ) {
@@ -156,8 +156,8 @@ if ( ! function_exists( 'buycred_get_cancel_transaction_url' ) ) :
 		}
 
 		// Override
-		if ( isset( $_REQUEST['return_to'] ) && esc_url_raw( $_REQUEST['return_to'] ) != '' )
-			$base = esc_url_raw( $_REQUEST['return_to'] );
+		if ( isset( $_REQUEST['return_to'] ) && sanitize_url( $_REQUEST['return_to'] ) != '' )
+			$base = sanitize_url( $_REQUEST['return_to'] );
 
 		if ( $transaction_id !== NULL )
 			$url = add_query_arg( array( 'buycred-cancel' => $transaction_id, '_token' => wp_create_nonce( 'buycred-cancel-pending-payment' ) ), $base );
@@ -175,7 +175,7 @@ endif;
 /**
  * Get Users Pending Payments
  * @since 1.7
- * @version 1.0.1
+ * @version 1.0
  */
 if ( ! function_exists( 'buycred_get_users_pending_payments' ) ) :
 	function buycred_get_users_pending_payments( $user_id = NULL, $point_type = NULL ) {
@@ -204,7 +204,7 @@ if ( ! function_exists( 'buycred_get_users_pending_payments' ) ) :
 
 				}
 
-				add_user_meta( $user_id, 'buycred_pending_payments', $pending, true );
+				//add_user_meta( $user_id, 'buycred_pending_payments', $pending, true );
 
 			}
 
@@ -293,3 +293,5 @@ if ( ! function_exists( 'buycred_complete_pending_payment' ) ) :
 
 	}
 endif;
+
+?>

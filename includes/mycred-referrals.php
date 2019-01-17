@@ -38,7 +38,7 @@ if ( ! function_exists( 'mycred_detect_referred_visits' ) ) :
 
 		$keys = apply_filters( 'mycred_referral_keys', array() );
 		if ( ! empty( $keys ) ) {
-			wp_redirect( remove_query_arg( $keys ), 301 );
+			wp_redirect( remove_query_arg( $keys ) );
 			exit;
 		}
 
@@ -70,3 +70,4 @@ if ( ! function_exists( 'mycred_detect_bp_user_activation' ) ) :
 
 	}
 endif;
+?>
