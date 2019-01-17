@@ -341,4 +341,3 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 
 	}
 endif;
-?>

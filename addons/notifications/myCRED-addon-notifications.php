@@ -181,7 +181,7 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 		/**
 		 * Settings Page
 		 * @since 1.2.3
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		public function after_general_settings( $mycred = NULL ) {
 
@@ -190,33 +190,43 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 ?>
 <h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Notifications', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
-	<label class="subheader" for="<?php echo $this->field_id( 'use_css' ); ?>"><?php _e( 'Styling', 'mycred' ); ?></label>
-	<ol>
-		<li>
-			<label for="<?php echo $this->field_id( 'use_css' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'use_css' ); ?>" id="<?php echo $this->field_id( 'use_css' ); ?>" <?php checked( $prefs['use_css'], 1 ); ?> value="1" /><?php _e( 'Use the included CSS Styling for notifications.', 'mycred' ); ?></label>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'template' ); ?>"><?php _e( 'Template', 'mycred' ); ?></label>
-	<ol id="myCRED-transfer-logging-send">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'template' ); ?>" id="<?php echo $this->field_id( 'template' ); ?>" value="<?php echo esc_attr( $prefs['template'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Use %entry% to show the log entry in the notice and %amount% for the amount.', 'mycred' ); ?></span> <a href="javascript:void(0);" id="retore-default-notice"><?php _e( 'Restore to default', 'mycred' ); ?></a>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'life' ); ?>"><?php _e( 'Transient Lifespan', 'mycred' ); ?></label>
-	<ol id="myCRED-transfer-logging-send">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'life' ); ?>" id="<?php echo $this->field_id( 'life' ); ?>" value="<?php echo absint( $prefs['life'] ); ?>" class="short" /></div>
-			<span class="description"><?php _e( 'The number of days a users notification is saved before being automatically deleted.', 'mycred' ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'duration' ); ?>"><?php _e( 'Duration', 'mycred' ); ?></label>
-	<ol id="myCRED-transfer-logging-send">
-		<li>
-			<div class="h2"><input type="number" name="<?php echo $this->field_name( 'duration' ); ?>" id="<?php echo $this->field_id( 'duration' ); ?>" value="<?php echo absint( $prefs['duration'] ); ?>" class="short" min="0" max="60" /></div>
-			<span class="description"><?php _e( 'Number of seconds before a notice is automatically removed after being shown to user. Use zero to disable.', 'mycred' ); ?></span>
-		</li>
-	</ol>
+
+	<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'template' ); ?>"><?php _e( 'Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'template' ); ?>" id="<?php echo $this->field_id( 'template' ); ?>" value="<?php echo esc_attr( $prefs['template'] ); ?>" class="form-control" />
+				<p><span class="description"><?php _e( 'Use %entry% to show the log entry in the notice and %amount% for the amount.', 'mycred' ); ?></span> <a href="javascript:void(0);" id="retore-default-notice"><?php _e( 'Restore to default', 'mycred' ); ?></a></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'life' ); ?>"><?php _e( 'Transient Lifespan', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'life' ); ?>" id="<?php echo $this->field_id( 'life' ); ?>" value="<?php echo absint( $prefs['life'] ); ?>" class="form-control" />
+				<p><span class="description"><?php _e( 'The number of days a users notification is saved before being automatically deleted.', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'duration' ); ?>"><?php _e( 'Duration', 'mycred' ); ?></label>
+				<input type="number" name="<?php echo $this->field_name( 'duration' ); ?>" id="<?php echo $this->field_id( 'duration' ); ?>" value="<?php echo absint( $prefs['duration'] ); ?>" class="form-control" min="0" max="60" />
+				<p><span class="description"><?php _e( 'Number of seconds before a notice is automatically removed after being shown to user. Use zero to disable.', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="checkbox">
+					<label for="<?php echo $this->field_id( 'use_css' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'use_css' ); ?>" id="<?php echo $this->field_id( 'use_css' ); ?>" <?php checked( $prefs['use_css'], 1 ); ?> value="1" /> <?php _e( 'Use the included CSS Styling for notifications.', 'mycred' ); ?></label>
+				</div>
+			</div>
+		</div>
+	</div>
+
 </div>
 <script type="text/javascript">
 jQuery(function($) {
@@ -298,5 +308,3 @@ if ( ! function_exists( 'mycred_add_new_notice' ) ) :
 
 	}
 endif;
-
-?>

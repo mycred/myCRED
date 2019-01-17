@@ -127,16 +127,46 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		/**
 		 * Re-activation
 		 * @since 0.1
-		 * @version 1.3.1
+		 * @version 1.4
 		 */
 		public static function reactivate() {
 
-			do_action( 'mycred_reactivation', get_option( 'mycred_version', false ) );
+			$version = get_option( 'mycred_version', false );
+			do_action( 'mycred_reactivation', $version );
 
-			if ( isset( $_GET['activate-multi'] ) )
-				return;
+			self::update_to_latest( $version );
 
-			set_transient( '_mycred_activation_redirect', true, 60 );
+			// Update version number
+			update_option( 'mycred_version', myCRED_VERSION );
+
+		}
+
+		/**
+		 * Update to Latest
+		 * @since 1.7.6
+		 * @version 1.0
+		 */
+		public static function update_to_latest( $version ) {
+
+			if ( version_compare( $version, myCRED_VERSION, '<' ) ) {
+
+				/**
+				 * Add support for showing all point types in the WooCommerce
+				 * currency dropdown. If this is a currency store, we need to switch the currency code.
+				 */
+				$woo_currency = apply_filters( 'woocommerce_currency', get_option( 'woocommerce_currency', false ) );
+				if ( $woo_currency === 'MYC' ) {
+
+					$settings = get_option( 'woocommerce_mycred_settings', false );
+					if ( $settings !== false && is_array( $settings ) && array_key_exists( 'point_type', $settings ) ) {
+
+						update_option( 'woocommerce_currency', $settings['point_type'] );
+
+					}
+
+				}
+
+			}
 
 		}
 
@@ -144,7 +174,7 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		 * Uninstall
 		 * Removes all myCRED related data from the database.
 		 * @since 0.1
-		 * @version 1.5
+		 * @version 1.5.1
 		 */
 		public static function uninstall() {
 
@@ -154,6 +184,7 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 
 			// Options to delete
 			$options_to_delete = array(
+				'mycred_setup_completed',
 				'mycred_pref_core',
 				'mycred_pref_hooks',
 				'mycred_pref_addons',
@@ -162,7 +193,6 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 				'mycred_types',
 				'woocommerce_mycred_settings',
 				'mycred_sell_content_one_seven_updated',
-				'mycred_setup_completed',
 				'mycred_version',
 				'mycred_version_db',
 				'mycred_key',
@@ -182,8 +212,32 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 			$options_to_delete = apply_filters( 'mycred_uninstall_options', $options_to_delete );
 
 			if ( ! empty( $options_to_delete ) ) {
-				foreach ( $options_to_delete as $option_id )
-					delete_option( $option_id );
+
+				// Multisite installations where we are not using the "Master Template" feature
+				if ( is_multisite() && ! mycred_override_settings() ) {
+
+					// Remove settings on all sites where myCRED was enabled
+					$site_ids = get_sites( array( 'fields' => 'ids' ) );
+					foreach ( $site_ids as $site_id ) {
+
+						// Check if myCRED was installed
+						$installed = get_blog_option( $site_id, 'mycred_setup_completed', false );
+						if ( $installed === false ) continue;
+
+						foreach ( $options_to_delete as $option_id )
+							delete_blog_option( $site_id, $option_id );
+
+					}
+
+				}
+
+				else {
+
+					foreach ( $options_to_delete as $option_id )
+						delete_option( $option_id );
+
+				}
+
 			}
 
 			// Unschedule cron jobs
@@ -291,7 +345,28 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 
 				}
 
-				$wpdb->query( "DROP TABLE IF EXISTS {$table_name};" );
+				if ( ! is_multisite() || ( is_multisite() && mycred_centralize_log() ) ) {
+
+					$wpdb->query( "DROP TABLE IF EXISTS {$table_name};" );
+
+				}
+				else {
+
+					$site_ids = get_sites( array( 'fields' => 'ids' ) );
+					foreach ( $site_ids as $site_id ) {
+
+						$site_id = absint( $site_id );
+						if ( $site_id === 0 ) continue;
+
+						$table = $wpdb->base_prefix . $site_id . '_myCRED_log';
+						if ( $site === 1 )
+							$table_name = $wpdb->base_prefix . 'myCRED_log';
+
+						$wpdb->query( "DROP TABLE IF EXISTS {$table_name};" );
+
+					}
+
+				}
 
 			}
 
@@ -313,5 +388,3 @@ if ( ! function_exists( 'mycred_installer' ) ) :
 		return myCRED_Install::instance();
 	}
 endif;
-
-?>

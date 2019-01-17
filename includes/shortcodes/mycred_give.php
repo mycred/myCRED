@@ -52,5 +52,3 @@ if ( ! function_exists( 'mycred_render_shortcode_give' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_give', 'mycred_render_shortcode_give' );
-
-?>

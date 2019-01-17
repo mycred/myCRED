@@ -36,7 +36,7 @@ if ( ! function_exists( 'mycred_render_shortcode_history' ) ) :
 		if ( ! mycred_point_type_exists( $type ) )
 			$type = MYCRED_DEFAULT_TYPE_KEY;
 
-		$args = array( 'ctype' => $type );
+		$args    = array( 'ctype' => $type );
 
 		if ( $user_id != 0 && $user_id != '' )
 			$args['user_id'] = absint( $user_id );
@@ -97,5 +97,3 @@ if ( ! function_exists( 'mycred_render_shortcode_history' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_history', 'mycred_render_shortcode_history' );
-
-?>

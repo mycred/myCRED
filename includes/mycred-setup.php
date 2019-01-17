@@ -262,11 +262,11 @@ jQuery(function($) {
 		/**
 		 * New Point Type Form
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
-		protected function new_point_type( $type_key = MYCRED_DEFAULT_TYPE_KEY, $posted = array() ) {
+		protected function new_point_type( $posted = array() ) {
 
-			$mycred = mycred( $type_key );
+			$mycred = mycred();
 			$posted = wp_parse_args( $posted, $mycred->defaults() );
 
 ?>
@@ -276,14 +276,14 @@ jQuery(function($) {
 		<div class="row">
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="mycred-setup-<?php echo $type_key; ?>-name-singular"><?php _e( 'Singular', 'mycred' ); ?></label>
-					<input type="text" name="mycred_setup[<?php echo $type_key; ?>][name][singular]" id="mycred-setup-<?php echo $type_key; ?>-name-singular" placeholder="<?php _e( 'Required', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['name']['singular'] ); ?>" />
+					<label for="mycred-setup-name-singular"><?php _e( 'Singular', 'mycred' ); ?></label>
+					<input type="text" name="first_type[name][singular]" id="mycred-setup-name-singular" placeholder="<?php _e( 'Required', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['name']['singular'] ); ?>" />
 				</div>
 			</div>
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="mycred-setup-<?php echo $type_key; ?>-name-plural"><?php _e( 'Plural', 'mycred' ); ?></label>
-					<input type="text" name="mycred_setup[<?php echo $type_key; ?>][name][plural]" id="mycred-setup-<?php echo $type_key; ?>-name-plural" placeholder="<?php _e( 'Required', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['name']['plural'] ); ?>" />
+					<label for="mycred-setup-name-plural"><?php _e( 'Plural', 'mycred' ); ?></label>
+					<input type="text" name="first_type[name][plural]" id="mycred-setup-name-plural" placeholder="<?php _e( 'Required', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['name']['plural'] ); ?>" />
 				</div>
 			</div>
 		</div>
@@ -294,28 +294,28 @@ jQuery(function($) {
 		<div class="row">
 			<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="mycred-setup-<?php echo $type_key; ?>-before"><?php _e( 'Prefix', 'mycred' ); ?></label>
-					<input type="text" name="mycred_setup[<?php echo $type_key; ?>][before]" id="mycred-setup-<?php echo $type_key; ?>-before" class="form-control" value="<?php echo esc_attr( $posted['before'] ); ?>" />
+					<label for="mycred-setup-before"><?php _e( 'Prefix', 'mycred' ); ?></label>
+					<input type="text" name="first_type[before]" id="mycred-setup-before" class="form-control" value="<?php echo esc_attr( $posted['before'] ); ?>" />
 				</div>
 			</div>
 			<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="mycred-setup-<?php echo $type_key; ?>-format-separators-thousand"><?php _e( 'Separators', 'mycred' ); ?></label>
+					<label for="mycred-setup-format-separators-thousand"><?php _e( 'Separators', 'mycred' ); ?></label>
 					<div class="form-inline">
-						<label>1</label> <input type="text" name="mycred_setup[<?php echo $type_key; ?>][format][separators][thousand]" id="mycred-setup-<?php echo $type_key; ?>-format-separators-thousand" placeholder="," class="form-control" size="2" value="<?php echo esc_attr( $posted['format']['separators']['thousand'] ); ?>" /> <label>000</label> <input type="text" name="mycred_setup[<?php echo $type_key; ?>][format][separators][decimal]" id="mycred-setup-<?php echo $type_key; ?>-format-separators-decimal" placeholder="." class="form-control" size="2" value="<?php echo esc_attr( $posted['format']['separators']['decimal'] ); ?>" /> <label>00</label>
+						<label>1</label> <input type="text" name="first_type[format][separators][thousand]" id="mycred-setup-format-separators-thousand" placeholder="," class="form-control" size="2" value="<?php echo esc_attr( $posted['format']['separators']['thousand'] ); ?>" /> <label>000</label> <input type="text" name="first_type[format][separators][decimal]" id="mycred-setup-format-separators-decimal" placeholder="." class="form-control" size="2" value="<?php echo esc_attr( $posted['format']['separators']['decimal'] ); ?>" /> <label>00</label>
 					</div>
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 				<div class="form-group">
 					<label for=""><?php _e( 'Decimals', 'mycred' ); ?></label>
-					<input type="text" name="mycred_setup[<?php echo $type_key; ?>][format][decimals]" id="mycred-setup-<?php echo $type_key; ?>-format-decimals" placeholder="0" class="form-control" value="<?php echo esc_attr( $posted['format']['decimals'] ); ?>" />
+					<input type="text" name="first_type[format][decimals]" id="mycred-setup-format-decimals" placeholder="0" class="form-control" value="<?php echo esc_attr( $posted['format']['decimals'] ); ?>" />
 				</div>
 			</div>
 			<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 				<div class="form-group">
 					<label for=""><?php _e( 'Suffix', 'mycred' ); ?></label>
-					<input type="text" name="mycred_setup[<?php echo $type_key; ?>][after]" id="mycred-setup-<?php echo $type_key; ?>-after" class="form-control" value="<?php echo esc_attr( $posted['after'] ); ?>" />
+					<input type="text" name="first_type[after]" id="mycred-setup-after" class="form-control" value="<?php echo esc_attr( $posted['after'] ); ?>" />
 				</div>
 			</div>
 		</div>
@@ -329,37 +329,37 @@ jQuery(function($) {
 		<div class="row">
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="mycred-setup-<?php echo $type_key; ?>-caps-creds"><?php _e( 'Point Editors', 'mycred' ); ?></label>
-					<input type="text" name="mycred_setup[<?php echo $type_key; ?>][caps][creds]" id="mycred-setup-<?php echo $type_key; ?>-caps-creds" placeholder="<?php _e( 'Required', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['caps']['creds'] ); ?>" />
+					<label for="mycred-setup-caps-creds"><?php _e( 'Point Editors', 'mycred' ); ?></label>
+					<input type="text" name="first_type[caps][creds]" id="mycred-setup-caps-creds" placeholder="<?php _e( 'Required', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['caps']['creds'] ); ?>" />
 					<p><span class="description"><?php _e( 'The capability of users who can edit balances.', 'mycred' ); ?></span></p>
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="mycred-setup-<?php echo $type_key; ?>-caps-plugin"><?php _e( 'Point Administrators', 'mycred' ); ?></label>
-					<input type="text" name="mycred_setup[<?php echo $type_key; ?>][caps][plugin]" id="mycred-setup-<?php echo $type_key; ?>-caps-plugin" placeholder="<?php _e( 'Required', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['caps']['plugin'] ); ?>" />
+					<label for="mycred-setup-caps-plugin"><?php _e( 'Point Administrators', 'mycred' ); ?></label>
+					<input type="text" name="first_type[caps][plugin]" id="mycred-setup-caps-plugin" placeholder="<?php _e( 'Required', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['caps']['plugin'] ); ?>" />
 					<p><span class="description"><?php _e( 'The capability of users who can edit settings.', 'mycred' ); ?></span></p>
 				</div>
 			</div>
 			<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="mycred-setup-<?php echo $type_key; ?>-max"><?php _e( 'Max. Amount', 'mycred' ); ?></label>
-					<input type="text" name="mycred_setup[<?php echo $type_key; ?>][max]" id="mycred-setup-<?php echo $type_key; ?>-max" class="form-control" value="<?php echo esc_attr( $posted['max'] ); ?>" />
+					<label for="mycred-setup-max"><?php _e( 'Max. Amount', 'mycred' ); ?></label>
+					<input type="text" name="first_type[max]" id="mycred-setup-max" class="form-control" value="<?php echo esc_attr( $posted['max'] ); ?>" />
 					<p><span class="description"><?php _e( 'The maximum amount allowed to be paid out in a single instance.', 'mycred' ); ?></span></p>
 				</div>
 			</div>
 			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="mycred-setup-<?php echo $type_key; ?>-exclude-list"><?php _e( 'Exclude by User ID', 'mycred' ); ?></label>
-					<input type="text" name="mycred_setup[<?php echo $type_key; ?>][exclude][list]" id="mycred-setup-<?php echo $type_key; ?>-exclude-list" placeholder="<?php _e( 'Optional', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['exclude']['list'] ); ?>" />
+					<label for="mycred-setup-exclude-list"><?php _e( 'Exclude by User ID', 'mycred' ); ?></label>
+					<input type="text" name="first_type[exclude][list]" id="mycred-setup-exclude-list" placeholder="<?php _e( 'Optional', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $posted['exclude']['list'] ); ?>" />
 					<p><span class="description"><?php _e( 'Comma separated list of user IDs to exclude from using this point type.', 'mycred' ); ?></span></p>
 				</div>
 				<div class="form-group">
 					<div class="checkbox">
-						<label for="mycred-setup-<?php echo $type_key; ?>-exclude-cred-editors"><input type="checkbox" name="mycred_setup[<?php echo $type_key; ?>][exclude][cred_editors]" id="mycred-setup-<?php echo $type_key; ?>-exclude-cred-editors"<?php checked( $posted['exclude']['cred_editors'], 1 ); ?> value="1" /> <?php _e( 'Exclude point editors', 'mycred' ); ?></label>
+						<label for="mycred-setup-exclude-cred-editors"><input type="checkbox" name="first_type[exclude][cred_editors]" id="mycred-setup-exclude-cred-editors"<?php checked( $posted['exclude']['cred_editors'], 1 ); ?> value="1" /> <?php _e( 'Exclude point editors', 'mycred' ); ?></label>
 					</div>
 					<div class="checkbox">
-						<label for="mycred-setup-<?php echo $type_key; ?>-exclude-plugin-editors"><input type="checkbox" name="mycred_setup[<?php echo $type_key; ?>][exclude][plugin_editors]" id="mycred-setup-<?php echo $type_key; ?>-exclude-plugin-editors"<?php checked( $posted['exclude']['plugin_editors'], 1 ); ?> value="1" /> <?php _e( 'Exclude point administrators', 'mycred' ); ?></label>
+						<label for="mycred-setup-exclude-plugin-editors"><input type="checkbox" name="first_type[exclude][plugin_editors]" id="mycred-setup-exclude-plugin-editors"<?php checked( $posted['exclude']['plugin_editors'], 1 ); ?> value="1" /> <?php _e( 'Exclude point administrators', 'mycred' ); ?></label>
 					</div>
 				</div>
 			</div>
@@ -373,63 +373,74 @@ jQuery(function($) {
 		/**
 		 * Process Setup Steps
 		 * @since 0.1
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		public function ajax_setup() {
 
 			// Security
 			check_admin_referer( 'mycred-run-setup', 'token' );
 
-			if ( ! current_user_can( 'manage_options' ) ) die;
+			if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error();
 
 			parse_str( $_POST['setup'], $posted );
 
-			$point_types = array();
 			$defaults    = $this->core->defaults();
-			$required    = array( 'singular', 'plural', 'plugin', 'creds' );
 			$decimals    = 0;
 
-			if ( array_key_exists( 'mycred_setup', $posted ) && is_array( $posted['mycred_setup'] ) && ! empty( $posted['mycred_setup'] ) ) {
-				foreach ( $posted['mycred_setup'] as $point_type => $setup ) {
-					$point_types[ $point_type ] = mycred_apply_defaults( $defaults, $setup );
-				}
+			if ( ! array_key_exists( 'first_type', $posted ) ) {
+
+				ob_start();
+
+				echo '<div class="info notice notice-info"><p>' . __( 'Please make sure you fill out all required fields!', 'mycred' ) . '</a></p></div>';
+
+				$this->new_point_type( $defaults );
+
+				$output = ob_get_contents();
+				ob_end_clean();
+
+				wp_send_json_error( $output );
+
 			}
 
-			$errors = array();
-			if ( ! empty( $point_types ) ) {
-				foreach ( $point_types as $type_id => $type_setup ) {
+			$errors     = array();
+			$setup      = mycred_apply_defaults( $defaults, $posted['first_type'] );
+			$first_type = $defaults;
 
-					$type_setup['before'] = sanitize_text_field( $type_setup['before'] );
-					$type_setup['after']  = sanitize_text_field( $type_setup['after'] );
+			$singular_name = sanitize_text_field( $setup['name']['singular'] );
+			if ( empty( $singular_name ) )
+				$errors[] = 'empty';
 
-					$type_setup['name']['singular'] = sanitize_text_field( $type_setup['name']['singular'] );
-					$type_setup['name']['plural']   = sanitize_text_field( $type_setup['name']['plural'] );
+			elseif ( $singular_name != $first_type['name']['singular'] )
+				$first_type['name']['singular'] = $singular_name;
 
-					if ( $type_setup['name']['singular'] == '' || $type_setup['name']['plural'] == '' ) {
-						$errors[] = 'empty';
-						continue;
-					}
+			$plural_name   = sanitize_text_field( $setup['name']['plural'] );
+			if ( empty( $plural_name ) )
+				$errors[] = 'empty';
 
-					$type_setup['caps']['creds']  = sanitize_key( $type_setup['caps']['creds'] );
-					if ( $type_setup['caps']['creds'] == '' ) $type_setup['caps']['creds'] = 'export';
+			elseif ( $plural_name != $first_type['name']['plural'] )
+				$first_type['name']['plural'] = $plural_name;
 
-					$type_setup['caps']['plugin'] = sanitize_key( $type_setup['caps']['plugin'] );
-					if ( $type_setup['caps']['plugin'] == '' ) $type_setup['caps']['plugin'] = 'manage_options';
+			$first_type['before'] = sanitize_text_field( $setup['before'] );
+			$first_type['after']  = sanitize_text_field( $setup['after'] );
 
-					if ( absint( $type_setup['format']['decimals'] ) > 0 ) {
-						$type_setup['format']['type'] = 'decimal';
-						$decimals = absint( $type_setup['format']['decimals'] );
-					}
-					else
-						$type_setup['format']['type'] = 'bigint';
+			$point_editor_cap     = sanitize_key( $setup['caps']['creds'] );
+			if ( empty( $point_editor_cap ) )
+				$errors[] = 'empty';
 
-					$option_id = 'mycred_pref_core';
-					if ( $type_id !== MYCRED_DEFAULT_TYPE_KEY )
-						$option_id .= '_' . $point_type;
+			if ( $point_editor_cap != $first_type['caps']['creds'] )
+				$first_type['caps']['creds'] = $point_editor_cap;
 
-					add_option( $option_id, $type_setup, '', 'yes' );
+			$point_admin_cap      = sanitize_key( $setup['caps']['plugin'] );
+			if ( empty( $point_admin_cap ) )
+				$errors[] = 'empty';
 
-				}
+			if ( $point_admin_cap != $first_type['caps']['plugin'] )
+				$first_type['caps']['plugin'] = $point_admin_cap;
+
+			if ( absint( $setup['format']['decimals'] ) > 0 ) {
+				$first_type['format']['type']     = 'decimal';
+				$first_type['format']['decimals'] = absint( $setup['format']['decimals'] );
+				$decimals                         = $first_type['format']['decimals'];
 			}
 
 			$errors = apply_filters( 'mycred_setup_errors', $errors, $posted );
@@ -437,28 +448,29 @@ jQuery(function($) {
 			// Something went wrong
 			if ( ! empty( $errors ) ) {
 
-				$output = '';
-				if ( in_array( 'empty', $errors ) )
-					$output .= '<div class="info notice notice-info"><p>' . __( 'Please make sure you fill out all required fields!', 'mycred' ) . '</a></p></div>';
+				ob_start();
 
-				if ( ! empty( $point_types ) ) {
-					foreach ( $point_types as $type_id => $type_setup ) {
-						$output .= $this->new_point_type( $type_id, $type_setup );
-					}
-				}
+				echo '<div class="info notice notice-info"><p>' . __( 'Please make sure you fill out all required fields!', 'mycred' ) . '</a></p></div>';
+
+				$this->new_point_type( $setup );
+
+				$output = ob_get_contents();
+				ob_end_clean();
 
 				wp_send_json_error( apply_filters( 'mycred_setup_error_output', $output, $posted ) );
 
 			}
 
+			// Save our first point type
+			mycred_update_option( 'mycred_pref_core', $first_type );
+
 			// Install database
 			if ( ! function_exists( 'mycred_install_log' ) )
-				require_once( myCRED_INCLUDES_DIR . 'mycred-functions.php' );
+				require_once myCRED_INCLUDES_DIR . 'mycred-functions.php';
 
-			mycred_install_log( $decimals, $this->core->log_table );
+			mycred_install_log( $decimals, true );
 
-			// Disable further use of the setup class
-			add_option( 'mycred_setup_completed', time(), '', 'yes' );
+			mycred_add_option( 'mycred_setup_completed', time() );
 
 			// Return the good news
 			wp_send_json_success();
@@ -467,5 +479,3 @@ jQuery(function($) {
 
 	}
 endif;
-
-?>

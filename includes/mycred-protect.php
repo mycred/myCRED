@@ -212,5 +212,3 @@ if ( ! function_exists( 'mycred_verify_token' ) ) :
 
 	}
 endif;
-
-?>

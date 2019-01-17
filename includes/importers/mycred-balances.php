@@ -4,50 +4,46 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Import: Balances
  * @since 1.2
- * @version 1.2.1
+ * @version 1.3
  */
-if ( class_exists( 'WP_Importer' ) ) :
+if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 	class myCRED_Importer_Balances extends WP_Importer {
 
-		var $id;
-		var $file_url;
-		var $import_page;
-		var $delimiter;
-		var $posts = array();
-		var $imported;
-		var $skipped;
+		var $id            = '';
+		var $file_url      = '';
+		var $import_page   = '';
+		var $delimiter     = '';
+		var $posts         = array();
+		var $imported      = 0;
+		var $skipped       = 0;
+		var $documentation = '';
 
 		/**
 		 * Construct
+		 * @version 1.0
 		 */
 		public function __construct() {
 
-			$this->import_page = 'mycred_import_balance';
+			$this->import_page   = MYCRED_SLUG . '-import-balance';
+			$this->delimiter     = empty( $_POST['delimiter'] ) ? ',' : (string) strip_tags( trim( $_POST['delimiter'] ) );
+			$this->documentation = 'http://codex.mycred.me/chapter-ii/import-data/importing-balances/';
 
 		}
 
 		/**
 		 * Registered callback function for the WordPress Importer
 		 * Manages the three separate stages of the CSV import process
+		 * @version 1.0
 		 */
-		function load() {
+		public function load() {
 
 			$this->header();
 
-			if ( ! empty( $_POST['delimiter'] ) )
-				$this->delimiter = stripslashes( trim( $_POST['delimiter'] ) );
+			$load = true;
+			$step = ( ! isset( $_GET['step'] ) ) ? 0 : absint( $_GET['step'] );
+			if ( $step > 1 ) $step = 0;
 
-			if ( ! $this->delimiter )
-				$this->delimiter = ',';
-
-			$step = empty( $_GET['step'] ) ? 0 : (int) $_GET['step'];
 			switch ( $step ) {
-
-				case 0 :
-
-					$this->greet();
-
-				break;
 
 				case 1 :
 
@@ -60,16 +56,13 @@ if ( class_exists( 'WP_Importer' ) ) :
 						else
 							$file = ABSPATH . $this->file_url;
 
-						add_filter( 'http_request_timeout', array( $this, 'bump_request_timeout' ) );
+						if ( $file !== false ) {
 
-						if ( function_exists( 'gc_enable' ) )
-							gc_enable();
+							add_filter( 'http_request_timeout', array( $this, 'bump_request_timeout' ) );
 
-						@set_time_limit(0);
-						@ob_flush();
-						@flush();
+							$load = $this->import( $file );
 
-						$this->import( $file );
+						}
 
 					}
 
@@ -77,159 +70,38 @@ if ( class_exists( 'WP_Importer' ) ) :
 
 			}
 
+			if ( $load )
+				$this->greet();
+
 			$this->footer();
 
 		}
 
 		/**
-		 * format_data_from_csv function.
+		 * UTF-8 encode the data if `$enc` value isn't UTF-8.
+		 * @version 1.0
 		 */
-		function format_data_from_csv( $data, $enc ) {
-
+		public function format_data_from_csv( $data, $enc ) {
 			return ( $enc == 'UTF-8' ) ? $data : utf8_encode( $data );
-
-		}
-
-		/**
-		 * import function.
-		 */
-		function import( $file ) {
-
-			global $wpdb, $mycred;
-
-			$this->imported = $this->skipped = 0;
-
-			if ( ! is_file( $file ) ) {
-
-				echo '<p><strong>' . __( 'Sorry, there has been an error.', 'mycred' ) . '</strong><br />';
-				echo __( 'The file does not exist, please try again.', 'mycred' ) . '</p>';
-
-				$this->footer();
-
-				die;
-
-			}
-
-			ini_set( 'auto_detect_line_endings', '1' );
-
-			if ( ( $handle = fopen( $file, "r" ) ) !== FALSE ) {
-
-				$header        = fgetcsv( $handle, 0, $this->delimiter );
-				$no_of_columns = sizeof( $header );
-				if ( $no_of_columns == 3 || $no_of_columns == 4 ) {
-
-					$loop = 0;
-					$mycred_types = mycred_get_types();
-
-					while ( ( $row = fgetcsv( $handle, 0, $this->delimiter ) ) !== FALSE ) {
-
-						$log_entry = '';
-						if ( $no_of_columns == 3 )
-							list( $id, $balance, $point_type ) = $row;
-						else
-							list( $id, $balance, $point_type, $log_entry ) = $row;
-
-						$user = false;
-						if ( is_numeric( $id ) )
-							$user = get_userdata( $id );
-
-						if ( $user === false )
-							$user = get_user_by( 'email', $id );
-
-						if ( $user === false )
-							$user = get_user_by( 'login', $id );
-
-						if ( $user === false ) {
-							$this->skipped ++;
-							continue;
-						}
-
-						if ( ! isset( $mycred_types[ $point_type ] ) ) {
-							if ( $point_type != '' )
-								$log_entry = $point_type;
-						}
-
-						if ( $point_type == '' )
-							$point_type = MYCRED_DEFAULT_TYPE_KEY;
-
-						$method = trim( $_POST['method'] );
-
-						if ( ! empty( $log_entry ) ) {
-							$wpdb->insert(
-								$mycred->log_table,
-								array(
-									'ref'     => 'import',
-									'ref_id'  => NULL,
-									'user_id' => $user->ID,
-									'creds'   => $mycred->number( $balance ),
-									'ctype'   => $point_type,
-									'time'    => current_time( 'timestamp' ),
-									'entry'   => sanitize_text_field( $log_entry ),
-									'data'    => ''
-								)
-							);
-						}
-
-						if ( $method == 'add' ) {
-							$current_balance = mycred_get_user_meta( $user->ID, $point_type, '', true );
-							$balance         = $current_balance+$balance;
-						}
-
-						mycred_update_user_meta( $user->ID, $point_type, '', $balance );
-
-						$loop ++;
-						$this->imported++;
-
-					}
-
-				} else {
-
-					echo '<p><strong>' . __( 'Sorry, there has been an error.', 'mycred' ) . '</strong><br />';
-					echo __( 'The CSV is invalid.', 'mycred' ) . '</p>';
-					$this->footer();
-					die();
-
-				}
-
-				fclose( $handle );
-
-			}
-
-			// Show Result
-			echo '<div class="updated settings-error below-h2"><p>
-				'.sprintf( __( 'Import complete - A total of <strong>%d</strong> balances were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), $this->imported, $this->skipped ).'
-			</p></div>';
-
-			$this->import_end();
-
-		}
-
-		/**
-		 * Performs post-import cleanup of files and the cache
-		 */
-		function import_end() {
-
-			echo '<p><a href="' . admin_url( 'admin.php?page=myCRED' ) . '" class="button button-large button-primary">' . __( 'View Log', 'mycred' ) . '</a> <a href="' . admin_url( 'import.php' ) . '" class="button button-large button-primary">' . __( 'Import More', 'mycred' ) . '</a></p>';
-
-			do_action( 'import_end' );
-
 		}
 
 		/**
 		 * Handles the CSV upload and initial parsing of the file to prepare for
 		 * displaying author import options
 		 * @return bool False if error uploading or invalid file, true otherwise
+		 * @version 1.1
 		 */
-		function handle_upload() {
+		public function handle_upload() {
 
 			if ( empty( $_POST['file_url'] ) ) {
 
 				$file = wp_import_handle_upload();
 
 				if ( isset( $file['error'] ) ) {
-					echo '<p><strong>' . __( 'Sorry, there has been an error.', 'mycred' ) . '</strong><br />';
-					echo esc_html( $file['error'] ) . '</p>';
+
+					echo '<div class="error notice notice-error is-dismissible"><p>' . esc_html( $file['error'] ) . '</p></div>';
 					return false;
+
 				}
 
 				$this->id = (int) $file['id'];
@@ -242,7 +114,7 @@ if ( class_exists( 'WP_Importer' ) ) :
 
 				} else {
 
-					echo '<p><strong>' . __( 'Sorry, there has been an error.', 'mycred' ) . '</strong></p>';
+					echo '<div class="error notice notice-error is-dismissible"><p>' . __( 'The file does not exist or could not be read.', 'mycred' ) . '</p></div>';
 					return false;
 
 				}
@@ -254,50 +126,157 @@ if ( class_exists( 'WP_Importer' ) ) :
 		}
 
 		/**
-		 * header function.
+		 * Import Function
+		 * Handles the actual import based on a given file.
+		 * @version 1.0
 		 */
-		function header() {
+		public function import( $file ) {
 
-			echo '<div class="wrap"><h2>' . __( 'Import Balances', 'mycred' ) . '</h2>';
+			global $wpdb;
+
+			$ran        = false;
+			$show_greet = true;
+			$loop       = 0;
+
+			// Make sure the file exists
+			if ( ! is_file( $file ) ) {
+
+				echo '<div class="error notice notice-error is-dismissible"><p>' . __( 'The file does not exist or could not be read.', 'mycred' ) . '</p></div>';
+				return true;
+
+			}
+
+			if ( function_exists( 'gc_enable' ) )
+				gc_enable();
+
+			@set_time_limit(0);
+			@ob_flush();
+			@flush();
+
+			// Begin by opening the file
+			if ( ( $handle = fopen( $file, "r" ) ) !== false ) {
+
+				// Need to get the header of the CSV file so we know how many columns we are using
+				$header        = fgetcsv( $handle, 0, $this->delimiter );
+				$no_of_columns = sizeof( $header );
+
+				// Make sure we have the correct number of columns
+				if ( $no_of_columns == 3 || $no_of_columns == 4 ) {
+
+					// Begin import loop
+					while ( ( $row = fgetcsv( $handle, 0, $this->delimiter ) ) !== false ) {
+
+						$log_entry = '';
+						if ( $no_of_columns == 3 )
+							list ( $identification, $balance, $point_type ) = $row;
+						else
+							list ( $identification, $balance, $point_type, $log_entry ) = $row;
+
+						// Attempt to identify the user
+						$user_id = mycred_get_user_id( $identification );
+
+						// Failed to find the user - Next!
+						if ( $user_id === false ) {
+							$this->skipped ++;
+							continue;
+						}
+
+						// Make sure the point type exists
+						if ( ! mycred_point_type_exists( $point_type ) ) {
+
+							// The point type column actually holds the log entry
+							if ( $point_type != '' )
+								$log_entry = $point_type;
+
+							$point_type = MYCRED_DEFAULT_TYPE_KEY;
+
+						}
+
+						$mycred = mycred( $point_type );
+						$method = trim( $_POST['method'] );
+
+						// If a log entry should be added with the import
+						if ( ! empty( $log_entry ) )
+							$mycred->add_to_log( 'import', $user_id, $balance, $log_entry );
+
+						// Add to the balance
+						if ( $method == 'add' )
+							$mycred->update_users_balance( $user_id, $balance );
+
+						// Change the balance
+						else
+							$mycred->set_users_balance( $user_id, $balance );
+
+						$loop ++;
+						$this->imported++;
+
+					}
+
+					$show_greet = false;
+					$ran        = true;
+
+				} else {
+
+					echo '<div class="error notice notice-error is-dismissible"><p>' . __( 'Invalid CSV file. Please consult the documentation for further assistance.', 'mycred' ) . '</p></div>';
+
+				}
+
+				fclose( $handle );
+
+			}
+
+			if ( $ran ) {
+				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( __( 'Import complete - A total of <strong>%d</strong> balances were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), $this->imported, $this->skipped ) . '</p></div>';
+				echo '<p><a href="' . admin_url( 'users.php' ) . '" class="button button-large button-primary">' . __( 'View Users', 'mycred' ) . '</a></p>';
+			}
+
+			do_action( 'import_end' );
+
+			return $show_greet;
 
 		}
 
 		/**
-		 * footer function.
+		 * Render Screen Header
+		 * @version 1.0
 		 */
-		function footer() {
+		public function header() {
+
+			echo '<div class="wrap"><h1>' . sprintf( __( 'Import Balances %s', 'mycred' ), '<a href="' . $this->documentation . '" target="_blank" class="page-title-action">' . __( 'Documentation', 'mycred' ) . '</a>' ) . '</h1>';
+
+		}
+
+		/**
+		 * Render Screem Fppter
+		 * @version 1.0
+		 */
+		public function footer() {
 
 			echo '</div>';
 
 		}
 
 		/**
-		 * greet function.
+		 * Greet Screen
+		 * @version 1.0
 		 */
-		function greet() {
-
-			global $mycred;
-
-			echo '<div class="narrow">';
-			echo '<p>' . __( 'Import balances from a CSV file.', 'mycred' ).'</p>';
-
-			$action = 'admin.php?import=mycred_import_balance&step=1';
+		public function greet() {
 
 			$bytes      = apply_filters( 'import_upload_size_limit', wp_max_upload_size() );
 			$size       = size_format( $bytes );
 			$upload_dir = wp_upload_dir();
+			$action_url = add_query_arg( array( 'import' => $this->import_page, 'step' => 1 ), admin_url( 'admin.php' ) );
 
 			if ( ! empty( $upload_dir['error'] ) ) :
 
 ?>
-<div class="error"><p><?php _e( 'Before you can upload your import file, you will need to fix the following error:', 'mycred' ); ?></p>
-<p><strong><?php echo $upload_dir['error']; ?></strong></p></div>
+<div class="error notice notice-error"><p><?php echo $upload_dir['error']; ?></p></div>
 <?php
 
 			else :
 
 ?>
-<form enctype="multipart/form-data" id="import-upload-form" method="post" action="<?php echo esc_attr( wp_nonce_url( $action, 'import-upload' ) ); ?>">
+<form enctype="multipart/form-data" id="import-upload-form" method="post" action="<?php echo esc_attr( wp_nonce_url( $action_url, 'import-upload' ) ); ?>">
 	<table class="form-table">
 		<tbody>
 			<tr>
@@ -316,31 +295,37 @@ if ( class_exists( 'WP_Importer' ) ) :
 					<label for="file_url"><?php _e( 'OR enter path to file:', 'mycred' ); ?></label>
 				</th>
 				<td>
-					<?php echo ' ' . ABSPATH . ' '; ?><input type="text" id="file_url" name="file_url" size="25" />
+					<?php echo ABSPATH . ' '; ?><input type="text" id="file_url" name="file_url" size="25" />
 				</td>
 			</tr>
 			<tr>
-				<th><label><?php _e( 'Delimiter', 'mycred' ); ?></label><br/></th>
-				<td><input type="text" name="delimiter" placeholder="," size="2" /></td>
+				<th>
+					<label for="delimiter"><?php _e( 'Delimiter', 'mycred' ); ?></label>
+				</th>
+				<td>
+					<input type="text" name="delimiter" id="delimiter" placeholder="," size="2" />
+				</td>
 			</tr>
 			<tr>
-				<th><label><?php _e( 'Method', 'mycred' ); ?></label><br/></th>
-				<td><select name="method">
-					<option value=""><?php _e( 'Replace current balances with the amount in this CSV file', 'mycred' ); ?></option>
-					<option value="add"><?php _e( 'Adjust current balances according to the amount in this CSV file', 'mycred' ); ?></option>
-				</select></td>
+				<th>
+					<label><?php _e( 'Method', 'mycred' ); ?></label>
+				</th>
+				<td>
+					<select name="method">
+						<option value=""><?php _e( 'Replace current balances with the amount in this CSV file', 'mycred' ); ?></option>
+						<option value="add"><?php _e( 'Adjust current balances according to the amount in this CSV file', 'mycred' ); ?></option>
+					</select>
+				</td>
 			</tr>
 		</tbody>
 	</table>
 	<p class="submit">
-		<input type="submit" class="button" value="<?php esc_attr_e( 'Upload file and import' ); ?>" />
+		<input type="submit" class="button button-primary" value="<?php _e( 'Import', 'mycred' ); ?>" />
 	</p>
 </form>
 <?php
 
 			endif;
-
-			echo '</div>';
 
 		}
 
@@ -348,7 +333,7 @@ if ( class_exists( 'WP_Importer' ) ) :
 		 * Added to http_request_timeout filter to force timeout at 60 seconds during import
 		 * @return int 60
 		 */
-		function bump_request_timeout( $val ) {
+		public function bump_request_timeout( $val ) {
 
 			return 60;
 
@@ -356,5 +341,3 @@ if ( class_exists( 'WP_Importer' ) ) :
 
 	}
 endif;
-
-?>

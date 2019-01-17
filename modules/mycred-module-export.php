@@ -112,11 +112,11 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 				if ( $this->export['front_format'] === 'raw' || ( $this->export['front_format'] === 'both' && isset( $_GET['raw'] ) && $_GET['raw'] == 1 ) )
 					$args['raw'] = true;
 
-				$file_name = apply_filters( 'mycred_export_file_name', $this->export['front_name'], false );
+				$file_name  = apply_filters( 'mycred_export_file_name', $this->export['front_name'], false );
 
 				do_action( 'mycred_do_front_export', $export_set, $this );
 
-				$export = new myCRED_Query_Export( $args );
+				$export     = new myCRED_Query_Export( $args );
 
 				if ( $export_set == 'user' )
 					$export->get_data_by_user( get_current_user_id() );
@@ -145,7 +145,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 			// Bulk action - export selected log entries
 			if ( isset( $_GET['action'] ) && substr( $_GET['action'], 0, 6 ) == 'export' && isset( $_GET['entry'] ) ) {
 
-				$args = array();
+				$args      = array();
 
 				if ( $this->export['admin_format'] === 'raw' || ( $this->export['admin_format'] === 'both' && isset( $_GET['raw'] ) && $_GET['raw'] == 1 ) )
 					$args['raw'] = true;
@@ -153,7 +153,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 				$file_name = apply_filters( 'mycred_export_file_name', $this->export['admin_name'], $request, true );
 
 				// First get a clean list of ids to delete
-				$export = new myCRED_Query_Export( $args );
+				$export    = new myCRED_Query_Export( $args );
 
 				$export->get_data_by_ids( $_GET['entry'] );
 				$export->set_export_file_name( $file_name );
@@ -169,14 +169,14 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 				$export_options = mycred_get_log_exports();
 				$search_args    = mycred_get_search_args();
 
-				$args = array();
+				$args           = array();
 
 				if ( $this->export['admin_format'] === 'raw' || ( $this->export['admin_format'] === 'both' && isset( $_GET['raw'] ) && $_GET['raw'] == 1 ) )
 					$args['raw'] = true;
 
-				$file_name = apply_filters( 'mycred_export_file_name', $this->export['admin_name'], true );
+				$file_name      = apply_filters( 'mycred_export_file_name', $this->export['admin_name'], true );
 
-				$export = new myCRED_Query_Export( $args );
+				$export         = new myCRED_Query_Export( $args );
 
 				if ( $export_set == 'all' )
 					$export->get_data_by_type( $point_type );
@@ -206,14 +206,14 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 
 			if ( mycred_is_valid_export_url( true ) ) {
 
-				$args = array();
+				$args      = array();
 
 				if ( $this->export['admin_format'] === 'raw' || ( $this->export['admin_format'] === 'both' && isset( $_GET['raw'] ) && $_GET['raw'] == 1 ) )
 					$args['raw'] = true;
 
 				$file_name = apply_filters( 'mycred_export_file_name', $this->export['admin_name'], true );
 
-				$export = new myCRED_Query_Export( $args );
+				$export    = new myCRED_Query_Export( $args );
 
 				$export->get_data_by_user( get_current_user_id() );
 				$export->set_export_file_name( $file_name );
@@ -482,5 +482,3 @@ jQuery(function($) {
 
 	}
 endif;
-
-?>

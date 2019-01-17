@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Register Hook
  * @since 0.1
- * @version 1.0.1
+ * @version 1.1
  */
 add_filter( 'mycred_setup_hooks', 'mycred_register_buddypress_hook', 40 );
 function mycred_register_buddypress_hook( $installed ) {
@@ -13,17 +13,19 @@ function mycred_register_buddypress_hook( $installed ) {
 
 	if ( bp_is_active( 'xprofile' ) ) {
 		$installed['hook_bp_profile'] = array(
-			'title'       => __( 'BuddyPress: Members', 'mycred' ),
-			'description' => __( 'Awards %_plural% for profile related actions.', 'mycred' ),
-			'callback'    => array( 'myCRED_BuddyPress_Profile' )
+			'title'         => __( 'BuddyPress: Members', 'mycred' ),
+			'description'   => __( 'Awards %_plural% for profile related actions.', 'mycred' ),
+			'documentation' => 'http://codex.mycred.me/hooks/buddypress-profiles/',
+			'callback'      => array( 'myCRED_BuddyPress_Profile' )
 		);
 	}
 
 	if ( bp_is_active( 'groups' ) ) {
 		$installed['hook_bp_groups'] = array(
-			'title'       => __( 'BuddyPress: Groups', 'mycred' ),
-			'description' => __( 'Awards %_plural% for group related actions. Use minus to deduct %_plural% or zero to disable a specific hook.', 'mycred' ),
-			'callback'    => array( 'myCRED_BuddyPress_Groups' )
+			'title'         => __( 'BuddyPress: Groups', 'mycred' ),
+			'description'   => __( 'Awards %_plural% for group related actions. Use minus to deduct %_plural% or zero to disable a specific hook.', 'mycred' ),
+			'documentation' => 'http://codex.mycred.me/hooks/buddypress-groups/',
+			'callback'      => array( 'myCRED_BuddyPress_Groups' )
 		);
 	}
 
@@ -48,7 +50,7 @@ function mycred_load_buddypress_profile_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'hook_bp_profile',
@@ -607,201 +609,285 @@ function mycred_load_buddypress_profile_hook() {
 				$friend_block = $prefs['new_friend']['block'];
 
 ?>
-<!-- Creds for Profile Update -->
-<label for="<?php echo $this->field_id( array( 'update', 'creds' ) ); ?>" class="subheader"><?php _e( 'New Profile Activity', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'update', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'update', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['update']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'update', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'update', 'limit' ) ), $this->field_id( array( 'update', 'limit' ) ), $prefs['update']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'update', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'update', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'update', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['update']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Removed Update -->
-<label for="<?php echo $this->field_id( array( 'removed_update', 'creds' ) ); ?>" class="subheader"><?php _e( 'Deleted Profile Activity', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'removed_update', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'removed_update', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['removed_update']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'removed_update', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'removed_update', 'limit' ) ), $this->field_id( array( 'removed_update', 'limit' ) ), $prefs['removed_update']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'removed_update', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'removed_update', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'removed_update', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['removed_update']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Avatar -->
-<label for="<?php echo $this->field_id( array( 'avatar', 'creds' ) ); ?>" class="subheader"><?php _e( 'New Profile Avatar', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'avatar', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'avatar', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['avatar']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'avatar', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'avatar', 'limit' ) ), $this->field_id( array( 'avatar', 'limit' ) ), $prefs['avatar']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'avatar', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'avatar', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'avatar', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['avatar']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Cover Image -->
-<label for="<?php echo $this->field_id( array( 'cover', 'creds' ) ); ?>" class="subheader"><?php _e( 'New Profile Cover Image', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'cover', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'cover', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['cover']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'cover', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'cover', 'limit' ) ), $this->field_id( array( 'cover', 'limit' ) ), $prefs['cover']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'cover', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'cover', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'cover', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['cover']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Friendships -->
-<label for="<?php echo $this->field_id( array( 'new_friend', 'creds' ) ); ?>" class="subheader"><?php _e( 'New Friendship', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_friend', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_friend', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_friend']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_friend', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_friend', 'limit' ) ), $this->field_id( array( 'new_friend', 'limit' ) ), $prefs['new_friend']['limit'] ); ?>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_friend', 'block' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'new_friend', 'block' ) ); ?>"<?php checked( $friend_block, 1 ); ?> id="<?php echo $this->field_id( array( 'new_friend', 'block' ) ); ?>" value="1" /> <?php echo $this->core->template_tags_general( __( 'Users with zero balance can not add friends. Requires that you deduct %_plural% for adding a new friend.', 'mycred' ) ); ?></label>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_friend', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_friend', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_friend', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['new_friend']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'user' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Leaving Friendships -->
-<label for="<?php echo $this->field_id( array( 'leave_friend', 'creds' ) ); ?>" class="subheader"><?php _e( 'Ending Friendship', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'leave_friend', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'leave_friend', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['leave_friend']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'leave_friend', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'leave_friend', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'leave_friend', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['leave_friend']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'user' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Comment -->
-<label for="<?php echo $this->field_id( array( 'new_comment', 'creds' ) ); ?>" class="subheader"><?php _e( 'New Comment', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_comment', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_comment', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_comment']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_comment', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_comment', 'limit' ) ), $this->field_id( array( 'new_comment', 'limit' ) ), $prefs['new_comment']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_comment', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_comment', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_comment', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['new_comment']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Deleting Comment -->
-<label for="<?php echo $this->field_id( array( 'delete_comment', 'creds' ) ); ?>" class="subheader"><?php _e( 'Deleted Comment', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_comment', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_comment', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete_comment']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete_comment', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_comment', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_comment', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['delete_comment']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Adding Activity to Favorites -->
-<label for="<?php echo $this->field_id( array( 'add_favorite', 'creds' ) ); ?>" class="subheader"><?php _e( 'Favorit Activity', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'add_favorite', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'add_favorite', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['add_favorite']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'add_favorite', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'add_favorite', 'limit' ) ), $this->field_id( array( 'add_favorite', 'limit' ) ), $prefs['add_favorite']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'add_favorite', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'add_favorite', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'add_favorite', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['add_favorite']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Removing Activity from Favorites -->
-<label for="<?php echo $this->field_id( array( 'remove_favorite', 'creds' ) ); ?>" class="subheader"><?php _e( 'Removing Favorit Activity', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'remove_favorite', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'remove_favorite', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['remove_favorite']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'remove_favorite', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'remove_favorite', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'remove_favorite', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['remove_favorite']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Sending Messages -->
-<label for="<?php echo $this->field_id( array( 'message', 'creds' ) ); ?>" class="subheader"><?php _e( 'New Private Message', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'message', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'message', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['message']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'message', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'message', 'limit' ) ), $this->field_id( array( 'message', 'limit' ) ), $prefs['message']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'message', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'message', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'message', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['message']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Sending Gifts -->
-<label for="<?php echo $this->field_id( array( 'send_gift', 'creds' ) ); ?>" class="subheader"><?php _e( 'Sending Gift', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'send_gift', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'send_gift', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['send_gift']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'send_gift', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'send_gift', 'limit' ) ), $this->field_id( array( 'send_gift', 'limit' ) ), $prefs['send_gift']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'send_gift', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'send_gift', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'send_gift', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['send_gift']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<h3><?php _e( 'New Profile Activity', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'update', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'update', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'update', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['update']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'update', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'update', 'limit' ) ), $this->field_id( array( 'update', 'limit' ) ), $prefs['update']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'update', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'update', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'update', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['update']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Deleted Profile Activity', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'removed_update', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'removed_update', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'removed_update', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['removed_update']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'removed_update', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'removed_update', 'limit' ) ), $this->field_id( array( 'removed_update', 'limit' ) ), $prefs['removed_update']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'removed_update', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'removed_update', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'removed_update', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['removed_update']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Profile Avatar Upload', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'avatar', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'avatar', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'avatar', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['avatar']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'avatar', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'avatar', 'limit' ) ), $this->field_id( array( 'avatar', 'limit' ) ), $prefs['avatar']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'avatar', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'avatar', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'avatar', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['avatar']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Profile Cover Upload', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'cover', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'cover', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'cover', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['cover']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'cover', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'cover', 'limit' ) ), $this->field_id( array( 'cover', 'limit' ) ), $prefs['cover']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'cover', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'cover', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'cover', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['cover']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Friendships', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_friend', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_friend', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_friend', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_friend']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_friend', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_friend', 'limit' ) ), $this->field_id( array( 'new_friend', 'limit' ) ), $prefs['new_friend']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_friend', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_friend', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_friend', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_friend']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="radio">
+					<label for="<?php echo $this->field_id( array( 'new_friend', 'block' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'new_friend', 'block' ) ); ?>"<?php checked( $friend_block, 1 ); ?> id="<?php echo $this->field_id( array( 'new_friend', 'block' ) ); ?>" value="1" /> <?php echo $this->core->template_tags_general( __( 'Users with zero balance can not add friends. Requires that you deduct %_plural% for adding a new friend.', 'mycred' ) ); ?></label>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Ending Friendships', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'leave_friend', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'leave_friend', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'leave_friend', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['leave_friend']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'leave_friend', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'leave_friend', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'leave_friend', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['leave_friend']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Comment', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_comment', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_comment', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_comment', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_comment']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_comment', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_comment', 'limit' ) ), $this->field_id( array( 'new_comment', 'limit' ) ), $prefs['new_comment']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_comment', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_comment', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_comment', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_comment']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Deleted Comment', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_comment', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_comment', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_comment', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete_comment']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_comment', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_comment', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_comment', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_comment']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Favorite Activity', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'add_favorite', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'add_favorite', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'add_favorite', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['add_favorite']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'add_favorite', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'add_favorite', 'limit' ) ), $this->field_id( array( 'add_favorite', 'limit' ) ), $prefs['add_favorite']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'add_favorite', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'add_favorite', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'add_favorite', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['add_favorite']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Removing Favorit Activity', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'remove_favorite', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'remove_favorite', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'remove_favorite', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['remove_favorite']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'remove_favorite', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'remove_favorite', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'remove_favorite', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['remove_favorite']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Private Message', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'message', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'message', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'message', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['message']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'message', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'message', 'limit' ) ), $this->field_id( array( 'message', 'limit' ) ), $prefs['message']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'message', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'message', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'message', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['message']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Sending Gift', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'send_gift', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'send_gift', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'send_gift', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['send_gift']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'send_gift', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'send_gift', 'limit' ) ), $this->field_id( array( 'send_gift', 'limit' ) ), $prefs['send_gift']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'send_gift', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'send_gift', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'send_gift', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['send_gift']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -811,7 +897,7 @@ function mycred_load_buddypress_profile_hook() {
 		 * @since 1.6
 		 * @version 1.1
 		 */
-		function sanitise_preferences( $data ) {
+		public function sanitise_preferences( $data ) {
 
 			if ( isset( $data['update']['limit'] ) && isset( $data['update']['limit_by'] ) ) {
 				$limit = sanitize_text_field( $data['update']['limit'] );
@@ -1412,189 +1498,260 @@ function mycred_load_buddypress_groups_hook() {
 			$prefs = $this->prefs;
 
 ?>
-<!-- Creds for New Group -->
-<label for="<?php echo $this->field_id( array( 'create', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Creating Groups', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'create', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'create', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['create']['creds'] ); ?>" size="8" /></div>
-		<span class="description"><?php echo $this->core->template_tags_general( __( 'If you use a negative value and the user does not have enough %_plural% the "Create Group" button will be disabled.', 'mycred' ) ); ?></span>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'create', 'min' ) ); ?>"><?php echo $this->core->template_tags_general( __( 'Number of members before awarding %_plural%', 'mycred' ) ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'create', 'min' ) ); ?>" id="<?php echo $this->field_id( array( 'create', 'min' ) ); ?>" value="<?php echo esc_attr( $prefs['create']['min'] ); ?>" size="8" /></div>
-		<span class="description"><?php echo $this->core->template_tags_general( __( 'Use zero to award %_plural% when group is created.', 'mycred' ) ); ?></span>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'create', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'create', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'create', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['create']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Deleting Group -->
-<label for="<?php echo $this->field_id( array( 'delete', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Deleting Groups', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['delete']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Forum Topic -->
-<label for="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for New Forum Topic', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_topic']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_topic', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_topic', 'limit' ) ), $this->field_id( array( 'new_topic', 'limit' ) ), $prefs['new_topic']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['new_topic']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Edit Forum Topic -->
-<label for="<?php echo $this->field_id( array( 'edit_topic', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Editing Forum Topic', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'edit_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'edit_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['edit_topic']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'edit_topic', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'edit_topic', 'limit' ) ), $this->field_id( array( 'edit_topic', 'limit' ) ), $prefs['edit_topic']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'edit_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'edit_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'edit_topic', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['edit_topic']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Forum Post -->
-<label for="<?php echo $this->field_id( array( 'new_post', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for New Forum Post', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_post', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_post']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_post', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_post', 'limit' ) ), $this->field_id( array( 'new_post', 'limit' ) ), $prefs['new_post']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_post', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_post', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['new_post']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Edit Forum Post -->
-<label for="<?php echo $this->field_id( array( 'edit_post', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Editing Forum Post', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'edit_post', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'edit_post', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['edit_post']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'edit_post', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'edit_post', 'limit' ) ), $this->field_id( array( 'edit_post', 'limit' ) ), $prefs['edit_post']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'edit_post', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'edit_post', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'edit_post', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['edit_post']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Joining Group -->
-<label for="<?php echo $this->field_id( array( 'join', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Joining Groups', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'join', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'join', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['join']['creds'] ); ?>" size="8" /></div>
-		<span class="description"><?php echo $this->core->template_tags_general( __( 'If you use a negative value and the user does not have enough %_plural% the "Join Group" button will be disabled.', 'mycred' ) ); ?></span>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'join', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'join', 'limit' ) ), $this->field_id( array( 'join', 'limit' ) ), $prefs['join']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'join', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'join', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'join', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['join']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Leaving Group -->
-<label for="<?php echo $this->field_id( array( 'leave', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Leaving Groups', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'leave', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'leave', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['leave']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'leave', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'leave', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'leave', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['leave']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Group Avatar -->
-<label for="<?php echo $this->field_id( array( 'avatar', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for New Group Avatar', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'avatar', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'avatar', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['avatar']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'avatar', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'avatar', 'limit' ) ), $this->field_id( array( 'avatar', 'limit' ) ), $prefs['avatar']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'avatar', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'avatar', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'avatar', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['avatar']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Cover Image -->
-<label for="<?php echo $this->field_id( array( 'cover', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for New Cover Image', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'cover', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'cover', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['cover']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'cover', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'cover', 'limit' ) ), $this->field_id( array( 'cover', 'limit' ) ), $prefs['cover']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'cover', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'cover', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'cover', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['cover']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Group Comment -->
-<label for="<?php echo $this->field_id( array( 'comments', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for New Group Comment', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'comments', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'comments', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['comments']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'comments', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'comments', 'limit' ) ), $this->field_id( array( 'comments', 'limit' ) ), $prefs['comments']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_group_comment', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'comments', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'comments', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['comments']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<h3><?php _e( 'Group Creation', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'create', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'create', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'create', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['create']['creds'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->core->template_tags_general( __( 'If you use a negative value and the user does not have enough %_plural%, the "Create Group" button will be disabled.', 'mycred' ) ); ?></span>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'create', 'min' ) ); ?>"><?php _e( 'No. of Members', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'create', 'min' ) ); ?>" id="<?php echo $this->field_id( array( 'create', 'min' ) ); ?>" value="<?php echo esc_attr( $prefs['create']['min'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->core->template_tags_general( __( 'The number of members a group must gain before awarding %_plural%. Use zero to award as soon as the group is created.', 'mycred' ) ); ?></span>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'create', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'create', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'create', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['create']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Group Deletions', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Group Avatar Upload', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'avatar', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'avatar', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'avatar', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['avatar']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'avatar', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'avatar', 'limit' ) ), $this->field_id( array( 'avatar', 'limit' ) ), $prefs['avatar']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'avatar', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'avatar', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'avatar', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['avatar']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Group Cover Upload', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'cover', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'cover', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'cover', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['cover']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'cover', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'cover', 'limit' ) ), $this->field_id( array( 'cover', 'limit' ) ), $prefs['cover']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'cover', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'cover', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'cover', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['cover']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Forum Topics', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_topic']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_topic', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_topic', 'limit' ) ), $this->field_id( array( 'new_topic', 'limit' ) ), $prefs['new_topic']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_topic']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Editing Forum Topics', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'edit_topic', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'edit_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'edit_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['edit_topic']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'edit_topic', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'edit_topic', 'limit' ) ), $this->field_id( array( 'edit_topic', 'limit' ) ), $prefs['edit_topic']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'edit_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'edit_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'edit_topic', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['edit_topic']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Forum Posts', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_post', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_post', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_post']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_post', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_post', 'limit' ) ), $this->field_id( array( 'new_post', 'limit' ) ), $prefs['new_post']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_post', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_post', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_post']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Editing Forum Posts', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'edit_post', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'edit_post', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'edit_post', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['edit_post']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'edit_post', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'edit_post', 'limit' ) ), $this->field_id( array( 'edit_post', 'limit' ) ), $prefs['edit_post']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'edit_post', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'edit_post', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'edit_post', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['edit_post']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Joining Groups', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'join', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'join', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'join', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['join']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'join', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'join', 'limit' ) ), $this->field_id( array( 'join', 'limit' ) ), $prefs['join']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'join', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'join', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'join', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['join']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Leaving Groups', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'leave', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'leave', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'leave', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['leave']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'leave', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'leave', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'leave', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['leave']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Group Comments', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'comments', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'comments', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'comments', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['comments']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'comments', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'comments', 'limit' ) ), $this->field_id( array( 'comments', 'limit' ) ), $prefs['comments']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'comments', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'comments', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'comments', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['comments']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -1604,7 +1761,7 @@ function mycred_load_buddypress_groups_hook() {
 		 * @since 1.6
 		 * @version 1.1
 		 */
-		function sanitise_preferences( $data ) {
+		public function sanitise_preferences( $data ) {
 
 			if ( isset( $data['new_topic']['limit'] ) && isset( $data['new_topic']['limit_by'] ) ) {
 				$limit = sanitize_text_field( $data['new_topic']['limit'] );
@@ -1669,5 +1826,3 @@ function mycred_load_buddypress_groups_hook() {
 	}
 
 }
-
-?>

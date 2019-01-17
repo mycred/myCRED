@@ -7,7 +7,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * to a pre-set user. A simpler version of the mycred_transfer shortcode.
  * @see http://codex.mycred.me/shortcodes/mycred_send/ 
  * @since 1.1
- * @version 1.3
+ * @version 1.3.1
  */
 if ( ! function_exists( 'mycred_render_shortcode_send' ) ) :
 	function mycred_render_shortcode_send( $atts, $content = '' ) {
@@ -20,7 +20,8 @@ if ( ! function_exists( 'mycred_render_shortcode_send' ) ) :
 			'log'    => '',
 			'ref'    => 'gift',
 			'type'   => MYCRED_DEFAULT_TYPE_KEY,
-			'class'  => 'button button-primary btn btn-primary'
+			'class'  => 'button button-primary btn btn-primary',
+			'reload' => 0
 		), $atts ) );
 
 		if ( ! mycred_point_type_exists( $type ) ) return 'Point type not found.';
@@ -28,18 +29,18 @@ if ( ! function_exists( 'mycred_render_shortcode_send' ) ) :
 		global $post;
 
 		// Send points to the post author (assuming this shortcode is used inside the loop)
-		$to = mycred_get_user_id( $to );
+		$to            = mycred_get_user_id( $to );
 
 		// We will not render for ourselves.
-		$user_id   = get_current_user_id();
-		$recipient = absint( $to );
+		$user_id       = get_current_user_id();
+		$recipient     = absint( $to );
 		if ( $recipient === $user_id || $recipient === 0 ) return;
 
 		global $mycred_sending_points;
 
 		$mycred_sending_points = false;
 
-		$mycred = mycred( $type );
+		$mycred        = mycred( $type );
 
 		// Make sure current user or recipient is not excluded!
 		if ( $mycred->exclude_user( $recipient ) || $mycred->exclude_user( $user_id ) ) return;
@@ -57,7 +58,10 @@ if ( ! function_exists( 'mycred_render_shortcode_send' ) ) :
 		if ( $class != '' )
 			$class = ' ' . sanitize_text_field( $class );
 
-		$render = '<button type="button" class="mycred-send-points-button btn btn-primary' . $class . '" data-to="' . $recipient . '" data-ref="' . esc_attr( $ref ) . '" data-log="' . esc_attr( $log ) . '" data-amount="' . $amount . '" data-type="' . esc_attr( $type ) . '">' . $mycred->template_tags_general( $content ) . '</button>';
+		$reload = absint( $reload );
+
+		$render = '<button type="button" class="mycred-send-points-button btn btn-primary' . $class . '" data-reload="' . $reload . '" data-to="' . $recipient . '" data-ref="' . esc_attr( $ref ) . '" data-log="' . esc_attr( $log ) . '" data-amount="' . $amount . '" data-type="' . esc_attr( $type ) . '">' . $mycred->template_tags_general( $content ) . '</button>';
+
 		return apply_filters( 'mycred_send', $render, $atts, $content );
 
 	}
@@ -157,5 +161,3 @@ if ( ! function_exists( 'mycred_shortcode_send_points_ajax' ) ) :
 	}
 endif;
 add_action( 'wp_ajax_mycred-send-points', 'mycred_shortcode_send_points_ajax' );
-
-?>

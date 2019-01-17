@@ -5,7 +5,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * myCRED Shortcode: mycred_leaderboard
  * @see http://codex.mycred.me/shortcodes/mycred_leaderboard/
  * @since 0.1
- * @version 1.5.2
+ * @version 1.5.4
  */
 if ( ! function_exists( 'mycred_render_shortcode_leaderboard' ) ) :
 	function mycred_render_shortcode_leaderboard( $atts, $content = '' ) {
@@ -48,12 +48,12 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderboard' ) ) :
 
 			$balance_format = '%d';
 			if ( isset( $mycred->format['decimals'] ) && $mycred->format['decimals'] > 0 ) {
-				$length         = 65 - $mycred->format['decimals'];
+				$length         = absint( 65 - $mycred->format['decimals'] );
 				$balance_format = 'CAST( %f AS DECIMAL( ' . $length . ', ' . $mycred->format['decimals'] . ' ) )';
 			}
 
 			if ( $total == 0 )
-				$excludes = $wpdb->prepare( "AND um.meta_value != {$balance_format}", $mycred->zero() );
+				$excludes = $wpdb->prepare( "AND l.meta_value != {$balance_format}", $mycred->zero() );
 
 		}
 
@@ -89,13 +89,13 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderboard' ) ) :
 			else {
 
 				$query = $wpdb->prepare( "
-					SELECT DISTINCT u.ID, um.meta_value AS cred 
+					SELECT DISTINCT u.ID, l.meta_value AS cred 
 					FROM {$wpdb->users} u 
-					INNER JOIN {$wpdb->usermeta} um ON ( u.ID = um.user_id ) 
+					INNER JOIN {$wpdb->usermeta} l ON ( u.ID = l.user_id ) 
 					{$multisite_check} 
-					WHERE um.meta_key = %s 
+					WHERE l.meta_key = %s 
 					{$excludes} 
-					ORDER BY um.meta_value+0 {$order}, um.user_id ASC
+					ORDER BY l.meta_value+0 {$order}, l.user_id ASC
 					{$limit};", mycred_get_meta_key( $type ) );
 
 			}
@@ -126,7 +126,7 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderboard' ) ) :
 
 				// Filter: Monthly
 				elseif ( $timeframe == 'this-month' )
-					$time_filter = $wpdb->prepare( "AND log.time BETWEEN %d AND %d", strtotime( 'Y-m-01', $now ), $now );
+					$time_filter = $wpdb->prepare( "AND log.time BETWEEN %d AND %d", strtotime( date( 'Y-m-01', $now ) ), $now );
 
 				else {
 

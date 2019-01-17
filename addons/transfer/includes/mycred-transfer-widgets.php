@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Widget: myCRED Transfer
  * @since 0.1
- * @version 1.2.1
+ * @version 1.2.2
  */
 if ( ! class_exists( 'myCRED_Widget_Transfer' ) ) :
 	class myCRED_Widget_Transfer extends WP_Widget {
@@ -31,6 +31,19 @@ if ( ! class_exists( 'myCRED_Widget_Transfer' ) ) :
 		public function widget( $args, $instance ) {
 
 			extract( $args, EXTR_SKIP );
+
+			$instance = shortcode_atts( array(
+				'title'        => '',
+				'button'       => 'Transfer',
+				'pay_to'       => '',
+				'show_balance' => 0,
+				'show_limit'   => 0,
+				'reference'    => 'transfer',
+				'amount'       => '',
+				'excluded'     => '',
+				'types'        => MYCRED_DEFAULT_TYPE_KEY,
+				'placeholder'  => ''
+			), $instance );
 
 			echo $before_widget;
 
@@ -142,5 +155,3 @@ if ( ! class_exists( 'myCRED_Widget_Transfer' ) ) :
 
 	}
 endif;
-
-?>

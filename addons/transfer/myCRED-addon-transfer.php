@@ -2,13 +2,13 @@
 /**
  * Addon: Transfer
  * Addon URI: http://mycred.me/add-ons/transfer/
- * Version: 1.4
+ * Version: 1.5
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 define( 'myCRED_TRANSFER',         __FILE__ );
 define( 'myCRED_TRANSFER_DIR',     myCRED_ADDONS_DIR . 'transfer/' );
-define( 'myCRED_TRANSFER_VERSION', '1.4' );
+define( 'myCRED_TRANSFER_VERSION', '1.5' );
 
 require_once myCRED_TRANSFER_DIR . 'includes/mycred-transfer-functions.php';
 require_once myCRED_TRANSFER_DIR . 'includes/mycred-transfer-shortcodes.php';
@@ -49,6 +49,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 					),
 					'autofill'   => 'user_login',
 					'reload'     => 1,
+					'message'    => 0,
 					'limit'      => array(
 						'amount'    => 1000,
 						'limit'     => 'none'
@@ -69,6 +70,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 			add_filter( 'mycred_get_email_events',     array( $this, 'email_notice_instance' ), 10, 2 );
 			add_filter( 'mycred_email_before_send',    array( $this, 'email_notices' ), 50, 2 );
+			add_filter( 'mycred_parse_log_entry',      array( $this, 'render_message' ), 20, 2 );
 
 			// Register Scripts & Styles
 			add_action( 'mycred_front_enqueue',        array( $this, 'register_script' ), 30 );
@@ -81,7 +83,25 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 			// Ajax Calls
 			add_action( 'wp_ajax_mycred-new-transfer', array( $this, 'ajax_call_transfer' ) );
-			add_action( 'wp_ajax_mycred-autocomplete', array( $this, 'ajax_call_autocomplete' ) );
+
+			if ( $this->transfers['autofill'] != 'none' )
+				add_action( 'wp_ajax_mycred-autocomplete', array( $this, 'ajax_call_autocomplete' ) );
+
+
+		}
+
+		/**
+		 * Register Widgets
+		 * @since 1.7.6
+		 * @version 1.0
+		 */
+		public function render_message( $content = '', $log = NULL ) {
+
+			if ( ! isset( $log->data ) ) return $content;
+
+			$data = (array) maybe_unserialize( $log->data );
+
+			return mycred_transfer_render_message( $content, $data );
 
 		}
 
@@ -112,7 +132,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				'mycred-transfer',
 				plugins_url( 'assets/js/mycred-transfer.js', myCRED_TRANSFER ),
 				array( 'jquery', 'jquery-ui-autocomplete' ),
-				'1.6'
+				'1.7'
 			);
 
 		}
@@ -138,7 +158,8 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				'user_id'   => get_current_user_id(),
 				'working'   => esc_attr__( 'Processing...', 'mycred' ),
 				'token'     => wp_create_nonce( 'mycred-autocomplete' ),
-				'reload'    => $this->transfers['reload']
+				'reload'    => $this->transfers['reload'],
+				'autofill'  => $this->transfers['autofill']
 			);
 
 			// Messages
@@ -169,7 +190,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		/**
 		 * AJAX Autocomplete
 		 * @since 0.1
-		 * @version 1.1
+		 * @version 1.2.1
 		 */
 		public function ajax_call_autocomplete() {
 
@@ -180,20 +201,16 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 			$results = array();
 			$user_id = get_current_user_id();
-			$prefs   = $this->transfers;
+			$string  = sanitize_text_field( $_REQUEST['string']['term'] );
 
 			// Let other play
-			do_action( 'mycred_transfer_autofill_find', $prefs, $this->core );
+			do_action( 'mycred_transfer_autofill_find', $this->transfers, $this->core );
 
 			global $wpdb;
 
 			// Query
-			$select     = $prefs['autofill'];
-			$blog_users = $wpdb->get_results( $wpdb->prepare( "
-				SELECT {$select}, ID 
-				FROM {$wpdb->users} 
-				WHERE ID != %d 
-					AND {$select} LIKE %s;", $user_id, '%' . $_REQUEST['string']['term'] . '%' ), 'ARRAY_N' );
+			$select     = sanitize_text_field( $this->transfers['autofill'] );
+			$blog_users = $wpdb->get_results( $wpdb->prepare( "SELECT {$select}, ID FROM {$wpdb->users} WHERE ID != %d AND {$select} LIKE %s;", $user_id, '%' . $string . '%' ), 'ARRAY_N' );
 
 			if ( $wpdb->num_rows > 0 ) {
 
@@ -206,14 +223,14 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 			}
 
-			die( json_encode( $results ) );
+			wp_send_json( $results );
 
 		}
 
 		/**
 		 * AJAX Transfer Creds
 		 * @since 0.1
-		 * @version 1.6.1
+		 * @version 1.7
 		 */
 		public function ajax_call_transfer() {
 
@@ -221,18 +238,18 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 			// Generate Transaction ID for our records
 			$user_id        = get_current_user_id();
-			$transaction_id = 'TXID' . current_time( 'timestamp' ) . $user_id;
 
 			if ( mycred_force_singular_session( $user_id, 'mycred-last-transfer' ) )
 				wp_send_json_error( 'error_9' );
 
-			$request = shortcode_atts( apply_filters( 'mycred_new_transfer_request', array(
+			$request        = shortcode_atts( apply_filters( 'mycred_new_transfer_request', array(
 				'token'        => NULL,
 				'recipient_id' => NULL,
 				'user_id'      => 'current',
 				'ctype'        => MYCRED_DEFAULT_TYPE_KEY,
 				'amount'       => NULL,
-				'reference'    => 'transfer'
+				'reference'    => 'transfer',
+				'message'      => ''
 			), $post ), $post['mycred_new_transfer'] );
 
 			// Security
@@ -247,20 +264,28 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 			if ( ! mycred_point_type_exists( $request['ctype'] ) || ! in_array( $request['ctype'], $this->transfers['types'] ) )
 				wp_send_json_error( 'error_10' );
 
+			// If messages are allowed, enforce a max length
+			$message = '';
+			if ( $this->transfers['message'] > 0 ) {
+				$message = sanitize_text_field( $request['message'] );
+				$message = substr( $message, 0, $this->transfers['message'] );
+			}
+
 			// Make sure we have a reference
 			if ( $request['reference'] == '' )
 				$request['reference'] = 'transfer';
 
-			// Prep
-			$point_type   = sanitize_key( $request['ctype'] );
-			$mycred       = mycred( $point_type );
-			$amount       = $mycred->number( abs( $request['amount'] ) );
-			$recipient_id = $this->get_recipient( sanitize_text_field( $request['recipient_id'] ) );
-			$reference    = sanitize_key( $request['reference'] );
+			// Honour the user ID in the request if it's not the current user
+			if ( $request['user_id'] != 'current' && absint( $request['user_id'] ) > 0 && absint( $request['user_id'] ) != $user_id )
+				$user_id = absint( $request['user_id'] );
 
-			// If we insist on using a point type we are excluded from using
-			if ( $mycred->exclude_user( $user_id ) )
-				wp_send_json_error( 'error_4' );
+			// Prep
+			$point_type     = sanitize_key( $request['ctype'] );
+			$reference      = sanitize_key( $request['reference'] );
+			$transaction_id = 'TXID' . current_time( 'timestamp' ) . $user_id;
+
+			$mycred         = mycred( $point_type );
+			$recipient_id   = $this->get_recipient( sanitize_text_field( $request['recipient_id'] ) );
 
 			// Ok, lets start validating the request
 			// Recipient not found
@@ -271,105 +296,65 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 			if ( $recipient_id == $user_id )
 				wp_send_json_error( 'error_4' );
 
-			// The recipient is excluded from the point type
-			if ( $mycred->exclude_user( $recipient_id ) )
-				wp_send_json_error( 'error_4' );
-
 			// Amount can not be zero
+			$amount         = $mycred->number( abs( $request['amount'] ) );
 			if ( $amount == $mycred->zero() )
 				wp_send_json_error( 'error_5' );
 
-			// Check if we can complete this transaction before we run it
-			$attempt_check = mycred_user_can_transfer( $user_id, $amount, $point_type, $reference );
+			$data           = apply_filters( 'mycred_transfer_data', array( 'ref_type' => 'user', 'tid' => $transaction_id, 'message' => $message ), $transaction_id, $request, $this->transfers );
 
-			// Insufficient funds
-			if ( $attempt_check === 'low' )
-				wp_send_json_error( 'error_7' );
+			$result         = mycred_new_transfer( array(
+				'transaction_id' => $transaction_id,
+				'sender_id'      => $user_id,
+				'recipient_id'   => $recipient_id,
+				'reference'      => $reference,
+				'charge'         => $amount,
+				'payout'         => $amount,
+				'point_type'     => $point_type,
+				'data'           => $data
+			) );
 
-			// Limit reached
-			elseif ( $attempt_check === 'limit' )
-				wp_send_json_error( 'error_8' );
+			if ( ! is_array( $result ) )
+				wp_send_json_error( $result );
 
-			// Let others play before we execute the transfer
-			do_action( 'mycred_transfer_ready', $transaction_id, $request, $this->transfers );
-
-			$data = apply_filters( 'mycred_transfer_data', array( 'ref_type' => 'user', 'tid' => $transaction_id ), $transaction_id, $request, $this->transfers );
-
-			// Prevent Duplicate transactions
-			if ( $mycred->has_entry( $reference, $recipient_id, $user_id, $data, $point_type ) )
-				wp_send_json_error( 'error_9' );
-
-			// First take the amount from the sender
-			if ( $mycred->add_creds(
-				$reference,
-				$user_id,
-				0 - $amount,
-				$this->transfers['logs']['sending'],
-				$recipient_id,
-				$data,
-				$point_type
-			) ) {
-
-				// Then add the amount to the receipient
-				if ( ! $mycred->has_entry( $reference, $user_id, $recipient_id, $data, $point_type ) ) {
-
-					$mycred->add_creds(
-						$reference,
-						$recipient_id,
-						$amount,
-						$this->transfers['logs']['receiving'],
-						$user_id,
-						$data,
-						$point_type
-					);
-
-					// Let others play once transaction is completed
-					do_action( 'mycred_transfer_completed', $transaction_id, $request, $this->transfers );
-
-					// Return the good news
-					wp_send_json_success( array(
-						'css'     => '.mycred-balance-' . $request['ctype'],
-						'balance' => $mycred->format_creds( $attempt_check ),
-						'zero'    => ( ( $attempt_check <= $mycred->zero() ) ? true : false )
-					) );
-
-				}
-
-			}
-
-			wp_send_json_error( 'error_9' );
+			wp_send_json_success( $result );
 
 		}
 
 		/**
 		 * Settings Page
 		 * @since 0.1
-		 * @version 1.3
+		 * @version 1.4
 		 */
 		public function after_general_settings( $mycred = NULL ) {
 
 			// Settings
-			$settings = $this->transfers;
+			$settings           = $this->transfers;
 
-			$before   = $this->core->before;
-			$after    = $this->core->after;
+			if ( ! array_key_exists( 'message', $settings ) )
+				$settings['message'] = 0;
 
 			// Limits
-			$limit    = $settings['limit']['limit'];
-			$limits   = array(
-				'none'   => __( 'No limits.', 'mycred' ),
-				'daily'  => __( 'Impose daily limit.', 'mycred' ),
-				'weekly' => __( 'Impose weekly limit.', 'mycred' )
+			$limit              = $settings['limit']['limit'];
+			$limits             = array(
+				'none'             => __( 'No limits.', 'mycred' ),
+				'daily'            => __( 'Impose daily limit.', 'mycred' ),
+				'weekly'           => __( 'Impose weekly limit.', 'mycred' )
 			);
-			$available_limits = apply_filters( 'mycred_transfer_limits', $limits, $settings );
+			$available_limits   = apply_filters( 'mycred_transfer_limits', $limits, $settings );
 
 			// Autofill by
-			$autofill  = $settings['autofill'];
-			$autofills = array(
-				'user_login'   => __( 'User Login (user_login)', 'mycred' ),
-				'user_email'   => __( 'User Email (user_email)', 'mycred' )
+			$autofill           = $settings['autofill'];
+			$autofills          = array(
+				'user_login'       => __( 'User Login (user_login)', 'mycred' ),
+				'user_email'       => __( 'User Email (user_email)', 'mycred' )
 			);
 			$available_autofill = apply_filters( 'mycred_transfer_autofill_by', $autofills, $settings );
+
+			$yes_no             = array(
+				1 => __( 'Yes', 'mycred' ),
+				0 => __( 'No', 'mycred' )
+			);
 
 			if ( ! isset( $settings['types'] ) )
 				$settings['types'] = $this->default_prefs['types'];
@@ -378,41 +363,47 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 <h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Transfers', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
 
-	<?php if ( count( $this->point_types ) > 1 ) : ?>
+	<h3><?php _e( 'Features', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="mycred-transfer-type"><?php _e( 'Point Types', 'mycred' ); ?></label>
+				<?php if ( count( $this->point_types ) > 1 ) : ?>
+				<?php mycred_types_select_from_checkboxes( 'mycred_pref_core[transfers][types][]', 'mycred-transfer-type', $settings['types'] ); ?>
+				<?php else : ?>
+				<p class="form-control-static"><?php echo $this->core->plural(); ?></p>
+				<input type="hidden" name="mycred_pref_core[transfers][types][]" value="<?php echo MYCRED_DEFAULT_TYPE_KEY; ?>" />
+				<?php endif; ?>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'reload' ); ?>"><?php _e( 'Reload', 'mycred' ); ?></label>
+				<select name="<?php echo $this->field_name( 'reload' ); ?>" id="<?php echo $this->field_id( 'reload' ); ?>" class="form-control">
+<?php
 
-	<label class="subheader"><?php _e( 'Point Types', 'mycred' ); ?></label>
-	<ol id="myCRED-transfer-logging-send">
-		<li>
-			<?php mycred_types_select_from_checkboxes( 'mycred_pref_core[transfers][types][]', 'mycred-transfer-type', $settings['types'] ); ?>
+			foreach ( $yes_no as $value => $label ) {
+				echo '<option value="' . $value . '"';
+				if ( $settings['reload'] == $value ) echo ' selected="selected"';
+				echo '>' . $label . '</option>';
+			}
 
-			<span class="description"><?php _e( 'Select the point types that users can transfer.', 'mycred' ); ?></span>
-		</li>
-	</ol>
-
-	<?php else : ?>
-
-	<input type="hidden" name="mycred_pref_core[transfers][types][]" value="mycred_default" />
-
-	<?php endif; ?>
-
-	<label class="subheader"><?php _e( 'Log template for sending', 'mycred' ); ?></label>
-	<ol id="myCRED-transfer-logging-send">
-		<li>
-			<div class="h2"><input type="text" name="mycred_pref_core[transfers][logs][sending]" id="myCRED-transfer-log-sender" value="<?php echo esc_attr( $settings['logs']['sending'] ); ?>" class="long" /></div>
-			<span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Log template for receiving', 'mycred' ); ?></label>
-	<ol id="myCRED-transfer-logging-receive">
-		<li>
-			<div class="h2"><input type="text" name="mycred_pref_core[transfers][logs][receiving]" id="myCRED-transfer-log-receiver" value="<?php echo esc_attr( $settings['logs']['receiving'] ); ?>" class="long" /></div>
-			<span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Autofill Recipient', 'mycred' ); ?></label>
-	<ol id="myCRED-transfer-autofill-by">
-		<li>
-			<select name="mycred_pref_core[transfers][autofill]" id="myCRED-transfer-autofill">
+?>
+				</select>
+				<p><span class="description"><?php _e( 'Should the page reload once a transfer has been completed?', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'message' ); ?>"><?php _e( 'Message Length', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'message' ); ?>" id="<?php echo $this->field_id( 'message' ); ?>" class="form-control" value="<?php echo absint( $settings['message'] ); ?>" />
+				<p><span class="description"><?php _e( 'The maximum length of messages users can attach to a transfer. Use zero to disable.', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'autofill' ); ?>"><?php _e( 'Autofill Recipient', 'mycred' ); ?></label>
+				<select name="<?php echo $this->field_name( 'autofill' ); ?>" id="<?php echo $this->field_id( 'autofill' ); ?>" class="form-control">
 <?php
 
 			foreach ( $available_autofill as $key => $label ) {
@@ -422,18 +413,15 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 			}
 
 ?>
-			</select><br />
-			<span class="description"><?php _e( 'Select what user details recipients should be autofilled by.', 'mycred' ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Reload', 'mycred' ); ?></label>
-	<ol id="myCRED-transfer-logging-receive">
-		<li>
-			<input type="checkbox" name="mycred_pref_core[transfers][reload]" id="myCRED-transfer-reload" <?php checked( $settings['reload'], 1 ); ?> value="1" /> <label for="myCRED-transfer-reload"><?php _e( 'Reload page on successful transfers.', 'mycred' ); ?></label>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Limits', 'mycred' ); ?></label>
-	<ol id="myCRED-transfer-limits">
+				</select>
+				<p><span class="description"><?php _e( 'Select what user details recipients should be autofilled by.', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'limit' => 'none' ) ); ?>"><?php _e( 'Limits', 'mycred' ); ?></label>
 <?php
 
 			// Loop though limits
@@ -441,29 +429,69 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				foreach ( $limits as $key => $description ) {
 
 ?>
-		<li>
-			<input type="radio" name="mycred_pref_core[transfers][limit][limit]" id="myCRED-limit-<?php echo $key; ?>" <?php checked( $limit, $key ); ?> value="<?php echo $key; ?>" />
-			<label for="myCRED-limit-<?php echo $key; ?>"><?php echo $description; ?></label>
-		</li>
+				<div class="radio"><label for="<?php echo $this->field_id( array( 'limit' => $key ) ); ?>"><input type="radio" name="<?php echo $this->field_name( array( 'limit' => 'limit' ) ); ?>" id="<?php echo $this->field_id( array( 'limit' => $key ) ); ?>" <?php checked( $limit, $key ); ?> value="<?php echo $key; ?>" /> <?php echo $description; ?></label></div>
 <?php
 
 				}
 			}
 
 ?>
-		<li class="empty">&nbsp;</li>
-		<li>
-			<label for="<?php echo $this->field_id( array( 'limit' => 'amount' ) ); ?>"><?php _e( 'Limit Amount', 'mycred' ); ?></label>
-			<div class="h2"><?php echo $before; ?> <input type="text" name="<?php echo $this->field_name( array( 'limit' => 'amount' ) ); ?>" id="<?php echo $this->field_id( array( 'limit' => 'amount' ) ); ?>" value="<?php echo $this->core->number( $settings['limit']['amount'] ); ?>" size="8" /> <?php echo $after; ?></div>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Templates', 'mycred' ); ?></label>
-	<ol>
-		<li>
-			<h3><?php _e( 'Visitors', 'mycred' ); ?></h3>
-			<p class="description"><?php _e( 'The template to use when the transfer shortcode or widget is viewed by someone who is not logged in.', 'mycred' ); ?></p>
-		</li>
-		<li>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'limit' => 'amount' ) ); ?>"><?php _e( 'Limit Amount', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'limit' => 'amount' ) ); ?>" id="<?php echo $this->field_id( array( 'limit' => 'amount' ) ); ?>" class="form-control" value="<?php echo $this->core->number( $settings['limit']['amount'] ); ?>" />
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'templates' => 'button' ) ); ?>"><?php _e( 'Default Button Label', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'templates' => 'button' ) ); ?>" id="<?php echo $this->field_id( array( 'templates' => 'button' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['templates']['button'] ); ?>" />
+				<p><span class="description"><?php _e( 'The default transfer button label. You can override this in the shortcode or widget if needed.', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+	</div>
+
+	<h3><?php _e( 'Log Templates', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'logs' => 'sending' ) ); ?>"><?php _e( 'Log template for sending', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'logs' => 'sending' ) ); ?>" id="<?php echo $this->field_id( array( 'logs' => 'sending' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['logs']['sending'] ); ?>" />
+				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ), '%transfer_message%' ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'logs' => 'receiving' ) ); ?>"><?php _e( 'Log template for receiving', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'logs' => 'receiving' ) ); ?>" id="<?php echo $this->field_id( array( 'logs' => 'receiving' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['logs']['receiving'] ); ?>" />
+				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ), '%transfer_message%' ); ?></span></p>
+			</div>
+		</div>
+	</div>
+
+	<h3><?php _e( 'Warning Messages', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'errors' => 'low' ) ); ?>"><?php _e( 'Insufficient Funds Warning', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'errors' => 'low' ) ); ?>" id="<?php echo $this->field_id( array( 'errors' => 'low' ) ); ?>" value="<?php echo esc_attr( $settings['errors']['low'] ); ?>" class="form-control" />
+				<p><span class="description"><?php _e( 'Message to show the user if they try to send more then they can afford.', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="mycred-transfer-log-receiving"><?php _e( 'Limit Reached Warning', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'errors' => 'over' ) ); ?>" id="<?php echo $this->field_id( array( 'errors' => 'over' ) ); ?>" value="<?php echo esc_attr( $settings['errors']['over'] ); ?>" class="form-control" />
+				<p><span class="description"><?php _e( 'Message to show the user once they reach their transfer limit. Ignored if no limits are enforced.', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<h3><?php _e( 'Visitors Template', 'mycred' ); ?></h3>
+			<p><span class="description"><?php _e( 'The template to use when the transfer shortcode or widget is viewed by someone who is not logged in.', 'mycred' ); ?></span></p>
 <?php
 
 			wp_editor( $settings['templates']['login'], $this->field_id( array( 'templates' => 'login' ) ), array(
@@ -472,13 +500,12 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 			) );
 
 ?>
-		</li>
-		<li class="empty">&nbsp;</li>
-		<li>
-			<h3><?php _e( 'Limit', 'mycred' ); ?></h3>
-			<p class="description"><?php _e( 'The template to use if you select to show the transfer limit in the transfer shortcode or widget. Ignored if there is no limit enforced.', 'mycred' ); ?></p>
-		</li>
-		<li>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<h3><?php _e( 'Limit Template', 'mycred' ); ?></h3>
+			<p><span class="description"><?php _e( 'The template to use if you select to show the transfer limit in the transfer shortcode or widget. Ignored if there is no limit enforced.', 'mycred' ); ?></span></p>
 <?php
 
 			wp_editor( $settings['templates']['limit'], $this->field_id( array( 'templates' => 'limit' ) ), array(
@@ -486,48 +513,28 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				'textarea_rows' => 10
 			) );
 
-			echo '<p>' . $this->core->available_template_tags( array( 'general' ), '%limit%', '%left%' ) . '</p>';
+			echo '<p>' . $this->core->available_template_tags( array( 'general' ), '%limit% %left%' ) . '</p>';
 
 ?>
-		</li>
-		<li class="empty">&nbsp;</li>
-		<li>
-			<h3><?php _e( 'Balance', 'mycred' ); ?></h3>
-			<p class="description"><?php _e( 'The template to use if you select to show the users balance in the transfer shortcode or widget. Ignored if balances are not shown.', 'mycred' ); ?></p>
-		</li>
-		<li>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<h3><?php _e( 'Balance Template', 'mycred' ); ?></h3>
+			<p><span class="description"><?php _e( 'The template to use if you select to show the users balance in the transfer shortcode or widget. Ignored if balances are not shown.', 'mycred' ); ?></span></p>
 <?php
 
 			wp_editor( $settings['templates']['balance'], $this->field_id( array( 'templates' => 'balance' ) ), array(
 				'textarea_name' => $this->field_name( array( 'templates' => 'balance' ) ),
-				'textarea_rows' => 5
+				'textarea_rows' => 10
 			) );
 
-			echo '<p>' . $this->core->available_template_tags( array( 'general', 'amount' ) ) . '</p>';
+			echo '<p>' . $this->core->available_template_tags( array( 'general' ), '%balance%' ) . '</p>';
 
 ?>
-		</li>
-		<li class="empty">&nbsp;</li>
-		<li>
-			<label for="<?php echo $this->field_id( array( 'templates' => 'button' ) ); ?>"><?php _e( 'Default Button Label', 'mycred' ); ?></label>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'templates' => 'button' ) ); ?>" id="<?php echo $this->field_id( array( 'templates' => 'button' ) ); ?>" value="<?php echo esc_attr( $settings['templates']['button'] ); ?>" class="medium code" /></div>
-			<span class="description"><?php _e( 'The default transfer button label. You can override this in the shortcode or widget if needed.', 'mycred' ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Insufficient Funds Warning', 'mycred' ); ?></label>
-	<ol>
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'errors' => 'low' ) ); ?>" id="<?php echo $this->field_id( array( 'errors' => 'low' ) ); ?>" value="<?php echo esc_attr( $settings['errors']['low'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Message to show the user if they try to send more then they can afford.', 'mycred' ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Limit Reached Warning', 'mycred' ); ?></label>
-	<ol>
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'errors' => 'over' ) ); ?>" id="<?php echo $this->field_id( array( 'errors' => 'over' ) ); ?>" value="<?php echo esc_attr( $settings['errors']['over'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Message to show the user once they reach their transfer limit. Ignored if no limits are enforced.', 'mycred' ); ?></span>
-		</li>
-	</ol>
+		</div>
+	</div>
+
 </div>
 <?php
 
@@ -536,26 +543,28 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		/**
 		 * Sanitize & Save Settings
 		 * @since 0.1
-		 * @version 1.2.1
+		 * @version 1.4
 		 */
 		public function sanitize_extra_settings( $new_data, $data, $general ) {
 
 			$new_data['transfers']['types']                = $data['transfers']['types'];
+			$new_data['transfers']['reload']               = absint( $data['transfers']['reload'] );
+			$new_data['transfers']['message']              = absint( $data['transfers']['message'] );
+			$new_data['transfers']['autofill']             = sanitize_text_field( $data['transfers']['autofill'] );
+
+			$new_data['transfers']['limit']['limit']       = sanitize_text_field( $data['transfers']['limit']['limit'] );
+			$new_data['transfers']['limit']['amount']      = absint( $data['transfers']['limit']['amount'] );
+			$new_data['transfers']['templates']['button']  = sanitize_text_field( $data['transfers']['templates']['button'] );
+
 			$new_data['transfers']['logs']['sending']      = wp_kses_post( $data['transfers']['logs']['sending'] );
 			$new_data['transfers']['logs']['receiving']    = wp_kses_post( $data['transfers']['logs']['receiving'] );
-			$new_data['transfers']['autofill']             = sanitize_text_field( $data['transfers']['autofill'] );
-			$new_data['transfers']['reload']               = ( isset( $data['transfers']['reload'] ) ) ? 1 : 0;
-
-			$new_data['transfers']['templates']['login']   = wp_kses_post( $data['transfers']['templates']['login'] );
-			$new_data['transfers']['templates']['balance'] = wp_kses_post( $data['transfers']['templates']['balance'] );
-			$new_data['transfers']['templates']['limit']   = wp_kses_post( $data['transfers']['templates']['limit'] );
-			$new_data['transfers']['templates']['button']  = sanitize_text_field( $data['transfers']['templates']['button'] );
 
 			$new_data['transfers']['errors']['low']        = sanitize_text_field( $data['transfers']['errors']['low'] );
 			$new_data['transfers']['errors']['over']       = sanitize_text_field( $data['transfers']['errors']['over'] );
 
-			$new_data['transfers']['limit']['limit']       = sanitize_text_field( $data['transfers']['limit']['limit'] );
-			$new_data['transfers']['limit']['amount']      = absint( $data['transfers']['limit']['amount'] );
+			$new_data['transfers']['templates']['login']   = wp_kses_post( $data['transfers']['templates']['login'] );
+			$new_data['transfers']['templates']['limit']   = wp_kses_post( $data['transfers']['templates']['limit'] );
+			$new_data['transfers']['templates']['balance'] = wp_kses_post( $data['transfers']['templates']['balance'] );
 
 			return $new_data;
 
@@ -564,42 +573,32 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		/**
 		 * Get Recipient
 		 * @since 1.3.2
-		 * @version 1.1.1
+		 * @version 1.2
 		 */
 		public function get_recipient( $to = '' ) {
 
-			if ( empty( $to ) ) return false;
+			$recipient_id = false;
+			if ( ! empty( $to ) ) {
 
-			if ( is_numeric( $to ) && absint( $to ) !== 0 ) return absint( $to );
-
-			switch ( $this->transfers['autofill'] ) {
-
-				case 'user_login' :
+				if ( $this->transfers['autofill'] == 'user_login' ) {
 
 					$user = get_user_by( 'login', $to );
-					if ( $user === false ) return false;
-					$user_id = $user->ID;
+					if ( isset( $user->ID ) )
+						$recipient_id = $user->ID;
 
-				break;
+				}
 
-				case 'user_email' :
+				elseif ( $this->transfers['autofill'] == 'user_email' ) {
 
 					$user = get_user_by( 'email', $to );
-					if ( $user === false ) return false;
-					$user_id = $user->ID;
+					if ( isset( $user->ID ) )
+						$recipient_id = $user->ID;
 
-				break;
-
-				default :
-
-					$user_id = apply_filters( 'mycred_transfer_autofill_get', false, $to );
-					if ( $user_id === false ) return false;
-
-				break;
+				}
 
 			}
 
-			return $user_id;
+			return apply_filters( 'mycred_transfer_get_recipient', $recipient_id, $to, $this );
 
 		}
 
@@ -662,5 +661,3 @@ if ( ! function_exists( 'mycred_load_transfer_addon' ) ) :
 	}
 endif;
 add_filter( 'mycred_load_modules', 'mycred_load_transfer_addon', 110, 2 );
-
-?>

@@ -181,4 +181,3 @@ if ( ! class_exists( 'myCRED_Statistics_Widget' ) ) :
 
 	}
 endif;
-?>

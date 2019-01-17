@@ -361,7 +361,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * Settings Header
 		 * Inserts the export styling
 		 * @since 1.3
-		 * @version 1.2
+		 * @version 1.2.1
 		 */
 		public function settings_header() {
 
@@ -373,9 +373,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			$this->accordion_tabs = array( 'core' => 0, 'management' => 1, 'point-types' => 2, 'exports_module' => 3 );
 
 			// Check if there are registered action hooks for mycred_after_core_prefs
-			$count = 0;
+			$count = 3;
 			if ( isset( $wp_filter['mycred_after_core_prefs'] ) ) {
-				$count = count( $this->accordion_tabs );
 
 				// If remove access is enabled
 				$settings = mycred_get_remote();
@@ -447,7 +446,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Adjust Decimal Places Settings
 		 * @since 1.6
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		public function adjust_decimal_places() {
 
@@ -455,7 +454,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			if ( $this->is_main_type ) {
 
 ?>
-<div><input type="number" min="0" max="20" id="mycred-adjust-decimal-places" class="form-control" value="<?php echo $this->core->format['decimals']; ?>" data-org="<?php echo $this->core->format['decimals']; ?>" size="8" /> <input type="button" style="display:none;" id="mycred-update-log-decimals" class="button button-primary button-large" value="<?php _e( 'Update Database', 'mycred' ); ?>" /></div>
+<div><input type="number" min="0" max="20" id="mycred-adjust-decimal-places" class="form-control" value="<?php echo esc_attr( $this->core->format['decimals'] ); ?>" data-org="<?php echo $this->core->format['decimals']; ?>" size="8" /> <input type="button" style="display:none;" id="mycred-update-log-decimals" class="button button-primary button-large" value="<?php _e( 'Update Database', 'mycred' ); ?>" /></div>
 <?php
 
 			}
@@ -502,7 +501,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Admin Page
 		 * @since 0.1
-		 * @version 1.4
+		 * @version 1.4.1
 		 */
 		public function admin_page() {
 
@@ -521,15 +520,17 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				$delete_user = $this->core->delete_user;
 
 			// Social Media Links
-			$facebook = '<a href="https://www.facebook.com/myCRED" class="facebook" target="_blank">Facebook</a>';
-			$google   = '<a href="https://plus.google.com/+MycredMe/posts" class="googleplus" target="_blank">Google+</a>';
+			$social   = array();
+			$social[] = '<a href="https://www.facebook.com/myCRED" class="facebook" target="_blank">Facebook</a>';
+			$social[] = '<a href="https://plus.google.com/+MycredMe/posts" class="googleplus" target="_blank">Google+</a>';
+			$social[] = '<a href="https://twitter.com/my_cred" class="twitter" target="_blank">Twitter</a>';
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h2><?php echo sprintf( __( '%s Settings', 'mycred' ), mycred_label() ); ?> <?php echo myCRED_VERSION; ?> <a href="http://mycred.me/documentation/" target="_blank" class="page-title-action"><?php _e( 'Documentation', 'mycred' ); ?></a></h2>
+	<h1><?php echo sprintf( __( '%s Settings', 'mycred' ), mycred_label() ); ?> <?php echo myCRED_VERSION; ?> <a href="http://codex.mycred.me/" target="_blank" class="page-title-action"><?php _e( 'Documentation', 'mycred' ); ?></a></h1>
 	<?php $this->update_notice(); ?>
 
-	<p>&nbsp;<span id="mycred-social-media"><?php echo $facebook . $google; ?></span></p>
+	<p>&nbsp;<span id="mycred-social-media"><?php echo implode( ' ', $social ); ?></span></p>
 	<form method="post" action="options.php" class="form" name="mycred-core-settings-form" novalidate>
 
 		<?php settings_fields( $this->settings_name ); ?>
@@ -1010,5 +1011,3 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 	}
 endif;
-
-?>

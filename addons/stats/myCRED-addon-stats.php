@@ -2,12 +2,12 @@
 /**
  * Addon: Stats
  * Addon URI: http://mycred.me/add-ons/stats/
- * Version: 1.2
+ * Version: 1.2.1
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 define( 'myCRED_STATS',             __FILE__ );
-define( 'myCRED_STATS_VERSION',     '1.2' );
+define( 'myCRED_STATS_VERSION',     '1.2.1' );
 define( 'myCRED_STATS_DIR',         myCRED_ADDONS_DIR . 'stats/' );
 define( 'myCRED_STATS_WIDGETS_DIR', myCRED_STATS_DIR . 'widgets/' );
 
@@ -292,7 +292,7 @@ jQuery(document).ready(function($){
 		/**
 		 * Admin Page
 		 * @since 1.6
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		public function admin_page() {
 
@@ -381,9 +381,9 @@ jQuery(document).ready(function($){
 				elseif ( substr( $current, 0, 5 ) === 'view_' ) {
 
 					$widgets = apply_filters( 'mycred_stats_' . $current . '_widgets', array(
-						0 => array( 'id' => $current . 'circulation', 'class' => 'myCRED_Stats_Widget_Circulation', 'args' => array( 'ctypes' => $current ) ),
-						1 => array( 'id' => $current . 'gains', 'class' => 'myCRED_Stats_Widget_Daily_Gains', 'args' => array( 'ctypes' => $current, 'span' => 10, 'number' => 5 ) ),
-						2 => array( 'id' => $current . 'loses', 'class' => 'myCRED_Stats_Widget_Daily_Loses', 'args' => array( 'ctypes' => $current, 'span' => 10, 'number' => 5 ) )
+						0 => array( 'id' => $current . 'circulation', 'class' => 'myCRED_Stats_Widget_Circulation', 'args' => array( 'ctypes' => str_replace( 'view_', '', $current ) ) ),
+						1 => array( 'id' => $current . 'gains', 'class' => 'myCRED_Stats_Widget_Daily_Gains', 'args' => array( 'ctypes' => str_replace( 'view_', '', $current ), 'span' => 10, 'number' => 5 ) ),
+						2 => array( 'id' => $current . 'loses', 'class' => 'myCRED_Stats_Widget_Daily_Loses', 'args' => array( 'ctypes' => str_replace( 'view_', '', $current ), 'span' => 10, 'number' => 5 ) )
 					), $this );
 
 					if ( ! empty( $widgets ) ) {
@@ -450,5 +450,3 @@ if ( ! function_exists( 'mycred_load_statistics_addon' ) ) :
 	}
 endif;
 add_filter( 'mycred_load_modules', 'mycred_load_statistics_addon', 100, 2 );
-
-?>

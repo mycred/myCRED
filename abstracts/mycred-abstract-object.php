@@ -37,5 +37,3 @@ if ( ! class_exists( 'myCRED_Object' ) ) :
 
 	}
 endif;
-
-?>

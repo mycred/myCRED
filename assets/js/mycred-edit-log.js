@@ -3,7 +3,7 @@
  * These scripts are used to edit or delete entries
  * in the myCRED Log.
  * @since 1.4
- * @version 1.2.1
+ * @version 1.2.2
  */
 jQuery(function($) {
 
@@ -348,7 +348,12 @@ jQuery(function($) {
 
 	});
 
-	
+	// Checkbox select in table
+	// @see http://stackoverflow.com/questions/19164816/jquery-select-all-checkboxes-in-table
+	$( '#myCRED-wrap form table .check-column input' ).click(function(e){
+		var table= $(e.target).closest('table');
+		$('.check-column input',table).prop( 'checked',this.checked );
+	});
 
 	/**
 	 * Click To Toggle Script

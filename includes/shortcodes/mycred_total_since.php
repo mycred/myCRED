@@ -36,5 +36,3 @@ if ( ! function_exists( 'mycred_render_shortcode_total_since' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_total_since', 'mycred_render_shortcode_total_since' );
-
-?>

@@ -689,7 +689,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		/**
 		 * Add to General Settings
 		 * @since 1.4
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function after_general_settings( $mycred = NULL ) {
 
@@ -701,62 +701,73 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 ?>
 <h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Coupons', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
-	<label class="subheader" for="<?php echo $this->field_id( 'invalid' ); ?>"><?php _e( 'Invalid Coupon Message', 'mycred' ); ?></label>
-	<ol id="myCRED-coupon-log">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'invalid' ); ?>" id="<?php echo $this->field_id( 'invalid' ); ?>" value="<?php echo esc_attr( $prefs['invalid'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Message to show when users try to use a coupon that does not exists.', 'mycred' ); ?> <?php echo  $this->available_template_tags( array( 'general' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'expired' ); ?>"><?php _e( 'Expired Coupon Message', 'mycred' ); ?></label>
-	<ol id="myCRED-coupon-log">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'expired' ); ?>" id="<?php echo $this->field_id( 'expired' ); ?>" value="<?php echo esc_attr( $prefs['expired'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Message to show when users try to use that has expired.', 'mycred' ); ?> <?php echo  $this->available_template_tags( array( 'general' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'user_limit' ); ?>"><?php _e( 'User Limit Message', 'mycred' ); ?></label>
-	<ol id="myCRED-coupon-log">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'user_limit' ); ?>" id="<?php echo $this->field_id( 'user_limit' ); ?>" value="<?php echo esc_attr( $prefs['user_limit'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Message to show when the user limit has been reached for the coupon.', 'mycred' ); ?> <?php echo  $this->available_template_tags( array( 'general' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'min' ); ?>"><?php _e( 'Minimum Balance Message', 'mycred' ); ?></label>
-	<ol id="myCRED-coupon-log">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'min' ); ?>" id="<?php echo $this->field_id( 'min' ); ?>" value="<?php echo esc_attr( $prefs['min'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Message to show when a user does not meet the minimum balance requirement. (if used)', 'mycred' ); ?> <?php echo  $this->available_template_tags( array( 'general', 'amount' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'max' ); ?>"><?php _e( 'Maximum Balance Message', 'mycred' ); ?></label>
-	<ol id="myCRED-coupon-log">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'max' ); ?>" id="<?php echo $this->field_id( 'max' ); ?>" value="<?php echo esc_attr( $prefs['max'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Message to show when a user does not meet the maximum balance requirement. (if used)', 'mycred' ); ?> <?php echo  $this->available_template_tags( array( 'general', 'amount' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'excluded' ); ?>"><?php _e( 'Excluded Message', 'mycred' ); ?></label>
-	<ol id="myCRED-coupon-log">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'excluded' ); ?>" id="<?php echo $this->field_id( 'excluded' ); ?>" value="<?php echo esc_attr( $prefs['excluded'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Message to show when a user is excluded from the point type the coupon gives.', 'mycred' ); ?> <?php echo  $this->available_template_tags( array( 'general' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'success' ); ?>"><?php _e( 'Success Message', 'mycred' ); ?></label>
-	<ol id="myCRED-coupon-log">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'success' ); ?>" id="<?php echo $this->field_id( 'success' ); ?>" value="<?php echo esc_attr( $prefs['success'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Message to show when a coupon was successfully deposited to a users account.', 'mycred' ); ?> <?php echo  $this->available_template_tags( array( 'general', 'amount' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'log' ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-	<ol id="myCRED-coupon-log">
-		<li>
-			<div class="h2"><input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="long" /></div>
-			<span class="description"><?php _e( 'Log entry for successful coupon redemption. Use %coupon% to show the coupon code.', 'mycred' ); ?> <?php echo  $this->available_template_tags( array( 'general', 'amount' ) ); ?></span>
-		</li>
-	</ol>
+
+	<h3><?php _e( 'Message Templates', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'invalid' ); ?>"><?php _e( 'Invalid Coupon Message', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'invalid' ); ?>" id="<?php echo $this->field_id( 'invalid' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['invalid'] ); ?>" />
+				<p><span class="description"><?php printf( '%s %s', __( 'Message to show when users try to use a coupon that does not exists.', 'mycred' ), $this->available_template_tags( array( 'general' ) ) ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'expired' ); ?>"><?php _e( 'Expired Coupon Message', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'expired' ); ?>" id="<?php echo $this->field_id( 'expired' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['expired'] ); ?>" />
+				<p><span class="description"><?php printf( '%s %s', __( 'Message to show when users try to use that has expired.', 'mycred' ), $this->available_template_tags( array( 'general' ) ) ); ?></span></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'min' ); ?>"><?php _e( 'Minimum Balance Message', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'min' ); ?>" id="<?php echo $this->field_id( 'min' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['min'] ); ?>" />
+				<p><span class="description"><?php printf( '%s %s', __( 'Message to show when a user does not meet the minimum balance requirement. (if used)', 'mycred' ), $this->available_template_tags( array( 'general' ) ) ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'max' ); ?>"><?php _e( 'Maximum Balance Message', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'max' ); ?>" id="<?php echo $this->field_id( 'max' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['max'] ); ?>" />
+				<p><span class="description"><?php printf( '%s %s', __( 'Message to show when a user does not meet the maximum balance requirement. (if used)', 'mycred' ), $this->available_template_tags( array( 'general' ) ) ); ?></span></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'user_limit' ); ?>"><?php _e( 'User Limit Message', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'user_limit' ); ?>" id="<?php echo $this->field_id( 'user_limit' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['user_limit'] ); ?>" />
+				<p><span class="description"><?php printf( '%s %s', __( 'Message to show when the user limit has been reached for the coupon.', 'mycred' ), $this->available_template_tags( array( 'general' ) ) ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'excluded' ); ?>"><?php _e( 'Excluded Message', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'excluded' ); ?>" id="<?php echo $this->field_id( 'excluded' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['excluded'] ); ?>" />
+				<p><span class="description"><?php printf( '%s %s', __( 'Message to show when a user is excluded from the point type the coupon gives.', 'mycred' ), $this->available_template_tags( array( 'general' ) ) ); ?></span></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'success' ); ?>"><?php _e( 'Success Message', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'success' ); ?>" id="<?php echo $this->field_id( 'success' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['success'] ); ?>" />
+				<p><span class="description"><?php printf( '%s %s', __( 'Message to show when a coupon was successfully deposited to a users account.', 'mycred' ), $this->available_template_tags( array( 'general', 'amount' ) ) ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" />
+				<p><span class="description"><?php printf( '%s %s', __( 'Log entry for successful coupon redemption. Use %coupon% to show the coupon code.', 'mycred' ), $this->available_template_tags( array( 'general', 'amount' ) ) ); ?></span></p>
+			</div>
+		</div>
+	</div>
+
 </div>
 <?php
 
@@ -770,7 +781,6 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		public function sanitize_extra_settings( $new_data, $data, $core ) {
 
 			$new_data['coupons']['log']        = sanitize_text_field( $data['coupons']['log'] );
-			
 			$new_data['coupons']['invalid']    = sanitize_text_field( $data['coupons']['invalid'] );
 			$new_data['coupons']['expired']    = sanitize_text_field( $data['coupons']['expired'] );
 			$new_data['coupons']['user_limit'] = sanitize_text_field( $data['coupons']['user_limit'] );

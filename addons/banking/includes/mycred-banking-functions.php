@@ -387,5 +387,3 @@ if ( ! function_exists( 'mycred_delete_recurring_payout' ) ) :
 
 	}
 endif;
-
-?>

@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Register Hook
  * @since 1.5
- * @version 1.0.1
+ * @version 1.1
  */
 add_filter( 'mycred_setup_hooks', 'mycred_register_sharethis_hook', 80 );
 function mycred_register_sharethis_hook( $installed ) {
@@ -12,9 +12,10 @@ function mycred_register_sharethis_hook( $installed ) {
 	if ( ! function_exists( 'install_ShareThis' ) ) return $installed;
 
 	$installed['sharethis'] = array(
-		'title'       => __( '%plural% for Sharing', 'mycred' ),
-		'description' => __( 'Awards %_plural% for users sharing / liking your website content to popular social media sites.', 'mycred' ),
-		'callback'    => array( 'myCRED_ShareThis' )
+		'title'         => __( '%plural% for Sharing', 'mycred' ),
+		'description'   => __( 'Awards %_plural% for users sharing / liking your website content to popular social media sites.', 'mycred' ),
+		'documentation' => 'http://codex.mycred.me/hooks/sharethis-actions/',
+		'callback'      => array( 'myCRED_ShareThis' )
 	);
 
 	return $installed;
@@ -37,7 +38,7 @@ function mycred_load_sharethis_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'sharethis',
@@ -206,8 +207,6 @@ jQuery(function($) {
 		 */
 		public function preferences() {
 
-			$prefs = $this->prefs;
-
 			$st_public_key = get_option( 'st_pubid', false );
 			$st_services   = get_option( 'st_services', false );
 
@@ -224,7 +223,7 @@ jQuery(function($) {
 			// All is well!
 			else :
 
-				$names = mycred_get_share_service_names();
+				$names    = mycred_get_share_service_names();
 
 				// Loop though selected services
 				$services = explode( ',', $st_services );
@@ -234,6 +233,7 @@ jQuery(function($) {
 					$services[] = 'fbunlike';
 
 				foreach ( $services as $service ) {
+
 					$service = str_replace( ' ', '', $service );
 					if ( $service == '' || $service == 'sharethis' ) continue;
 
@@ -253,22 +253,30 @@ jQuery(function($) {
 						$service_name = ucfirst( $service );
 
 ?>
-<label for="<?php echo $this->field_id( array( $service, 'creds' ) ); ?>" class="subheader"><?php echo $service_name; ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( $service, 'creds' ) ); ?>" id="<?php echo $this->field_id( array( $service, 'creds' ) ); ?>" value="<?php echo $this->core->number( $this->prefs[ $service ]['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( $service, 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( $service, 'limit' ) ), $this->field_id( array( $service, 'limit' ) ), $prefs[ $service ]['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( $service, 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( $service, 'log' ) ); ?>" id="<?php echo $this->field_id( array( $service, 'log' ) ); ?>" value="<?php echo esc_attr( $this->prefs[ $service ]['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ), '%service%' ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<h3><?php _e( 'Publishing Posts', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( $service => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( $service => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( $service => 'creds' ) ); ?>" value="<?php echo $this->core->number( $this->prefs[ $service ]['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( $service => 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( $service => 'limit' ) ), $this->field_id( array( $service => 'limit' ) ), $this->prefs[ $service ]['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( $service => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( $service => 'log' ) ); ?>" id="<?php echo $this->field_id( array( $service => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->prefs[ $service ]['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ), '%service%' ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 				}
 
@@ -281,7 +289,7 @@ jQuery(function($) {
 		 * @since 1.6
 		 * @version 1.0.1
 		 */
-		function sanitise_preferences( $data ) {
+		public function sanitise_preferences( $data ) {
 
 			$st_services = get_option( 'st_services', false );
 
@@ -293,6 +301,7 @@ jQuery(function($) {
 				$services[] = 'fbunlike';
 
 			foreach ( $services as $service ) {
+
 				$service = str_replace( ' ', '', $service );
 
 				if ( isset( $data[ $service ]['limit'] ) && isset( $data[ $service ]['limit_by'] ) ) {
@@ -353,5 +362,3 @@ if ( ! function_exists( 'mycred_get_share_service_names' ) ) :
 
 	}
 endif;
-
-?>

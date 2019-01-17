@@ -1,26 +1,25 @@
 <?php
 /**
  * Plugin Name: myCRED
- * Plugin URI: http://mycred.me
+ * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 1.7.5
+ * Version: 1.7.6
  * Tags: points, tokens, credit, management, reward, charge, buddypress, bbpress, jetpack, woocommerce, marketpress, wp e-commerce, gravity forms, simplepress
  * Author: Gabriel S Merovingi
  * Author URI: http://www.merovingi.com
  * Author Email: support@mycred.me
  * Requires at least: WP 4.0
- * Tested up to: WP 4.7
+ * Tested up to: WP 4.7.3
  * Text Domain: mycred
  * Domain Path: /lang
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
- * Forum URI: http://mycred.me/support/forums/
  */
 if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '1.7.5';
+		public $version             = '1.7.6';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -129,8 +128,9 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			else {
 
 				// Load translation and register assets for the setup
-				add_action( 'init', array( $this, 'load_plugin_textdomain' ), 10 );
-				add_action( 'init', array( $this, 'register_assets' ), 20 );
+				add_action( 'init',                    array( $this, 'load_plugin_textdomain' ), 10 );
+				add_action( 'init',                    array( $this, 'register_assets' ), 20 );
+				add_filter( 'mycred_maybe_install_db', '__return_false' );
 
 				// Load the setup module
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-setup.php' );
@@ -157,6 +157,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 
 			// Ok to override
 			$this->define( 'myCRED_VERSION',            $this->version );
+			$this->define( 'myCRED_DB_VERSION',         '1.0' );
 			$this->define( 'MYCRED_SLUG',               'mycred' );
 			$this->define( 'MYCRED_DEFAULT_LABEL',      'myCRED' );
 			$this->define( 'MYCRED_DEFAULT_TYPE_KEY',   'mycred_default' );
@@ -205,7 +206,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				// Core
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-object.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-remote.php' );
-				$this->file( myCRED_INCLUDES_DIR . 'mycred-update.php' );
+				// $this->file( myCRED_INCLUDES_DIR . 'mycred-update.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-about.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-protect.php' );
 
@@ -312,6 +313,9 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		public function after_theme() {
 
 			global $mycred, $mycred_modules;
+
+			// In case a table was deleted, we need to add one
+			maybe_install_mycred_table();
 
 			// Lets start with Multisite
 			if ( is_multisite() ) {
@@ -550,7 +554,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		/**
 		 * Register Importers
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		private function register_importers() {
 
@@ -560,7 +564,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			 * @version 1.0
 			 */
 			register_importer(
-				'mycred_import_log',
+				MYCRED_SLUG . '-import-log',
 				sprintf( __( '%s Log Import', 'mycred' ), mycred_label() ),
 				__( 'Import log entries via a CSV file.', 'mycred' ),
 				array( $this, 'import_log_entries' )
@@ -572,9 +576,9 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			 * @version 1.0
 			 */
 			register_importer(
-				'mycred_import_balance',
+				MYCRED_SLUG . '-import-balance',
 				sprintf( __( '%s Balance Import', 'mycred' ), mycred_label() ),
-				__( 'Import balances.', 'mycred' ),
+				__( 'Import balances via a CSV file.', 'mycred' ),
 				array( $this, 'import_balances' )
 			);
 
@@ -584,7 +588,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			 * @version 1.0
 			 */
 			register_importer(
-				'mycred_import_cp',
+				MYCRED_SLUG . '-import-cp',
 				sprintf( __( '%s CubePoints Import', 'mycred' ), mycred_label() ),
 				__( 'Import CubePoints log entries and / or balances.', 'mycred' ),
 				array( $this, 'import_cubepoints' )
@@ -752,19 +756,11 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		/**
 		 * Load Importer: CubePoints
 		 * @since 1.4
-		 * @version 1.1
+		 * @version 1.1.1
 		 */
 		public function import_cubepoints() {
 
 			$this->file( ABSPATH . 'wp-admin/includes/import.php' );
-
-			global $wpdb;
-
-			// No use continuing if there is no log to import
-			if ( $wpdb->query( $wpdb->prepare( "SHOW TABLES LIKE %s;", $wpdb->prefix . 'cp' ) ) == 0 ) {
-				echo '<p>' . __( 'No CubePoints log exists.', 'mycred' ) . '</p>';
-				return;
-			}
 
 			if ( ! class_exists( 'WP_Importer' ) )
 				$this->file( ABSPATH . 'wp-admin/includes/class-wp-importer.php' );
@@ -995,7 +991,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		/**
 		 * Plugin Description Links
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.2
 		 */
 		public function plugin_description_links( $links, $file ) {
 
@@ -1010,9 +1006,8 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			}
 
 			// Usefull links
-			$links[] = '<a href="' . admin_url( 'index.php?page=' . MYCRED_SLUG ) . '">About</a>';
-			$links[] = '<a href="http://mycred.me/documentation/" target="_blank">Documentation</a>';
-			$links[] = '<a href="http://codex.mycred.me/" target="_blank">Codex</a>';
+			$links[] = '<a href="' . admin_url( 'index.php?page=' . MYCRED_SLUG . '-about' ) . '">About</a>';
+			$links[] = '<a href="http://codex.mycred.me/" target="_blank">Documentation</a>';
 			$links[] = '<a href="http://mycred.me/store/" target="_blank">Store</a>';
 
 			return $links;

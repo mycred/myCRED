@@ -12,9 +12,10 @@ function mycred_register_wp_postratings_hook( $installed ) {
 	if ( ! defined( 'WP_POSTRATINGS_VERSION' ) ) return $installed;
 
 	$installed['wp_postratings'] = array(
-		'title'       => __( 'Post Ratings', 'mycred' ),
-		'description' => __( 'Awards %_plural% for post ratings. Supports awarding %_plural% both to post author and the user rating.', 'mycred' ),
-		'callback'    => array( 'myCRED_WP_Postratings' )
+		'title'         => __( 'Post Ratings', 'mycred' ),
+		'description'   => __( 'Awards %_plural% for post ratings. Supports awarding %_plural% both to post author and the user rating.', 'mycred' ),
+		'documentation' => 'http://codex.mycred.me/hooks/wp-postratings-actions/',
+		'callback'      => array( 'myCRED_WP_Postratings' )
 	);
 
 	return $installed;
@@ -37,7 +38,7 @@ function mycred_load_wp_postratings_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'wp_postratings',
@@ -95,7 +96,7 @@ function mycred_load_wp_postratings_hook() {
 		public function new_rating( $user_id, $post_id, $rating_value ) {
 
 			// Get post
-			$post = get_post( $post_id );
+			$post   = get_post( $post_id );
 
 			// Authors can not get points for rating their own stuff
 			if ( ! isset( $post->post_author ) && $post->post_author == $user_id ) return;
@@ -149,51 +150,74 @@ function mycred_load_wp_postratings_hook() {
 		/**
 		 * Preferences for WP Postratings Hook
 		 * @since 1.6
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function preferences() {
 
 			$prefs = $this->prefs;
 
 ?>
-<label for="<?php echo $this->field_id( array( 'rating', 'creds' ) ); ?>" class="subheader"><?php _e( 'Adding a Rating', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'rating', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'rating', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['rating']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'rating', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'rating', 'limit' ) ), $this->field_id( array( 'rating', 'limit' ) ), $prefs['rating']['limit'] ); ?>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'rating', 'value' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'rating', 'value' ) ); ?>" id="<?php echo $this->field_id( array( 'rating', 'value' ) ); ?>" <?php checked( $prefs['rating']['value'], 1 ); ?> value="1" /> <?php _e( 'Use the Rating Value instead of the amount set here.', 'mycred' ); ?></label>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'rating', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'rating', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'rating', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['rating']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
-	</li>
-</ol>
-<label for="<?php echo $this->field_id( array( 'rated', 'creds' ) ); ?>" class="subheader"><?php _e( 'Receiving a Rating', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'rated', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'rated', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['rated']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'rated', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'rated', 'limit' ) ), $this->field_id( array( 'rated', 'limit' ) ), $prefs['rated']['limit'] ); ?>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'rated', 'value' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'rated', 'value' ) ); ?>" id="<?php echo $this->field_id( array( 'rated', 'value' ) ); ?>" <?php checked( $prefs['rated']['value'], 1 ); ?> value="1" /> <?php _e( 'Use the Rating Value instead of the amount set here.', 'mycred' ); ?></label>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'rated', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'rated', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'rated', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['rated']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<h3><?php _e( 'Content Rating', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'rating' => 'creds' ) ); ?>"><?php _e( 'Member', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'rating' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'rating' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['rating']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'rating', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'rating', 'limit' ) ), $this->field_id( array( 'rating', 'limit' ) ), $prefs['rating']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'rated' => 'creds' ) ); ?>"><?php _e( 'Content Author', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'rated' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'rated' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['rated']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'rated', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'rated', 'limit' ) ), $this->field_id( array( 'rated', 'limit' ) ), $prefs['rated']['limit'] ); ?>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="checkbox">
+					<label for="<?php echo $this->field_id( array( 'rating', 'value' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'rating', 'value' ) ); ?>" id="<?php echo $this->field_id( array( 'rating', 'value' ) ); ?>" <?php checked( $prefs['rating']['value'], 1 ); ?> value="1" /> <?php _e( 'Use the Rating Value instead of the amount set here.', 'mycred' ); ?></label>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="checkbox">
+					<label for="<?php echo $this->field_id( array( 'rated', 'value' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'rated', 'value' ) ); ?>" id="<?php echo $this->field_id( array( 'rated', 'value' ) ); ?>" <?php checked( $prefs['rated']['value'], 1 ); ?> value="1" /> <?php _e( 'Use the Rating Value instead of the amount set here.', 'mycred' ); ?></label>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'rating' => 'log' ) ); ?>"><?php _e( 'Member Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'rating' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'rating' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['rating']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'rated' => 'log' ) ); ?>"><?php _e( 'Content Author Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'rated' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'rated' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['rated']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -203,9 +227,9 @@ function mycred_load_wp_postratings_hook() {
 		 * @since 1.6
 		 * @version 1.0
 		 */
-		function sanitise_preferences( $data ) {
+		public function sanitise_preferences( $data ) {
 
-			$data['rating']['value'] = ( isset( $data['rating']['value'] ) ) ? $data['rating']['value'] : 0;
+			$data['rating']['value'] = ( isset( $data['rating']['value'] ) ) ? 1 : 0;
 
 			if ( isset( $data['rating']['limit'] ) && isset( $data['rating']['limit_by'] ) ) {
 				$limit = sanitize_text_field( $data['rating']['limit'] );
@@ -214,7 +238,7 @@ function mycred_load_wp_postratings_hook() {
 				unset( $data['rating']['limit_by'] );
 			}
 
-			$data['rated']['value'] = ( isset( $data['rated']['value'] ) ) ? $data['rated']['value'] : 0;
+			$data['rated']['value'] = ( isset( $data['rated']['value'] ) ) ? 1 : 0;
 
 			if ( isset( $data['rated']['limit'] ) && isset( $data['rated']['limit_by'] ) ) {
 				$limit = sanitize_text_field( $data['rated']['limit'] );
@@ -230,5 +254,3 @@ function mycred_load_wp_postratings_hook() {
 	}
 
 }
-
-?>

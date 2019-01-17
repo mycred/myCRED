@@ -6,15 +6,14 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Renders a transfer form that allows users to send points to other users.
  * @see http://mycred.me/functions/mycred_transfer_render/
  * @since 0.1
- * @version 1.6.3
+ * @version 1.7
  */
 if ( ! function_exists( 'mycred_transfer_render' ) ) :
 	function mycred_transfer_render( $atts, $content = NULL ) {
 
-		global $mycred_do_transfer;
+		global $mycred, $mycred_do_transfer;
 
 		// Settings
-		$mycred  = mycred();
 		$pref    = $mycred->transfers;
 
 		// Get Attributes
@@ -30,7 +29,8 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 			'excluded'        => '',
 			'recipient_label' => __( 'Recipient', 'mycred' ),
 			'amount_label'    => __( 'Amount', 'mycred' ),
-			'balance_label'   => __( 'Balance', 'mycred' )
+			'balance_label'   => __( 'Balance', 'mycred' ),
+			'message_label'   => __( 'Message', 'mycred' )
 		), $atts ) );
 
 		$output = '';
@@ -152,6 +152,7 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 		// Placeholder
 		if ( $placeholder == '' ) {
 
+			$pln = '';
 			if ( $pref['autofill'] == 'user_login' )
 				$pln = __( 'username', 'mycred' );
 
@@ -277,9 +278,24 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 		}
 
 ?>
-
 		</div>
 <?php
+
+		// Messaging if enabled
+		if ( array_key_exists( 'message', $pref ) && $pref['message'] > 0 ) {
+
+?>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label><?php echo $message_label; ?></label>
+					<input type="text" name="mycred_new_transfer[message]" class="form-control" value="" />
+				</div>
+			</div>
+		</div>
+<?php
+
+		}
 
 		// Show extras
 		if ( ! empty( $extras ) ) {
@@ -337,5 +353,3 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 
 	}
 endif;
-
-?>

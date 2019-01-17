@@ -5,7 +5,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Shortcode: mycred_my_badges
  * Allows you to show the current users earned badges.
  * @since 1.5
- * @version 1.2
+ * @version 1.2.1
  */
 if ( ! function_exists( 'mycred_render_my_badges' ) ) :
 	function mycred_render_my_badges( $atts, $content = '' ) {
@@ -51,7 +51,7 @@ if ( ! function_exists( 'mycred_render_my_badges' ) ) :
 					$badge->image_height = $height;
 
 					if ( $badge->main_image !== false )
-						echo $badge->main_image;
+						echo $badge->get_image( 'main' );
 
 				}
 
@@ -64,7 +64,7 @@ if ( ! function_exists( 'mycred_render_my_badges' ) ) :
 					$badge->image_height = $height;
 
 					if ( $badge->level_image !== false )
-						echo $badge->level_image;
+						echo $badge->get_image( $level );
 
 				}
 

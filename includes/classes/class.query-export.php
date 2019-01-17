@@ -10,7 +10,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 if ( ! class_exists( 'myCRED_Query_Export' ) ) :
 	class myCRED_Query_Export {
 
-		protected $db   = '';
+		protected $db       = '';
 
 		public $args        = array();
 		public $headers     = array();
@@ -366,7 +366,7 @@ if ( ! class_exists( 'myCRED_Query_Export' ) ) :
 							$content = apply_filters( 'mycred_log_ref', $content, $entry->ref, $entry );
 
 						break;
-						
+
 						case 'user_id' :
 						case __( 'User', 'mycred' ) :
 
@@ -378,7 +378,7 @@ if ( ! class_exists( 'myCRED_Query_Export' ) ) :
 							$content = apply_filters( 'mycred_log_username', $display_name, $entry->user_id, $entry );
 
 						break;
-						
+
 						case 'creds' :
 						case __( 'Amount', 'mycred' ) :
 
@@ -386,7 +386,7 @@ if ( ! class_exists( 'myCRED_Query_Export' ) ) :
 							$content = apply_filters( 'mycred_log_creds', $content, $entry->creds, $entry );
 
 						break;
-						
+
 						case 'ctype' :
 						case __( 'Point Type', 'mycred' ) :
 
@@ -394,14 +394,14 @@ if ( ! class_exists( 'myCRED_Query_Export' ) ) :
 							$content = apply_filters( 'mycred_log_ctype', $content, $entry->ctype, $entry );
 
 						break;
-						
+
 						case 'time' :
 						case __( 'Date', 'mycred' ) :
 
 							$content = apply_filters( 'mycred_log_date', date( $this->args['date_format'], $entry->time ), $entry->time, $entry );
 
 						break;
-						
+
 						case 'entry' :
 						case __( 'Entry', 'mycred' ) :
 
@@ -431,7 +431,7 @@ if ( ! class_exists( 'myCRED_Query_Export' ) ) :
 		/**
 		 * Do Export
 		 * If data is available for export, we run the export tool.
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function do_export() {
 
@@ -442,7 +442,7 @@ if ( ! class_exists( 'myCRED_Query_Export' ) ) :
 				require_once myCRED_ASSETS_DIR . 'libs/parsecsv.lib.php';
 
 			$csv = new parseCSV();
-			$csv->output( $this->file_name, $this->data, $this->headers );
+			$csv->output( true, $this->file_name, $this->data, $this->headers );
 
 			exit;
 
@@ -587,5 +587,3 @@ if ( ! function_exists( 'mycred_is_valid_export_url' ) ) :
 
 	}
 endif;
-
-?>

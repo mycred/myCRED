@@ -42,7 +42,7 @@ if ( ! function_exists( 'mycred_render_shortcode_hide_if' ) ) :
 		if ( ! mycred_point_type_exists( $ctype ) ) return 'invalid point type';
 
 		// Load myCRED with the requested point type
-		$mycred = mycred( $ctype );
+		$mycred  = mycred( $ctype );
 
 		// Make sure user is not excluded
 		if ( $mycred->exclude_user( $user_id ) ) return do_shortcode( $content );
@@ -120,5 +120,3 @@ if ( ! function_exists( 'mycred_render_shortcode_hide_if' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_hide_if', 'mycred_render_shortcode_hide_if' );
-
-?>

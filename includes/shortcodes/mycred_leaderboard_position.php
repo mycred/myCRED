@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @see http://codex.mycred.me/shortcodes/mycred_leaderboard_position/
  * Replaces the mycred_my_ranking shortcode.
  * @since 1.7
- * @version 1.1.2
+ * @version 1.1.3
  */
 if ( ! function_exists( 'mycred_render_shortcode_leaderbaord_position' ) ) :
 	function mycred_render_shortcode_leaderbaord_position( $atts, $content = '' ) {
@@ -101,7 +101,7 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderbaord_position' ) ) :
 
 				// Filter: Monthly
 				elseif ( $timeframe == 'this-month' )
-					$time_filter = $wpdb->prepare( "AND time BETWEEN %d AND %d", strtotime( 'Y-m-01', $now ), $now );
+					$time_filter = $wpdb->prepare( "AND time BETWEEN %d AND %d", strtotime( date( 'Y-m-01', $now ) ), $now );
 
 				else
 					$time_filter = $wpdb->prepare( "AND time BETWEEN %d AND %d", strtotime( $timeframe, $now ), $now );

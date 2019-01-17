@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Renders the form that allows users to redeem coupons from.
  * @see http://codex.mycred.me/shortcodes/mycred_load_coupon/
  * @since 1.4
- * @version 1.3
+ * @version 1.3.1
  */
 if ( ! function_exists( 'mycred_render_shortcode_load_coupon' ) ) :
 	function mycred_render_shortcode_load_coupon( $atts, $content = NULL ) {
@@ -48,7 +48,7 @@ if ( ! function_exists( 'mycred_render_shortcode_load_coupon' ) ) :
 				// That did not work out well, need to show an error message
 				if ( ! mycred_coupon_was_successfully_used( $load ) ) {
 
-					$message = mycred_get_coupon_error_message( $code, $coupon );
+					$message = mycred_get_coupon_error_message( $load, $coupon );
 					$message = $mycred->template_tags_general( $message );
 					$output .= '<div class="alert alert-danger">' . $message . '</div>';
 

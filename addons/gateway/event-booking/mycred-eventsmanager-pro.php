@@ -437,7 +437,7 @@ if ( ! class_exists( 'EM_Gateway_myCRED' ) && class_exists( 'EM_Gateway' ) ) :
 		/**
 		 * Refunds
 		 * @since 1.3
-		 * @version 1.1
+		 * @version 1.1.1
 		 */
 		function refunds( $result, $EM_Booking ) {
 
@@ -454,7 +454,7 @@ if ( ! class_exists( 'EM_Gateway_myCRED' ) && class_exists( 'EM_Gateway' ) ) :
 					if ( $this->prefs['refund'] != 100 )
 						$refund = ( $this->prefs['refund'] / 100 ) * $cost;
 					else
-						$refund = $price;
+						$refund = $cost;
 
 					// Charge
 					$this->core->add_creds(
@@ -810,5 +810,3 @@ jQuery(function($){
 
 	}
 endif;
-
-?>

@@ -283,9 +283,13 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 		/**
 		 * Add to General Settings
 		 * @since 0.1
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		public function after_general_settings( $mycred = NULL ) {
+
+			// Reset while on this screen so we can use $this->field_id() and $this->field_name()
+			$this->module_name = 'buy_creds';
+			$this->option_id   = '';
 
 			// Since we are both registering our own settings and want to hook into
 			// the core settings, we need to define our "defaults" here.
@@ -314,131 +318,164 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 			);
 
 			if ( isset( $this->core->buy_creds ) )
-				$buy_creds = $this->core->buy_creds;
+				$settings = $this->core->buy_creds;
 			else
-				$buy_creds = $defaults;
-
-			$thankyou_use  = $buy_creds['thankyou']['use'];
-			$cancelled_use = $buy_creds['cancelled']['use'];
+				$settings = $defaults;
 
 ?>
 <h4><span class="dashicons dashicons-admin-plugins static"></span><strong>buy</strong>CRED</h4>
 <div class="body" style="display:none;">
-	<label class="subheader"><?php echo $this->core->template_tags_general( __( 'Minimum %plural%', 'mycred' ) ); ?></label>
-	<ol id="mycred-buy-creds-minimum-amount">
-		<li>
-			<div class="h2"><input type="text" name="mycred_pref_core[buy_creds][minimum]" id="<?php echo $this->field_id( 'minimum' ); ?>" value="<?php echo $buy_creds['minimum']; ?>" size="5" /></div>
-			<span class="description"><?php echo $this->core->template_tags_general( __( 'Minimum amount of %plural% a user must purchase. Will default to 1.', 'mycred' ) ); ?></span>
-		</li>
-	</ol>
-	<?php if ( count( $this->point_types ) > 1 ) : ?>
 
-	<label class="subheader"><?php _e( 'Point Types', 'mycred' ); ?></label>
-	<ol id="mycred-buy-creds-type">
-		<li>
-			<span class="description"><?php _e( 'Select the point types that users can buy. You must select at least one!', 'mycred' ); ?></span>
-		</li>
-		<li>
-			<?php mycred_types_select_from_checkboxes( 'mycred_pref_core[buy_creds][types][]', $this->field_id( 'types' ), $buy_creds['types'] ); ?>
-		</li>
-	</ol>
-	<?php else : ?>
+	<h3><?php _e( 'Features', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="mycred-transfer-type"><?php _e( 'Point Types', 'mycred' ); ?></label>
+				<?php if ( count( $this->point_types ) > 1 ) : ?>
+				<?php mycred_types_select_from_checkboxes( 'mycred_pref_core[buy_creds][types][]', $this->field_id( 'types' ), $settings['types'] ); ?>
+				<p><span class="description"><?php _e( 'Select the point types that users can buy. You must select at least one!', 'mycred' ); ?></span></p>
+				<?php else : ?>
+				<p class="form-control-static"><?php echo $this->core->plural(); ?></p>
+				<input type="hidden" name="mycred_pref_core[buy_creds][types][]" value="<?php echo MYCRED_DEFAULT_TYPE_KEY; ?>" />
+				<?php endif; ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'minimum' ); ?>"><?php echo $this->core->template_tags_general( __( 'Minimum %plural%', 'mycred' ) ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'minimum' ); ?>" id="<?php echo $this->field_id( 'minimum' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['minimum'] ); ?>" />
+				<p><span class="description"><?php echo $this->core->template_tags_amount( __( 'Minimum amount of %plural% a user must purchase. Will default to %cred%.', 'mycred' ), 1 ); ?></span></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="checkbox">
+					<label for="<?php echo $this->field_id( 'custom_log' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'custom_log' ); ?>" id="<?php echo $this->field_id( 'custom_log' ); ?>"<?php checked( $settings['custom_log'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Show seperate log for %_plural% purchases.', 'mycred' ) ); ?></label>
+				</div>
+			</div>
+		</div>
+	</div>
 
-	<input type="hidden" name="mycred_pref_core[buy_creds][types][]" value="mycred_default" />
-	<?php endif; ?>
-
-	<label class="subheader" for="<?php echo $this->field_id( 'login' ); ?>"><?php _e( 'Login Template', 'mycred' ); ?></label>
-	<ol id="mycred-buy-creds-default-log">
-		<li>
-			<input type="text" name="mycred_pref_core[buy_creds][login]" id="<?php echo $this->field_id( 'login' ); ?>" class="large-text code" value="<?php echo esc_attr( $buy_creds['login'] ); ?>" />
-			<span class="description"><?php _e( 'Content to show when a user is not logged in.', 'mycred' ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for="<?php echo $this->field_id( 'log' ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-	<ol id="mycred-buy-creds-default-log">
-		<li>
-			<div class="h2"><input type="text" name="mycred_pref_core[buy_creds][log]" id="<?php echo $this->field_id( 'log' ); ?>" value="<?php echo $buy_creds['log']; ?>" class="long" /></div>
-			<span class="description"><?php echo $this->core->available_template_tags( array( 'general' ), '%gateway%' ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Thank You Page', 'mycred' ); ?></label>
-	<ol id="mycred-buy-creds-thankyou-page">
-		<li class="option">
-			<input type="radio" name="mycred_pref_core[buy_creds][thankyou][use]" <?php checked( $thankyou_use, 'custom' ); ?> id="<?php echo $this->field_id( array( 'thankyou' => 'use' ) ); ?>-custom" value="custom" /> <label for="<?php echo $this->field_id( array( 'thankyou' => 'custom' ) ); ?>"><?php _e( 'Custom URL', 'mycred' ); ?></label><br />
-			<div class="h2"><?php echo get_bloginfo( 'url' ) . '/'; ?>  <input type="text" name="mycred_pref_core[buy_creds][thankyou][custom]" id="<?php echo $this->field_id( array( 'thankyou' => 'custom' ) ); ?>" value="<?php echo $buy_creds['thankyou']['custom']; ?>" /></div>
-		</li>
-		<li class="empty">&nbsp;</li>
-		<li class="option">
-			<input type="radio" name="mycred_pref_core[buy_creds][thankyou][use]" <?php checked( $thankyou_use, 'page' ); ?> id="<?php echo $this->field_id( array( 'thankyou' => 'use' ) ); ?>-page" value="page" /> <label for="mycred-buy-creds-thankyou-use-page"><?php _e( 'Page', 'mycred' ); ?></label><br />
+	<h3><?php _e( 'Redirects', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<p style="margin-top: 0;"><span class="description"><?php _e( 'Where should users be redirected to upon successfully completing a purchase. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
+			</div>
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'thankyou' => 'page' ) ); ?>"><?php _e( 'Redirect to Page', 'mycred' ); ?></label>
 <?php
 
 			// Thank you page dropdown
 			$thankyou_args = array(
-				'name'             => 'mycred_pref_core[buy_creds][thankyou][page]',
+				'name'             => $this->field_name( array( 'thankyou' => 'page' ) ),
 				'id'               => $this->field_id( array( 'thankyou' => 'page' ) ) . '-id',
-				'selected'         => $buy_creds['thankyou']['page'],
-				'show_option_none' => __( 'Select', 'mycred' )
+				'selected'         => $settings['thankyou']['page'],
+				'show_option_none' => __( 'Select', 'mycred' ),
+				'class'            => 'form-control'
 			);
 			wp_dropdown_pages( $thankyou_args );
 
 ?>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Cancellation Page', 'mycred' ); ?></label>
-	<ol id="mycred-buy-creds-cancel-page">
-		<li class="option">
-			<input type="radio" name="mycred_pref_core[buy_creds][cancelled][use]" <?php checked( $cancelled_use, 'custom' ); ?> id="<?php echo $this->field_id( array( 'cancelled' => 'custom' ) ); ?>" value="custom" /> <label for="<?php echo $this->field_id( array( 'cancelled' => 'custom' ) ); ?>"><?php _e( 'Custom URL', 'mycred' ); ?></label><br />
-			<div class="h2"><?php echo get_bloginfo( 'url' ) . '/'; ?> <input type="text" name="mycred_pref_core[buy_creds][cancelled][custom]" id="mycred-buy-creds-cancelled-custom-url" value="<?php echo $buy_creds['cancelled']['custom']; ?>" /></div>
-		</li>
-		<li class="empty">&nbsp;</li>
-		<li class="option">
-			<input type="radio" name="mycred_pref_core[buy_creds][cancelled][use]" <?php checked( $cancelled_use, 'page' ); ?> id="<?php echo $this->field_id( array( 'cancelled' => 'use' ) ); ?>-page" value="page" /> <label for="<?php echo $this->field_id( array( 'cancelled' => 'use' ) ); ?>-page"><?php _e( 'Page', 'mycred' ); ?></label><br />
+			</div>
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'thankyou' => 'custom' ) ); ?>"><?php _e( 'Redirect to URL', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'thankyou' => 'custom' ) ); ?>" id="<?php echo $this->field_id( array( 'thankyou' => 'custom' ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['thankyou']['custom'] ); ?>" />
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<p style="margin-top: 0;"><span class="description"><?php _e( 'Where should users be redirected to if they cancel a transaction. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
+			</div>
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'cancelled' => 'page' ) ); ?>"><?php _e( 'Redirect to Page', 'mycred' ); ?></label>
 <?php
 
-			// Cancelled page dropdown
-			$cancelled_args = array(
-				'name'             => 'mycred_pref_core[buy_creds][cancelled][page]',
+			// Thank you page dropdown
+			$thankyou_args = array(
+				'name'             => $this->field_name( array( 'cancelled' => 'page' ) ),
 				'id'               => $this->field_id( array( 'cancelled' => 'page' ) ) . '-id',
-				'selected'         => $buy_creds['cancelled']['page'],
-				'show_option_none' => __( 'Select', 'mycred' )
+				'selected'         => $settings['cancelled']['page'],
+				'show_option_none' => __( 'Select', 'mycred' ),
+				'class'            => 'form-control'
 			);
-			wp_dropdown_pages( $cancelled_args );
+			wp_dropdown_pages( $thankyou_args );
 
 ?>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Purchase Log', 'mycred' ); ?></label>
-	<ol id="mycred-buy-creds-seperate-log">
-		<li><input type="checkbox" name="mycred_pref_core[buy_creds][custom_log]" id="<?php echo $this->field_id( 'custom_log' ); ?>"<?php checked( $buy_creds['custom_log'], 1 ); ?> value="1" /><label for="<?php echo $this->field_id( 'custom_log' ); ?>"><?php echo $this->core->template_tags_general( __( 'Show seperate log for %_plural% purchases.', 'mycred' ) ); ?></label></li>
-	</ol>
-	<label class="subheader"><?php _e( 'Gifting', 'mycred' ); ?></label>
-	<ol id="mycred-buy-creds-gifting">
-		<li><input type="checkbox" name="mycred_pref_core[buy_creds][gifting][members]" id="<?php echo $this->field_id( array( 'gifting' => 'members' ) ); ?>"<?php checked( $buy_creds['gifting']['members'], 1 ); ?> value="1" /><label for="<?php echo $this->field_id( array( 'gifting' => 'members' ) ); ?>"><?php echo $this->core->template_tags_general( __( 'Allow users to buy %_plural% for other users.', 'mycred' ) ); ?></label></li>
-		<li><input type="checkbox" name="mycred_pref_core[buy_creds][gifting][authors]" id="<?php echo $this->field_id( array( 'gifting' => 'authors' ) ); ?>"<?php checked( $buy_creds['gifting']['authors'], 1 ); ?> value="1" /><label for="<?php echo $this->field_id( array( 'gifting' => 'authors' ) ); ?>"><?php echo $this->core->template_tags_general( __( 'Allow users to buy %_plural% for content authors.', 'mycred' ) ); ?></label></li>
-		<li class="empty">&nbsp;</li>
-		<li>
-			<label for="<?php echo $this->field_id( array( 'gifting' => 'log' ) ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-			<div class="h2"><input type="text" name="mycred_pref_core[buy_creds][gifting][log]" id="<?php echo $this->field_id( array( 'gifting' => 'log' ) ); ?>" value="<?php echo $buy_creds['gifting']['log']; ?>" class="long" /></div>
-			<span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ) ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader"><?php _e( 'Available Shortcodes', 'mycred' ); ?></label>
-	<ol id="mycred-buy-creds-shortcodes">
-		<li>
-			<a href="http://codex.mycred.me/shortcodes/mycred_buy/" target="_blank">[mycred_buy]</a> , 
-			<a href="http://codex.mycred.me/shortcodes/mycred_buy_form/" target="_blank">[mycred_buy_form]</a> , 
-			<a href="http://codex.mycred.me/shortcodes/mycred_buy_pending/" target="_blank">[mycred_buy_pending]</a>
-		</li>
-	</ol>
+			</div>
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'cancelled' => 'custom' ) ); ?>"><?php _e( 'Redirect to URL', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'cancelled' => 'custom' ) ); ?>" id="<?php echo $this->field_id( array( 'cancelled' => 'custom' ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['cancelled']['custom'] ); ?>" />
+			</div>
+		</div>
+	</div>
+
+	<h3><?php _e( 'Templates', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'login' ); ?>"><?php _e( 'Login Message', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'login' ); ?>" id="<?php echo $this->field_id( 'login' ); ?>" class="form-control" value="<?php echo esc_attr( $settings['login'] ); ?>" />
+				<p><span class="description"><?php _e( 'Message to show in shortcodes when viewed by someone who is not logged in.', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['log'] ); ?>" />
+				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general' ), '%gateway%' ); ?></span></p>
+			</div>
+		</div>
+	</div>
+
+	<h3><?php _e( 'Gifting', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="checkbox">
+					<label for="<?php echo $this->field_id( array( 'gifting' => 'members' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'gifting' => 'members' ) ); ?>" id="<?php echo $this->field_id( array( 'gifting' => 'members' ) ); ?>"<?php checked( $settings['gifting']['members'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Allow users to buy %_plural% for other users.', 'mycred' ) ); ?></label>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="checkbox">
+					<label for="<?php echo $this->field_id( array( 'gifting' => 'authors' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'gifting' => 'authors' ) ); ?>" id="<?php echo $this->field_id( array( 'gifting' => 'authors' ) ); ?>"<?php checked( $settings['gifting']['authors'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Allow users to buy %_plural% for content authors.', 'mycred' ) ); ?></label>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'gifting' => 'log' ) ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'gifting' => 'log' ) ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['gifting']['log'] ); ?>" />
+				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ) ); ?></span></p>
+			</div>
+		</div>
+	</div>
+
+	<h3 style="margin-bottom: 0;"><?php _e( 'Available Shortcodes', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<p><a href="http://codex.mycred.me/shortcodes/mycred_buy/" target="_blank">[mycred_buy]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_buy_form/" target="_blank">[mycred_buy_form]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_buy_pending/" target="_blank">[mycred_buy_pending]</a></p>
+		</div>
+	</div>
+
 </div>
 <?php
+
+			$this->module_name = 'gateways';
+			$this->option_id   = 'mycred_pref_buycreds';
 
 		}
 
 		/**
 		 * Save Settings
 		 * @since 0.1
-		 * @version 1.1.1
+		 * @version 1.1.2
 		 */
 		public function sanitize_extra_settings( $new_data, $data, $core ) {
 
@@ -451,13 +488,13 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 			$new_data['buy_creds']['log']                 = sanitize_text_field( $data['buy_creds']['log'] );
 			$new_data['buy_creds']['login']               = wp_kses_post( $data['buy_creds']['login'] );
 
-			$new_data['buy_creds']['thankyou']['use']     = sanitize_text_field( $data['buy_creds']['thankyou']['use'] );
-			$new_data['buy_creds']['thankyou']['custom']  = sanitize_text_field( $data['buy_creds']['thankyou']['custom'] );
 			$new_data['buy_creds']['thankyou']['page']    = absint( $data['buy_creds']['thankyou']['page'] );
+			$new_data['buy_creds']['thankyou']['custom']  = sanitize_text_field( $data['buy_creds']['thankyou']['custom'] );
+			$new_data['buy_creds']['thankyou']['use']     = ( $new_data['buy_creds']['thankyou']['custom'] != '' ) ? 'custom' : 'page';
 
-			$new_data['buy_creds']['cancelled']['use']    = sanitize_text_field( $data['buy_creds']['cancelled']['use'] );
-			$new_data['buy_creds']['cancelled']['custom'] = sanitize_text_field( $data['buy_creds']['cancelled']['custom'] );
 			$new_data['buy_creds']['cancelled']['page']   = absint( $data['buy_creds']['cancelled']['page'] );
+			$new_data['buy_creds']['cancelled']['custom'] = sanitize_text_field( $data['buy_creds']['cancelled']['custom'] );
+			$new_data['buy_creds']['cancelled']['use']    = ( $new_data['buy_creds']['cancelled']['custom'] != '' ) ? 'custom' : 'page';
 
 			$new_data['buy_creds']['custom_log']          = ( ! isset( $data['buy_creds']['custom_log'] ) ) ? 0 : 1;
 

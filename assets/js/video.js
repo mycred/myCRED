@@ -10,7 +10,7 @@ var seconds  = {};
 var logic    = {};
 var interval = {};
 var duration = {};
-	
+
 var done     = {};
 
 /**
@@ -114,7 +114,7 @@ function mycred_view_video( id, state, custom_logic, custom_interval, key, ctype
 			else {
 				// Stop Timer
 				clearInterval( timer );
-			}	
+			}
 		}
 	}
 }
@@ -125,7 +125,7 @@ function mycred_view_video( id, state, custom_logic, custom_interval, key, ctype
  * @version 1.1
  */
 function mycred_video_call( id, key, state, actions, seconds, pointtype ) {
-	
+
 	if ( done[ id ] === undefined ) {
 
 		if ( duration[ id ] === undefined )
@@ -146,8 +146,6 @@ function mycred_video_call( id, key, state, actions, seconds, pointtype ) {
 			dataType   : "JSON",
 			url        : myCRED_Video.ajaxurl,
 			success    : function( response ) {
-
-				console.log( response );
 
 				// Add to done list
 				if ( response.status === 'max' )

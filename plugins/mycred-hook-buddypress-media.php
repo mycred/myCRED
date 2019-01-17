@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Register Hook
  * @since 1.4
- * @version 1.0
+ * @version 1.1
  */
 add_filter( 'mycred_setup_hooks', 'mycred_register_buddypress_media_hook', 35 );
 function mycred_register_buddypress_media_hook( $installed ) {
@@ -12,9 +12,10 @@ function mycred_register_buddypress_media_hook( $installed ) {
 	if ( ! function_exists( 'rtmedia_autoloader' ) ) return $installed;
 
 	$installed['rtmedia'] = array(
-		'title'       => __( 'rtMedia Galleries', 'mycred' ),
-		'description' => __( 'Award / Deduct %_plural% for users creating albums or uploading new photos.', 'mycred' ),
-		'callback'    => array( 'myCRED_rtMedia' )
+		'title'         => __( 'rtMedia Galleries', 'mycred' ),
+		'description'   => __( 'Award / Deduct %_plural% for users creating albums or uploading new photos.', 'mycred' ),
+		'documentation' => 'http://codex.mycred.me/hooks/rtmedia-uploads/',
+		'callback'      => array( 'myCRED_rtMedia' )
 	);
 
 	return $installed;
@@ -37,7 +38,7 @@ function mycred_load_buddypress_media_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = 'mycred_default' ) {
+		public function __construct( $hook_prefs, $type = 'mycred_default' ) {
 
 			parent::__construct( array(
 				'id'       => 'rtmedia',
@@ -216,10 +217,10 @@ function mycred_load_buddypress_media_hook() {
 			}
 
 			// Put all wheres together into one string
-			$wheres   = implode( " AND ", $wheres );
+			$wheres     = implode( " AND ", $wheres );
 
 			// Count
-			$count    = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->core->log_table} WHERE {$wheres};" );
+			$count      = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->core->log_table} WHERE {$wheres};" );
 			if ( $count === NULL ) $count = 0;
 
 			$over_limit = false;
@@ -261,11 +262,11 @@ function mycred_load_buddypress_media_hook() {
 		/**
 		 * Preferences for rtMedia Gallery Hook
 		 * @since 1.4
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function preferences() {
 
-			$prefs = $this->prefs;
+			$prefs  = $this->prefs;
 
 			global $rtmedia;
 
@@ -277,7 +278,7 @@ function mycred_load_buddypress_media_hook() {
 			if ( array_key_exists( 'allowedTypes_video_enabled', $rtmedia->options ) && $rtmedia->options['allowedTypes_video_enabled'] == 1 )
 				$videos = '';
 
-			$music = ' readonly="readonly"';
+			$music  = ' readonly="readonly"';
 			if ( array_key_exists( 'allowedTypes_music_enabled', $rtmedia->options ) && $rtmedia->options['allowedTypes_music_enabled'] == 1 )
 				$music = '';
 
@@ -285,83 +286,132 @@ function mycred_load_buddypress_media_hook() {
 			add_filter( 'mycred_hook_limit_id_by',   array( $this, 'hook_limit_id' ) );
 
 ?>
-<label class="subheader"><?php _e( 'New Media Upload', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_media', 'photo' ) ); ?>"><?php _e( 'Photo Upload', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_media', 'photo' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'photo' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['new_media']['photo'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_media', 'photo_limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_media', 'photo_limit' ) ), $this->field_id( array( 'new_media', 'photo_limit' ) ), $prefs['new_media']['photo_limit'] ); ?>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_media', 'photo_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_media', 'photo_log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'photo_log' ) ); ?>"<?php echo $photos; ?> value="<?php echo esc_attr( $prefs['new_media']['photo_log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_media', 'video' ) ); ?>"><?php _e( 'Video Upload', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_media', 'video' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'video' ) ); ?>"<?php echo $videos; ?> value="<?php echo $this->core->number( $prefs['new_media']['video'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_media', 'video_limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_media', 'video_limit' ) ), $this->field_id( array( 'new_media', 'video_limit' ) ), $prefs['new_media']['video_limit'] ); ?>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_media', 'video_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_media', 'video_log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'video_log' ) ); ?>"<?php echo $videos; ?> value="<?php echo esc_attr( $prefs['new_media']['video_log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_media', 'music' ) ); ?>"><?php _e( 'Music Upload', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_media', 'music' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'music' ) ); ?>"<?php echo $music; ?> value="<?php echo $this->core->number( $prefs['new_media']['music'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_media', 'music_limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_media', 'music_limit' ) ), $this->field_id( array( 'new_media', 'music_limit' ) ), $prefs['new_media']['music_limit'] ); ?>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_media', 'music_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_media', 'music_log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'music_log' ) ); ?>"<?php echo $music; ?> value="<?php echo esc_attr( $prefs['new_media']['music_log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-
-<label for="<?php echo $this->field_id( array( 'delete_media', 'creds' ) ); ?>" class="subheader"><?php _e( 'Delete Media', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete_media', 'photo' ) ); ?>"><?php _e( 'Delete Photo', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'photo' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'photo' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['delete_media']['photo'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete_media', 'photo_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'photo_log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'photo_log' ) ); ?>"<?php echo $photos; ?> value="<?php echo esc_attr( $prefs['delete_media']['photo_log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete_media', 'video' ) ); ?>"><?php _e( 'Delete Video', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'video' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'video' ) ); ?>"<?php echo $videos; ?> value="<?php echo $this->core->number( $prefs['delete_media']['video'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete_media', 'video_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'video_log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'video_log' ) ); ?>"<?php echo $videos; ?> value="<?php echo esc_attr( $prefs['delete_media']['video_log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete_media', 'music' ) ); ?>"><?php _e( 'Delete Music', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'music' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'music' ) ); ?>"<?php echo $music; ?> value="<?php echo $this->core->number( $prefs['delete_media']['music'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete_media', 'music_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'music_log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'music_log' ) ); ?>"<?php echo $music; ?> value="<?php echo esc_attr( $prefs['delete_media']['music_log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<h3><?php _e( 'Photo Upload', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_media', 'photo' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'photo' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'photo' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['new_media']['photo'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_media', 'photo_limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_media', 'photo_limit' ) ), $this->field_id( array( 'new_media', 'photo_limit' ) ), $prefs['new_media']['photo_limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_media', 'photo_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'photo_log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'photo_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_media']['photo_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Video Upload', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_media', 'video' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'video' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'video' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['new_media']['video'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_media', 'video_limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_media', 'video_limit' ) ), $this->field_id( array( 'new_media', 'video_limit' ) ), $prefs['new_media']['video_limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_media', 'video_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'video_log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'video_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_media']['video_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Music Upload', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_media', 'music' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'music' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'music' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['new_media']['music'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_media', 'music_limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_media', 'music_limit' ) ), $this->field_id( array( 'new_media', 'music_limit' ) ), $prefs['new_media']['music_limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_media', 'music_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'music_log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'music_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_media']['music_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Photo Deletion', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_media', 'photo' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'photo' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'photo' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['delete_media']['photo'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_media', 'photo_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'photo_log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'photo_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_media']['photo_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Video Deletion', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_media', 'video' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'video' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'video' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['delete_media']['video'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_media', 'video_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'video_log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'video_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_media']['video_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Music Deletion', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_media', 'music' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'music' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'music' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['delete_media']['music'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_media', 'music_log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'music_log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'music_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_media']['music_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -371,7 +421,7 @@ function mycred_load_buddypress_media_hook() {
 		 * @since 1.6
 		 * @version 1.0.1
 		 */
-		function sanitise_preferences( $data ) {
+		public function sanitise_preferences( $data ) {
 
 			if ( isset( $data['new_media']['photo_limit'] ) && isset( $data['new_media']['photo_limit_by'] ) ) {
 				$limit = sanitize_text_field( $data['new_media']['photo_limit'] );

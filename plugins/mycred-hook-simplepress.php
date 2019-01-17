@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Register Hook
  * @since 1.3.3
- * @version 1.1.1
+ * @version 1.2
  */
 add_filter( 'mycred_setup_hooks', 'mycred_register_simplepress_hook', 85 );
 function mycred_register_simplepress_hook( $installed ) {
@@ -12,9 +12,10 @@ function mycred_register_simplepress_hook( $installed ) {
 	if ( ! defined( 'SFTOPICS' ) ) return $installed;
 
 	$installed['hook_simplepress'] = array(
-		'title'       => 'Simple:Press',
-		'description' => __( 'Awards %_plural% for Simple:Press actions.', 'mycred' ),
-		'callback'    => array( 'myCRED_SimplePress' )
+		'title'         => 'Simple:Press',
+		'description'   => __( 'Awards %_plural% for Simple:Press actions.', 'mycred' ),
+		'documentation' => 'http://codex.mycred.me/hooks/simplepress-actions/',
+		'callback'      => array( 'myCRED_SimplePress' )
 	);
 
 	return $installed;
@@ -37,7 +38,7 @@ function mycred_load_simplepress_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'hook_simplepress',
@@ -88,7 +89,7 @@ function mycred_load_simplepress_hook() {
 			// Delete Reply
 			if ( $this->prefs['delete_post']['creds'] != 0 )
 				add_action( 'sph_post_delete', array( $this, 'delete_post' ) );
-			
+
 			add_filter( 'mycred_parse_log_entry', array( $this, 'adjust_log_templates' ), 10, 2 );
 
 		}
@@ -106,15 +107,11 @@ function mycred_load_simplepress_hook() {
 				case 'new_forum_topic' :
 
 					global $wpdb;
-					$db = SFTOPICS;
-					$topic = $wpdb->get_row( $wpdb->prepare( "
-					SELECT * 
-					FROM {$db} 
-					WHERE user_id = %d 
-						AND topic_id = %d;", $log_entry->user_id, $log_entry->ref_id ) );
 
-					// Topic name
+					$db         = SFTOPICS;
+					$topic      = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$db} WHERE user_id = %d AND topic_id = %d;", $log_entry->user_id, $log_entry->ref_id ) );
 					$topic_name = '';
+
 					if ( isset( $topic->topic_name ) )
 						$topic_name = $topic->topic_name;
 
@@ -138,10 +135,10 @@ function mycred_load_simplepress_hook() {
 
 			// Topic details
 			$topic_author = $post['userid'];
-			
+
 			$forum_id = $post['forumid'];
 			$topic_id = $post['topicid'];
-			
+
 			// Check if user is excluded
 			if ( $this->core->exclude_user( $topic_author ) ) return;
 
@@ -172,7 +169,7 @@ function mycred_load_simplepress_hook() {
 		public function delete_topic( $topic ) {
 
 			if ( $topic->user_id == 0 ) return;
-			
+
 			// Topic details
 			$topic_author = $topic->user_id;
 			$topic_id     = $topic->topic_id;
@@ -203,7 +200,7 @@ function mycred_load_simplepress_hook() {
 		public function new_post( $post ) {
 
 			if ( $post['action'] != 'post' ) return;
-			
+
 			// Post details
 			$post_author = $post['userid'];
 			$post_id     = $post['postid'];
@@ -213,9 +210,7 @@ function mycred_load_simplepress_hook() {
 			if ( $this->core->exclude_user( $post_author ) ) return;
 
 			// Check if topic author gets points for their own replies
-			if ( (bool) $this->prefs['new_post']['author'] === false ) {
-				if ( $this->get_topic_author( $topic_id ) == $post_author ) return;
-			}
+			if ( (bool) $this->prefs['new_post']['author'] === false && $this->get_topic_author( $topic_id ) == $post_author ) return;
 
 			// Limit
 			if ( $this->over_hook_limit( 'new_post', 'new_topic_post', $post_author ) ) return;
@@ -275,90 +270,116 @@ function mycred_load_simplepress_hook() {
 		public function get_topic_author( $topic_id = '' ) {
 
 			global $wpdb;
-			
-			$db = SFTOPICS;
-			return $wpdb->get_var( $wpdb->prepare( "
-				SELECT user_id 
-				FROM {$db} 
-				WHERE topic_id = %d;", $topic_id ) );
+
+			$db    = SFTOPICS;
+
+			return $wpdb->get_var( $wpdb->prepare( "SELECT user_id FROM {$db} WHERE topic_id = %d;", $topic_id ) );
 
 		}
 
 		/**
 		 * Preferences
 		 * @since 1.3.3
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function preferences() {
 
 			$prefs = $this->prefs;
 
 ?>
-<!-- Creds for New Topic -->
-<label for="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for New Topic', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_topic']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_topic', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_topic', 'limit' ) ), $this->field_id( array( 'new_topic', 'limit' ) ), $prefs['new_topic']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['new_topic']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ), '%topic_name%' ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Deleting Topic -->
-<label for="<?php echo $this->field_id( array( 'delete_topic', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Topic Deletion', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete_topic']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_topic', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['delete_topic']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for New Topic Post -->
-<label for="<?php echo $this->field_id( array( 'new_post', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for New Topic Post', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_post', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_post']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_post', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_post', 'limit' ) ), $this->field_id( array( 'new_post', 'limit' ) ), $prefs['new_post']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'new_post', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'new_post', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['new_post']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<input type="checkbox" name="<?php echo $this->field_name( array( 'new_post' => 'author' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post' => 'author' ) ); ?>" <?php checked( $prefs['new_post']['author'], 1 ); ?> value="1" />
-		<label for="<?php echo $this->field_id( array( 'new_post' => 'author' ) ); ?>"><?php echo $this->core->template_tags_general( __( 'Topic authors can receive %_plural% for posting on their own Topic', 'mycred' ) ); ?></label>
-	</li>
-</ol>
-<!-- Creds for Deleting Post -->
-<label for="<?php echo $this->field_id( array( 'delete_post', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Topic Post Deletion', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_post', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_post', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete_post']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'delete_post', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'delete_post', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_post', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['delete_post']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<h3><?php _e( 'New Topic', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_topic']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_topic', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_topic', 'limit' ) ), $this->field_id( array( 'new_topic', 'limit' ) ), $prefs['new_topic']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_topic']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ), '%topic_name%' ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Deleted Topic', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_topic', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete_topic']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_topic', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_topic']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'New Topic Post', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_post', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_post', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_post']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_post', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_post', 'limit' ) ), $this->field_id( array( 'new_post', 'limit' ) ), $prefs['new_post']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'new_post', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'new_post', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_post']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="radio">
+					<label for="<?php echo $this->field_id( array( 'new_post' => 'author' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'new_post' => 'author' ) ); ?>" id="<?php echo $this->field_id( array( 'new_post' => 'author' ) ); ?>" <?php checked( $prefs['new_post']['author'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Topic authors can receive %_plural% for posting on their own Topic.', 'mycred' ) ); ?></label>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Deleted Topic Post', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_post', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_post', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_post', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete_post']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'delete_post', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_post', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_post', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_post']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -368,7 +389,7 @@ function mycred_load_simplepress_hook() {
 		 * @since 1.3.3
 		 * @version 1.1
 		 */
-		function sanitise_preferences( $data ) {
+		public function sanitise_preferences( $data ) {
 
 			if ( isset( $data['new_topic']['limit'] ) && isset( $data['new_topic']['limit_by'] ) ) {
 				$limit = sanitize_text_field( $data['new_topic']['limit'] );
@@ -384,7 +405,8 @@ function mycred_load_simplepress_hook() {
 				unset( $data['new_post']['limit_by'] );
 			}
 
-			$data['new_post']['author'] = ( isset( $data['new_post']['author'] ) ) ? $data['new_post']['author'] : 0;
+			$data['new_post']['author'] = ( isset( $data['new_post']['author'] ) ) ? 1 : 0;
+
 			return $data;
 
 		}
@@ -392,5 +414,3 @@ function mycred_load_simplepress_hook() {
 	}
 
 }
-
-?>

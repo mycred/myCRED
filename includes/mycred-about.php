@@ -210,5 +210,3 @@ function mycred_about_credit_page() {
 <?php
 
 }
-
-?>

@@ -465,5 +465,3 @@ if ( ! function_exists( 'mycred_wpecom_parse_email' ) ) :
 	}
 endif;
 add_filter( 'mycred_email_before_send', 'mycred_wpecom_parse_email', 30 );
-
-?>

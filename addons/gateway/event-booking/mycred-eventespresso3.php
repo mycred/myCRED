@@ -611,5 +611,3 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 
 	}
 endif;
-
-?>

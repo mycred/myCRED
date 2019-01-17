@@ -291,11 +291,13 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 		/**
 		 * Enqueue Scripts & Styles
 		 * @since 0.1
-		 * @version 1.4
+		 * @version 1.4.1
 		 */
 		public function admin_header() {
 
 			$screen = get_current_screen();
+			if ( ! isset( $screen->id ) ) return;
+
 			if ( $screen->id == 'users' ) {
 
 				wp_enqueue_style( 'mycred-bootstrap-grid' );
@@ -828,5 +830,3 @@ jQuery(function($){
 
 	}
 endif;
-
-?>

@@ -44,5 +44,3 @@ do_action( 'mycred_buycred_load_gateways' );
  */
 require_once MYCRED_BUYCRED_MODULES_DIR . 'buycred-module-core.php';
 require_once MYCRED_BUYCRED_MODULES_DIR . 'buycred-module-pending.php';
-
-?>

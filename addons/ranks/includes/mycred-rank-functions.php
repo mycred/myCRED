@@ -597,7 +597,7 @@ endif;
  * @version 1.5.1
  */
 if ( ! function_exists( 'mycred_get_users_of_rank' ) ) :
-	function mycred_get_users_of_rank( $rank_identifier = NULL, $number = NULL, $order = 'DESC', $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_get_users_of_rank( $rank_identifier = NULL, $number = '-1', $order = 'DESC', $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 		$rank_id = mycred_get_rank_object_id( $rank_identifier );
 		if ( $rank_id === false ) return false;
@@ -709,5 +709,3 @@ if ( ! function_exists( 'mycred_show_rank_in_bbpress' ) ) :
 
 	}
 endif;
-
-?>

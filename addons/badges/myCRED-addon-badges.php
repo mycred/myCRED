@@ -2,7 +2,7 @@
 /**
  * Addon: Badges
  * Addon URI: http://mycred.me/add-ons/badges/
- * Version: 1.2
+ * Version: 1.2.1
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
@@ -1114,32 +1114,26 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 		/**
 		 * Add to General Settings
 		 * @since 1.0
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function after_general_settings( $mycred = NULL ) {
 
-			$settings = $this->badges;
+			$settings   = $this->badges;
 
-			$buddypress = false; 
-			if ( class_exists( 'BuddyPress' ) )
-				$buddypress = true;
-			
-			$bbpress = false;
-			if ( class_exists( 'bbPress' ) )
-				$bbpress = true;
-
-			if ( ! $buddypress && ! $bbpress ) return;
+			$buddypress = ( ( class_exists( 'BuddyPress' ) ) ? true : false ); 
+			$bbpress    = ( ( class_exists( 'bbPress' ) ) ? true : false ); 
 
 ?>
 <h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Badges', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
 
-	<?php if ( $buddypress ) : ?>
-
-	<label class="subheader" for="<?php echo $this->field_id( 'buddypress' ); ?>">BuddyPress</label>
-	<ol>
-		<li>
-			<select name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>">
+	<h3><?php _e( 'Third-party Integrations', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'buddypress' ); ?>">BuddyPress</label>
+				<?php if ( $buddypress ) : ?>
+				<select name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>" class="form-control">
 <?php
 
 			$buddypress_options = array(
@@ -1157,25 +1151,23 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 
 ?>
 
-			</select>
-		</li>
-		<li>
-			<label for="<?php echo $this->field_id( 'show_all_bp' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bp' ); ?>" id="<?php echo $this->field_id( 'show_all_bp' ); ?>" <?php checked( $settings['show_all_bp'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
-		</li>
-	</ol>
-
-	<?php else : ?>
-
-	<input type="hidden" name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>" value="" />
-
-	<?php endif; ?>
-
-	<?php if ( $bbpress ) : ?>
-
-	<label class="subheader" for="<?php echo $this->field_id( 'bbpress' ); ?>">bbPress</label>
-	<ol>
-		<li>
-			<select name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>">
+				</select>
+			</div>
+			<div class="form-group">
+				<div class="checkbox">
+					<label for="<?php echo $this->field_id( 'show_all_bp' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bp' ); ?>" id="<?php echo $this->field_id( 'show_all_bp' ); ?>" <?php checked( $settings['show_all_bp'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
+				</div>
+				<?php else : ?>
+				<input type="hidden" name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>" value="" />
+				<p><span class="description"><?php _e( 'Not installed', 'mycred' ); ?></span></p>
+				<?php endif; ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'bbpress' ); ?>">bbPress</label>
+				<?php if ( $bbpress ) : ?>
+				<select name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>" class="form-control">
 <?php
 
 			$bbpress_options = array(
@@ -1193,18 +1185,26 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 
 ?>
 
-			</select>
-		</li>
-		<li>
-			<label for="<?php echo $this->field_id( 'show_all_bb' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bb' ); ?>" id="<?php echo $this->field_id( 'show_all_bb' ); ?>" <?php checked( $settings['show_all_bb'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
-		</li>
-	</ol>
+				</select>
+			</div>
+			<div class="form-group">
+				<div class="checkbox">
+					<label for="<?php echo $this->field_id( 'show_all_bb' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bb' ); ?>" id="<?php echo $this->field_id( 'show_all_bb' ); ?>" <?php checked( $settings['show_all_bb'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
+				</div>
+				<?php else : ?>
+					<input type="hidden" name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>" value="" />
+					<p><span class="description"><?php _e( 'Not installed', 'mycred' ); ?></span></p>
+				<?php endif; ?>
+			</div>
+		</div>
+	</div>
 
-	<?php else : ?>
-
-	<input type="hidden" name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>" value="" />
-
-	<?php endif; ?>
+	<h3 style="margin-bottom: 0;"><?php _e( 'Available Shortcodes', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<p><a href="http://codex.mycred.me/shortcodes/mycred_my_badges/" target="_blank">[mycred_my_badges]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_badges/" target="_blank">[mycred_badges]</a></p>
+		</div>
+	</div>
 
 </div>
 <?php
@@ -1522,5 +1522,3 @@ if ( ! function_exists( 'mycred_load_badges_addon' ) ) :
 	}
 endif;
 add_filter( 'mycred_load_modules', 'mycred_load_badges_addon', 10, 2 );
-
-?>

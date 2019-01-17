@@ -33,5 +33,3 @@ if ( ! function_exists( 'mycred_statistics_shortcode_render' ) ) :
 
 	}
 endif;
-
-?>

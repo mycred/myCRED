@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Register Hook
  * @since 1.0.5
- * @version 1.0.1
+ * @version 1.1
  */
 add_filter( 'mycred_setup_hooks', 'mycred_register_jetpack_hook', 75 );
 function mycred_register_jetpack_hook( $installed ) {
@@ -12,9 +12,10 @@ function mycred_register_jetpack_hook( $installed ) {
 	if ( ! defined( 'JETPACK__PLUGIN_DIR' ) ) return $installed;
 
 	$installed['jetpack'] = array(
-		'title'       => __( 'Jetpack Subscriptions', 'mycred' ),
-		'description' => __( 'Awards %_plural% for users signing up for site or comment updates using Jetpack.', 'mycred' ),
-		'callback'    => array( 'myCRED_Hook_Jetpack' )
+		'title'         => __( 'Jetpack Subscriptions', 'mycred' ),
+		'description'   => __( 'Awards %_plural% for users signing up for site or comment updates using Jetpack.', 'mycred' ),
+		'documentation' => 'http://codex.mycred.me/hooks/jetpack-subscriptions/',
+		'callback'      => array( 'myCRED_Hook_Jetpack' )
 	);
 
 	return $installed;
@@ -37,7 +38,7 @@ function mycred_load_jetpack_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'jetpack',
@@ -527,39 +528,49 @@ function mycred_load_jetpack_hook() {
 		/**
 		 * Preferences
 		 * @since 1.0.5
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function preferences() {
 
 			$prefs = $this->prefs;
 
 ?>
-<!-- Creds for Site Subscription -->
-<label for="<?php echo $this->field_id( array( 'subscribe_site', 'creds' ) ); ?>" class="subheader"><?php _e( 'Site Subscriptions', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'subscribe_site', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_site', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['subscribe_site']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'subscribe_site', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'subscribe_site', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_site', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['subscribe_site']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<!-- Creds for Comment Subscription -->
-<label for="<?php echo $this->field_id( array( 'subscribe_comment', 'creds' ) ); ?>" class="subheader"><?php _e( 'Comment Subscriptions', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'subscribe_comment', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_comment', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['subscribe_comment']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'subscribe_comment', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'subscribe_comment', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_comment', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['subscribe_comment']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<h3><?php _e( 'Site Subscriptions', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'subscribe_site' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'subscribe_site' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_site' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['subscribe_site']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'subscribe_site' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'subscribe_site' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_site' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['subscribe_site']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Comment Subscriptions', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'subscribe_comment' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'subscribe_comment' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_comment' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['subscribe_comment']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'subscribe_comment' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'subscribe_comment' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_comment' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['subscribe_comment']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -567,5 +578,3 @@ function mycred_load_jetpack_hook() {
 	}
 
 }
-
-?>

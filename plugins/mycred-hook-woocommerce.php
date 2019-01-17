@@ -6,19 +6,21 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @since 1.5
  * @version 1.1
  */
-add_action( 'mycred_load_hooks', 'mycred_load_woocommerce_reward', 90 );
 if ( ! function_exists( 'mycred_load_woocommerce_reward' ) ) :
 	function mycred_load_woocommerce_reward() {
 
 		if ( ! class_exists( 'WooCommerce' ) ) return;
 
-		add_filter( 'mycred_comment_gets_cred',     'mycred_woo_remove_review_from_comments', 10, 2 );
-		add_action( 'add_meta_boxes_product',       'mycred_woo_add_product_metabox' );
-		add_action( 'save_post',                    'mycred_woo_save_reward_settings' );
-		add_action( 'woocommerce_payment_complete', 'mycred_woo_payout_rewards' );
+		add_filter( 'mycred_comment_gets_cred',                      'mycred_woo_remove_review_from_comments', 10, 2 );
+		add_action( 'add_meta_boxes_product',                        'mycred_woo_add_product_metabox' );
+		add_action( 'save_post_product',                             'mycred_woo_save_reward_settings' );
+		add_action( 'woocommerce_payment_complete',                  'mycred_woo_payout_rewards' );
+		add_action( 'woocommerce_product_after_variable_attributes', 'mycred_woo_add_product_variation_detail', 10, 3 );
+		add_action( 'woocommerce_save_product_variation',            'mycred_woo_save_product_variation_detail' );
 
 	}
 endif;
+add_action( 'mycred_load_hooks', 'mycred_load_woocommerce_reward', 90 );
 
 /**
  * Remove Reviews from Comment Hook
@@ -39,7 +41,7 @@ endif;
 /**
  * Add Reward Metabox
  * @since 1.5
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_woo_add_product_metabox' ) ) :
 	function mycred_woo_add_product_metabox() {
@@ -69,24 +71,26 @@ if ( ! function_exists( 'mycred_woo_product_metabox' ) ) :
 		$types = mycred_get_types();
 		$prefs = (array) get_post_meta( $post->ID, 'mycred_reward', true );
 
-		foreach ( $types as $type => $label ) {
-			if ( ! isset( $prefs[ $type ] ) )
-				$prefs[ $type ] = '';
+		foreach ( $types as $point_type => $point_type_label ) {
+			if ( ! array_key_exists( $point_type, $prefs ) )
+				$prefs[ $point_type ] = '';
 		}
 
 		$count = 0;
 		$cui   = get_current_user_id();
-		foreach ( $types as $type => $label ) {
+		foreach ( $types as $point_type => $point_type_label ) {
 
 			$count ++;
-			$mycred = mycred( $type );
+			$mycred = mycred( $point_type );
 
 			if ( ! $mycred->can_edit_creds( $cui ) ) continue;
 
+			$setup = $prefs[ $point_type ];
+
 ?>
-<p class="<?php if ( $count == 1 ) echo 'first'; ?>"><label for="mycred-reward-purchase-with-<?php echo $type; ?>"><input class="toggle-mycred-reward" data-id="<?php echo $type; ?>" <?php if ( $prefs[ $type ] != '' ) echo 'checked="checked"'; ?> type="checkbox" name="mycred_reward[<?php echo $type; ?>][use]" id="mycred-reward-purchase-with-<?php echo $type; ?>" value="<?php echo $prefs[ $type ]; ?>" /> <?php echo $mycred->template_tags_general( __( 'Reward with %plural%', 'mycred' ) ); ?></label></p>
-<div class="mycred-woo-wrap" id="reward-<?php echo $type; ?>" style="display:<?php if ( $prefs[ $type ] == '' ) echo 'none'; else echo 'block'; ?>">
-	<label><?php echo $mycred->plural(); ?></label> <input type="text" size="8" name="mycred_reward[<?php echo $type; ?>][amount]" value="<?php echo $prefs[ $type ]; ?>" placeholder="<?php echo $mycred->zero(); ?>" />
+<p class="<?php if ( $count == 1 ) echo 'first'; ?>"><label for="mycred-reward-purchase-with-<?php echo $point_type; ?>"><input class="toggle-mycred-reward" data-id="<?php echo $point_type; ?>" <?php if ( $setup != '' ) echo 'checked="checked"'; ?> type="checkbox" name="mycred_reward[<?php echo $point_type; ?>][use]" id="mycred-reward-purchase-with-<?php echo $point_type; ?>" value="1" /> <?php echo $mycred->template_tags_general( __( 'Reward with %plural%', 'mycred' ) ); ?></label></p>
+<div class="mycred-woo-wrap" id="reward-<?php echo $point_type; ?>" style="display:<?php if ( $setup == '' ) echo 'none'; else echo 'block'; ?>">
+	<label><?php echo $mycred->plural(); ?></label> <input type="text" size="8" name="mycred_reward[<?php echo $point_type; ?>][amount]" value="<?php echo esc_attr( $setup ); ?>" placeholder="<?php echo $mycred->zero(); ?>" />
 </div>
 <?php
 
@@ -111,7 +115,54 @@ jQuery(function($) {
 #mycred_woo_sales_setup .inside .mycred-woo-wrap label { display: block; font-weight: bold; float: left; }
 #mycred_woo_sales_setup .inside .mycred-woo-wrap input { width: 50%; }
 #mycred_woo_sales_setup .inside .mycred-woo-wrap p { margin: 0; padding: 0 12px; font-style: italic; text-align: center; }
+#mycred_woo_vaiation .box { display: block; float: left; width: 49%; margin-right: 1%; margin-bottom: 12px; }
+#mycred_woo_vaiation .box input { display: block; width: 100%; }
 </style>
+<?php
+
+	}
+endif;
+
+/**
+ * Add Reward details for Variations
+ * @since 1.7.6
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_woo_add_product_variation_detail' ) ) :
+	function mycred_woo_add_product_variation_detail( $loop, $variation_data, $variation ) {
+
+		$types   = mycred_get_types();
+		$user_id = get_current_user_id();
+		$prefs   = (array) get_post_meta( $variation->ID, '_mycred_reward', true );
+
+		foreach ( $types as $point_type => $point_type_label ) {
+			if ( ! array_key_exists( $point_type, $prefs ) )
+				$prefs[ $point_type ] = '';
+		}
+
+?>
+<div class="" id="mycred_woo_vaiation">
+<?php
+
+		foreach ( $types as $point_type => $point_type_label ) {
+
+			$mycred = mycred( $point_type );
+
+			if ( ! $mycred->can_edit_creds( $user_id ) ) continue;
+
+			$id = 'mycred-rewards-variation-' . $variation->ID . str_replace( '_', '-', $point_type );
+
+?>
+		<div class="box">
+			<label for="<?php echo $id; ?>"><?php echo $mycred->template_tags_general( __( 'Reward with %plural%', 'mycred' ) ); ?></label>
+			<input type="text" name="_mycred_reward[<?php echo $variation->ID; ?>][<?php echo $point_type; ?>]" id="<?php echo $id; ?>" class="input-text" placeholder="<?php _e( 'Leave empty for no rewards', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $point_type ] ); ?>" />
+		</div>
+<?php
+
+		}
+
+?>
+</div>
 <?php
 
 	}
@@ -120,23 +171,60 @@ endif;
 /**
  * Save Reward Setup
  * @since 1.5
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_woo_save_reward_settings' ) ) :
 	function mycred_woo_save_reward_settings( $post_id ) {
 
-		if ( ! isset( $_POST['mycred_reward'] ) || get_post_type( $post_id ) != 'product' ) return;
+		if ( ! isset( $_POST['mycred_reward'] ) || empty( $_POST['mycred_reward'] ) || get_post_type( $post_id ) != 'product' ) return;
 
-		$new_settings = array();
-		foreach ( $_POST['mycred_reward'] as $type => $prefs ) {
+		$new_setup = array();
+		foreach ( $_POST['mycred_reward'] as $point_type => $setup ) {
 
-			$mycred = mycred( $type );
-			if ( isset( $prefs['use'] ) )
-				$new_settings[ $type ] = $mycred->number( $prefs['amount'] );
+			if ( empty( $setup ) ) continue;
+
+			$mycred = mycred( $point_type );
+			if ( array_key_exists( 'use', $setup ) && $setup['use'] == 1 )
+				$new_setup[ $point_type ] = $mycred->number( $setup['amount'] );
 
 		}
 
-		update_post_meta( $post_id, 'mycred_reward', $new_settings );
+		if ( empty( $new_setup ) )
+			delete_post_meta( $post_id, 'mycred_reward' );
+		else
+			update_post_meta( $post_id, 'mycred_reward', $new_setup );
+
+	}
+endif;
+
+/**
+ * Save Reward for Variations
+ * @since 1.7.6
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_woo_save_product_variation_detail' ) ) :
+	function mycred_woo_save_product_variation_detail( $post_id ) {
+
+		if ( ! isset( $_POST['_mycred_reward'] ) || empty( $_POST['_mycred_reward'] ) || ! array_key_exists( $post_id, $_POST['_mycred_reward'] ) ) return;
+
+		$new_setup = array();
+		foreach ( $_POST['_mycred_reward'][ $post_id ] as $point_type => $value ) {
+
+			$value  = sanitize_text_field( $value );
+			if ( empty( $value ) ) continue;
+
+			$mycred = mycred( $point_type );
+			$value  = $mycred->number( $value );
+			if ( $value === $mycred->zero() ) continue;
+
+			$new_setup[ $point_type ] = $value;
+
+		}
+
+		if ( empty( $new_setup ) )
+			delete_post_meta( $post_id, '_mycred_reward' );
+		else
+			update_post_meta( $post_id, '_mycred_reward', $new_setup );
 
 	}
 endif;
@@ -144,55 +232,66 @@ endif;
 /**
  * Payout Rewards
  * @since 1.5
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_woo_payout_rewards' ) ) :
 	function mycred_woo_payout_rewards( $order_id ) {
 
 		// Get Order
-		$order = wc_get_order( $order_id );
+		$order    = wc_get_order( $order_id );
 
 		// If we paid with myCRED we do not award points by default
-		if ( $order->payment_method == 'mycred' && apply_filters( 'mycred_woo_reward_mycred_payment', false ) === false )
+		if ( $order->payment_method == 'mycred' && apply_filters( 'mycred_woo_reward_mycred_payment', false, $order ) === false )
 			return;
 
 		// Get items
-		$items = $order->get_items();
-		$types = mycred_get_types();
+		$items    = $order->get_items();
+		$types    = mycred_get_types();
+		$buyer_id = $order->user_id;
 
-		// Loop
-		foreach ( $types as $type => $label ) {
+		// Loop through each point type
+		foreach ( $types as $point_type => $point_type_label ) {
 
 			// Load type
-			$mycred = mycred( $type );
+			$mycred = mycred( $point_type );
 
 			// Check for exclusions
-			if ( $mycred->exclude_user( $order->user_id ) ) continue;
+			if ( $mycred->exclude_user( $buyer_id ) ) continue;
 
 			// Calculate reward
-			$reward = $mycred->zero();
+			$payout = $mycred->zero();
 			foreach ( $items as $item ) {
-				$prefs = (array) get_post_meta( $item['product_id'], 'mycred_reward', true );
-				if ( isset( $prefs[ $type ] ) && $prefs[ $type ] != '' )
-					$reward = ( $reward + ( $prefs[ $type ] * $item['qty'] ) );
+
+				// Get the product ID or the variation ID
+				$product_id    = absint( $item['product_id'] );
+				$variation_id  = absint( $item['variation_id'] );
+				$reward_amount = mycred_get_woo_product_reward( $product_id, $variation_id, $point_type );
+
+				// Reward can not be empty or zero
+				if ( $reward_amount != '' && $reward_amount != 0 )
+					$payout = ( $payout + ( $mycred->number( $reward_amount ) * $item['qty'] ) );
+
 			}
 
-			// Let others play with the reference and log entry
-			$reference = apply_filters( 'mycred_woo_reward_reference', 'reward', $order_id, $type );
-			$log       = apply_filters( 'mycred_woo_reward_log',       '%plural% reward for store purchase', $order_id, $type );
+			// We can not payout zero points
+			if ( $payout === $mycred->zero() ) continue;
 
-			// Award
-			if ( ! $mycred->has_entry( $reference, $order_id, $order->user_id ) ) {
+			// Let others play with the reference and log entry
+			$reference = apply_filters( 'mycred_woo_reward_reference', 'reward', $order_id, $point_type );
+			$log       = apply_filters( 'mycred_woo_reward_log',       '%plural% reward for store purchase', $order_id, $point_type );
+
+			// Make sure we only get points once per order
+			if ( ! $mycred->has_entry( $reference, $order_id, $buyer_id ) ) {
 
 				// Execute
 				$mycred->add_creds(
 					$reference,
-					$order->user_id,
-					$reward,
+					$buyer_id,
+					$payout,
 					$log,
 					$order_id,
 					array( 'ref_type' => 'post' ),
-					$type
+					$point_type
 				);
 
 			}
@@ -203,24 +302,95 @@ if ( ! function_exists( 'mycred_woo_payout_rewards' ) ) :
 endif;
 
 /**
+ * Get Product Reward
+ * Returns either an array of point types and the reward value set for each or
+ * the value set for a given point type. Will check for variable product rewards as well.
+ * @since 1.7.6
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_woo_product_reward' ) ) :
+	function mycred_get_woo_product_reward( $product_id = NULL, $variation_id = NULL, $requested_type = false ) {
+
+		$product_id   = absint( $product_id );
+		$types        = mycred_get_types();
+		$meta_key     = 'mycred_reward';
+		$is_variable  = false;
+		if ( $product_id === 0 ) return false;
+
+		if ( function_exists( 'wc_get_product' ) ) {
+
+			$product  = wc_get_product( $product_id );
+
+			// For variations, we need a variation ID
+			if ( $product->is_type( 'variable' ) && $variation_id !== NULL && $variation_id > 0 ) {
+				$parent_product_id   = $product->get_parent();
+				$reward_setup        = (array) get_post_meta( $variation_id, '_mycred_reward', true );
+				$parent_reward_setup = (array) get_post_meta( $parent_product_id, 'mycred_reward', true );
+			}
+			else {
+				$reward_setup        = (array) get_post_meta( $product_id, 'mycred_reward', true );
+				$parent_reward_setup = array();
+			}
+
+		}
+
+		// Make sure all point types are populated in a reward setup
+		foreach ( $types as $point_type => $point_type_label ) {
+
+			if ( empty( $reward_setup ) || ! array_key_exists( $point_type, $reward_setup ) )
+				$reward_setup[ $point_type ]        = '';
+
+			if ( empty( $parent_reward_setup ) || ! array_key_exists( $point_type, $parent_reward_setup ) )
+				$parent_reward_setup[ $point_type ] = '';
+
+		}
+
+		// We might want to enforce the parent value for variations
+		foreach ( $reward_setup as $point_type => $value ) {
+
+			// If the variation has no value set, but the parent box has a value set, enforce the parent value
+			// If the variation is set to zero however, it indicates we do not want to reward that variation
+			if ( $value == '' && $parent_reward_setup[ $point_type ] != '' && $parent_reward_setup[ $point_type ] != 0 )
+				$reward_setup[ $point_type ] = $parent_reward_setup[ $point_type ];
+
+		}
+
+		// If we are requesting one particular types reward
+		if ( $requested_type !== false ) {
+
+			$value = '';
+			if ( array_key_exists( $requested_type, $reward_setup ) )
+				$value = $reward_setup[ $requested_type ];
+
+			return $value;
+
+		}
+
+		return $reward_setup;
+
+	}
+endif;
+
+/**
  * Register Hook
  * @since 1.5
- * @version 1.0.1
+ * @version 1.1
  */
-add_filter( 'mycred_setup_hooks', 'mycred_register_woocommerce_hook', 95 );
 function mycred_register_woocommerce_hook( $installed ) {
 
 	if ( ! class_exists( 'WooCommerce' ) ) return $installed;
 
 	$installed['wooreview'] = array(
-		'title'       => __( 'WooCommerce Product Reviews', 'mycred' ),
-		'description' => __( 'Awards %_plural% for users leaving reviews on your WooCommerce products.', 'mycred' ),
-		'callback'    => array( 'myCRED_Hook_WooCommerce_Reviews' )
+		'title'         => __( 'WooCommerce Product Reviews', 'mycred' ),
+		'description'   => __( 'Awards %_plural% for users leaving reviews on your WooCommerce products.', 'mycred' ),
+		'documentation' => 'http://codex.mycred.me/hooks/product-reviews/',
+		'callback'      => array( 'myCRED_Hook_WooCommerce_Reviews' )
 	);
 
 	return $installed;
 
 }
+add_filter( 'mycred_setup_hooks', 'mycred_register_woocommerce_hook', 95 );
 
 /**
  * WooCommerce Product Review Hook
@@ -238,7 +408,7 @@ function mycred_load_woocommerce_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'wooreview',
@@ -320,30 +490,36 @@ function mycred_load_woocommerce_hook() {
 		/**
 		 * Preferences for WooCommerce Product Reviews
 		 * @since 1.5
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function preferences() {
 
 			$prefs = $this->prefs;
 
 ?>
-<label class="subheader"><?php echo $this->core->plural(); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'creds' ); ?>" id="<?php echo $this->field_id( 'creds' ); ?>" value="<?php echo $this->core->number( $prefs['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( 'limit' ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( 'limit' ), $this->field_id( 'limit' ), $prefs['limit'] ); ?>
-	</li>
-</ol>
-<label class="subheader"><?php _e( 'Log Template', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'creds' ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'creds' ); ?>" id="<?php echo $this->field_id( 'creds' ); ?>" value="<?php echo $this->core->number( $prefs['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'limit' ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( 'limit' ), $this->field_id( 'limit' ), $prefs['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -353,7 +529,7 @@ function mycred_load_woocommerce_hook() {
 		 * @since 1.6
 		 * @version 1.0
 		 */
-		function sanitise_preferences( $data ) {
+		public function sanitise_preferences( $data ) {
 
 			if ( isset( $data['limit'] ) && isset( $data['limit_by'] ) ) {
 				$limit = sanitize_text_field( $data['limit'] );
@@ -369,5 +545,3 @@ function mycred_load_woocommerce_hook() {
 	}
 
 }
-
-?>

@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Register Hook
  * @since 1.4
- * @version 1.0.1
+ * @version 1.1
  */
 add_filter( 'mycred_setup_hooks', 'mycred_register_gravity_forms_hook', 65 );
 function mycred_register_gravity_forms_hook( $installed ) {
@@ -12,9 +12,10 @@ function mycred_register_gravity_forms_hook( $installed ) {
 	if ( ! class_exists( 'GFForms' ) ) return $installed;
 
 	$installed['gravityform'] = array(
-		'title'       => __( 'Gravityform Submissions', 'mycred' ),
-		'description' => __( 'Awards %_plural% for successful form submissions.', 'mycred' ),
-		'callback'    => array( 'myCRED_Gravity_Forms' )
+		'title'         => __( 'Gravityform Submissions', 'mycred' ),
+		'description'   => __( 'Awards %_plural% for successful form submissions.', 'mycred' ),
+		'documentation' => 'http://codex.mycred.me/hooks/submitting-gravity-forms/',
+		'callback'      => array( 'myCRED_Gravity_Forms' )
 	);
 
 	return $installed;
@@ -37,7 +38,7 @@ function mycred_load_gravity_forms_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'gravityform',
@@ -83,16 +84,16 @@ function mycred_load_gravity_forms_hook() {
 
 			// See if the form contains myCRED fields that override these defaults
 			if ( isset( $form['fields'] ) && ! empty( $form['fields'] ) ) {
-				foreach ( (array) $form['fields'] as $field ) {
+				foreach ( $form['fields'] as $field ) {
 
 					// Amount override
-					if ( $field['label'] == 'mycred_amount' ) {
-						$amount = $this->core->number( $field['defaultValue'] );
+					if ( $field->label == 'mycred_amount' ) {
+						$amount = $this->core->number( $field->defaultValue );
 					}
 
 					// Entry override
-					if ( $field['label'] == 'mycred_entry' ) {
-						$entry = sanitize_text_field( $field['defaultValue'] );
+					if ( $field->label == 'mycred_entry' ) {
+						$entry = sanitize_text_field( $field->defaultValue );
 					}
 
 				}
@@ -117,7 +118,7 @@ function mycred_load_gravity_forms_hook() {
 		/**
 		 * Preferences for Gravityforms Hook
 		 * @since 1.4
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function preferences() {
 
@@ -151,22 +152,30 @@ function mycred_load_gravity_forms_hook() {
 			foreach ( $forms as $form ) {
 
 ?>
-<label for="<?php echo $this->field_id( array( $form->id, 'creds' ) ); ?>" class="subheader"><?php echo $form->title; ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( $form->id, 'creds' ) ); ?>" id="<?php echo $this->field_id( array( $form->id, 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs[ $form->id ]['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( $form->id, 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( $form->id, 'limit' ) ), $this->field_id( array( $form->id, 'limit' ) ), $prefs[ $form->id ]['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( $form->id, 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( $form->id, 'log' ) ); ?>" id="<?php echo $this->field_id( array( $form->id, 'log' ) ); ?>" value="<?php echo esc_attr( $prefs[ $form->id ]['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<h3><?php printf( __( 'Form: %s', 'mycred' ), $form->title ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( $form->id, 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( $form->id, 'creds' ) ); ?>" id="<?php echo $this->field_id( array( $form->id, 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs[ $form->id ]['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( $form->id, 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( $form->id, 'limit' ) ), $this->field_id( array( $form->id, 'limit' ) ), $prefs[ $form->id ]['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( $form->id, 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( $form->id, 'log' ) ); ?>" id="<?php echo $this->field_id( array( $form->id, 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $form->id ]['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 			}
@@ -178,7 +187,7 @@ function mycred_load_gravity_forms_hook() {
 		 * @since 1.6
 		 * @version 1.0
 		 */
-		function sanitise_preferences( $data ) {
+		public function sanitise_preferences( $data ) {
 
 			$forms = RGFormsModel::get_forms();
 			foreach ( $forms as $form ) {
@@ -199,5 +208,3 @@ function mycred_load_gravity_forms_hook() {
 	}
 
 }
-
-?>

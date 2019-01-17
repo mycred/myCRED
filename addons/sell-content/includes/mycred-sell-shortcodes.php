@@ -315,5 +315,3 @@ if ( ! function_exists( 'mycred_render_sell_buyer_avatars' ) ) :
 
 	}
 endif;
-
-?>

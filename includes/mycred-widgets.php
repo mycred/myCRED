@@ -417,7 +417,7 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
 </p>
 <p class="myCRED-widget-field">
 	<label for="<?php echo esc_attr( $this->get_field_id( 'timeframe' ) ); ?>"><?php _e( 'Timeframe', 'mycred' ); ?>:</label>
-	<input id="<?php echo esc_attr( $this->get_field_id( 'timeframe' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'timeframe' ) ); ?>" type="text" value="<?php echo $timeframe; ?>" size="3" class="widefat" />
+	<input id="<?php echo esc_attr( $this->get_field_id( 'timeframe' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'timeframe' ) ); ?>" type="text" value="<?php echo esc_attr( $timeframe ); ?>" size="3" class="widefat" />
 	<small><?php _e( 'Option to limit the leaderboard based on a specific timeframe. Leave empty if not used.', 'mycred' ); ?></small>
 </p>
 <?php
@@ -627,5 +627,3 @@ jQuery(function($) {
 
 	}
 endif;
-
-?>

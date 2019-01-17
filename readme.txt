@@ -2,8 +2,8 @@
 Contributors: designbymerovingi
 Tags: point, points, tokens, credit, management, reward, charge, community, contest, buddypress, jetpack, bbpress, simple press, woocommerce, wp e-commerce, contact-form-7
 Requires at least: 4.0
-Tested up to: 4.7
-Stable tag: 1.7.5
+Tested up to: 4.7.3
+Stable tag: 1.7.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,12 +11,8 @@ An adaptive and powerful points management system for WordPress powered websites
 
 == Description ==
 
-> #### Updating to 1.7
-> If you are using the Banking add-on, Sell Content add-on or the Badge add-on, I highly recommend you read [these](https://mycred.me/news/) update guides before you update to 1.7 from older versions!
-
-
 > #### Plugin Support
-> Free support is offered via the [myCRED website](https://mycred.me/support/). No support is provided here on the wordpress.org support forum.
+> Free support is offered via the [myCRED website](https://mycred.me/support/) Monday to Friday 9AM - 5PM (GMT+1). You can consult the [online community](https://mycred.me/support/forums/) for customisations or open a [free support ticket](https://mycred.me/support/) if you can not get myCRED to work as described in the documentation. No support is provided here on the wordpress.org support forum or on any social media account.
 
 
 myCRED is an adaptive points management system that lets you build a broad range of point related applications for your WordPress powered website.
@@ -100,8 +96,8 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-= 1.7.5 =
-Bug fixes, query improvements, Coupon add-on updates and WP 4.7 comp.
+= 1.7.6 =
+Important bug fixes and updates for all 1.7 users.
 
 
 == Other Notes ==
@@ -125,27 +121,36 @@ Bug fixes, query improvements, Coupon add-on updates and WP 4.7 comp.
 
 == Changelog ==
 
-= 1.7.5 =
-FIX - rtMedia hook uses the has_entry() method incorrectly.
-FIX - Fixed issue with amount queries searching ref_id instead of creds column.
-FIX - Fixed issue with usernames / emails are not converted into correct IDs.
-FIX - When a new log entry is added the reference cache should be reset.
-FIX - Incorrect value for %new_balance% in Email Notifications add-on.
-FIX - Added missing bank transfer reference translation.
-FIX - Bank Transfers are not being shown in the buyCRED purchase log in the admin area.
-FIX - The leaderboard shortcode does not follow the same sorting of results as the leaderboard position shortcode. While we get to choose the order of our first sorting, the secondary sorting should be based on the users IDs.
-TWEAK - Updated inline documentation.
-TWEAK - Improved query construction and created a new structure for posting queries.
-TWEAK - Updated leaderboard query when leaderboard is based on total balance.
-TWEAK - When providing a timeframe, make sure the value of strtotime() is only used if it's a valid unix timestamp. This should prevent db query errors when using bad strings.
-UPDATE - myCRED_Query_Log class updated to version 1.7
-UPDATE - Updated the Coupons add-on to version 1.3.1
-NEW - Added new mycred_locate_template() function.
-NEW - Added support for order by multiple columns.
-NEW - Added support for multiple point type queries and display.
-NEW - Added support for multiple entry id queries.
-NEW - Added advanced query options which disabled the table rendering.
-NEW - Added new shortcode attribute for horizontal navigation when using the mycred_history shortcode.
+= 1.7.6 =
+NEW - Added support for transfer messages.
+NEW - Point rewards can now be setup for WooCommerce product variations.
+NEW - Import files can now identify users by: ID | email | login | slug.
+NEW - Added new function to check if the log table has been deleted, in which case a new one is installed.
+NEW - Added option to query best users without involving point types.
+NEW - Added support for numeric usernames for the Transfers add-on.
+TWEAK - All add-on settings have been updated to follow the new 1.7 styling.
+TWEAK - All hook settings have been given a facelift.
+TWEAK - Added in documentation links wherever possible.
+FIX - Rank promotions/demotions not getting correctly detected in email notifications.
+FIX - Incorrect error messages are shown in the mycred_load_coupon shortcode.
+FIX - mycred_my_ranks shortcode render issue.
+FIX - Custom payment gateway labels do not show up in buyCRED.
+FIX - Leaderboard issue on multisite with central logging.
+FIX - Add-on settings link does not open the correct tab on the settings page.
+FIX - Incorrect variable name causes payments to fail in Events Manager Pro.
+FIX - When attempting to setup the first point type, if we make a mistake the error is not shown.
+FIX - Incorrect call to non-static function during re-activation.
+FIX - Front end navigation is generating incorrect pagination links.
+FIX - Fixed PHP error when deleting point types.
+FIX - Incorrect comparisons for post author check in Sell Content add-on.
+FIX - Leaderboard monthly filter is not rendering a correct UNIX timestamp.
+FIX - Misspelled variable is passed to mycred_before_deletion and mycred_after_deletion actions.
+FIX - Statistics add-on tabs are not working correctly.
+FIX - Check-all-checkboxes in the log table in the wp-admin area is not working.
+FIX - When creating our first point type, not all options are saved as set.
+FIX - Bad query structure usage the mycred_best_user shortcode when providing multiple references or point types.
+FIX - Translated dates are not shown correctly when rendering the log.
+FIX - buyCRED gateway settings sanitisation causes PHP warning.
 
 
 = Previous Versions =

@@ -82,11 +82,9 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 			if ( is_numeric( $image_identification ) &&  strpos( '://', $image_identification ) === false )
 				$image_url = wp_get_attachment_url( $image_identification );
 
-			return '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $this->title ) . '" width="' . $this->image_width . '" height="' . $this->image_height . '" />';
+			return apply_filters( 'mycred_badge_image', '<img src="' . esc_url( $image_url ) . '" title="' . esc_attr( $this->title ) . '" alt="' . esc_attr( $this->title ) . '" width="' . $this->image_width . '" height="' . $this->image_height . '" />', $image, $this );
 
 		}
 
 	}
 endif;
-
-?>

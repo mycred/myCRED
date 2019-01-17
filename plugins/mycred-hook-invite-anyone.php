@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Register Hook
  * @since 0.1
- * @version 1.0.1
+ * @version 1.1
  */
 add_filter( 'mycred_setup_hooks', 'mycred_register_invite_anyone_hook', 70 );
 function mycred_register_invite_anyone_hook( $installed ) {
@@ -12,9 +12,10 @@ function mycred_register_invite_anyone_hook( $installed ) {
 	if ( ! function_exists( 'invite_anyone_init' ) ) return $installed;
 
 	$installed['invite_anyone'] = array(
-		'title'       => __( 'Invite Anyone Plugin', 'mycred' ),
-		'description' => __( 'Awards %_plural% for sending invitations and/or %_plural% if the invite is accepted.', 'mycred' ),
-		'callback'    => array( 'myCRED_Invite_Anyone' )
+		'title'         => __( 'Invite Anyone Plugin', 'mycred' ),
+		'description'   => __( 'Awards %_plural% for sending invitations and/or %_plural% if the invite is accepted.', 'mycred' ),
+		'documentation' => 'http://codex.mycred.me/hooks/inviting-users/',
+		'callback'      => array( 'myCRED_Invite_Anyone' )
 	);
 
 	return $installed;
@@ -37,7 +38,7 @@ function mycred_load_invite_anyone_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'invite_anyone',
@@ -193,54 +194,61 @@ function mycred_load_invite_anyone_hook() {
 		/**
 		 * Preferences
 		 * @since 0.1
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		public function preferences() {
 
 			$prefs = $this->prefs;
 
 ?>
-<!-- Creds for Sending Invites -->
-<label for="<?php echo $this->field_id( array( 'send_invite', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Sending An Invite', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'send_invite', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'send_invite', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['send_invite']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'send_invite', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'send_invite', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'send_invite', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['send_invite']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
-	</li>
-</ol>
-<label for="<?php echo $this->field_id( array( 'send_invite', 'limit' ) ); ?>" class="subheader"><?php _e( 'Limit', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'send_invite', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'send_invite', 'limit' ) ), $this->field_id( array( 'send_invite', 'limit' ) ), $prefs['send_invite']['limit'] ); ?>
-	</li>
-</ol>
-<!-- Creds for Accepting Invites -->
-<label for="<?php echo $this->field_id( array( 'accept_invite', 'creds' ) ); ?>" class="subheader"><?php echo $this->core->template_tags_general( __( '%plural% for Accepting An Invite', 'mycred' ) ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'accept_invite', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'accept_invite', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['accept_invite']['creds'] ); ?>" size="8" /></div>
-		<span class="description"><?php echo $this->core->template_tags_general( __( '%plural% for each invited user that accepts an invitation.', 'mycred' ) ); ?></span>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'accept_invite', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'accept_invite', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'accept_invite', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['accept_invite']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'user' ) ); ?></span>
-	</li>
-</ol>
-<label for="<?php echo $this->field_id( array( 'accept_invite', 'limit' ) ); ?>" class="subheader"><?php _e( 'Limit', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'accept_invite', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'accept_invite', 'limit' ) ), $this->field_id( array( 'accept_invite', 'limit' ) ), $prefs['accept_invite']['limit'] ); ?>
-	</li>
-</ol>
+<div class="hook-instance">
+	<h3><?php _e( 'Sending Invites', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'send_invite' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'send_invite' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'send_invite' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['send_invite']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'send_invite' => 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'send_invite' => 'limit' ) ), $this->field_id( array( 'send_invite' => 'limit' ) ), $prefs['send_invite']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'send_invite' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'send_invite' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'send_invite' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['send_invite']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Accepted Invites', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'accept_invite' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'accept_invite' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'accept_invite' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['accept_invite']['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'accept_invite' => 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'accept_invite' => 'limit' ) ), $this->field_id( array( 'accept_invite' => 'limit' ) ), $prefs['accept_invite']['limit'] ); ?>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'accept_invite' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'accept_invite' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'accept_invite' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['accept_invite']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -250,7 +258,7 @@ function mycred_load_invite_anyone_hook() {
 		 * @since 1.6
 		 * @version 1.0
 		 */
-		function sanitise_preferences( $data ) {
+		public function sanitise_preferences( $data ) {
 
 			if ( isset( $data['send_invite']['limit'] ) && isset( $data['send_invite']['limit_by'] ) ) {
 				$limit = sanitize_text_field( $data['send_invite']['limit'] );
@@ -273,5 +281,3 @@ function mycred_load_invite_anyone_hook() {
 	}
 
 }
-
-?>

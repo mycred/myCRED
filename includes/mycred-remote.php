@@ -703,5 +703,3 @@ if ( ! function_exists( 'mycred_remote_save_settings' ) ) :
 	}
 endif;
 add_filter( 'mycred_save_core_prefs', 'mycred_remote_save_settings', 10, 3 );
-
-?>

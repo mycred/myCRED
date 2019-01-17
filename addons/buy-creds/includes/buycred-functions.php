@@ -175,7 +175,7 @@ endif;
 /**
  * Get Users Pending Payments
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'buycred_get_users_pending_payments' ) ) :
 	function buycred_get_users_pending_payments( $user_id = NULL, $point_type = NULL ) {
@@ -204,7 +204,7 @@ if ( ! function_exists( 'buycred_get_users_pending_payments' ) ) :
 
 				}
 
-				//add_user_meta( $user_id, 'buycred_pending_payments', $pending, true );
+				add_user_meta( $user_id, 'buycred_pending_payments', $pending, true );
 
 			}
 
@@ -293,5 +293,3 @@ if ( ! function_exists( 'buycred_complete_pending_payment' ) ) :
 
 	}
 endif;
-
-?>

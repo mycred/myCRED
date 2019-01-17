@@ -18,5 +18,3 @@ if ( ! function_exists( 'mycred_render_affiliate_link' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_affiliate_link', 'mycred_render_affiliate_link' );
-
-?>

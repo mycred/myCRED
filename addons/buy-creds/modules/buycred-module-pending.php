@@ -50,29 +50,6 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 
 			add_action( 'mycred_add_menu',       array( $this, 'add_to_menu' ), $this->menu_pos );
 			add_action( 'template_redirect',     array( $this, 'intercept_cancellations' ) );
-			add_action( 'parse_comment_query',   array( $this, 'remove_frontend_updates' ), 90 );
-
-		}
-
-		/**
-		 * Remove Front End Updates
-		 * Make sure comments are not shown on the front end when it comes to buyCRED.
-		 * @since 1.7.4
-		 * @version 1.0
-		 */
-		public function remove_frontend_updates( $query ) {
-
-			$show_updates = true;
-			if ( ! function_exists( 'is_admin' ) || ! is_admin() )
-				$show_updates = false;
-
-			if ( apply_filters( 'mycred_buycred_show_updates', $show_updates, $this ) === true ) return;
-
-			if ( ! empty( $query->query_vars['author__not_in'] ) )
-				$query->query_vars['author__not_in'][] = 'buycred';
-
-			elseif ( empty( $query->query_vars['author__not_in'] ) )
-				$query->query_vars['author__not_in'] = array( 'buycred' );
 
 		}
 

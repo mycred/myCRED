@@ -442,32 +442,33 @@ endif;
  * Sell Content Template
  * Parses a particular template.
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 	function mycred_sell_content_template( $template = '', $post = NULL, $type = 'mycred-sell-partial-content', $status = 'visitor' ) {
 
 		if ( ! is_object( $post ) || strlen( $template ) === 0 ) return $template;
 
-		$post_type = get_post_type_object( $post->post_type );
-		$url       = get_permalink( $post->ID );
+		$post_type         = get_post_type_object( $post->post_type );
+		$url               = get_permalink( $post->ID );
 
 		// Remove old tags that are no longer supported
-		$template  = str_replace( array( '%price%', '%expires%', ), '', $template );
+		$template          = str_replace( array( '%price%', '%expires%', ), '', $template );
 
-		$template  = str_replace( '%post_title%',      get_the_title( $post->ID ), $template );
-		$template  = str_replace( '%post_type%',       $post_type->labels->singular_name, $template );
-		$template  = str_replace( '%post_url%',        $url, $template );
-		$template  = str_replace( '%link_with_title%', '<a href="' . $url . '">' . $post->post_title . '</a>', $template );
+		$template          = str_replace( '%post_title%',      get_the_title( $post->ID ), $template );
+		$template          = str_replace( '%post_type%',       $post_type->labels->singular_name, $template );
+		$template          = str_replace( '%post_url%',        $url, $template );
+		$template          = str_replace( '%link_with_title%', '<a href="' . $url . '">' . $post->post_title . '</a>', $template );
 
-		$template  = apply_filters( 'mycred_sell_content_template', $template, $post, $type );
+		$template          = apply_filters( 'mycred_sell_content_template', $template, $post, $type );
+		$template          = do_shortcode( $template );
 
 		$wrapper_classes   = array();
 		$wrapper_classes[] = 'mycred-sell-this-wrapper';
-		$wrapper_classes[] = $type;
-		$wrapper_classes[] = $status;
+		$wrapper_classes[] = esc_attr( $type );
+		$wrapper_classes[] = esc_attr( $status );
 
-		$wrapper_classes = apply_filters( 'mycred_sell_template_class', $wrapper_classes, $post );
+		$wrapper_classes   = apply_filters( 'mycred_sell_template_class', $wrapper_classes, $post );
 
 		return '<div id="mycred-buy-content' . $post->ID . '" class="' . implode( ' ', $wrapper_classes ) . '" data-pid="' . $post->ID . '">' . $template . '</div>';
 
@@ -812,5 +813,3 @@ if ( ! function_exists( 'mycred_get_post_type_options' ) ) :
 
 	}
 endif;
-
-?>

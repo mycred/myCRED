@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Register Hook
  * @since 1.1
- * @version 1.0
+ * @version 1.1
  */
 add_filter( 'mycred_setup_hooks', 'mycred_register_wp_polls_hook', 105 );
 function mycred_register_wp_polls_hook( $installed ) {
@@ -12,9 +12,10 @@ function mycred_register_wp_polls_hook( $installed ) {
 	if ( ! function_exists( 'vote_poll' ) ) return $installed;
 
 	$installed['wppolls'] = array(
-		'title'       => __( 'WP-Polls', 'mycred' ),
-		'description' => __( 'Awards %_plural% for users voting in polls.', 'mycred' ),
-		'callback'    => array( 'myCRED_Hook_WPPolls' )
+		'title'         => __( 'WP-Polls', 'mycred' ),
+		'description'   => __( 'Awards %_plural% for users voting in polls.', 'mycred' ),
+		'documentation' => '',
+		'callback'      => array( 'myCRED_Hook_WPPolls' )
 	);
 
 	return $installed;
@@ -37,7 +38,7 @@ function mycred_load_wp_polls_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'wppolls',
@@ -69,21 +70,32 @@ function mycred_load_wp_polls_hook() {
 		public function vote_poll() {
 
 			if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'polls' && is_user_logged_in() ) {
+
 				// Get Poll ID
 				$poll_id = ( isset( $_REQUEST['poll_id'] ) ? intval( $_REQUEST['poll_id'] ) : 0 );
+
 				// Ensure Poll ID Is Valid
 				if ( $poll_id != 0 ) {
+
 					// Verify Referer
 					if ( check_ajax_referer( 'poll_' . $poll_id . '-nonce', 'poll_' . $poll_id . '_nonce', false ) ) {
+
 						// Which View
 						switch ( $_REQUEST['view'] ) {
+
 							case 'process':
-								$poll_aid = $_POST["poll_$poll_id"];
+
+								$poll_aid       = $_POST["poll_$poll_id"];
 								$poll_aid_array = array_unique( array_map( 'intval', explode( ',', $poll_aid ) ) );
+
 								if ( $poll_id > 0 && ! empty( $poll_aid_array ) && check_allowtovote() ) {
+
 									$check_voted = check_voted( $poll_id );
+
 									if ( $check_voted == 0 ) {
+
 										$user_id = get_current_user_id();
+
 										// Make sure we are not excluded
 										if ( ! $this->core->exclude_user( $user_id ) ) {
 											$this->core->add_creds(
@@ -96,12 +108,19 @@ function mycred_load_wp_polls_hook() {
 												$this->mycred_type
 											);
 										}
+
 									}
+
 								}
+
 							break;
+
 						}
+
 					}
+
 				}
+
 			}
 
 		}
@@ -145,19 +164,23 @@ function mycred_load_wp_polls_hook() {
 			$prefs = $this->prefs;
 
 ?>
-<label class="subheader"><?php echo $this->core->plural(); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'creds' ); ?>" id="<?php echo $this->field_id( 'creds' ); ?>" value="<?php echo $this->core->number( $prefs['creds'] ); ?>" size="8" /></div>
-	</li>
-</ol>
-<label class="subheader"><?php _e( 'Log Template', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general' ), '%poll_id% and %poll_question%' ); ?></span>
-	</li>
-</ol>
+<div class="hook-instance">
+	<div class="row">
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'creds' ); ?>"><?php echo $this->core->plural(); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'creds' ); ?>" id="<?php echo $this->field_id( 'creds' ); ?>" value="<?php echo $this->core->number( $prefs['creds'] ); ?>" class="form-control" />
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -165,5 +188,3 @@ function mycred_load_wp_polls_hook() {
 	}
 
 }
-
-?>

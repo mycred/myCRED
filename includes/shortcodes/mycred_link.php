@@ -12,7 +12,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  *
  * @see http://codex.mycred.me/shortcodes/mycred_link/
  * @since 1.1
- * @version 1.2.1
+ * @version 1.3
  */
 if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 	function mycred_render_shortcode_link( $atts, $link_title = '' ) {
@@ -65,7 +65,7 @@ if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 		}
 
 		// Add point type as a data attribute
-		$attr[] = 'data-type="' . $atts['ctype'] . '"';
+		$attr[] = 'data-type="' . esc_attr( $atts['ctype'] ) . '"';
 
 		// Only usable for members
 		if ( is_user_logged_in() ) {
@@ -99,10 +99,8 @@ if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 		}
 
 		// Return result
-		return '<a ' . implode( ' ', $attr ) . '>' . do_shortcode( $link_title ) . '</a>';
+		return apply_filters( 'mycred_link', '<a ' . implode( ' ', $attr ) . '>' . do_shortcode( $link_title ) . '</a>', $atts, $link_title );
 
 	}
 endif;
 add_shortcode( 'mycred_link', 'mycred_render_shortcode_link' );
-
-?>

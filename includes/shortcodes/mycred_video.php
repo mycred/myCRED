@@ -24,12 +24,12 @@ if ( ! function_exists( 'mycred_render_shortcode_video' ) ) :
 			'ctype'    => MYCRED_DEFAULT_TYPE_KEY
 		), $atts ) );
 
-		$hooks = mycred_get_option( 'mycred_pref_hooks', false );
+		$hooks    = mycred_get_option( 'mycred_pref_hooks', false );
 		if ( $ctype != MYCRED_DEFAULT_TYPE_KEY )
 			$hooks = mycred_get_option( 'mycred_pref_hooks_' . sanitize_key( $ctype ), false );
 
 		if ( $hooks === false || ! is_array( $hooks ) || ! array_key_exists( 'video_view', $hooks['hook_prefs'] ) ) return;
-		$prefs = $hooks['hook_prefs']['video_view'];
+		$prefs    = $hooks['hook_prefs']['video_view'];
 
 		if ( $amount == '' )
 			$amount = $prefs['creds'];
@@ -70,8 +70,8 @@ if ( ! function_exists( 'mycred_render_shortcode_video' ) ) :
 			unset( $query['playerapiid'] );
 
 		// Construct Youtube Query Address
-		$url = 'https://www.youtube.com/embed/' . $id;
-		$url = add_query_arg( $query, $url );
+		$url      = 'https://www.youtube.com/embed/' . $id;
+		$url      = add_query_arg( $query, $url );
 
 		$mycred_video_points[] = 'youtube';
 
@@ -86,13 +86,12 @@ if ( ! function_exists( 'mycred_render_shortcode_video' ) ) :
 		<iframe id="mycred_vvideo_v<?php echo $video_id; ?>" class="mycred-video mycred-youtube-video" data-vid="<?php echo $video_id; ?>" src="<?php echo esc_url( $url ); ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 	</div>
 </div>
-<?php if ( is_user_logged_in() ) : ?>
-<script type="text/javascript">
-function mycred_vvideo_v<?php echo $video_id; ?>( state ) {
-	duration[ "<?php echo $video_id; ?>" ] = state.target.getDuration();
-	mycred_view_video( "<?php echo $video_id; ?>", state.data, "<?php echo $logic; ?>", "<?php echo $interval; ?>", "<?php echo $key; ?>", "<?php echo $ctype; ?>" );
-}
-</script>
+<?php
+
+		if ( is_user_logged_in() ) :
+
+?>
+<script type="text/javascript">function mycred_vvideo_v<?php echo $video_id; ?>( state ) { duration[ "<?php echo $video_id; ?>" ] = state.target.getDuration(); mycred_view_video( "<?php echo $video_id; ?>", state.data, "<?php echo $logic; ?>", "<?php echo $interval; ?>", "<?php echo $key; ?>", "<?php echo $ctype; ?>" ); }</script>
 <?php
 
 		endif;
@@ -106,5 +105,3 @@ function mycred_vvideo_v<?php echo $video_id; ?>( state ) {
 	}
 endif;
 add_shortcode( 'mycred_video', 'mycred_render_shortcode_video' );
-
-?>

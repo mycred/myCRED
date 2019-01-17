@@ -42,12 +42,12 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			$this->current_user_id = get_current_user_id();
 
-			add_filter( 'mycred_add_finished', array( $this, 'update_user_references' ), 90, 2 );
-			add_action( 'mycred_add_menu',     array( $this, 'my_history_menu' ) );
+			add_filter( 'mycred_add_finished',             array( $this, 'update_user_references' ), 90, 2 );
+			add_action( 'mycred_add_menu',                 array( $this, 'my_history_menu' ) );
 
 			// Handle deletions
-			add_action( 'before_delete_post',  array( $this, 'post_deletions' ) );
-			add_action( 'delete_comment',      array( $this, 'comment_deletions' ) );
+			add_action( 'before_delete_post',              array( $this, 'post_deletions' ) );
+			add_action( 'delete_comment',                  array( $this, 'comment_deletions' ) );
 
 			// If we do not want to delete log entries, attempt to hardcode the users
 			// details with their last known details.
@@ -66,8 +66,8 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		 */
 		public function module_admin_init() {
 
-			add_action( 'admin_notices',            array( $this, 'admin_notices' ) );
-			add_action( 'mycred_delete_point_type', array( $this, 'delete_point_type' ) );
+			add_action( 'admin_notices',               array( $this, 'admin_notices' ) );
+			add_action( 'mycred_delete_point_type',    array( $this, 'delete_point_type' ) );
 
 			$screen_id = 'toplevel_page_' . MYCRED_SLUG;
 			if ( $this->mycred_type != MYCRED_DEFAULT_TYPE_KEY )
@@ -87,7 +87,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		 */
 		protected function set_columns() {
 
-			$column_headers = array(
+			$column_headers    = array(
 				'cb'       => '',
 				'username' => __( 'User', 'mycred' ),
 				'ref'      => __( 'Reference', 'mycred' ),
@@ -96,8 +96,8 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				'entry'    => __( 'Entry', 'mycred' )
 			);
 
-			$column_headers = apply_filters( 'mycred_log_column_headers', $column_headers, $this, true );
-			$column_headers = apply_filters( 'mycred_log_column_' . $this->mycred_type . '_headers', $column_headers, $this );
+			$column_headers    = apply_filters( 'mycred_log_column_headers', $column_headers, $this, true );
+			$column_headers    = apply_filters( 'mycred_log_column_' . $this->mycred_type . '_headers', $column_headers, $this );
 
 			$columns = array();
 			foreach ( $column_headers as $column_id => $column_name )
@@ -111,7 +111,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		 * Delete Point Type
 		 * Deletes log entries for a particular point type when the point type is deleted.
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function delete_point_type( $point_type = NULL ) {
 
@@ -120,7 +120,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			global $wpdb;
 
 			$wpdb->delete(
-				$mycred->log_table,
+				$this->core->log_table,
 				array( 'ctype' => $this->mycred_type ),
 				array( '%s' )
 			);
@@ -456,6 +456,9 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 					$js_references[ $ref_id ] = esc_js( $ref_label );
 			}
 
+			wp_enqueue_style( 'mycred-bootstrap-grid' );
+			wp_enqueue_style( 'mycred-edit-log' );
+
 			wp_localize_script(
 				'mycred-edit-log',
 				'myCREDLog',
@@ -482,9 +485,6 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			);
 
 			wp_enqueue_script( 'mycred-edit-log' );
-
-			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-edit-log' );
 
 		}
 
@@ -517,7 +517,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		/**
 		 * Admin Page
 		 * @since 0.1
-		 * @version 1.4.1
+		 * @version 1.4.2
 		 */
 		public function admin_page() {
 
@@ -551,7 +551,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 ?>
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php $this->page_title( sprintf( __( '%s Log', 'mycred' ), $this->core->plural() ) ); ?></h1>
+	<h1><?php $this->page_title( sprintf( __( '%s Log', 'mycred' ), $this->core->plural() ) ); ?> <a href="http://codex.mycred.me/chapter-i/the-log/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a></h1>
 <?php
 
 			// This requirement is only checked on activation. If the library is disabled
@@ -559,7 +559,6 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			// that requires encryption will stop working:
 			// Points for clicking on links
 			// Exchange Shortcode
-			// buyCRED Add-on
 			$extensions = get_loaded_extensions();
 			if ( ! in_array( 'mcrypt', $extensions ) && ! defined( 'MYCRED_DISABLE_PROTECTION' ) )
 				echo '<div id="message" class="error below-h2"><p>' . __( 'Warning. The required Mcrypt PHP Library is not installed on this server! Certain hooks and shortcodes will not work correctly!', 'mycred' ) . '</p></div>';
@@ -571,7 +570,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 	<?php do_action( 'mycred_top_log_page', $this ); ?>
 
-	<form method="get" id="posts-filter" action="">
+	<form method="get" action="">
 		<input type="hidden" name="page" value="<?php echo $this->screen_id; ?>" />
 <?php
 

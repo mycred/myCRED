@@ -391,4 +391,3 @@ jQuery(function($) {
 
 	}
 endif;
-?>

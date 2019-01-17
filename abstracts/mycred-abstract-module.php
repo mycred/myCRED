@@ -503,7 +503,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * Enqueue Scripts & Styles
 		 * Scripts and styles to enqueu on module admin pages.
 		 * @since 1.4
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		function settings_page_enqueue() {
 
@@ -513,12 +513,6 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 			if ( $this->accordion ) {
 
 				wp_enqueue_style( 'mycred-admin' );
-
-				$open = '-1';
-				if ( isset( $_GET['open-tab'] ) && is_numeric( $_GET['open-tab'] ) )
-					$open = absint( $_GET['open-tab'] );
-
-				wp_localize_script( 'mycred-accordion', 'myCRED', apply_filters( 'mycred_localize_admin', array( 'active' => $open ) ) );
 				wp_enqueue_script( 'mycred-accordion' );
 
 ?>
@@ -727,5 +721,3 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 
 	}
 endif;
-
-?>

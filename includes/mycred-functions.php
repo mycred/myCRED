@@ -945,15 +945,18 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		}
 
 		/**
-		 * Count Blog Members
+		 * Count Members
 		 * @since 1.1
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function count_members() {
 
 			global $wpdb;
 
-			return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->users};" );
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->usermeta} WHERE meta_key = %s;", mycred_get_meta_key( $this->cred_id ) ) );
+			if ( $count === NULL ) $count = 0;
+
+			return $count;
 
 		}
 
@@ -1514,7 +1517,7 @@ endif;
  * Get Users Profile URL
  * Returns a given users profile URL.
  * @since 1.7.4
- * @version 1.0.1
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_get_users_profile_url' ) ) :
 	function mycred_get_users_profile_url( $user_id = NULL ) {
@@ -1523,22 +1526,11 @@ if ( ! function_exists( 'mycred_get_users_profile_url' ) ) :
 		if ( $user_id === NULL || absint( $user_id ) === 0 ) return $profile_url;
 
 		$user        = get_userdata( $user_id );
+		$profile_url = get_author_posts_url( $user_id );
 
 		// BuddyPress option
 		if ( function_exists( 'bp_core_get_user_domain' ) )
 			$profile_url = bp_core_get_user_domain( $user_id );
-
-		// bbPress option
-		elseif ( function_exists( 'bbp_get_user_profile_url' ) )
-			$profile_url = bbp_get_user_profile_url( $user_id );
-
-		else {
-
-			global $wp_rewrite;
-
-			$profile_url = get_bloginfo( 'url' ) . '/' . $wp_rewrite->author_base . '/' . urlencode( $user->user_login ) . '/';
-
-		}
 
 		return apply_filters( 'mycred_users_profile_url', $profile_url, $user );
 
@@ -1811,19 +1803,23 @@ endif;
  * Get Network Settings
  * Returns myCRED's network settings or false if multisite is not enabled.
  * @since 0.1
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_get_settings_network' ) ) :
 	function mycred_get_settings_network() {
 
 		if ( ! is_multisite() ) return false;
 
-		$defaults = array(
-			'master'  => 0,
-			'central' => 0,
-			'block'   => ''
+		$defaults            = array(
+			'master'            => 0,
+			'central'           => 0,
+			'block'             => ''
 		);
-		$settings = get_blog_option( 1, 'mycred_network', $defaults );
+		$settings            = get_blog_option( 1, 'mycred_network', $defaults );
+		$settings            = wp_parse_args( $settings, $defaults );
+
+		$settings['master']  = (bool) $settings['master'];
+		$settings['central'] = (bool) $settings['central'];
 
 		return $settings;
 
@@ -1869,9 +1865,30 @@ if ( ! function_exists( 'mycred_centralize_log' ) ) :
 endif;
 
 /**
+ * Add Option
+ * @since 1.7.6
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_add_option' ) ) :
+	function mycred_add_option( $option_id, $value = '' ) {
+
+		if ( is_multisite() ) {
+
+			if ( mycred_override_settings() )
+				return add_blog_option( 1, $option_id, $value );
+
+			return add_blog_option( $GLOBALS['blog_id'], $option_id, $value );
+
+		}
+		return add_option( $option_id, $value );
+
+	}
+endif;
+
+/**
  * Get Option
  * @since 1.4
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_get_option' ) ) :
 	function mycred_get_option( $option_id, $default = array() ) {
@@ -1879,19 +1896,13 @@ if ( ! function_exists( 'mycred_get_option' ) ) :
 		if ( is_multisite() ) {
 
 			if ( mycred_override_settings() )
-				$settings = get_blog_option( 1, $option_id, $default );
+				return get_blog_option( 1, $option_id, $default );
 
-			else
-				$settings = get_blog_option( $GLOBALS['blog_id'], $option_id, $default );
-
-		}
-		else {
-
-			$settings = get_option( $option_id, $default );
+			return get_blog_option( $GLOBALS['blog_id'], $option_id, $default );
 
 		}
 
-		return $settings;
+		return get_option( $option_id, $default );
 
 	}
 endif;
@@ -1899,7 +1910,7 @@ endif;
 /**
  * Update Option
  * @since 1.4
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_update_option' ) ) :
 	function mycred_update_option( $option_id, $value = '' ) {
@@ -1909,15 +1920,11 @@ if ( ! function_exists( 'mycred_update_option' ) ) :
 			if ( mycred_override_settings() )
 				return update_blog_option( 1, $option_id, $value );
 
-			else
-				return update_blog_option( $GLOBALS['blog_id'], $option_id, $value );
+			return update_blog_option( $GLOBALS['blog_id'], $option_id, $value );
 
 		}
-		else {
 
-			return update_option( $option_id, $value );
-
-		}
+		return update_option( $option_id, $value );
 
 	}
 endif;
@@ -1925,7 +1932,7 @@ endif;
 /**
  * Delete Option
  * @since 1.5.2
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_delete_option' ) ) :
 	function mycred_delete_option( $option_id ) {
@@ -1933,32 +1940,41 @@ if ( ! function_exists( 'mycred_delete_option' ) ) :
 		if ( is_multisite() ) {
 
 			if ( mycred_override_settings() )
-				delete_blog_option( 1, $option_id );
+				return delete_blog_option( 1, $option_id );
 
-			else
-				delete_blog_option( $GLOBALS['blog_id'], $option_id );
-
-		}
-		else {
-
-			delete_option( $option_id );
+			return delete_blog_option( $GLOBALS['blog_id'], $option_id );
 
 		}
+
+		return delete_option( $option_id );
 
 	}
 endif;
 
 /**
- * Get User Meta
- * @since 1.5
- * @version 1.1
+ * Get Meta Key
+ * @since 1.6.8
+ * @version 1.0
  */
-if ( ! function_exists( 'mycred_get_user_meta' ) ) :
-	function mycred_get_user_meta( $user_id, $key, $end = '', $unique = true ) {
+if ( ! function_exists( 'mycred_get_meta_key' ) ) :
+	function mycred_get_meta_key( $key, $end = '' ) {
 
-		$key = mycred_get_meta_key( $key, $end );
+		if ( is_multisite() ) {
 
-		return get_user_meta( $user_id, $key, $unique );
+			$blog_id = get_current_blog_id();
+
+			if ( $blog_id > 1 && ! mycred_centralize_log() && $key != 'mycred_rank' )
+				$key .= '_' . $blog_id;
+
+			elseif ( $blog_id > 1 && ! mycred_override_settings() && $key == 'mycred_rank' )
+				$key .= '_' . $blog_id;
+
+		}
+
+		if ( strlen( $end ) > 0 )
+			$key .= $end;
+
+		return $key;
 
 	}
 endif;
@@ -1974,6 +1990,21 @@ if ( ! function_exists( 'mycred_add_user_meta' ) ) :
 		$key = mycred_get_meta_key( $key, $end );
 
 		return add_user_meta( $user_id, $key, $value, $unique );
+
+	}
+endif;
+
+/**
+ * Get User Meta
+ * @since 1.5
+ * @version 1.1
+ */
+if ( ! function_exists( 'mycred_get_user_meta' ) ) :
+	function mycred_get_user_meta( $user_id, $key, $end = '', $unique = true ) {
+
+		$key = mycred_get_meta_key( $key, $end );
+
+		return get_user_meta( $user_id, $key, $unique );
 
 	}
 endif;
@@ -2007,34 +2038,6 @@ if ( ! function_exists( 'mycred_delete_user_meta' ) ) :
 			return delete_user_meta( $user_id, $key );
 
 		return delete_user_meta( $user_id, $key, $value );
-
-	}
-endif;
-
-/**
- * Get Meta Key
- * @since 1.6.8
- * @version 1.0
- */
-if ( ! function_exists( 'mycred_get_meta_key' ) ) :
-	function mycred_get_meta_key( $key, $end = '' ) {
-
-		if ( is_multisite() ) {
-
-			$blog_id = get_current_blog_id();
-
-			if ( $blog_id > 1 && ! mycred_centralize_log() && $key != 'mycred_rank' )
-				$key .= '_' . $blog_id;
-
-			elseif ( $blog_id > 1 && ! mycred_override_settings() && $key == 'mycred_rank' )
-				$key .= '_' . $blog_id;
-
-		}
-
-		if ( strlen( $end ) > 0 )
-			$key .= $end;
-
-		return $key;
 
 	}
 endif;
@@ -2114,21 +2117,23 @@ endif;
  * @param $user_id (int) user id
  * @return users balance (int|float)
  * @since 0.1
- * @version 1.2
+ * @version 1.2.1
  */ 
 if ( ! function_exists( 'mycred_get_users_cred' ) ) :
-	function mycred_get_users_cred( $user_id = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_get_users_cred( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		if ( $user_id === NULL )
-			$user_id = get_current_user_id();
+		if ( $user_id === NULL ) $user_id = get_current_user_id();
 
 		if ( (int) $user_id === 0 ) return false;
 
-		$mycred = mycred( $type );
+		if ( ! mycred_point_type_exists( $point_type ) )
+			$point_type = MYCRED_DEFAULT_TYPE_KEY;
+
+		$mycred = mycred( $point_type );
 
 		if ( $mycred->exclude_user( $user_id ) ) return false;
 
-		return $mycred->get_users_balance( $user_id, $type );
+		return $mycred->get_users_balance( $user_id, $point_type );
 
 	}
 endif;
@@ -2148,6 +2153,39 @@ if ( ! function_exists( 'mycred_get_users_balance' ) ) :
 endif;
 
 /**
+ * Get Users Total Balance
+ * @since 1.7.6
+ * @version 1.0
+ */ 
+if ( ! function_exists( 'mycred_get_users_total_balance' ) ) :
+	function mycred_get_users_total_balance( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+
+		if ( $user_id === NULL ) $user_id = get_current_user_id();
+
+		if ( (int) $user_id === 0 ) return false;
+
+		if ( ! mycred_point_type_exists( $point_type ) )
+			$point_type = MYCRED_DEFAULT_TYPE_KEY;
+
+		$mycred      = mycred( $point_type );
+
+		if ( $mycred->exclude_user( $user_id ) ) return false;
+
+		$users_total = mycred_get_user_meta( $user_id, $point_type, '_total', true );
+		if ( $users_total == '' ) {
+
+			$users_total = mycred_query_users_total( $user_id, $point_type );
+
+			mycred_update_user_meta( $user_id, $point_type, '_total', $users_total );
+
+		}
+
+		return $mycred->number( $users_total );
+
+	}
+endif;
+
+/**
  * Get Users Creds Formated
  * Returns the given users current cred balance formated. If no user id is given
  * this function will return false!
@@ -2157,18 +2195,17 @@ endif;
  * @version 1.2
  */
 if ( ! function_exists( 'mycred_get_users_fcred' ) ) :
-	function mycred_get_users_fcred( $user_id = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_get_users_fcred( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		if ( $user_id === NULL )
-			$user_id = get_current_user_id();
+		if ( $user_id === NULL ) $user_id = get_current_user_id();
 
 		if ( (int) $user_id === 0 ) return false;
 
-		$mycred  = mycred( $type );
+		$mycred  = mycred( $point_type );
 
 		if ( $mycred->exclude_user( $user_id ) ) return false;
 
-		$balance = $mycred->get_users_balance( $user_id, $type );
+		$balance = $mycred->get_users_balance( $user_id, $point_type );
 
 		return $mycred->format_creds( $balance );
 
@@ -2185,6 +2222,39 @@ if ( ! function_exists( 'mycred_display_users_balance' ) ) :
 	function mycred_display_users_balance( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 		return mycred_get_users_fcred( $user_id, $point_type );
+
+	}
+endif;
+
+/**
+ * Display Users Total Balance
+ * @since 1.7.6
+ * @version 1.0
+ */ 
+if ( ! function_exists( 'mycred_display_users_total_balance' ) ) :
+	function mycred_display_users_total_balance( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+
+		if ( $user_id === NULL ) $user_id = get_current_user_id();
+
+		if ( (int) $user_id === 0 ) return false;
+
+		if ( ! mycred_point_type_exists( $point_type ) )
+			$point_type = MYCRED_DEFAULT_TYPE_KEY;
+
+		$mycred      = mycred( $point_type );
+
+		if ( $mycred->exclude_user( $user_id ) ) return false;
+
+		$users_total = mycred_get_user_meta( $user_id, $point_type, '_total', true );
+		if ( $users_total == '' ) {
+
+			$users_total = mycred_query_users_total( $user_id, $point_type );
+
+			mycred_update_user_meta( $user_id, $point_type, '_total', $users_total );
+
+		}
+
+		return $mycred->format_creds( $users_total );
 
 	}
 endif;
@@ -2305,14 +2375,14 @@ if ( ! function_exists( 'mycred_update_users_total' ) ) :
 		if ( ! mycred_point_type_exists( $type ) )
 			$type = $mycred->get_cred_id();
 
-		$amount  = $mycred->number( $request['amount'] );
-		$user_id = absint( $request['user_id'] );
+		$amount      = $mycred->number( $request['amount'] );
+		$user_id     = absint( $request['user_id'] );
 
 		$users_total = mycred_get_user_meta( $user_id, $type, '_total', true );
 		if ( $users_total == '' )
 			$users_total = mycred_query_users_total( $user_id, $type );
 
-		$new_total = $mycred->number( $users_total+$amount );
+		$new_total   = $mycred->number( $users_total+$amount );
 		mycred_update_user_meta( $user_id, $type, '_total', $new_total );
 
 		return apply_filters( 'mycred_update_users_total', $new_total, $type, $request, $mycred );
@@ -2377,7 +2447,7 @@ endif;
 /**
  * Check if site is blocked
  * @since 1.5.4
- * @version 1.0.3
+ * @version 1.0.4
  */
 if ( ! function_exists( 'mycred_is_site_blocked' ) ) :
 	function mycred_is_site_blocked( $blog_id = NULL ) {
@@ -2401,10 +2471,10 @@ if ( ! function_exists( 'mycred_is_site_blocked' ) ) :
 			$clean = array();
 			foreach ( $list as $listed_id ) {
 
-				$listed_id = absint( $listed_id );
+				$listed_id = absint( trim( $listed_id ) );
 
 				if ( $listed_id === 0 || $listed_id === 1 ) continue;
-				$clean[] = $listed_id;
+				$clean[]   = $listed_id;
 
 			}
 
@@ -2422,20 +2492,12 @@ endif;
 /**
  * Is myCRED Ready
  * @since 1.3
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'is_mycred_ready' ) ) :
 	function is_mycred_ready() {
 
-		$installed = mycred_is_installed();
-		$mycred    = mycred();
-
-		// Make sure that if we switch from central log to seperate logs, we install this
-		// log if it does not exists.
-		if ( $mycred->is_multisite && $GLOBALS['blog_id'] > 1 && ! $mycred->use_master_template )
-			mycred_install_log( $mycred->core['format']['decimals'], $mycred->log_table );
-
-		if ( $installed !== false ) return true;
+		if ( mycred_is_installed() !== false ) return true;
 
 		return false;
 
@@ -2446,32 +2508,38 @@ endif;
  * Is myCRED Installed
  * Returns either false (setup has not been run) or the timestamp when it was completed.
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_is_installed' ) ) :
 	function mycred_is_installed() {
 
-		$mycred    = mycred();
-		$installed = false;
+		return mycred_get_option( 'mycred_setup_completed', false );
 
-		if ( is_multisite() ) {
+	}
+endif;
 
-			$blog_id = 1;
+/**
+ * Maybe Install myCRED Table
+ * Check to see if maybe the myCRED table needs to be installed.
+ * @since 1.7.6
+ * @version 1.0
+ */
+if ( ! function_exists( 'maybe_install_mycred_table' ) ) :
+	function maybe_install_mycred_table() {
 
-			// If we are not using the master template feature and this is not the main site, we need to check for local installations
-			if ( $GLOBALS['blog_id'] > 1 && ! $mycred->use_master_template )
-				$blog_id = $GLOBALS['blog_id'];
+		// No need to check this if we have disabled logging. Prevent this from being used using AJAX
+		if ( ! MYCRED_ENABLE_LOGGING || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || apply_filters( 'mycred_maybe_install_db', true ) === false ) return;
 
-			$installed = get_blog_option( $blog_id, 'mycred_setup_completed', false );
+		global $wpdb, $mycred;
+
+		// Check if the table exists
+		if ( $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $mycred->log_table ) ) != $mycred->log_table ) {
+
+			mycred_install_log( NULL, true );
+
+			do_action( 'mycred_reinstalled_table' );
 
 		}
-		else {
-
-			$installed = get_option( 'mycred_setup_completed', false );
-
-		}
-
-		return $installed;
 
 	}
 endif;
@@ -2479,30 +2547,35 @@ endif;
 /**
  * Install Log
  * Installs the log for a site.
- * Requires Multisite
  * @since 1.3
- * @version 1.3.1
+ * @version 1.4.1
  */
 if ( ! function_exists( 'mycred_install_log' ) ) :
-	function mycred_install_log( $decimals = NULL, $table = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_install_log( $decimals = NULL, $force = false ) {
 
-		// Can not be used if myCRED is already installed
-		if ( mycred_is_installed() !== false || ! MYCRED_ENABLE_LOGGING ) return true;
+		if ( ! MYCRED_ENABLE_LOGGING ) return true;
+		$mycred = mycred();
+
+		if ( ! $force ) {
+
+			$db_version = mycred_get_option( 'mycred_version_db', false );
+
+			// DB Already installed
+			if ( $db_version == myCRED_DB_VERSION ) return true;
+
+		}
 
 		global $wpdb;
 
-		$mycred   = mycred( $point_type );
-
-		// If table is not provided
-		if ( $table === NULL )
-			$table = $mycred->log_table;
+		$table       = $mycred->log_table;
+		$cred_format = 'bigint(22)';
+		$point_type  = $mycred->cred_id;
 
 		// If decimals is not provided
 		if ( $decimals === NULL )
 			$decimals = $mycred->format['decimals'];
 
 		// Point format in the log
-		$cred_format = 'bigint(22)';
 		if ( $decimals > 0 ) {
 
 			if ( $decimals > 4 )
@@ -2527,7 +2600,7 @@ if ( ! function_exists( 'mycred_install_log' ) ) :
 		}
 
 		// Log structure
-		$sql = apply_filters( 'mycred_install_db_structure', "
+		$sql = "
 			id            INT(11) NOT NULL AUTO_INCREMENT, 
 			ref           VARCHAR(256) NOT NULL, 
 			ref_id        INT(11) DEFAULT NULL, 
@@ -2538,17 +2611,13 @@ if ( ! function_exists( 'mycred_install_log' ) ) :
 			entry         LONGTEXT DEFAULT NULL, 
 			data          LONGTEXT DEFAULT NULL, 
 			PRIMARY KEY   (id), 
-			UNIQUE KEY id (id)", $decimals, $cred_format, $point_type, $mycred ); 
+			UNIQUE KEY id (id)"; 
 
 		// Insert table
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( "CREATE TABLE IF NOT EXISTS {$table} ( " . $sql . " ) $collate;" );
 
-		if ( is_multisite() )
-			add_blog_option( $GLOBALS['blog_id'], 'mycred_version_db', '1.0' );
-
-		else
-			add_option( 'mycred_version_db', '1.0' );
+		mycred_update_option( 'mycred_version_db', myCRED_DB_VERSION );
 
 		return true;
 
@@ -2603,7 +2672,7 @@ endif;
 /**
  * Runs when the plugin is deleted
  * @since 1.3
- * @version 1.0.1
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_plugin_uninstall' ) ) :
 	function mycred_plugin_uninstall() {
@@ -2612,12 +2681,12 @@ if ( ! function_exists( 'mycred_plugin_uninstall' ) ) :
 		require_once myCRED_INCLUDES_DIR . 'mycred-install.php';
 		$installer = mycred_installer();
 
-		do_action( 'mycred_before_deletion', $install );
+		do_action( 'mycred_before_deletion', $installer );
 
 		// Run uninstaller
 		$installer::uninstall();
 
-		do_action( 'mycred_after_deletion', $install );
+		do_action( 'mycred_after_deletion', $installer );
 
 	}
 endif;
@@ -2631,9 +2700,9 @@ endif;
 if ( ! function_exists( 'mycred_get_exchange_rates' ) ) :
 	function mycred_get_exchange_rates( $point_type = '' ) {
 
-		$types = mycred_get_types();
-
+		$types   = mycred_get_types();
 		$default = array();
+
 		foreach ( $types as $type => $label ) {
 			if ( $type == $point_type ) continue;
 			$default[ $type ] = 0;
@@ -2674,22 +2743,27 @@ if ( ! function_exists( 'mycred_translate_limit_code' ) ) :
 			return __( 'No limit', 'mycred' );
 
 		$result = '-';
-		$check = explode( '/', $code );
+		$check  = explode( '/', $code );
 		if ( count( $check ) == 2 ) {
+
+			$per    = __( 'in total', 'mycred' );
 			if ( $check[1] == 'd' )
 				$per = __( 'per day', 'mycred' );
+
 			elseif ( $check[1] == 'w' )
 				$per = __( 'per week', 'mycred' );
+
 			elseif ( $check[1] == 'm' )
 				$per = __( 'per month', 'mycred' );
-			else
-				$per = __( 'in total', 'mycred' );
 
 			$result = sprintf( _n( 'Maximum once', 'Maximum %d times', $check[0], 'mycred' ), $check[0] ) . ' ' . $per;
 
 		}
+
 		elseif ( is_numeric( $code ) ) {
+
 			$result = sprintf( _n( 'Maximum once', 'Maximum %d times', $code, 'mycred' ), $code );
+
 		}
 
 		return apply_filters( 'mycred_translate_limit_code', $result, $code );
@@ -2700,52 +2774,28 @@ endif;
 /**
  * Ordinal Suffix
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_ordinal_suffix' ) ) :
-	function mycred_ordinal_suffix( $num = 0, $append = true ) {
+	function mycred_ordinal_suffix( $num = 0, $depreciated = true ) {
+
+		if ( ! is_numeric( $num ) ) return $num;
 
 		$value  = $num;
-		$num    = $num % 100;
-		$result = '';
+		$num    = $num % 100; // protect against large numbers
 
+		$result = sprintf( _x( '%d th', 'e.g. 5 th', 'mycred' ), $value );
 		if ( $num < 11 || $num > 13 ) {
-			switch( $num % 10 ) {
+			switch ( $num % 10 ) {
 
-				case 1:
-
-					$result = 'st.';
-					if ( $append )
-						$result = sprintf( _x( '%dst', 'ex. 21st.', 'mycred' ), $value );
-
-				break;
-				case 2:
-
-					$result = 'nd.';
-					if ( $append )
-						$result = sprintf( _x( '%dnd', 'ex. 32nd.', 'mycred' ), $value );
-
-				break;
-				case 3:
-
-					$result = 'rd.';
-					if ( $append )
-						$result = sprintf( _x( '%drd', 'ex. 43rd.', 'mycred' ), $value );
-
-				break;
+				case 1 : $result = sprintf( _x( '%d st', 'e.g. 1 st', 'mycred' ), $value );
+				case 2 : $result = sprintf( _x( '%d nd', 'e.g. 2 nd', 'mycred' ), $value );
+				case 3 : $result = sprintf( _x( '%d rd', 'e.g. 3 rd', 'mycred' ), $value );
 
 			}
 		}
 
-		else {
-
-			$result = 'th';
-			if ( $append )
-				$result = sprintf( _x( '%dth', 'ex. 50th', 'mycred' ), $value );
-
-		}
-
-		return apply_filters( 'mycred_ordinal_suffix', $result, $value, $append );
+		return apply_filters( 'mycred_ordinal_suffix', $result, $value );
 
 	}
 endif;

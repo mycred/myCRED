@@ -70,4 +70,3 @@ if ( ! function_exists( 'mycred_detect_bp_user_activation' ) ) :
 
 	}
 endif;
-?>

@@ -60,5 +60,3 @@ function mycred_load_events_manager() {
 
 }
 add_action( 'mycred_init', 'mycred_load_events_manager' );
-
-?>

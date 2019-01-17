@@ -26,24 +26,24 @@ if ( ! function_exists( 'mycred_render_shortcode_exchange' ) ) :
 
 		if ( ! mycred_point_type_exists( $from ) || ! mycred_point_type_exists( $to ) ) return __( 'Point type not found.', 'mycred' );
 
-		$user_id = get_current_user_id();
+		$user_id     = get_current_user_id();
 
 		$mycred_from = mycred( $from );
 		if ( $mycred_from->exclude_user( $user_id ) )
 			return sprintf( __( 'You are excluded from using %s.', 'mycred' ), $mycred_from->plural() );
 
-		$balance = $mycred_from->get_users_balance( $user_id, $from );
+		$balance     = $mycred_from->get_users_balance( $user_id, $from );
 		if ( $balance < $mycred_from->number( $min ) )
 			return __( 'Your balance is too low to use this feature.', 'mycred' );
 
-		$mycred_to = mycred( $to );
+		$mycred_to   = mycred( $to );
 		if ( $mycred_to->exclude_user( $user_id ) )
 			return sprintf( __( 'You are excluded from using %s.', 'mycred' ), $mycred_to->plural() );
 
 		global $mycred_exchange;
 
-		$rate  = apply_filters( 'mycred_exchange_rate', $rate, $mycred_from, $mycred_to );
-		$token = mycred_create_token( array( $from, $to, $user_id, $rate, $min ) );
+		$rate        = apply_filters( 'mycred_exchange_rate', $rate, $mycred_from, $mycred_to );
+		$token       = mycred_create_token( array( $from, $to, $user_id, $rate, $min ) );
 
 		ob_start();
 
@@ -110,14 +110,14 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 		if ( ! isset( $_POST['mycred_exchange']['nonce'] ) || ! wp_verify_nonce( $_POST['mycred_exchange']['nonce'], 'mycred-exchange' ) ) return;
 
 		// Decode token
-		$token = mycred_verify_token( $_POST['mycred_exchange']['token'], 5 );
+		$token       = mycred_verify_token( $_POST['mycred_exchange']['token'], 5 );
 		if ( $token === false ) return;
 
 		global $mycred_exchange;
 		list ( $from, $to, $user_id, $rate, $min ) = $token;
 
 		// Check point types
-		$types = mycred_get_types();
+		$types       = mycred_get_types();
 		if ( ! array_key_exists( $from, $types ) || ! array_key_exists( $to, $types ) ) {
 			$mycred_exchange = array(
 				'success' => false,
@@ -126,7 +126,7 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 			return;
 		}
 
-		$user_id = get_current_user_id();
+		$user_id     = get_current_user_id();
 
 		// Check for exclusion
 		$mycred_from = mycred( $from );
@@ -139,7 +139,7 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 		}
 
 		// Check balance
-		$balance = $mycred_from->get_users_balance( $user_id, $from );
+		$balance     = $mycred_from->get_users_balance( $user_id, $from );
 		if ( $balance < $mycred_from->number( $min ) ) {
 			$mycred_exchange = array(
 				'success' => false,
@@ -149,7 +149,7 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 		}
 
 		// Check for exclusion
-		$mycred_to = mycred( $to );
+		$mycred_to   = mycred( $to );
 		if ( $mycred_to->exclude_user( $user_id ) ) {
 			$mycred_exchange = array(
 				'success' => false,
@@ -159,8 +159,8 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 		}
 
 		// Prep Amount
-		$amount = abs( $_POST['mycred_exchange']['amount'] );
-		$amount = $mycred_from->number( $amount );
+		$amount      = abs( $_POST['mycred_exchange']['amount'] );
+		$amount      = $mycred_from->number( $amount );
 
 		// Make sure we are sending more then minimum
 		if ( $amount < $min ) {
@@ -181,7 +181,7 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 		}
 
 		// Let others decline
-		$reply = apply_filters( 'mycred_decline_exchange', false, compact( 'from', 'to', 'user_id', 'rate', 'min', 'amount' ) );
+		$reply       = apply_filters( 'mycred_decline_exchange', false, compact( 'from', 'to', 'user_id', 'rate', 'min', 'amount' ) );
 		if ( $reply === false ) {
 
 			$mycred_from->add_creds(
@@ -213,15 +213,15 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 
 		}
 		else {
+
 			$mycred_exchange = array(
 				'success' => false,
 				'message' => $reply
 			);
 			return;
+
 		}
 
 	}
 endif;
 add_action( 'mycred_init', 'mycred_catch_exchange_requests', 100 );
-
-?>

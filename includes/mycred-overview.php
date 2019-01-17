@@ -7,8 +7,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @since 1.3.3
  * @version 1.3
  */
-add_action( 'wp_dashboard_setup', array( 'myCRED_Dashboard_Widget_Overview', 'init' ) );
-if ( ! class_exists( 'myCRED_Dashboard_Widget_Overview' ) ) {
+if ( ! class_exists( 'myCRED_Dashboard_Widget_Overview' ) ) :
 	class myCRED_Dashboard_Widget_Overview {
 
 		const mycred_wid = 'mycred_overview';
@@ -17,6 +16,7 @@ if ( ! class_exists( 'myCRED_Dashboard_Widget_Overview' ) ) {
 		 * Init Widget
 		 */
 		public static function init() {
+
 			if ( ! current_user_can( apply_filters( 'mycred_overview_capability', 'edit_users' ) ) ) return;
 
 			// Add widget
@@ -25,6 +25,7 @@ if ( ! class_exists( 'myCRED_Dashboard_Widget_Overview' ) ) {
 				sprintf( __( '%s Overview', 'mycred' ), mycred_label() ),
 				array( 'myCRED_Dashboard_Widget_Overview', 'widget' )
 			);
+
 		}
 
 		/**
@@ -104,7 +105,5 @@ div.overview-module-wrap div.mycred-type .overview .section strong { padding: 0 
 		}
 
 	}
-
-}
-
-?>
+endif;
+add_action( 'wp_dashboard_setup', array( 'myCRED_Dashboard_Widget_Overview', 'init' ) );

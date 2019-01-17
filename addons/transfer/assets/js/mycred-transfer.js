@@ -6,7 +6,7 @@
  * @requires jQuery UI
  * @requires jQuery Autocomplete
  * @since 0.1
- * @version 1.5.1
+ * @version 1.5.2
  */
 (function($) {
 
@@ -46,6 +46,8 @@
 	});
 
 	$( 'input.mycred-autofill' ).click(function(){
+
+		if ( myCREDTransfer.autofill == 'none' ) return false;
 
 		var formfieldid = $(this).data( 'form' );
 		mycred_transfer_autofill.autocomplete( "option", "appendTo", '#mycred-transfer-form-' + formfieldid + ' .select-recipient-wrapper' );

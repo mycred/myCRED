@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Register Hook
  * @since 1.6
- * @version 1.0.1
+ * @version 1.1
  */
 add_filter( 'mycred_setup_hooks', 'mycred_register_affiliatewp_hook', 10 );
 function mycred_register_affiliatewp_hook( $installed ) {
@@ -12,9 +12,10 @@ function mycred_register_affiliatewp_hook( $installed ) {
 	if ( ! class_exists( 'Affiliate_WP' ) ) return $installed;
 
 	$installed['affiliatewp'] = array(
-		'title'       => __( 'AffiliateWP', 'mycred' ),
-		'description' => __( 'Awards %_plural% for affiliate signups, referring visitors and store sale referrals.', 'mycred' ),
-		'callback'    => array( 'myCRED_AffiliateWP' )
+		'title'         => __( 'AffiliateWP', 'mycred' ),
+		'description'   => __( 'Awards %_plural% for affiliate signups, referring visitors and store sale referrals.', 'mycred' ),
+		'documentation' => 'http://codex.mycred.me/hooks/affiliatewp-actions/',
+		'callback'      => array( 'myCRED_AffiliateWP' )
 	);
 
 	return $installed;
@@ -24,7 +25,7 @@ function mycred_register_affiliatewp_hook( $installed ) {
 /**
  * Affiliate WP Hook
  * @since 1.6
- * @version 1.0.2
+ * @version 1.1
  */
 add_action( 'mycred_load_hooks', 'mycred_load_affiliatewp_hook', 10 );
 function mycred_load_affiliatewp_hook() {
@@ -39,7 +40,7 @@ function mycred_load_affiliatewp_hook() {
 		/**
 		 * Construct
 		 */
-		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( array(
 				'id'       => 'affiliatewp',
@@ -55,6 +56,8 @@ function mycred_load_affiliatewp_hook() {
 					),
 					'referrals' => array(
 						'creds'      => 0,
+						'exchange'   => 1,
+						'currency'   => 'MYC',
 						'log'        => '%plural% for store referral',
 						'remove_log' => '%plural% refund for rejected sale',
 						'pay'        => 'amount'
@@ -64,12 +67,69 @@ function mycred_load_affiliatewp_hook() {
 
 			$this->currency = affiliate_wp()->settings->get( 'currency', 'USD' );
 
+			// We might want to add a custom currency code
+			add_filter( 'affwp_currencies', array( $this, 'add_currency' ) );
+
+			// A custom currency code has been set and is used in AffiliateWP!
+			// We need to take over the way currencies are shown in AffiliateWP
+			if ( ! empty( $this->prefs['referrals']['currency'] ) && $this->currency == $this->prefs['referrals']['currency'] ) {
+				add_filter( 'affwp_format_amount',                                  array( $this, 'amount' ) );
+				add_filter( 'affwp_sanitize_amount_decimals',                       array( $this, 'decimals' ) );
+				add_filter( 'affwp_' . $this->currency . '_currency_filter_before', array( $this, 'before' ), 10, 3 );
+				add_filter( 'affwp_' . $this->currency . '_currency_filter_after',  array( $this, 'after' ), 10, 3 );
+			}
+
+		}
+
+		public function add_currency( $currencies ) {
+
+			if ( $this->prefs['referrals']['pay'] == 'currency' && ! empty( $this->prefs['referrals']['currency'] ) && ! array_key_exists( $this->prefs['referrals']['currency'], $currencies ) )
+				$currencies[ $this->prefs['referrals']['currency'] ] = $this->core->plural();
+
+			return $currencies;
+
+		}
+
+		public function amount( $amount ) {
+
+			// Format myCRED way
+			return $this->core->format_number( $amount );
+
+		}
+
+		public function before( $formatted, $currency, $amount ) {
+
+			// No need to add if empty
+			if ( $this->core->before != '' )
+				$formatted = $this->core->before . ' ' . $amount;
+
+			// Some might have applied adjustments how points are shown, apply them here as well
+			return apply_filters( 'mycred_format_creds', $formatted, $amount, $this->core );
+
+		}
+
+		public function after( $formatted, $currency, $amount ) {
+
+			// No need to add if empty
+			if ( $this->core->after != '' )
+				$formatted = $amount . ' ' . $this->core->after;
+
+			// Some might have applied adjustments how points are shown, apply them here as well
+			return apply_filters( 'mycred_format_creds', $formatted, $amount, $this->core );
+
+		}
+
+		public function decimals( $decimals ) {
+
+			// Get decimal setup
+			return absint( $this->core->format['decimals'] );
+
 		}
 
 		/**
 		 * Run
 		 * @since 1.6
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function run() {
 
@@ -82,8 +142,7 @@ function mycred_load_affiliatewp_hook() {
 				add_action( 'affwp_post_insert_visit', array( $this, 'new_visit' ), 10, 2 );
 
 			// If we reward referrals
-			if ( $this->prefs['referrals']['creds'] != 0 )
-				add_action( 'affwp_set_referral_status', array( $this, 'referral_payouts' ), 10, 3 );
+			add_action( 'affwp_set_referral_status', array( $this, 'referral_payouts' ), 10, 3 );
 
 		}
 
@@ -161,18 +220,27 @@ function mycred_load_affiliatewp_hook() {
 			$referral = affwp_get_referral( $referral_id );
 
 			// Get the user id
-			$user_id = affwp_get_affiliate_user_id( $referral->affiliate_id );
+			$user_id  = affwp_get_affiliate_user_id( $referral->affiliate_id );
 
-			if ( array_key_exists( $currency, $this->point_types ) && $this->prefs['referrals']['pay'] == 'store' )
-				$amount = $referral->amount;
+			// Check for exclusion
+			if ( $this->core->exclude_user( $user_id ) ) return;
 
-			elseif ( $this->prefs['referrals']['pay'] == 'amount' )
+			$amount   = false;
+
+			// We are paying a set amount for all referrals
+			if ( $this->prefs['referrals']['pay'] == 'creds' )
 				$amount = $this->prefs['referrals']['creds'];
 
-			else
-				$amount = $this->core->number( ( $referral->amount / $this->prefs['referrals']['creds'] ) );
+			// We pay the referral amount (assumes poins are used as the store currency
+			elseif ( $this->prefs['referrals']['pay'] == 'currency' )
+				$amount = $referral->amount;
+
+			// We apply an exchange rate
+			elseif ( $this->prefs['referrals']['pay'] == 'exchange' )
+				$amount = $this->core->number( ( $referral->amount * $this->prefs['referrals']['exchange'] ) );
 
 			$amount = apply_filters( 'mycred_affiliatewp_payout', $amount, $referral, $new_status, $old_status, $this );
+			if ( $amount === false ) return;
 
 			if ( 'paid' === $new_status ) {
 
@@ -187,18 +255,19 @@ function mycred_load_affiliatewp_hook() {
 				);
 
 			}
-			
-			elseif ( ( 'paid' === $old_status ) && ( 'unpaid' === $new_status ) ) {
 
-				$this->core->add_creds(
-					'affiliate_referral_refund',
-					$user_id,
-					0-$amount,
-					$this->prefs['referrals']['remove_log'],
-					$referral_id,
-					array( 'ref_type' => 'post' ),
-					$this->mycred_type
-				);
+			elseif ( 'paid' === $old_status ) {
+
+				if ( $this->core->has_entry( 'affiliate_referral', $referral_id, $user_id, array( 'ref_type' => 'post' ), $this->mycred_type ) )
+					$this->core->add_creds(
+						'affiliate_referral_refund',
+						$user_id,
+						0 - $amount,
+						$this->prefs['referrals']['remove_log'],
+						$referral_id,
+						array( 'ref_type' => 'post' ),
+						$this->mycred_type
+					);
 
 			}
 
@@ -207,82 +276,110 @@ function mycred_load_affiliatewp_hook() {
 		/**
 		 * Preferences
 		 * @since 1.6
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function preferences() {
 
 			$prefs = $this->prefs;
 
-			$label = $block = '';
-			if ( ! array_key_exists( $this->currency, $this->point_types ) )
-				$label = '1 ' . $this->currency . ' = ';
-			else
-				$block = 'readonly="readonly"';
-
 ?>
-<label for="<?php echo $this->field_id( array( 'signup', 'creds' ) ); ?>" class="subheader"><?php _e( 'Affiliate Signup', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'signup', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'signup', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['signup']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'signup', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'signup', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'signup', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['signup']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
-	</li>
-</ol>
-
-<label for="<?php echo $this->field_id( array( 'visits', 'creds' ) ); ?>" class="subheader"><?php _e( 'Referring Visitors', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'visits', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'visits', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['visits']['creds'] ); ?>" size="8" /></div>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'visits', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
-		<?php echo $this->hook_limit_setting( $this->field_name( array( 'visits', 'limit' ) ), $this->field_id( array( 'visits', 'limit' ) ), $prefs['visits']['limit'] ); ?>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'visits', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'visits', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'visits', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['visits']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
-	</li>
-</ol>
-
-<label for="<?php echo $this->field_id( array( 'referrals', 'pay' ) ); ?>" class="subheader"><?php _e( 'Referring Sales', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'referrals', 'pay-amount' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( array( 'referrals', 'pay' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'pay-amount' ) ); ?>"<?php checked( $this->prefs['referrals']['pay'], 'amount' ); ?> value="amount" class="toggles-creds" /> <?php _e( 'Pay a set amount for all referrals.', 'mycred' ); ?></label><br />
-		<label for="<?php echo $this->field_id( array( 'referrals', 'pay-store' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( array( 'referrals', 'pay' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'pay-store' ) ); ?>"<?php checked( $this->prefs['referrals']['pay'], 'store' ); ?> value="store" class="toggles-creds" /> <?php echo $this->core->template_tags_general( __( 'AffiliateWP will use %plural% as currency so pay the referral amount.', 'mycred' ) ); ?></label><br />
-		<label for="<?php echo $this->field_id( array( 'referrals', 'pay-ex' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( array( 'referrals', 'pay' ) ); ?>"<?php echo $block; ?> id="<?php echo $this->field_id( array( 'referrals', 'pay-ex' ) ); ?>"<?php checked( $this->prefs['referrals']['pay'], 'ex' ); ?> value="ex" class="toggles-creds" /> <?php _e( 'Apply an exchange rate against the referral amount.', 'mycred' ); ?></label>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'referrals', 'creds-ex' ) ); ?>"><?php _e( 'Amount', 'mycred' ); ?></label>
-		<div class="h2"><span id="<?php echo $this->field_id( array( 'referrals', 'creds-ex' ) ); ?>" style="display:none;"><?php echo $label; ?></span><input type="text" name="<?php echo $this->field_name( array( 'referrals', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'creds' ) ); ?>" value="<?php echo $prefs['referrals']['creds']; ?>" size="8" /></div>
-	</li>
-	<li class="empty">&nbsp;</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'referrals', 'log' ) ); ?>"><?php _e( 'Log template - Payout', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'referrals', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['referrals']['log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
-	</li>
-	<li>
-		<label for="<?php echo $this->field_id( array( 'referrals', 'remove_log' ) ); ?>"><?php _e( 'Log template - Refund', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( array( 'referrals', 'remove_log' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'remove_log' ) ); ?>" value="<?php echo esc_attr( $prefs['referrals']['remove_log'] ); ?>" class="long" /></div>
-		<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
-	</li>
-</ol>
-<script type="text/javascript">
-jQuery(function($) {
-	$( '.toggles-creds' ).change(function(){
-		if ( $(this).val() == 'ex' )
-			$( '#<?php echo $this->field_id( array( 'referrals', 'creds-ex' ) ); ?>' ).show();
-		else
-			$( '#<?php echo $this->field_id( array( 'referrals', 'creds-ex' ) ); ?>' ).hide();
-	});
-});
-</script>
+<div class="hook-instance">
+	<h3><?php _e( 'Affiliate Signup', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'signup', 'creds' ) ); ?>"><?php _e( 'Amount', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'signup', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'signup', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['signup']['creds'] ); ?>" class="form-control" />
+				<span class="description"><?php _e( 'Use zero to disable.', 'mycred' ); ?></span>
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'signup', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'signup', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'signup', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['signup']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Referring Visitors', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'visits', 'creds' ) ); ?>"><?php _e( 'Amount', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'visits', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'visits', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['visits']['creds'] ); ?>" class="form-control" />
+				<span class="description"><?php _e( 'Use zero to disable.', 'mycred' ); ?></span>
+			</div>
+		</div>
+		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'visits', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<?php echo $this->hook_limit_setting( $this->field_name( array( 'visits', 'limit' ) ), $this->field_id( array( 'visits', 'limit' ) ), $prefs['visits']['limit'] ); ?>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'visits', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'visits', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'visits', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['visits']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hook-instance">
+	<h3><?php _e( 'Referring Sales', 'mycred' ); ?></h3>
+	<div class="row">
+		<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="radio">
+					<label for="<?php echo $this->field_id( array( 'referrals', 'pay-amount' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( array( 'referrals', 'pay' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'pay-amount' ) ); ?>"<?php checked( $this->prefs['referrals']['pay'], 'creds' ); ?> value="creds" /> <?php _e( 'Pay a set amount', 'mycred' ); ?></label>
+				</div>
+				<label for="<?php echo $this->field_id( array( 'referrals', 'creds' ) ); ?>"><?php _e( 'Amount', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'referrals', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'creds' ) ); ?>" class="form-control" value="<?php echo $this->core->number( $prefs['referrals']['creds'] ); ?>" />
+				<span class="description"><?php _e( 'All referrals will pay the same amount.', 'mycred' ); ?></span>
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="radio">
+					<label for="<?php echo $this->field_id( array( 'referrals', 'pay-store' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( array( 'referrals', 'pay' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'pay-store' ) ); ?>"<?php checked( $this->prefs['referrals']['pay'], 'currency' ); ?> value="currency" /> <?php _e( 'Pay the referral amount', 'mycred' ); ?></label>
+				</div>
+				<label for="<?php echo $this->field_id( array( 'referrals', 'currency' ) ); ?>"><?php _e( 'Points Currency Code', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'referrals', 'currency' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'currency' ) ); ?>" class="form-control" value="<?php echo esc_attr( $prefs['referrals']['currency'] ); ?>" />
+				<span class="description"><?php _e( 'Requires AffiliateWP and your store to use points as currency.', 'mycred' ); ?></span>
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="radio">
+					<label for="<?php echo $this->field_id( array( 'referrals', 'pay-ex' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( array( 'referrals', 'pay' ) ); ?>"<?php if ( array_key_exists( $this->currency, $this->point_types ) ) echo ' readonly="readonly"'; ?> id="<?php echo $this->field_id( array( 'referrals', 'pay-ex' ) ); ?>"<?php checked( $this->prefs['referrals']['pay'], 'exchange' ); ?> value="exchange" /> <?php _e( 'Apply an exchange rate', 'mycred' ); ?></label>
+				</div>
+				<label for="<?php echo $this->field_id( array( 'referrals', 'exchange' ) ); ?>"><?php _e( 'Exchange Rate', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'referrals', 'exchange' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'exchange' ) ); ?>" class="form-control"<?php if ( array_key_exists( $this->currency, $this->point_types ) ) echo ' readonly="readonly"'; ?> value="<?php echo esc_attr( $prefs['referrals']['exchange'] ); ?>" />
+				<span class="description"><?php if ( ! array_key_exists( $this->currency, $this->point_types ) ) printf( __( 'How much is 1 %s worth in %s', 'mycred' ), $this->core->plural(), $this->currency ); else _e( 'Disabled', 'mycred' ); ?></span>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'referrals', 'log' ) ); ?>"><?php _e( 'Log template - Payout', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'referrals', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['referrals']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+			</div>
+		</div>
+		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( array( 'referrals', 'remove_log' ) ); ?>"><?php _e( 'Log template - Refund', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'referrals', 'remove_log' ) ); ?>" id="<?php echo $this->field_id( array( 'referrals', 'remove_log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['referrals']['remove_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -307,119 +404,4 @@ jQuery(function($) {
 
 	}
 
-	class myCRED_Adjust_AffiliateWP {
-
-		protected static $instance = NULL;
-		public $mycred;
-		public $point_types;
-
-		/**
-		 * Access this plugin’s working instance
-		 * @since 1.6
-		 * @version 1.0
-		 */
-		public static function get_instance() {
-
-			NULL === self::$instance and self::$instance = new self;
-			return self::$instance;
-
-		}
-
-		/**
-		 * Start
-		 * @since 1.6
-		 * @version 1.0
-		 */
-		public function plugin_setup() {
-
-			// Add option to use myCRED Points as currency
-			add_filter( 'affwp_currencies',    array( $this, 'add_currencies' ) );
-
-			// If a point type is set as currency, filter the way amounts are displayed
-			$currency = affiliate_wp()->settings->get( 'currency', MYCRED_DEFAULT_TYPE_KEY );
-			if ( array_key_exists( $currency, $this->point_types ) ) {
-
-				add_filter( 'affwp_format_amount',                            array( $this, 'amount' ) );
-				add_filter( 'affwp_sanitize_amount_decimals',                 array( $this, 'decimals' ) );
-				add_filter( 'affwp_' . $currency . '_currency_filter_before', array( $this, 'before' ), 10, 3 );
-				add_filter( 'affwp_' . $currency . '_currency_filter_after',  array( $this, 'after' ), 10, 3 );
-
-			}
-
-		}
-
-		/**
-		 * Construct
-		 * @since 1.6
-		 * @version 1.0
-		 */
-		public function __construct() {
-
-			// Get all types
-			$this->point_types = mycred_get_types();
-
-			// Get the used type (if used)
-			$type     = MYCRED_DEFAULT_TYPE_KEY;
-			$currency = affiliate_wp()->settings->get( 'currency', MYCRED_DEFAULT_TYPE_KEY );
-			if ( array_key_exists( $currency, $this->point_types ) )
-				$type = $currency;
-
-			// Load myCRED
-			$this->mycred = mycred( $type );
-
-		}
-
-		public function add_currencies( $currencies ) {
-
-			foreach ( $this->point_types as $type_id => $label ) {
-				if ( ! array_key_exists( $type_id, $currencies ) )
-					$currencies[ $type_id ] = $label;
-			}
-			return $currencies;
-
-		}
-
-		public function amount( $amount ) {
-
-			// Format myCRED way
-			return $this->mycred->format_number( $amount );
-
-		}
-
-		public function before( $formatted, $currency, $amount ) {
-
-			// No need to add if empty
-			if ( $this->mycred->before != '' )
-				$formatted = $this->mycred->before . ' ' . $amount;
-
-			// Some might have applied adjustments how points are shown, apply them here as well
-			return apply_filters( 'mycred_format_creds', $formatted, $amount, $this->mycred );
-
-		}
-
-		public function after( $formatted, $currency, $amount ) {
-
-			// No need to add if empty
-			if ( $this->mycred->after != '' )
-				$formatted = $amount . ' ' . $this->mycred->after;
-
-			// Some might have applied adjustments how points are shown, apply them here as well
-			return apply_filters( 'mycred_format_creds', $formatted, $amount, $this->mycred );
-
-		}
-
-		public function decimals( $decimals ) {
-
-			// Get decimal setup
-			return absint( $this->mycred->format['decimals'] );
-
-		}
-
-	}
-
-	$mycred_affiliatewp = new myCRED_Adjust_AffiliateWP();
-	$mycred_affiliatewp->plugin_setup();
-
 }
-
-?>

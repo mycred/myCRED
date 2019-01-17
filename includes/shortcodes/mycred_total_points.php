@@ -66,7 +66,7 @@ if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 
 			}
 
-			$ref_id = absint( $ref_id );
+			$ref_id  = absint( $ref_id );
 			if ( $ref_id > 0 )
 				$wheres[] = $wpdb->prepare( "ref_id = %d", $ref_id );
 
@@ -74,8 +74,8 @@ if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 			if ( $user_id != '' && $user_id != 0 )
 				$wheres[] = $wpdb->prepare( "user_id = %d", $user_id );
 
-			$wheres = implode( " AND ", $wheres );
-			$total = $wpdb->get_var( "SELECT SUM( creds ) FROM {$mycred->log_table} WHERE {$wheres};" );
+			$wheres  = implode( " AND ", $wheres );
+			$total   = $wpdb->get_var( "SELECT SUM( creds ) FROM {$mycred->log_table} WHERE {$wheres};" );
 
 		}
 
@@ -90,5 +90,3 @@ if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 	}
 endif;
 add_shortcode( 'mycred_total_points', 'mycred_render_shortcode_total_points' );
-
-?>
