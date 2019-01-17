@@ -1408,6 +1408,34 @@ if ( ! function_exists( 'mycred_get_module' ) ) :
 endif;
 
 /**
+ * Get Addon Settings
+ * @since 1.7.7
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_addon_settings' ) ) :
+	function mycred_get_addon_settings( $addon = '', $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+
+		if ( $addon == '' ) return false;
+
+		$mycred = $_mycred = mycred();
+		if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
+			$mycred = mycred( $point_type );
+
+		// If we are trying to get the settings under a custom point type and it does not exists
+		// try and see if it exits under the main type
+		if ( ! isset( $mycred->$addon ) && $point_type != MYCRED_DEFAULT_TYPE_KEY )
+			$mycred = $_mycred;
+
+		$settings = false;
+		if ( isset( $mycred->$addon ) )
+			$settings = $mycred->$addon;
+
+		return apply_filters( 'mycred_get_addon_settings', $settings, $addon, $point_type );
+
+	}
+endif;
+
+/**
  * Get Post Types
  * Returns an array of post types that myCRED uses.
  * @since 1.7
@@ -1771,7 +1799,7 @@ endif;
 /**
  * Select Point Type from Checkboxes
  * @since 1.4
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_types_select_from_checkboxes' ) ) :
 	function mycred_types_select_from_checkboxes( $name = '', $id = '', $selected_values = array(), $return = false ) {
@@ -1787,7 +1815,7 @@ if ( ! function_exists( 'mycred_types_select_from_checkboxes' ) ) :
 
 				$id .= '-' . $type;
 
-				$output .= '<input type="checkbox" name="' . $name . '" id="' . $id . '" value="' . $type . '"' . $selected . ' /><label for="' . $id . '">' . $label . '</label><br />';
+				$output .= '<label for="' . $id . '"><input type="checkbox" name="' . $name . '" id="' . $id . '" value="' . $type . '"' . $selected . ' /> ' . $label . '</label>';
 			}
 		}
 

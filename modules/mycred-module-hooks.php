@@ -2744,7 +2744,7 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 		/**
 		 * Register Script
 		 * @since 1.2
-		 * @version 1.1.1
+		 * @version 1.1.2
 		 */
 		public function register_script() {
 
@@ -2764,7 +2764,7 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 				'mycred-video-points',
 				'myCRED_Video',
 				array(
-					'ajaxurl'          => esc_url( get_permalink( $post->ID ) ),
+					'ajaxurl'          => esc_url( ( isset( $post->ID ) ) ? get_permalink( $post->ID ) : home_url( '/' ) ),
 					'token'            => wp_create_nonce( 'mycred-video-points' ),
 					'default_interval' => abs( $this->prefs['interval']*1000 ),
 					'default_logic'    => $this->prefs['logic']

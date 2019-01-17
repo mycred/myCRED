@@ -3,7 +3,7 @@
  * Plugin Name: myCRED
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 1.7.6
+ * Version: 1.7.7
  * Tags: points, tokens, credit, management, reward, charge, buddypress, bbpress, jetpack, woocommerce, marketpress, wp e-commerce, gravity forms, simplepress
  * Author: Gabriel S Merovingi
  * Author URI: http://www.merovingi.com
@@ -19,7 +19,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '1.7.6';
+		public $version             = '1.7.7';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -308,14 +308,11 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * After Themes Loaded
 		 * Used to load internal features via modules.
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function after_theme() {
 
 			global $mycred, $mycred_modules;
-
-			// In case a table was deleted, we need to add one
-			maybe_install_mycred_table();
 
 			// Lets start with Multisite
 			if ( is_multisite() ) {

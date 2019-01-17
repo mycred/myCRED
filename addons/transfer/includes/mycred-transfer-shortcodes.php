@@ -6,15 +6,17 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Renders a transfer form that allows users to send points to other users.
  * @see http://mycred.me/functions/mycred_transfer_render/
  * @since 0.1
- * @version 1.7
+ * @version 1.7.2
  */
 if ( ! function_exists( 'mycred_transfer_render' ) ) :
 	function mycred_transfer_render( $atts, $content = NULL ) {
 
-		global $mycred, $mycred_do_transfer;
+		global $mycred_do_transfer;
 
 		// Settings
-		$pref    = $mycred->transfers;
+		$mycred  = mycred();
+		$pref    = mycred_get_addon_settings( 'transfers' );
+		$output  = '';
 
 		// Get Attributes
 		extract( shortcode_atts( array(
@@ -32,8 +34,6 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 			'balance_label'   => __( 'Balance', 'mycred' ),
 			'message_label'   => __( 'Message', 'mycred' )
 		), $atts ) );
-
-		$output = '';
 
 		if ( $ref == '' )
 			$ref = 'transfer';

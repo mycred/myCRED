@@ -385,19 +385,19 @@ endif;
  * Translates a coupon error code into a readable message.
  * we ran into issues.
  * @since 1.7.5
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_get_coupon_error_message' ) ) :
 	function mycred_get_coupon_error_message( $code = '', $coupon = NULL ) {
 
-		$message = __( 'An unknown error occurred. Coupon not used.', 'mycred' );
+		$message  = __( 'An unknown error occurred. Coupon not used.', 'mycred' );
 
 		if ( ! is_object( $coupon ) ) return $message;
 
-		global $mycred;
+		$settings = mycred_get_addon_settings( 'coupons' );
 
-		if ( array_key_exists( $code, $mycred->coupons ) )
-			$message = $mycred->coupons[ $code ];
+		if ( array_key_exists( $code, $settings ) )
+			$message = $settings[ $code ];
 
 		if ( $code == 'min' ) {
 

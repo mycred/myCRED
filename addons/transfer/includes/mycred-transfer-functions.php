@@ -11,7 +11,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @filter 'mycred_transfer_limit'
  * @filter 'mycred_transfer_acc_limit'
  * @since 0.1
- * @version 1.4
+ * @version 1.4.1
  */
 if ( ! function_exists( 'mycred_user_can_transfer' ) ) :
 	function mycred_user_can_transfer( $user_id = NULL, $amount = NULL, $type = MYCRED_DEFAULT_TYPE_KEY, $reference = NULL ) {
@@ -25,20 +25,16 @@ if ( ! function_exists( 'mycred_user_can_transfer' ) ) :
 		if ( ! mycred_point_type_exists( $type ) )
 			$type = MYCRED_DEFAULT_TYPE_KEY;
 
-		// Grab Settings (from main type where the settings are saved)
-		$mycred   = mycred();
-		$settings = $mycred->transfers;
-
-		if ( $type !== MYCRED_DEFAULT_TYPE_KEY )
-			$mycred = mycred( $type );
-
+		// Grab Settings
+		$settings = mycred_get_addon_settings( 'transfers' );
+		$mycred   = mycred( $type );
 		$zero     = $mycred->zero();
 
 		// Get users balance
 		$balance  = $mycred->get_users_balance( $user_id, $type );
 
 		// Get Transfer Max
-		$max = apply_filters( 'mycred_transfer_limit', $mycred->number( $settings['limit']['amount'] ), $user_id, $amount, $settings, $reference );
+		$max      = apply_filters( 'mycred_transfer_limit', $mycred->number( $settings['limit']['amount'] ), $user_id, $amount, $settings, $reference );
 
 		// If an amount is given, deduct this amount to see if the transaction
 		// brings us over the account limit
@@ -104,7 +100,7 @@ endif;
 /**
  * New Transfer
  * @since 1.7.6
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_new_transfer' ) ) :
 	function mycred_new_transfer( $request = array() ) {
@@ -124,10 +120,8 @@ if ( ! function_exists( 'mycred_new_transfer' ) ) :
 
 		if ( $transaction_id === NULL || $sender_id === NULL || $recipient_id === NULL || $charge === NULL || $payout === NULL ) return 'error_9';
 
-		global $mycred;
-
 		$point_type    = sanitize_key( $point_type );
-		$settings      = $mycred->transfers;
+		$settings      = mycred_get_addon_settings( 'transfers' );
 		$mycred        = mycred( $point_type );
 
 		$result        = 'error_9';

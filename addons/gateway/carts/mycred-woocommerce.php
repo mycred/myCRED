@@ -592,7 +592,7 @@ add_filter( 'woocommerce_currencies', 'mycred_woo_add_currency' );
  * Currency Symbol
  * Appends the myCRED prefix or suffix to the amount.
  * @since 0.1
- * @version 1.2
+ * @version 1.2.1
  */
 if ( ! function_exists( 'mycred_woo_currency_symbol' ) ) :
 	function mycred_woo_currency_symbol( $currency_symbols ) {
@@ -608,6 +608,9 @@ if ( ! function_exists( 'mycred_woo_currency_symbol' ) ) :
 				elseif ( ! empty( $mycred->before ) )
 					$symbol = $mycred->before;
 
+				if ( $type_id == 'mycred_default' )
+					$type_id = 'MYC';
+
 				$currency_symbols[ $type_id ] = $symbol;
 
 			}
@@ -617,7 +620,7 @@ if ( ! function_exists( 'mycred_woo_currency_symbol' ) ) :
 
 	}
 endif;
-add_filter( 'woocommerce_currency_symbols', 'mycred_woo_currency_symbol', 10, 2 );
+add_filter( 'woocommerce_currency_symbols', 'mycred_woo_currency_symbol' );
 
 /**
  * Log Entry: Payment

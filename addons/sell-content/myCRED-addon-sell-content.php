@@ -42,8 +42,8 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 					'working'     => 'Processing ...',
 					'templates'   => array(
 						'members'     => '<div class="text-center"><h3>Premium Content</h3><p>Buy access to this content.</p><p>%buy_button%</p></div>',
-						'visitors'    => '<div class="text-center"><h3>Premium Content</h3><p>Buy access to this content.</p><p><strong>Insufficient Funds</strong></p></div>',
-						'cantafford'  => '<div class="text-center"><h3>Premium Content</h3><p>Login to buy access to this content.</p></div>'
+						'visitors'    => '<div class="text-center"><h3>Premium Content</h3><p>Login to buy access to this content.</p></div>',
+						'cantafford'  => '<div class="text-center"><h3>Premium Content</h3><p>Buy access to this content.</p><p><strong>Insufficient Funds</strong></p></div>'
 					)
 				),
 				'add_to_core' => true
@@ -122,7 +122,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 				'mycred-sell-this',
 				plugins_url( 'assets/js/buy-content.js', myCRED_SELL ),
 				array( 'jquery' ),
-				'1.2',
+				'1.2.1',
 				true
 			);
 
@@ -131,7 +131,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 		/**
 		 * Load Script
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		public function enqueue_footer() {
 
@@ -146,10 +146,10 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 					'mycred-sell-this',
 					'myCREDBuyContent',
 					array(
-						'ajaxurl' => esc_url( get_permalink( $post->ID ) ),
-						'token'   => wp_create_nonce( 'mycred-buy-this-content' ),
-						'working' => esc_js( $this->sell_content['working'] ),
-						'reload'  => $this->sell_content['reload'],
+						'ajaxurl'    => esc_url( ( isset( $post->ID ) ) ? get_permalink( $post->ID ) : home_url( '/' ) ),
+						'token'      => wp_create_nonce( 'mycred-buy-this-content' ),
+						'working'    => esc_js( $this->sell_content['working'] ),
+						'reload'     => $this->sell_content['reload'],
 						'sweeterror' => __( 'Error', 'mycred' )
 					)
 				);
@@ -169,6 +169,10 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 		 * @version 1.0.1
 		 */
 		public function template_redirect() {
+
+			global $mycred_partial_content_sale;
+
+			$mycred_partial_content_sale = false;
 
 			// Handle purhchase requests
 			$this->maybe_buy_content();
@@ -258,8 +262,6 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 			global $mycred_partial_content_sale, $mycred_sell_this;
 
-			$mycred_partial_content_sale = false;
-
 			$post_id = mycred_sell_content_post_id();
 			$post    = get_post( $post_id );
 
@@ -268,12 +270,12 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 				$mycred_sell_this = true;
 
-				// Parse shortcodes now to see if mycred_sell_this has been used
-				$content = do_shortcode( $content );
+				// Parse shortcodes now just in case it has not been done already
+				$_content = do_shortcode( $content );
 
 				// Partial Content Sale - We have already done the work in the shortcode
 				if ( $mycred_partial_content_sale === true )
-					return $content;
+					return $_content;
 
 				// Logged in users
 				if ( is_user_logged_in() ) {

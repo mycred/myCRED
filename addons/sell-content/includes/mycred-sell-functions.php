@@ -172,7 +172,7 @@ endif;
  * Post is for Sale
  * Returns true (post is for sale) or false (post is not for sale).
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_post_is_for_sale' ) ) :
 	function mycred_post_is_for_sale( $post = NULL ) {
@@ -188,7 +188,7 @@ if ( ! function_exists( 'mycred_post_is_for_sale' ) ) :
 		$for_sale    = false;
 
 		// We start with checking the post type.
-		if ( mycred_post_type_for_sale( $post->post_type ) ) {
+		if ( mycred_post_type_for_sale( $post->post_type ) && array_key_exists( $post->post_type, $settings['filters'] ) ) {
 
 			$filter = $settings['filters'][ $post->post_type ]['by'];
 			$list   = explode( ',', $settings['filters'][ $post->post_type ]['list'] );

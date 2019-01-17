@@ -98,7 +98,7 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Daily_Loses' ) ) :
 				}
 
 				$mycred = mycred( $type_id );
-				$series[] = "{ label : '" . esc_js( $mycred->plural() ) . "', fillColor : '" . str_replace( ',1)', ',0.3)', $this->colors[ $type_id ] ) . "', strokeColor : '" . $this->colors[ $type_id ] . "', pointColor : '" . $this->colors[ $type_id ] . "', data : [" . implode( ', ', $values ) . "] }";
+				$series[] = "{ label : '" . esc_js( $mycred->plural() ) . "', fillColor : '" . str_replace( ',1)', ',0.3)', $this->colors[ $type_id ]['negative'] ) . "', strokeColor : '" . $this->colors[ $type_id ]['negative'] . "', pointColor : '" . $this->colors[ $type_id ]['negative'] . "', data : [" . implode( ', ', $values ) . "] }";
 
 			}
 
@@ -147,7 +147,7 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Daily_Loses' ) ) :
 
 ?>
 <li>
-	<strong style="color:<?php echo $this->colors[ $item->type ]; ?>;"><?php echo $label; ?></strong>
+	<strong style="color:<?php echo $this->colors[ $item->type ]['negative']; ?>;"><?php echo $label; ?></strong>
 	<span class="view"><a href="<?php echo esc_url( $url ); ?>"><?php _e( 'View', 'mycred' ); ?></a></span>
 	<ul>
 		<li><?php echo number_format( $item->total, 0, '.', ' ' ); ?></li>

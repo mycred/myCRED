@@ -34,16 +34,16 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Circulation' ) ) :
 
 			$series = $totals = array();
 			$all = 0;
-				
+
 			foreach ( $point_types as $type_id => $label ) {
 
 				$mycred = mycred( $type_id );
 				$total = $wpdb->get_var( $wpdb->prepare( "SELECT SUM( meta_value ) FROM {$wpdb->usermeta} WHERE meta_key = %s;", $type_id ) );
 				if ( $total === NULL ) $total = 0;
 
-				$totals[] = '<strong>' . sprintf( __( 'Total %s:', 'mycred' ), $this->ctypes[ $type_id ] ) . '</strong> <span style="color:' . $this->colors[ $type_id ] . '">' . $mycred->format_creds( $total ) . '</span>';
+				$totals[] = '<strong>' . sprintf( __( 'Total %s:', 'mycred' ), $this->ctypes[ $type_id ] ) . '</strong> <span style="color:' . $this->colors[ $type_id ]['positive'] . '">' . $mycred->format_creds( $total ) . '</span>';
 				$all = $all + $total;
-				$series[] = "{ value: " . $total . ", color: '" . $this->colors[ $type_id ] . "', highlight: '" . $this->colors[ $type_id ] . "', label: '" . esc_attr( $label ) . "' }";
+				$series[] = "{ value: " . $total . ", color: '" . $this->colors[ $type_id ]['positive'] . "', highlight: '" . $this->colors[ $type_id ]['negative'] . "', label: '" . esc_attr( $label ) . "' }";
 
 			}
 
@@ -167,11 +167,10 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Circulation' ) ) :
 				$gains_p = number_format( ( ( $gains / $total ) * 100 ), 0 );
 				$gains_l = number_format( ( 100 - $gains_p ), 0 );
 
-				$color = $gain_color = $this->colors[ $this->args['ctypes'] ];
+				$color = $gain_color = $this->colors[ $this->args['ctypes'] ]['positive'];
 				$circulation['series'][] = "{ value: {$gains_p}, color: '" . $color . "', highlight: '" . $color . "', label: '" . esc_attr__( 'Total gains (%)', 'mycred' ) . "' }";
 
-				
-				$color = $lose_color = mycred_inverse_rgb_color( $this->colors[ $this->args['ctypes'] ] );
+				$color = $lose_color = $this->colors[ $this->args['ctypes'] ]['positive'];
 				$circulation['series'][] = "{ value: {$gains_l}, color: '" . $color . "', highlight: '" . $color . "', label: '" . esc_attr__( 'Total loses (%)', 'mycred' ) . "' }";
 
 // 
@@ -212,7 +211,7 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Circulation' ) ) :
 				$mycred = mycred( $type_id );
 
 ?>
-					<tr style="color: <?php echo $this->colors[ $type_id ]; ?>;">
+					<tr style="color: <?php echo $this->colors[ $type_id ]['positive']; ?>;">
 						<td class="rowtitle"><?php echo $this->ctypes[ $type_id ]; ?></td>
 <?php
 
@@ -298,11 +297,11 @@ jQuery(function($) {
 					$gains_l = number_format( ( 100 - $gains_p ), 0 );
 				}
 
-				$color = $gain_color = $this->colors[ $this->args['ctypes'] ];
+				$color = $gain_color = $this->colors[ $this->args['ctypes'] ]['positive'];
 				$circulation['series'][] = "{ value: {$gains_p}, color: '" . $color . "', highlight: '" . $color . "', label: '" . esc_attr__( 'Total gains (%)', 'mycred' ) . "' }";
 
 				
-				$color = $lose_color = mycred_inverse_rgb_color( $this->colors[ $this->args['ctypes'] ] );
+				$color = $lose_color = $this->colors[ $this->args['ctypes'] ]['negative'];
 				$circulation['series'][] = "{ value: {$gains_l}, color: '" . $color . "', highlight: '" . $color . "', label: '" . esc_attr__( 'Total loses (%)', 'mycred' ) . "' }";
 
 ?>
@@ -343,7 +342,7 @@ jQuery(function($) {
 				$mycred  = mycred( $type_id );
 
 ?>
-				<tr style="color: <?php echo $this->colors[ $type_id ]; ?>;">
+				<tr style="color: <?php echo $this->colors[ $type_id ]['positive']; ?>;">
 					<td class="rowtitle"><?php echo $this->ctypes[ $type_id ]; ?></td>
 <?php
 

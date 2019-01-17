@@ -274,7 +274,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 					$value = mycred_get_coupon_value( $post_id );
 					if ( empty( $value ) ) $value = 0;
-					
+
 					echo $mycred->format_creds( $value );
 
 				break;

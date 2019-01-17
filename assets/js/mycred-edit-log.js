@@ -3,7 +3,7 @@
  * These scripts are used to edit or delete entries
  * in the myCRED Log.
  * @since 1.4
- * @version 1.2.2
+ * @version 1.2.3
  */
 jQuery(function($) {
 
@@ -58,7 +58,7 @@ jQuery(function($) {
 	 */
 	function mycred_animate_row_deletion( rowtoanimate ) {
 
-		var rowtodelete = $( '#mycred-log-entry-row-' + rowtoanimate );
+		var rowtodelete = $( '#entry-' + rowtoanimate );
 		if ( rowtodelete === undefined ) return;
 
 		rowtodelete.addClass( 'deleted-row' ).fadeOut( 2000, function(){
@@ -72,7 +72,7 @@ jQuery(function($) {
 	 */
 	function mycred_animate_row_update( newrow ) {
 
-		var affectedrow = $( '#mycred-log-entry-row-' + myCREDRowId );
+		var affectedrow = $( '#entry-' + myCREDRowId );
 
 		affectedrow.addClass( 'updated-row' ).fadeOut(function(){
 			affectedrow.empty().append( newrow ).fadeIn( 2000, function(){
@@ -297,7 +297,7 @@ jQuery(function($) {
 
 			myCREDRowId     = $(this).data( 'id' );
 			myCREDReference = $(this).data( 'ref' );
-			myCREDRow       = '#mycred-log-entry-row-' + myCREDRowId;
+			myCREDRow       = '#entry-' + myCREDRowId;
 
 			mycred_reset_editor();
 

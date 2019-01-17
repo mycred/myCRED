@@ -698,7 +698,7 @@ endif;
  * Display Users Badges
  * Will echo all badge images a given user has earned.
  * @since 1.5
- * @version 1.3.1
+ * @version 1.3.2
  */
 if ( ! function_exists( 'mycred_display_users_badges' ) ) :
 	function mycred_display_users_badges( $user_id = NULL, $width = MYCRED_BADGE_WIDTH, $height = MYCRED_BADGE_HEIGHT ) {
@@ -717,6 +717,8 @@ if ( ! function_exists( 'mycred_display_users_badges' ) ) :
 			foreach ( $users_badges as $badge_id => $level ) {
 
 				$badge = mycred_get_badge( $badge_id, $level );
+				if ( $badge === false ) continue;
+
 				$badge->image_width  = $width;
 				$badge->image_height = $height;
 
