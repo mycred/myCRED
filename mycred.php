@@ -3,7 +3,7 @@
  * Plugin Name: myCRED
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 1.7.9.6
+ * Version: 1.7.9.7
  * Tags: points, credit, balance, finance, rewards, engagement, woocommerce, bbpress, buddypress
  * Author: myCred
  * Author URI: https://mycred.me
