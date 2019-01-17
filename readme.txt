@@ -3,7 +3,7 @@ Contributors: mycred ,wpexpertsio
 Tags: point, credit, loyalty program, engagement, reward
 Requires at least: 4.5
 Tested up to: 4.9
-Stable tag: 1.7.9.5
+Stable tag: 1.7.9.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,11 @@ An adaptive and powerful points management system for WordPress powered websites
 myCRED is an adaptive points management system that lets you build a broad range of point related applications for your WordPress powered website.
 Store reward systems, community leaderboards, online banking or monetizing your websites content, are a few examples of the ways myCRED is used.
 
+== Beta version is now available ==
+
+Now we have released our **Beta Version 1.7.9.7** with updated [changelog](https://mycred.me/support/changelog/) you can help us in reporting bugs and in return you can get **50 tokens** after reporting a bug on support ticket. [click to open a ticket](http://mycred.me/support/)
+
+**[Click here to get the Beta version](https://mycred.page.link/jdF1)**
 
 = Points =
 
@@ -117,6 +122,9 @@ Bug fixes.
 
 
 == Changelog ==
+
+= 1.7.9.6 =
+FIX - Version error
 
 = 1.7.9.5 =
 FIX - Notification error.
