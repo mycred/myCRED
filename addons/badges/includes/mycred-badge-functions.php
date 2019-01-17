@@ -201,7 +201,7 @@ endif;
  * Display Badge Requirements
  * Returns the badge requirements as a string in a readable format.
  * @since 1.5
- * @version 1.2.1
+ * @version 1.2.2
  */
 if ( ! function_exists( 'mycred_display_badge_requirement' ) ) :
 	function mycred_display_badge_requirements( $badge_id = NULL ) {
@@ -247,7 +247,7 @@ if ( ! function_exists( 'mycred_display_badge_requirement' ) ) :
 			foreach ( $levels as $level => $setup ) {
 
 				$level_label = '<strong>' . sprintf( __( 'Level %s', 'mycred' ), ( $level + 1 ) ) . ':</strong>';
-				if ( $levels[0]['label'] != '' )
+				if ( $levels[ $level ]['label'] != '' )
 					$level_label = '<strong>' . $levels[0]['label'] . ':</strong>';
 
 				// Construct requirements to be used in an unorganized list.

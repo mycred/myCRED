@@ -87,14 +87,15 @@ function mycred_load_contact_form_seven_hook() {
 		/**
 		 * Successful Form Submission
 		 * @since 0.1
-		 * @version 1.4
+		 * @version 1.4.1
 		 */
-		public function form_submission( $cf7_form ) {
+		public function form_submission( $form_object ) {
 
 			// Login is required
 			if ( ! is_user_logged_in() ) return;
 
-			$form_id = $cf7_form->id;
+			$form_id = ( version_compare( WPCF7_VERSION, '4.8', '<' ) ) ? $form_object->id : $form_object->id();
+
 			if ( ! isset( $this->prefs[ $form_id ] ) || ! $this->prefs[ $form_id ]['creds'] != 0 ) return;
 
 			// Check for exclusions

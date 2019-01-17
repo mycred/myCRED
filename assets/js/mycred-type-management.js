@@ -1,9 +1,12 @@
 /**
  * myCRED Management Scripts
  * @since 1.3
- * @version 1.3
+ * @version 1.4
  */
 jQuery(function($) {
+
+	var wWidth     = $(window).width();
+	var dWidth     = wWidth * 0.75;
 
 	/**
 	 * Make sure new point type key is
@@ -122,28 +125,48 @@ jQuery(function($) {
 
 	});
 
-	/**
-	 * Export Balances Modal
-	 */
-	$( '#export-points' ).dialog({
-		dialogClass : 'mycred-export-points',
-		draggable   : false,
-		autoOpen    : false,
-		closeText   : myCREDmanage.export_close,
-		title       : myCREDmanage.export_title,
-		modal       : true,
-		width       : 500,
-		resizable   : false,
-		show        : { effect: 'slide', direction: 'up', duration: 250 },
-		hide        : { effect: 'slide', direction: 'up', duration: 250 }
-	});
+	$(document).ready( function() {
 
-	/**
-	 * Export balances Modal Trigger
-	 */
-	$( '#mycred-export-users-points' ).click( function() {
+		if ( dWidth < 250 )
+			dWidth = wWidth;
 
-		$( '#export-points' ).dialog( 'open' );
+		if ( dWidth > 960 )
+			dWidth = 960;
+
+		/**
+		 * Export Balances Modal
+		 */
+		$( '#export-points' ).dialog({
+			dialogClass : 'mycred-export-points',
+			draggable   : true,
+			autoOpen    : false,
+			title       : myCREDmanage.export_title,
+			closeText   : myCREDmanage.export_close,
+			modal       : true,
+			width       : dWidth,
+			height      : 'auto',
+			resizable   : false,
+			position    : { my: "center", at: "top+25%", of: window },
+			show        : {
+				effect     : 'fadeIn',
+				duration   : 250
+			},
+			hide        : {
+				effect     : 'fadeOut',
+				duration   : 250
+			}
+		});
+
+		/**
+		 * Export balances Modal Trigger
+		 */
+		$( '#mycred-export-users-points' ).click( function() {
+
+			$(this).blur();
+
+			$( '#export-points' ).dialog( 'open' );
+
+		});
 
 	});
 

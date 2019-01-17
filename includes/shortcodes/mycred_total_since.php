@@ -5,7 +5,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Total Since
  * Shows the total number of points a user has gained / lost in a given timeframe.
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_render_shortcode_total_since' ) ) :
 	function mycred_render_shortcode_total_since( $atts, $content = '' ) {
@@ -28,7 +28,7 @@ if ( ! function_exists( 'mycred_render_shortcode_total_since' ) ) :
 		$mycred  = mycred( $type );
 		$total   = mycred_get_total_by_time( $from, $until, $ref, $user_id, $type );
 
-		if ( $formatted == 1 )
+		if ( substr( $total, 0, 7 ) != 'Invalid' && $formatted == 1 )
 			$total = $mycred->format_creds( $total );
 
 		return $total;

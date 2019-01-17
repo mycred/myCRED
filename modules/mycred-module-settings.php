@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * myCRED_Settings_Module class
  * @since 0.1
- * @version 1.4
+ * @version 1.4.1
  */
 if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 	class myCRED_Settings_Module extends myCRED_Module {
@@ -361,7 +361,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * Settings Header
 		 * Inserts the export styling
 		 * @since 1.3
-		 * @version 1.2.1
+		 * @version 1.2.2
 		 */
 		public function settings_header() {
 
@@ -428,7 +428,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 					'confirm_reset' => esc_attr__( 'Warning! All user balances will be set to zero! This can not be undone!', 'mycred' ),
 					'done'          => esc_attr__( 'Done!', 'mycred' ),
 					'export_close'  => esc_attr__( 'Close', 'mycred' ),
-					'export_title'  => $mycred->template_tags_general( esc_attr__( 'Export users %plural%', 'mycred' ) ),
+					'export_title'  => $mycred->template_tags_general( esc_attr__( 'Export %singular% Balances', 'mycred' ) ),
 					'decimals'      => esc_attr__( 'In order to adjust the number of decimal places you want to use we must update your log. It is highly recommended that you backup your current log before continuing!', 'mycred' )
 				)
 			);
@@ -501,7 +501,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Admin Page
 		 * @since 0.1
-		 * @version 1.4.1
+		 * @version 1.4.2
 		 */
 		public function admin_page() {
 
@@ -708,7 +708,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 						<div class="form-group">
 							<label><?php _e( 'Actions', 'mycred' ); ?></label>
 							<div>
-								<button type="button" id="mycred-manage-action-reset-accounts" data-type="<?php echo $this->mycred_type; ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>"><?php _e( 'Set all to zero', 'mycred' ); ?></button>
+								<button type="button" id="mycred-manage-action-reset-accounts" data-type="<?php echo $this->mycred_type; ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>"><?php _e( 'Set all to zero', 'mycred' ); ?></button> 
+								<button type="button" id="mycred-export-users-points" data-type="<?php echo $this->mycred_type; ?>" class="button button-large large"><?php _e( 'Export Balances', 'mycred' ); ?></button>
 							</div>
 						</div>
 					</div>
@@ -826,10 +827,14 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 	<?php do_action( 'mycred_bottom_settings_page' . $action_hook, $this ); ?>
 
 	<div id="export-points" style="display:none;">
-		<ul>
-			<li>
-				<label><?php _e( 'Identify users by', 'mycred' ); ?>:</label><br />
-				<select id="mycred-export-identify-by">
+		<div class="mycred-container">
+
+			<div class="form mycred-metabox">
+				<div class="row">
+					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+						<div class="form-group">
+							<label><?php _e( 'Identify users by', 'mycred' ); ?></label>
+							<select id="mycred-export-identify-by" class="form-control">
 <?php
 
 			// Identify users by...
@@ -843,20 +848,29 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				echo '<option value="' . $id . '">' . $label . '</option>';
 
 ?>
-				</select><br />
-				<span class="description"><?php _e( 'Use ID if you intend to use this export as a backup of your current site while Email is recommended if you want to export to a different site.', 'mycred' ); ?></span>
-			</li>
-			<li>
-				<label><?php _e( 'Import Log Entry', 'mycred' ); ?>:</label><br />
-				<input type="text" id="mycred-export-log-template" value="" class="regular-text" /><br />
-				<span class="description"><?php echo sprintf( __( 'Optional log entry to use if you intend to import this file in a different %s installation.', 'mycred' ), mycred_label() ); ?></span>
-			</li>
-			<li class="action">
-				<input type="button" id="mycred-run-exporter" value="<?php _e( 'Export', 'mycred' ); ?>" data-type="<?php echo $this->mycred_type; ?>" class="button button-large button-primary" />
-			</li>
-		</ul>
-		<div class="clear"></div>
+							</select>
+							<span class="description"><?php _e( 'Use ID if you intend to use this export as a backup of your current site while Email is recommended if you want to export to a different site.', 'mycred' ); ?></span>
+						</div>
+					</div>
+					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+						<div class="form-group">
+							<label><?php _e( 'Import Log Entry', 'mycred' ); ?></label>
+							<input type="text" id="mycred-export-log-template" value="" class="regular-text form-control" />
+							<span class="description"><?php echo sprintf( __( 'Optional log entry to use if you intend to import this file in a different %s installation.', 'mycred' ), mycred_label() ); ?></span>
+						</div>
+					</div>
+				</div>	
+
+				<div class="row last">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
+						<input type="button" id="mycred-run-exporter" value="<?php _e( 'Export', 'mycred' ); ?>" data-type="<?php echo $this->mycred_type; ?>" class="button button-large button-primary" />
+					</div>
+				</div>
+			</div>
+
+		</div>
 	</div>
+
 </div>
 <?php
 

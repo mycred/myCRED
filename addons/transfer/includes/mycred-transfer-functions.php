@@ -100,7 +100,7 @@ endif;
 /**
  * New Transfer
  * @since 1.7.6
- * @version 1.0.1
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_new_transfer' ) ) :
 	function mycred_new_transfer( $request = array() ) {
@@ -143,9 +143,6 @@ if ( ! function_exists( 'mycred_new_transfer' ) ) :
 		// Limit reached
 		if ( $attempt_check === 'limit' )
 			return 'error_8';
-
-		// Let others play before we execute the transfer
-		do_action( 'mycred_transfer_ready', $transaction_id, $request, $settings );
 
 		// Prevent Duplicate transactions
 		if ( $mycred->has_entry( $reference, $recipient_id, $sender_id, $data, $point_type ) )

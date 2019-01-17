@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Allows to show total points of a specific point type or add up
  * points from the log based on reference, reference id or user id.
  * @since 1.6.6
- * @version 1.1
+ * @version 1.1.1
  */
 if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 	function mycred_render_shortcode_total_points( $atts ) {
@@ -29,7 +29,7 @@ if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 		global $wpdb;
 
 		// Simple
-		if ( $ref == '' && $ref_id == '' && $user_id == '' && $user_id != 0 ) {
+		if ( $ref == '' && $ref_id == '' && $user_id == '' ) {
 
 			// Add up all balances
 			$total = $wpdb->get_var( $wpdb->prepare( "SELECT SUM( meta_value ) FROM {$wpdb->usermeta} WHERE meta_key = %s", mycred_get_meta_key( $type ) ) );

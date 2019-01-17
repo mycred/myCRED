@@ -998,17 +998,20 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 * Adjust Rank Sort Order
 		 * Adjusts the wp query when viewing ranks to order by the min. point requirement.
 		 * @since 1.1.1
-		 * @version 1.2
+		 * @version 1.2.1
 		 */
 		public function adjust_wp_query( $query ) {
+
+			if ( ! function_exists( 'is_admin' ) ) return;
 
 			// Front End Queries
 			if ( ! is_admin() ) {
 
-				if ( ! is_post_type_archive( 'mycred_rank' ) ) return;
+				// Only applicable on the post archive page (if used) and only for the main query
+				if ( ! is_post_type_archive( 'mycred_rank' ) || ! $query->is_main_query() ) return;
 
 				// By default we want to only show ranks for the main point type
-				if ( ! isset( $_GET['ctype'] ) && $query->is_main_query() ) {
+				if ( ! isset( $_GET['ctype'] ) ) {
 					$query->set( 'meta_query', array(
 						array(
 							'key'     => 'ctype',
@@ -1034,6 +1037,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			// Admin Queries
 			else {
 
+				// Only applicable when we are quering ranks
 				if ( ! isset( $query->query['post_type'] ) || $query->query['post_type'] != 'mycred_rank' ) return;
 
 				// If ctype is set, filter ranks according to it's value

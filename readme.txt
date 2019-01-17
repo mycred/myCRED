@@ -2,8 +2,8 @@
 Contributors: designbymerovingi
 Tags: point, points, tokens, credit, management, reward, charge, community, contest, buddypress, jetpack, bbpress, simple press, woocommerce, wp e-commerce, contact-form-7
 Requires at least: 4.0
-Tested up to: 4.7.4
-Stable tag: 1.7.8.1
+Tested up to: 4.8
+Stable tag: 1.7.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -96,7 +96,7 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-= 1.7.8.1 =
+= 1.7.9 =
 Minor bug fixes.
 
 
@@ -121,11 +121,16 @@ Minor bug fixes.
 
 == Changelog ==
 
-= 1.7.8.1 =
-FIX - Selecting a log entry causes all entries to be selected.
-FIX - mycred_get_module() function are returning incorrect details.
-FIX - Badge rewards not getting paid out when a badge is automatically assigned.
-FIX - The mycred_history shortcode can not render two dates correctly when using the time attribute.
+= 1.7.9 =
+FIX - Incorrect badge level labels are shown in the mycred_badges shortcode.
+FIX - Unapproved comments are sometimes seen as spam by the Points for comments hook. (Thanks thomaslhotta)
+FIX - Fixed minor logic issue in the mycred_total_points shortcode.
+FIX - Balance export option is missing in the Management section (Thanks imago).
+FIX - Removed duplicate usage of the mycred_transfer_ready action.
+FIX - Rank sorting in the front end should only be applied to the main query in the rank archive (if used).
+TWEAK - Updated export balance modal design to 1.7
+TWEAK - Updated the mycred_total_since shortcode to render potential errors when the shortcode is used incorrectly.
+Tested with WordPress 4.8
 
 
 = Previous Versions =

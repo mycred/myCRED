@@ -560,7 +560,7 @@ jQuery(function($) {
 		/**
 		 * AJAX: Save Hook Settings
 		 * @since 1.7
-		 * @version 1.0.2
+		 * @version 1.0.3
 		 */
 		public function ajax_save_hook_prefs() {
 
@@ -577,7 +577,7 @@ jQuery(function($) {
 			if ( $ctype == MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST['mycred_pref_hooks']['hook_prefs'] ) )
 				$hook_prefs = $_POST['mycred_pref_hooks']['hook_prefs'][ $hook_id ];
 
-			elseif ( array_key_exists( $hook_id, $_POST[ 'mycred_pref_hooks_' . $ctype ]['hook_prefs'] ) )
+			elseif ( $ctype != MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[ 'mycred_pref_hooks_' . $ctype ]['hook_prefs'] ) )
 				$hook_prefs = $_POST[ 'mycred_pref_hooks_' . $ctype ]['hook_prefs'][ $hook_id ];
 
 			if ( $hook_prefs === false ) die;
@@ -1963,12 +1963,12 @@ if ( ! class_exists( 'myCRED_Hook_Comments' ) ) :
 		 * If comments are approved without moderation, we apply the corresponding method
 		 * or else we will wait till the appropriate instance.
 		 * @since 0.1
-		 * @version 1.2.1
+		 * @version 1.2.2
 		 */
 		public function new_comment( $comment_id, $comment_status ) {
 
 			// Marked SPAM
-			if ( $comment_status == 'spam' )
+			if ( $comment_status === 'spam' )
 				$this->comment_transitions( 'spam', 'unapproved', $comment_id );
 
 			// Approved comment
