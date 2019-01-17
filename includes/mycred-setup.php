@@ -88,7 +88,7 @@ if ( ! class_exists( 'myCRED_Setup' ) ) :
 		 * Setup Screen
 		 * Outputs the setup page.
 		 * @since 0.1
-		 * @version 1.2
+		 * @version 1.2.1
 		 */
 		public function setup_page() {
 
@@ -112,7 +112,7 @@ pre { margin: 0 0 12px 0; padding: 10px; background-color: #dedede; }
 			</div>
 		</div>
 
-		<div id="form-content">
+		<div id="mycred-form-content">
 
 			<?php $this->new_point_type(); ?>
 
@@ -242,7 +242,7 @@ jQuery(function($) {
 						setupform.remove();
 					}
 					else {
-						$( '#form-content' ).empty().append( response.data );
+						$( '#mycred-form-content' ).empty().append( response.data );
 						setupform.slideDown();
 					}
 

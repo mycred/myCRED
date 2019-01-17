@@ -106,7 +106,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Reset All Balances Action
 		 * @since 1.3
-		 * @version 1.4
+		 * @version 1.4.1
 		 */
 		public function action_reset_balance() {
 
@@ -121,7 +121,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			check_ajax_referer( 'mycred-management-actions', 'token' );
 
 			// Access
-			if ( ! is_user_logged_in() || ! $this->core->can_edit_plugin() )
+			if ( ! is_user_logged_in() || ! $this->core->user_is_point_admin() )
 				wp_send_json_error( 'Access denied' );
 
 			global $wpdb;
@@ -129,6 +129,12 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			$wpdb->delete(
 				$wpdb->usermeta,
 				array( 'meta_key' => mycred_get_meta_key( $type, '' ) ),
+				array( '%s' )
+			);
+
+			$wpdb->delete(
+				$wpdb->usermeta,
+				array( 'meta_key' => mycred_get_meta_key( $type, '_total' ) ),
 				array( '%s' )
 			);
 

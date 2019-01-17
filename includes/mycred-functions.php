@@ -2874,33 +2874,30 @@ endif;
  * Used to prevent multiple simultaneous AJAX calls from any one user.
  * The $timelimit sets the minimum amount of seconds that must have passed between
  * two AJAX requests.
- * Not sure if this is the best solution, might change it later as it creates an overhead
- * on database queries if spammed. 
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_force_singular_session' ) ) :
 	function mycred_force_singular_session( $user_id = NULL, $key = NULL, $timelimit = MYCRED_MIN_TIME_LIMIT ) {
 
-		$force     = false;
-		$time      = time();
-		$user_id   = absint( $user_id );
-		$key       = sanitize_text_field( $key );
-		$timelimit = absint( $timelimit );
+		$force      = false;
+		$time       = time();
+		$user_id    = absint( $user_id );
+		$key        = sanitize_text_field( $key );
+		$timelimit  = absint( $timelimit );
 
-		if ( $user_id === 0 || $key == '' ) return true;
+		if ( $key == '' ) return true;
 
-		global $wpdb;
+		// 1 - Cookies
+		$last_call  = $time - $timelimit;
+		$cookie_key = md5( $user_id . $key );
+		if ( isset( $_COOKIE[ $cookie_key ] ) )
+			$last_call = absint( $_COOKIE[ $cookie_key ] );
 
-		$session = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key = %s;", $user_id, $key ) );
-
-		// Add or Update value for the next sync
-		if ( $session === NULL ) $wpdb->insert( $wpdb->usermeta, array( 'user_id' => $user_id, 'meta_key' => $key, 'meta_value' => $time ), array( '%d', '%s', '%s' ) );
-		else $wpdb->update( $wpdb->usermeta, array( 'meta_value' => $time ), array( 'umeta_id' => $session->umeta_id ), array( '%s' ), array( '%d' ) );
-
-		// A minimum x second must have passed
-		if ( isset( $session->meta_value ) && ( $time - $session->meta_value ) < $timelimit )
+		if ( ( $time - $last_call ) < $timelimit )
 			$force = true;
+
+		setcookie( $cookie_key, $time, ( time() + DAY_IN_SECONDS ), COOKIEPATH, COOKIE_DOMAIN );
 
 		return apply_filters( 'mycred_force_singular_session', $force, $user_id, $key, $timelimit );
 

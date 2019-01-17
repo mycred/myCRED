@@ -411,7 +411,7 @@ endif;
  * Get Payment Buttons
  * Returns all payment buttons a user can use to pay for a given post.
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_sell_content_payment_buttons' ) ) :
 	function mycred_sell_content_payment_buttons( $user_id = NULL, $post_id = NULL ) {
@@ -429,12 +429,23 @@ if ( ! function_exists( 'mycred_sell_content_payment_buttons' ) ) :
 			foreach ( $settings['type'] as $point_type ) {
 
 				// Load point type
-				$mycred = mycred( $point_type );
-				$setup  = mycred_get_option( 'mycred_sell_this_' . $point_type );
-				$price  = mycred_get_content_price( $post_id, $point_type, $user_id );
+				$mycred       = mycred( $point_type );
+				$setup        = mycred_get_option( 'mycred_sell_this_' . $point_type );
+				$price        = mycred_get_content_price( $post_id, $point_type, $user_id );
+				$status       = $setup['status'];
+
+				// Manual mode
+				if ( $settings['filters'][ $post->post_type ]['by'] == 'manual' ) {
+
+					$suffix       = ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? '_' . $point_type : '';
+					$manual_setup = (array) get_post_meta( $post_id, 'myCRED_sell_content' . $suffix, true );
+					if ( ! empty( $manual_setup ) && array_key_exists( 'status', $manual_setup ) )
+						$status = $manual_setup['status'];
+
+				}
 
 				// Point type not enabled
-				if ( $setup['status'] === 'disabled' ) continue;
+				if ( $status == 'disabled' ) continue;
 
 				// Make sure we are not excluded from this type
 				if ( $mycred->exclude_user( $user_id ) ) continue;

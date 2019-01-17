@@ -283,7 +283,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			/**
 			 * Process Payment
 			 * @since 0.1
-			 * @version 1.4.2
+			 * @version 1.4.3
 			 */
 			function process_payment( $order_id ) {
 
@@ -295,7 +295,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 					return;
 				}
 
-				$user_id = get_current_user_id();
+				$user_id     = get_current_user_id();
 
 				// Make sure we have not been excluded
 				if ( $this->mycred->exclude_user( $user_id ) ) {
@@ -304,15 +304,16 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 				}
 
 				// Grab Order
-				$order   = wc_get_order( $order_id );
+				$order       = wc_get_order( $order_id );
+
+				$order_total = ( version_compare( $woocommerce->version, '3.0', '>=' ) ) ? $order->get_total() : $order->order_total;
 
 				// Cost
+				$cost        = $order_total;
 				if ( $this->use_exchange() )
-					$cost = $this->mycred->number( ( $order->order_total / $this->exchange_rate ) );
-				else
-					$cost = $order->order_total;
+					$cost = $this->mycred->number( ( $order_total / $this->exchange_rate ) );
 
-				$cost    = apply_filters( 'mycred_woo_order_cost', $cost, $order, false, $this );
+				$cost        = apply_filters( 'mycred_woo_order_cost', $cost, $order, false, $this );
 
 				// Check funds
 				if ( $this->mycred->get_users_balance( $user_id, $this->mycred_type ) < $cost ) {
@@ -322,7 +323,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 				}
 
 				// Let others decline a store order
-				$decline = apply_filters( 'mycred_decline_store_purchase', false, $order, $this );
+				$decline     = apply_filters( 'mycred_decline_store_purchase', false, $order, $this );
 				if ( $decline !== false ) {
 					wc_add_notice( $decline, 'error' );
 					return;
@@ -391,28 +392,29 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			/**
 			 * Process Refunds
 			 * @since 1.5.4
-			 * @version 1.0.1
+			 * @version 1.0.2
 			 */
 			public function process_refund( $order_id, $amount = null, $reason = '' ) {
 
-				$order = wc_get_order( $order_id );
+				$order       = wc_get_order( $order_id );
 
 				if ( ! isset( $order->order_total ) ) {
 					return false;
 				}
 
-				if ( $amount === NULL )
-					$amount = $order->order_total;
+				$order_total = ( version_compare( $woocommerce->version, '3.0', '>=' ) ) ? $order->get_total() : $order->order_total;
 
+				if ( $amount === NULL )
+					$amount = $order_total;
+
+				$refund      = $amount;
 				if ( $this->use_exchange() )
-					$refund = $amount / $this->exchange_rate;
-				else
-					$refund = $amount;
+					$refund = $this->mycred->number( ( $refund / $this->exchange_rate ) );
 
 				$this->mycred->add_creds(
 					'woocommerce_refund',
 					$order->user_id,
-					$refund,
+					0 - $refund,
 					$this->log_template_refund,
 					$order_id,
 					array( 'ref_type' => 'post', 'reason' => $reason ),
@@ -437,14 +439,16 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 						if ( $product === NULL ) continue;
 
 						// Calculate Share
-						// by: Leonie Heinle
-						$share   = ( $this->profit_sharing_percent / 100 ) * $item['line_total'];
+						$percentage = apply_filters( 'mycred_woo_profit_share_refund', $this->profit_sharing_percent, $order, $product, $this );
+						if ( $percentage == 0 ) continue;
+
+						$share      = ( $percentage / 100 ) * $item['line_total'];
 
 						// Payout
 						$this->mycred->add_creds(
 							'store_sale_refund',
 							$product->post_author,
-							0-$share,
+							0 - $share,
 							$this->profit_sharing_refund_log,
 							$product->ID,
 							array( 'ref_type' => 'post', 'order_id' => $order_id ),

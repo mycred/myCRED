@@ -2729,7 +2729,7 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 		/**
 		 * Run
 		 * @since 1.2
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		public function run() {
 
@@ -2737,10 +2737,9 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 
 			$mycred_video_points = array();
 
-			add_action( 'mycred_front_enqueue',          array( $this, 'register_script' ), 90 );
-			add_action( 'template_redirect',             array( $this, 'maybe_reward_points' ), 5 );
-			add_action( 'wp_ajax_mycred-viewing-videos', array( $this, 'ajax_call_video_points' ) );
-			add_action( 'wp_footer',                     array( $this, 'footer' ) );
+			add_action( 'mycred_front_enqueue', array( $this, 'register_script' ), 90 );
+			add_action( 'template_redirect',    array( $this, 'maybe_reward_points' ), 5 );
+			add_action( 'wp_footer',            array( $this, 'footer' ) );
 
 		}
 

@@ -2,8 +2,8 @@
 Contributors: designbymerovingi
 Tags: point, points, tokens, credit, management, reward, charge, community, contest, buddypress, jetpack, bbpress, simple press, woocommerce, wp e-commerce, contact-form-7
 Requires at least: 4.0
-Tested up to: 4.8.1
-Stable tag: 1.7.9.1
+Tested up to: 4.8.2
+Stable tag: 1.7.9.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -96,8 +96,8 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-= 1.7.9.1 =
-Last set of bug fixes for the 1.7.x version.
+= 1.7.9.2 =
+Bug fixes.
 
 
 == Other Notes ==
@@ -121,27 +121,16 @@ Last set of bug fixes for the 1.7.x version.
 
 == Changelog ==
 
-= 1.7.9.1 =
-FIX - Events Manager Pro issue with manually approved events.
-FIX - Email notification not being sent to admins in certain instances.
-FIX - BuddyPress Points History URL is incorrect when using BuddyPress 2.8 or higher.
-FIX - Transfer add-on does not work well when a user ID is provided in the transfer shortcode on certain sites.
-FIX - Sell Content sales history shortcode causes a fatal error when showing a users purchase history.
-FIX - When providing more than one reference for the mycred_total_points shortcode, the shortcode will return zero.
-FIX - Ranks in bbPress or BuddyPress are not visible to visitors, only those who are logged in.
-FIX - Fixed issue with email notifications for new badges.
-FIX - Fixed issue with the mycred_get_users_reference_sum function. (Thanks Andy)
-NEW - Added timeframe support when basing leaderboards on total balances.
-NEW - Added new myCRED_Query_Leaderboard class for leaderboard queries.
-NEW - Added option to cache leaderboard results.
-NEW - Added new mycred_admin_show_balance filter to hide balances being inserted in the WP Toolbar.
-NEW - Added new mycred_transfer_to_field filter for transfer forms recipient field.
-TWEAK - Improved how the lowest point amount value is calculated by get_lowest_value().
-TWEAK - Referral redirects are now done using status code 301.
-TWEAK - A users earned badges are now cached to cut down on database queries.
-TWEAK - Updated how order details are retrieved in WooCommerce 3.0
-REMOVED - Events Manager Pro support. Support for EM Pro has been moved to a separate free plugin.
-
+= 1.7.9.2 =
+FIX - When deleting balances, the total balance should also be deleted.
+FIX - Appended users in leaderboard always shows a zero value.
+FIX - JavaScript error when using non english locals in the badge editor.
+FIX - Content set for sale using "Manual Mode" will not render the enabled type buttons correctly (when using multiple types).
+FIX - The placeholder names for new badges show an incorrect count where 1 is repeated twice.
+FIX - Added comp. with latest version of WooCommerce 3.1.2
+FIX - Built-in View Video hook was calling for a non existing function.
+TWEAK - Adjusted the setup form containers id as it seems to collide with styling of third-party plugins in the wp-admin area.
+TWEAK - Added mycred_module_is_active filter to allow overrides of module loads e.g. add-ons, banking or hooks.
 
 = Previous Versions =
 https://mycred.me/support/changelog/

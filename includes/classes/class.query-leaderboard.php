@@ -207,7 +207,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			// User is not in the leaderboard so we need to append him/her to the end of the leaderboard array.
 			$new_row             = array( 'ID' => $this->user_id );
 			$new_row['position'] = $this->get_users_current_position();
-			$new_row['creds']    = $this->get_users_current_value();
+			$new_row['cred']     = $this->get_users_current_value();
 
 			if ( $return )
 				return $new_row;

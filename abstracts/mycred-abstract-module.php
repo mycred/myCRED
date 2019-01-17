@@ -351,30 +351,31 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @param $key (string) required key to check for
 		 * @returns (bool) true or false
 		 * @since 0.1
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		function is_active( $key = '' ) {
 
-			$module = $this->module_name;
+			$module    = $this->module_name;
+			$is_active = false;
 
 			if ( ! isset( $this->active ) && ! empty( $key ) ) {
 
 				if ( isset( $this->$module['active'] ) )
 					$active = $this->$module['active'];
-				else
-					return false;
 
-				if ( in_array( $key, $active ) ) return true;
+				if ( in_array( $key, $active ) )
+					$is_active = true;
 
 			}
 
 			elseif ( isset( $this->active ) && ! empty( $key ) ) {
 
-				if ( in_array( $key, $this->active ) ) return true;
+				if ( in_array( $key, $this->active ) )
+					$is_active = true;
 
 			}
 
-			return false;
+			return apply_filters( 'mycred_module_is_active', $is_active, $module, $key, $this );
 
 		}
 
