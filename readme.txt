@@ -1,10 +1,9 @@
-=== myCred - Points, Rewards & Badges | Loyalty Plugin ===
-Contributors: mycred ,wpexpertsio
+=== myCRED ===
+Contributors: mycred,wpexpertsio
 Tags: point, credit, loyalty program, engagement, reward
-Requires at least: 4.5
-Tested up to: 5.0.1
-Requires PHP: 7.0
-Stable tag: 1.7.9.8
+Requires at least: 4.8
+Tested up to: 5.0.2
+Stable tag: 1.8 beta1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,14 +11,17 @@ An adaptive and powerful points management system for WordPress powered websites
 
 == Description ==
 
-myCRED is an adaptive points management system that lets you build a broad range of point related applications for your WordPress powered website.
-Store reward systems, community leaderboards, online banking or monetizing your websites content, are a few examples of the ways myCRED is used.
+> #### Plugin Support
+> Free support is offered via the [myCRED website](https://mycred.me/support/) Monday to Friday 9AM - 5PM (GMT+1). You can consult the [online community](https://mycred.me/support/forums/) for customisations or open a [free support ticket](https://mycred.me/support/) if you can not get myCRED to work as described in the documentation. No support is provided here on the wordpress.org support forum or on any social media account.
 
-**[List your self as beta tester for 1.8 (upcoming version)](https://goo.gl/forms/CMjGFpOEByfse9j52)**
+
+myCRED is an adaptive points management system that lets you build a broad range of point related applications for your WordPress powered website.
+Store reward systems, community leaderboards, online banking or monetizing your websites content, these are some of the ways you can use myCRED.
+
 
 = Points =
 
-Each user on your WordPress websites gets their own point balance which you can manually [adjust](https://mycred.me/about/features/#points-management) at any time. You can use just one point balance or setup multiple types of balances. How these balances are accessed, used or shows is entirely up to you.
+Each user on your WordPress websites gets their own point balance which you can manually [adjust](https://mycred.me/about/features/#points-management) at any time. As of version 1.4, myCRED also supports [multiple point types](https://mycred.me/about/features/#multiple-point-types) for those who need more then one type of points on their website.
 
 
 = Log =
@@ -59,7 +61,7 @@ The most commonly asked customizations for myCRED are available as code snippets
 
 = Support =
 
-Support is offered on our [myCRED website](https://mycred.me/support/)  from Monday to Friday 9AM - 5PM (GMT+5). Submit [customization request](https://mycred.me/customize/request-quote/) or open a [support ticket](https://mycred.me/support/) If you have trouble with myCRED which is not described in documentation also you can consult the [online community](https://mycred.me/support/forums/) for your question. We pay myCRED Store Tokens as a reward on reporting bugs and their fixes as well. Support is not entertained here on the wordpress.org support forum or on any social media account. 
+I provide [free support](https://mycred.me/support/) if you can not get myCRED to work as described in the documentation, and pay myCRED Store Tokens as a reward for reporting bugs and/or bug fixes. There is also a [community forum](https://mycred.me/support/forums/) where you can post your questions or [contact me directly](https://mycred.me/contact/).
 
 
 == Installation ==
@@ -94,17 +96,15 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-
-= 1.7.9.8 =
-Bug fixes.
+= 1.8 =
+New Features and improvements.
 
 
 == Other Notes ==
 
 = Requirements =
-* WordPress 4.5 or greater
+* WordPress 4.8 or greater
 * PHP version 5.6 or greater
-* PHP mcrypt library enabled
 * MySQL version 5.0 or greater
 
 = Language Contributors =
@@ -120,15 +120,34 @@ Bug fixes.
 
 == Changelog ==
 
-= 1.7.9.8 =
-Tested with WordPress 5.0.1
-FIX – Refund points on WooCommerce order refund
-FIX - Reward points on WooCommerce order completed
-
-= 1.7.9.7 =
-FIX – Points for clicking on links
-FIX – Point for viewing videos
-FIX – Exchange points from one point type to another point type
+= 1.8 =
+NEW - Added new mycred_over_hook_limit filter for adjusting hook limit checks.
+NEW - Added new MYCRED_RANK_KEY constant which can be used to whitelabel ranks.
+NEW - Added new MYCRED_COUPON_KEY constant which can be used to whitelabel coupons.
+NEW - Added new MYCRED_BADGE_KEY constant which can be used to whitelabel badges.
+NEW - Added new MYCRED_EMAIL_KEY constant with can be used to whitelabel email notifications.
+NEW - Added new MYCRED_BUY_KEY constant with can be used to whitelabel pending buyCRED payments.
+NEW - Added new MYCRED_ENABLE_SHORTCODES constant in cases where myCRED shortcodes needs to be disabled.
+NEW - Updated the Email Notifications add-on to version 1.4 with support for custom instances, multiple point types / notice and introduced the new myCRED_Email object.
+NEW - Updated the buyCRED add-on which now has improved checkout process. 
+NEW - Added the option to set a custom gateway logo for all built-in payment gateways.
+NEW - Updated the mycred_load_coupon shortcode to show an error message when an invalid coupon is used.
+NEW - Added new Anniversary hook allowing you to reward users for each year they are a member on your website.
+NEW - Added new MYCRED_ENABLE_HOOKS constant to disable hooks completely.
+NEW - Added support for Multi Network setups.
+NEW - Added new mycred_add_post_meta(), mycred_get_post_meta(), mycred_update_post_meta() and mycred_delete_post_meta() functions in order to add support for the Master Template feature on multisites.
+NEW - Added support for multiple point types in leaderboards.
+NEW - The leaderboard shortcode can now be setup to render results based on multiple point types.
+NEW - Added caching of log and leaderboard queries.
+NEW - Added new filter to allow adjustments to the reference used for publishing and deleting content hooks.
+NEW - Added new mycred_give_run filter to control if the mycred_give shortcode should run or not.
+TWEAK - Moved hooks to /includes/hooks/ and third-party hooks to /includes/hooks/external/.
+TWEAK - Implemented the use of $mycred_log_table global throughout the plugin.
+TWEAK - Improved Multisite support.
+TWEAK - When a user jumps more than one badge level in a single instance, we want to make sure he gets rewarded for each level (if rewards is set).
+TWEAK - Corrected codex urls for functions and shortcodes throughout the plugin.
+TWEAK - Added support to whitelabel shortcodes.
+TWEAK - Added new MYCRED_SHOW_PREMIUM_ADDONS constant to hide all mentions of premium add-ons in myCRED.
 
 = Previous Versions =
 https://mycred.me/support/changelog/

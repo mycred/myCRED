@@ -219,7 +219,7 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 			// Profit sharing
 			if ( $this->prefs['share'] != 0 ) {
 
-				$event_post = get_post( (int) $payment_data['event_id'] );
+				$event_post = mycred_get_post( (int) $payment_data['event_id'] );
 
 				if ( $event_post !== NULL ) {
 
@@ -396,7 +396,7 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 ?>
 <p id="mycred-gate">&nbsp;</p>
 <div class="metabox-holder">
-	<div class="postbox <?php echo $postbox_style; ?>" style="background-image: url(http://mycred.me/wp-content/uploads/login-bg.png); background-position: center bottom; background-repeat: no-repeat; background-size: contain;">
+	<div class="postbox <?php echo $postbox_style; ?>">
 		<div title="Click to toggle" class="handlediv"><br /></div>
 		<h3 class="hndle">
 			<?php echo $this->label . ' ' . __( 'Gateway Settings', 'mycred' ); ?>
@@ -566,7 +566,7 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 
 			// Security
 			if ( ! wp_verify_nonce( $_REQUEST['mycred-gateway-token'], 'mycred-espresso-update' ) ) return;
-			if ( ! $this->core->can_edit_plugin() ) return;
+			if ( ! $this->core->user_is_point_admin() ) return;
 
 			// Prep
 			$new_settings = array();

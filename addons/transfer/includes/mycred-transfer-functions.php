@@ -2,14 +2,220 @@
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 /**
+ * Get The Transfer Object
+ * @since 1.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_transfer' ) ) :
+	function mycred_transfer( $transfer_id = false ) {
+
+		global $mycred_transfer;
+
+		$transfer_id     = sanitize_text_field( $transfer_id );
+
+		if ( isset( $mycred_transfer )
+			&& ( $mycred_transfer instanceof myCRED_Transfer )
+			&& ( $transfer_id === $mycred_transfer->transfer_id )
+		) {
+			return $mycred_transfer;
+		}
+
+		$mycred_transfer = new myCRED_Transfer( $transfer_id );
+
+		do_action( 'mycred_transfer' );
+
+		return $mycred_transfer;
+
+	}
+endif;
+
+/**
+ * Get Transfer
+ * @see http://codex.mycred.me/functions/mycred_get_transfer/
+ * @param $transfer_id (string) required transfer id to retreave.
+ * @returns myCRED_Transfer object on success else false.
+ * @since 1.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_transfer' ) ) :
+	function mycred_get_transfer( $transfer_id = false ) {
+
+		if ( $transfer === false ) return false;
+
+		$transfer    = mycred_transfer( $transfer_id );
+		$transaction = $transfer->get_transfer();
+
+		// Transaction not found
+		if ( $transaction === false ) return false;
+
+		// Populate object
+		foreach ( $transaction as $key => $value )
+			$transfer->$key = $value;
+
+		return $transfer;
+
+	}
+endif;
+
+/**
+ * New Transfer
+ * @see http://codex.mycred.me/functions/mycred_new_transfer/
+ * @param $request (array) the required transfer request array.
+ * @param $post (array) optional posted data from the transfer form.
+ * @returns error code if transfer failed else an array or transfer details.
+ * @since 1.7.6
+ * @version 1.1
+ */
+if ( ! function_exists( 'mycred_new_transfer' ) ) :
+	function mycred_new_transfer( $request = array(), $post = array() ) {
+
+		$transfer       = mycred_transfer();
+
+		// Validate the request first
+		$valid_transfer = $transfer->is_valid_transfer_request( $request, $post );
+		if ( $valid_transfer !== true )
+			return $valid_transfer;
+
+		// Attempt to make the transfer
+		return $transfer->new_transfer();
+
+	}
+endif;
+
+/**
+ * Refund Transfer
+ * @see http://codex.mycred.me/functions/mycred_refund_transfer/
+ * @param $transfer_id (string) required transfer id to refund.
+ * @returns error message (string) or true on success.
+ * @since 1.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_refund_transfer' ) ) :
+	function mycred_refund_transfer( $transfer_id = false ) {
+
+		if ( $transfer === false ) return false;
+
+		$transfer    = mycred_transfer( $transfer_id );
+		$transaction = $transfer->get_transfer();
+
+		// Transaction could not be found
+		if ( $transaction === false ) return false;
+
+		// Populate object
+		foreach ( $transaction as $key => $value )
+			$transfer->$key = $value;
+
+		return $transfer->refund();
+
+	}
+endif;
+
+/**
+ * Get Transfer Limits
+ * @see http://codex.mycred.me/functions/mycred_get_transfer_limits/
+ * @param $settings (array) optional transfer settings.
+ * @returns array of limits.
+ * @since 1.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_transfer_limits' ) ) :
+	function mycred_get_transfer_limits( $settings = false ) {
+
+		if ( $settings === false )
+			$settings = mycred_get_addon_settings( 'transfers' );
+
+		$limits = array(
+			'none'    => __( 'No limits.', 'mycred' ),
+			'daily'   => __( 'Impose daily limit.', 'mycred' ),
+			'weekly'  => __( 'Impose weekly limit.', 'mycred' ),
+			'monthly' => __( 'Impose monthly limit.', 'mycred' )
+		);
+
+		return apply_filters( 'mycred_transfer_limits', $limits, $settings );
+
+	}
+endif;
+
+/**
+ * Get Transfer Limits
+ * @see http://codex.mycred.me/functions/mycred_get_transfer_autofill_by/
+ * @param $settings (array) optional transfer settings.
+ * @returns array of autofill options.
+ * @since 1.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_transfer_autofill_by' ) ) :
+	function mycred_get_transfer_autofill_by( $settings = false ) {
+
+		if ( $settings === false )
+			$settings = mycred_get_addon_settings( 'transfers' );
+
+		$autofills = array(
+			'user_login' => __( 'User Login (user_login)', 'mycred' ),
+			'user_email' => __( 'User Email (user_email)', 'mycred' )
+		);
+
+		return apply_filters( 'mycred_transfer_autofill_by', $autofills, $settings );
+
+	}
+endif;
+
+/**
+ * Get Transfer Recipient
+ * @see http://codex.mycred.me/functions/mycred_get_transfer_recipient/
+ * @param $value (int|string) a value that identifies a particular user in WordPress.
+ * @returns false if no recipient was found else the users id (int).
+ * @since 1.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_transfer_recipient' ) ) :
+	function mycred_get_transfer_recipient( $value = '' ) {
+
+		$settings     = mycred_get_addon_settings( 'transfers' );
+		$recipient_id = false;
+
+		if ( ! empty( $value ) ) {
+
+			// A numeric ID has been provided that we need to validate
+			if ( is_numeric( $value ) ) {
+
+				$user = get_userdata( $value );
+				if ( isset( $user->ID ) )
+					$recipient_id = $user->ID;
+
+			}
+
+			// A username has been provided
+			elseif ( $settings['autofill'] == 'user_login' ) {
+
+				$user = get_user_by( 'login', $value );
+				if ( isset( $user->ID ) )
+					$recipient_id = $user->ID;
+
+			}
+
+			// An email address has been provided
+			elseif ( $settings['autofill'] == 'user_email' ) {
+
+				$user = get_user_by( 'email', $value );
+				if ( isset( $user->ID ) )
+					$recipient_id = $user->ID;
+
+			}
+
+		}
+
+		return apply_filters( 'mycred_transfer_get_recipient', $recipient_id, $value, $settings );
+
+	}
+endif;
+
+/**
  * User Can Transfer
- * @see http://mycred.me/functions/mycred_user_can_transfer/
+ * @see http://codex.mycred.me/functions/mycred_user_can_transfer/
  * @param $user_id (int) requred user id
  * @param $amount (int) optional amount to check against balance
  * @returns true if no limit is set, 'limit' (string) if user is over limit else the amount of creds left
- * @filter 'mycred_user_can_transfer'
- * @filter 'mycred_transfer_limit'
- * @filter 'mycred_transfer_acc_limit'
  * @since 0.1
  * @version 1.4.1
  */
@@ -98,99 +304,26 @@ if ( ! function_exists( 'mycred_user_can_transfer' ) ) :
 endif;
 
 /**
- * New Transfer
+ * Render Transfer Message
+ * @see http://codex.mycred.me/functions/mycred_transfer_render_message/
  * @since 1.7.6
- * @version 1.0.2
+ * @version 1.0
  */
-if ( ! function_exists( 'mycred_new_transfer' ) ) :
-	function mycred_new_transfer( $request = array() ) {
+if ( ! function_exists( 'mycred_transfer_render_message' ) ) :
+	function mycred_transfer_render_message( $original = '', $data = array() ) {
 
-		$request = apply_filters( 'mycred_new_transfer_args', shortcode_atts( array(
-			'transaction_id' => NULL,
-			'sender_id'      => NULL,
-			'recipient_id'   => NULL,
-			'reference'      => 'transfer',
-			'charge'         => NULL,
-			'payout'         => NULL,
-			'point_type'     => MYCRED_DEFAULT_TYPE_KEY,
-			'data'           => ''
-		), $request ) );
+		if ( empty( $original ) || empty( $data ) ) return $original;
 
-		extract( $request );
+		// Default message
+		$message = apply_filters( 'mycred_transfer_default_message', '-', $original, $data );
 
-		if ( $transaction_id === NULL || $sender_id === NULL || $recipient_id === NULL || $charge === NULL || $payout === NULL ) return 'error_9';
+		// Get saved message
+		if ( ! empty( $data ) && array_key_exists( 'message', $data ) && ! empty( $data['message'] ) )
+			$message = $data['message'];
 
-		$point_type    = sanitize_key( $point_type );
-		$settings      = mycred_get_addon_settings( 'transfers' );
-		$mycred        = mycred( $point_type );
+		$content = str_replace( '%transfer_message%', $message, $original );
 
-		$result        = 'error_9';
-
-		if ( $mycred->exclude_user( $sender_id ) )
-			return 'error_4';
-
-		// The recipient is excluded from the point type
-		if ( $mycred->exclude_user( $recipient_id ) )
-			return 'error_4';
-
-		// Check if we can complete this transaction before we run it
-		$attempt_check = mycred_user_can_transfer( $sender_id, $charge, $point_type, $reference );
-
-		// Insufficient funds
-		if ( $attempt_check === 'low' )
-			return 'error_7';
-
-		// Limit reached
-		if ( $attempt_check === 'limit' )
-			return 'error_8';
-
-		// Prevent Duplicate transactions
-		if ( $mycred->has_entry( $reference, $recipient_id, $sender_id, $data, $point_type ) )
-			return 'error_9';
-
-		// Let others play before we execute the transfer
-		do_action( 'mycred_transfer_ready', $transaction_id, $request, $settings );
-
-		// First take the amount from the sender
-		if ( $mycred->add_creds(
-			$reference,
-			$sender_id,
-			0 - $charge,
-			$settings['logs']['sending'],
-			$recipient_id,
-			$data,
-			$point_type
-		) ) {
-
-			// Then add the amount to the receipient
-			if ( ! $mycred->has_entry( $reference, $sender_id, $recipient_id, $data, $point_type ) ) {
-
-				$mycred->add_creds(
-					$reference,
-					$recipient_id,
-					$payout,
-					$settings['logs']['receiving'],
-					$sender_id,
-					$data,
-					$point_type
-				);
-
-				// Let others play once transaction is completed
-				do_action( 'mycred_transfer_completed', $transaction_id, $request, $settings );
-
-				// Return the good news
-				$result = array(
-					'amount'  => $payout,
-					'css'     => '.mycred-balance-' . $point_type,
-					'balance' => $mycred->format_creds( $attempt_check ),
-					'zero'    => ( ( $attempt_check <= $mycred->zero() ) ? true : false )
-				);
-
-			}
-
-		}
-
-		return apply_filters( 'mycred_new_transfer', $result, $request, $attempt_check );
+		return apply_filters( 'mycred_transfer_message', $content, $original, $message, $data );
 
 	}
 endif;
@@ -214,30 +347,6 @@ if ( ! function_exists( 'mycred_get_users_transfer_history' ) ) :
 			'amount' => 0
 		);
 		return mycred_apply_defaults( $default, mycred_get_user_meta( $user_id, $key, '', true ) );
-
-	}
-endif;
-
-/**
- * Render Transfer Message
- * @since 1.7.6
- * @version 1.0
- */
-if ( ! function_exists( 'mycred_transfer_render_message' ) ) :
-	function mycred_transfer_render_message( $original = '', $data = array() ) {
-
-		if ( empty( $original ) || empty( $data ) ) return $original;
-
-		// Default message
-		$message = apply_filters( 'mycred_transfer_default_message', '-', $original, $data );
-
-		// Get saved message
-		if ( ! empty( $data ) && array_key_exists( 'message', $data ) && ! empty( $data['message'] ) )
-			$message = $data['message'];
-
-		$content = str_replace( '%transfer_message%', $message, $original );
-
-		return apply_filters( 'mycred_transfer_message', $content, $original, $message, $data );
 
 	}
 endif;

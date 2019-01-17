@@ -17,7 +17,7 @@ if ( ! class_exists( 'myCRED_Setup' ) ) :
 		/**
 		 * Construct
 		 */
-		function __construct() {
+		public function __construct() {
 
 			$this->core = mycred();
 
@@ -40,14 +40,14 @@ if ( ! class_exists( 'myCRED_Setup' ) ) :
 		/**
 		 * Setup Setup Nag
 		 * @since 0.1
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function admin_notice() {
 
 			$screen = get_current_screen();
 			if ( $screen->id == 'plugins_page_' . MYCRED_SLUG . '-setup' || ( isset( $_GET['action'] ) && $_GET['action'] === 'edit' ) || ! mycred_is_admin() ) return;
 
-			echo '<div class="info notice notice-info"><p>' . __( 'myCRED needs your attention.', 'mycred' ) . ' <a href="' . admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup' ) . '">' . __( 'Run Setup', 'mycred' ) . '</a></p></div>';
+			echo '<div class="info notice notice-info"><p>' . sprintf( __( '%s needs your attention.', 'mycred' ), mycred_label() ) . ' <a href="' . admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup' ) . '">' . __( 'Run Setup', 'mycred' ) . '</a></p></div>';
 
 		}
 
@@ -384,8 +384,9 @@ jQuery(function($) {
 
 			parse_str( $_POST['setup'], $posted );
 
-			$defaults    = $this->core->defaults();
-			$decimals    = 0;
+			$errors               = array();
+			$defaults             = $this->core->defaults();
+			$decimals             = 0;
 
 			if ( ! array_key_exists( 'first_type', $posted ) ) {
 
@@ -402,18 +403,17 @@ jQuery(function($) {
 
 			}
 
-			$errors     = array();
-			$setup      = mycred_apply_defaults( $defaults, $posted['first_type'] );
-			$first_type = $defaults;
+			$setup                = mycred_apply_defaults( $defaults, $posted['first_type'] );
+			$first_type           = $defaults;
 
-			$singular_name = sanitize_text_field( $setup['name']['singular'] );
+			$singular_name        = sanitize_text_field( $setup['name']['singular'] );
 			if ( empty( $singular_name ) )
 				$errors[] = 'empty';
 
 			elseif ( $singular_name != $first_type['name']['singular'] )
 				$first_type['name']['singular'] = $singular_name;
 
-			$plural_name   = sanitize_text_field( $setup['name']['plural'] );
+			$plural_name          = sanitize_text_field( $setup['name']['plural'] );
 			if ( empty( $plural_name ) )
 				$errors[] = 'empty';
 

@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Renders the form that allows users to redeem coupons from.
  * @see http://codex.mycred.me/shortcodes/mycred_load_coupon/
  * @since 1.4
- * @version 1.3.1
+ * @version 1.4
  */
 if ( ! function_exists( 'mycred_render_shortcode_load_coupon' ) ) :
 	function mycred_render_shortcode_load_coupon( $atts, $content = NULL ) {
@@ -18,7 +18,7 @@ if ( ! function_exists( 'mycred_render_shortcode_load_coupon' ) ) :
 			'label'       => 'Coupon',
 			'button'      => 'Apply Coupon',
 			'placeholder' => ''
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_load_coupon' ) );
 
 		$mycred = mycred();
 		if ( ! isset( $mycred->coupons ) )
@@ -58,9 +58,19 @@ if ( ! function_exists( 'mycred_render_shortcode_load_coupon' ) ) :
 				else {
 
 					$message = $mycred->template_tags_amount( $mycred->coupons['success'], $coupon->value );
+					$message = str_replace( '%amount%', $mycred->format_creds( $coupon->value ), $message );
 					$output .= '<div class="alert alert-success">' . $message . '</div>';
 
 				}
+
+			}
+
+			// Invalid coupon
+			else {
+
+				$message = mycred_get_coupon_error_message( 'invalid' );
+				$message = $mycred->template_tags_general( $message );
+				$output .= '<div class="alert alert-danger">' . $message . '</div>';
 
 			}
 

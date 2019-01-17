@@ -1,7 +1,7 @@
 <?php
 /**
  * Addon: Notifications
- * Addon URI: http://mycred.me/add-ons/notifications/
+ * Addon URI: http://codex.mycred.me/chapter-iii/notifications/
  * Version: 1.1.2
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
@@ -170,15 +170,15 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 			$data    = get_transient( 'mycred_notice_' . $user_id );
 
 			if ( $data === false || ! is_array( $data ) ) return;
-               /*fixed notification error create_function replase this*/
-			foreach ( $data as $notice ){
-                $notice_query = function ($query) use ($notice) {
-                    $query[]= $notice ; return $query;
-                };
-                add_filter( 'mycred_notifications', $notice_query );
-            }
 
-			delete_transient( 'mycred_notice_' . $user_id );
+			foreach ( $data as $notice )
+
+				//add_filter( 'mycred_notifications', create_function( '$query', '$query[]=\'' . $notice . '\'; return $query;' ) );
+				//replacing above filter second param create function with annonymus function to remove depricated error and passed notice
+                add_filter( 'mycred_notifications', function ($query) use ($notice){ $query[]= $notice ; return $query; }  );
+
+
+            delete_transient( 'mycred_notice_' . $user_id );
 
 		}
 
@@ -230,6 +230,14 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 			</div>
 		</div>
 	</div>
+	<?php if ( MYCRED_SHOW_PREMIUM_ADDONS ) : ?>
+	<hr />
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<p><strong>Tip:</strong> <?php printf( 'The %s add-on allows you to further style and customize notifications.', sprintf( '<a href="https://mycred.me/store/notifications-plus-add-on/" target="_blank">%s</a>', 'Notifications Plus' ) ); ?></p>
+		</div>
+	</div>
+	<?php endif; ?>
 
 </div>
 <script type="text/javascript">

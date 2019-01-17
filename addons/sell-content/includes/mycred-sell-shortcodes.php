@@ -14,7 +14,7 @@ if ( ! function_exists( 'mycred_render_sell_this' ) ) :
 		global $mycred_partial_content_sale, $mycred_modules;
 
 		$post_id  = mycred_sell_content_post_id();
-		$post     = get_post( $post_id );
+		$post     = mycred_get_post( $post_id );
 		$user_id  = get_current_user_id();
 		$is_admin = mycred_is_admin( $user_id );
 		$is_owner = ( (int) $post->post_author === $user_id ) ? true : false;
@@ -117,7 +117,7 @@ if ( ! function_exists( 'mycred_render_sell_count' ) ) :
 		extract( shortcode_atts( array(
 			'wrapper' => '',
 			'post_id' => NULL
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_content_sale_count' ) );
 
 		if ( $post_id === NULL )
 			$post_id = mycred_sell_content_post_id();
@@ -151,7 +151,7 @@ if ( ! function_exists( 'mycred_render_sell_buyer_count' ) ) :
 		extract( shortcode_atts( array(
 			'wrapper' => '',
 			'post_id' => NULL
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_content_buyer_count' ) );
 
 		if ( $post_id === NULL )
 			$post_id = mycred_sell_content_post_id();
@@ -187,7 +187,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 			'nothing' => 'No purchases found',
 			'ctype'   => NULL,
 			'order'   => 'DESC'
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_sales_history' ) );
 
 		// Not logged in
 		if ( ! is_user_logged_in() && $user_id == 'current' )
@@ -238,7 +238,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 						echo date( $date_format, $entry->time );
 
 					elseif ( $column_id == 'col-title' )
-						echo '<a href="' . get_permalink( $entry->ref_id ) . '">' . get_the_title( $entry->ref_id ) . '</a>';
+						echo '<a href="' . mycred_get_permalink( $entry->ref_id ) . '">' . mycred_get_the_title( $entry->ref_id ) . '</a>';
 
 					elseif ( $column_id == 'col-amount' )
 						echo '<td class="">' . $mycred->format_creds( abs( $entry->creds ) ) . '</td>';
@@ -302,7 +302,7 @@ if ( ! function_exists( 'mycred_render_sell_buyer_avatars' ) ) :
 			'use_email' => 0,
 			'default'   => '',
 			'alt'       => ''
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_content_buyer_avatars' ) );
 
 		if ( $post_id === NULL )
 			$post_id = mycred_sell_content_post_id();

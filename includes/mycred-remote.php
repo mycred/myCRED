@@ -56,7 +56,7 @@ if ( ! class_exists( 'myCRED_Remote' ) ) :
 			if ( get_magic_quotes_gpc() ) {
 
 				$process = array( &$_GET, &$_POST, &$_COOKIE, &$_REQUEST );
-				foreach( $process as $key => $val ) {
+				while ( list( $key, $val ) = each( $process ) ) {
 					foreach ( $val as $k => $v ) {
 						unset( $process[ $key ][ $k ] );
 						if ( is_array( $v ) ) {
@@ -68,7 +68,9 @@ if ( ! class_exists( 'myCRED_Remote' ) ) :
 					}
 				}
 				unset( $process );
+
 			}
+
 			// Let others play
 			do_action_ref_array( 'mycred_remote_magic', array( &$this ) );
 

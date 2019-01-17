@@ -72,7 +72,6 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 			if ( version_compare( $sql_version, '5.0', '<' ) )
 				$message[] = __( 'myCRED requires SQL 5.0 or higher. Version detected: ', 'mycred' ) . ' ' . $sql_version;
 
-
 			// Not empty $message means there are issues
 			if ( ! empty( $message ) ) {
 
@@ -85,11 +84,13 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		/**
 		 * First time activation
 		 * @since 0.1
-		 * @version 1.3
+		 * @version 1.4
 		 */
 		public static function activate() {
 
 			$mycred = mycred();
+			
+			set_transient( '_mycred_activation_redirect', true, 60 );
 
 			// Add general settings
 			add_option( 'mycred_version',   myCRED_VERSION );
@@ -117,7 +118,6 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 			set_transient( '_mycred_activation_redirect', true, 60 );
 
 			flush_rewrite_rules();
-
 		}
 
 		/**
@@ -126,7 +126,7 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		 * @version 1.4
 		 */
 		public static function reactivate() {
-
+		
 			$version = get_option( 'mycred_version', false );
 			do_action( 'mycred_reactivation', $version );
 
@@ -207,7 +207,10 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 				'widget_mycred_widget_transfer',
 				'mycred_ref_hook_counter',
 				'mycred_espresso_gateway_prefs',
-				'mycred_eventsmanager_gateway_prefs'
+				'mycred_eventsmanager_gateway_prefs',
+				MYCRED_SLUG . '-cache-stats-keys',
+				MYCRED_SLUG . '-cache-leaderboard-keys',
+				MYCRED_SLUG . '-last-clear-stats'
 			);
 
 			foreach ( $mycred_types as $type => $label ) {
@@ -263,13 +266,8 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 			}
 
 			// Delete all custom post types created by myCRED
-			$mycred_post_types_to_delete = apply_filters( 'mycred_uninstall_post_types', array(
-				'mycred_badge',
-				'mycred_coupon',
-				'mycred_email_notice',
-				'mycred_rank',
-				'buycred_payment'
-			) );
+			$post_types                  = get_mycred_post_types();
+			$mycred_post_types_to_delete = apply_filters( 'mycred_uninstall_post_types', $post_types );
 
 			if ( ! empty( $mycred_post_types_to_delete ) ) {
 				foreach ( $mycred_post_types_to_delete as $post_type ) {
@@ -287,22 +285,26 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 				}
 			}
 
+			if ( ! defined( 'MYCRED_RANK_KEY' ) ) define( 'MYCRED_RANK_KEY', 'mycred_rank' );
+			if ( ! defined( 'MYCRED_BADGE_KEY' ) ) define( 'MYCRED_BADGE_KEY', 'mycred_badge' );
+
 			// Delete user meta
 			// 'meta_key' => true (exact key) / false (use LIKE)
 			$mycred_usermeta_to_delete = array(
-				'mycred_rank'                  => true,
+				MYCRED_RANK_KEY                => true,
 				'mycred-last-send'             => true,
 				'mycred-last-linkclick'        => true,
 				'mycred-last-transfer'         => true,
 				'mycred_affiliate_link'        => true,
 				'mycred_email_unsubscriptions' => true,
 				'mycred_transactions'          => true,
-				'mycred_badge%'                => false,
-				'mycred_rank%'                 => false,
+				MYCRED_BADGE_KEY . '%'         => false,
+				MYCRED_RANK_KEY . '%'          => false,
 				'mycred_epp_%'                 => false,
 				'mycred_payments_%'            => false,
 				'mycred_comment_limit_post_%'  => false,
-				'mycred_comment_limit_day_%'   => false
+				'mycred_comment_limit_day_%'   => false,
+				'mycred-last-clear-stats'      => true
 			);
 
 			if ( MYCRED_UNINSTALL_CREDS ) {
@@ -374,6 +376,10 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 				}
 
 			}
+
+			// Clear stats data (if enabled)
+			if ( function_exists( 'mycred_delete_stats_data' ) )
+				mycred_delete_stats_data();
 
 			// Good bye.
 			flush_rewrite_rules();

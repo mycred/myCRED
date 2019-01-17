@@ -6,37 +6,21 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Checks if there are any rank posts.
  * @returns (bool) true or false
  * @since 1.1
- * @version 1.5.1
+ * @version 1.6
  */
 if ( ! function_exists( 'mycred_have_ranks' ) ) :
-	function mycred_have_ranks( $point_type = NULL ) {
+	function mycred_have_ranks( $point_type = '' ) {
 
-		global $wpdb;
-
-		if ( ! mycred_override_settings() ) {
-			$posts    = $wpdb->posts;
-			$postmeta = $wpdb->postmeta;
-		}
-		else {
-			$posts    = $wpdb->base_prefix . 'posts';
-			$postmeta = $wpdb->base_prefix . 'postmeta';
+		$have_ranks = false;
+		$total      = 0;
+		foreach ( wp_count_posts( MYCRED_RANK_KEY ) as $status => $count ) {
+			$total += $count;
 		}
 
-		$type_filter = '';
-		if ( $point_type !== NULL && mycred_point_type_exists( sanitize_key( $point_type ) ) )
-			$type_filter = $wpdb->prepare( "INNER JOIN {$postmeta} ctype ON ( ranks.ID = ctype.post_id AND ctype.meta_key = 'ctype' AND ctype.meta_value = %s )", $point_type );
+		if ( $total > 0 )
+			$have_ranks = true;
 
-		$mycred_ranks = $wpdb->get_var( "
-			SELECT COUNT(*) 
-			FROM {$posts} ranks 
-			{$type_filter} 
-			WHERE ranks.post_type = 'mycred_rank';" );
-		
-		$return = false;
-		if ( $mycred_ranks !== NULL && $mycred_ranks > 0 )
-			$return = true;
-
-		return apply_filters( 'mycred_have_ranks', $return, $point_type );
+		return apply_filters( 'mycred_have_ranks', $have_ranks, $point_type, $count );
 
 	}
 endif;
@@ -51,29 +35,35 @@ endif;
 if ( ! function_exists( 'mycred_get_published_ranks_count' ) ) :
 	function mycred_get_published_ranks_count( $point_type = NULL ) {
 
-		global $wpdb;
+		$count = wp_count_posts( MYCRED_RANK_KEY )->publish;
 
-		if ( ! mycred_override_settings() ) {
-			$posts    = $wpdb->posts;
-			$postmeta = $wpdb->postmeta;
+		if ( $point_type === NULL ) {
+
+			$cache_key  = 'ranks-published-count-' . $point_type;
+			$count      = wp_cache_get( $cache_key, MYCRED_SLUG );
+
+			if ( $count === false ) {
+
+				global $wpdb;
+
+				$posts       = mycred_get_db_column( 'posts' );
+				$type_filter = '';
+
+				if ( $point_type !== NULL && mycred_point_type_exists( sanitize_key( $point_type ) ) ) {
+
+					$postmeta    = mycred_get_db_column( 'postmeta' );
+					$type_filter = $wpdb->prepare( "INNER JOIN {$postmeta} ctype ON ( ranks.ID = ctype.post_id AND ctype.meta_key = 'ctype' AND ctype.meta_value = %s )", $point_type );
+
+				}
+
+				$count      = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$posts} ranks {$type_filter} WHERE ranks.post_type = %s AND ranks.post_status = 'publish';", MYCRED_RANK_KEY ) );
+				if ( $count === NULL ) $count = 0;
+
+				wp_cache_set( $cache_key, $count, MYCRED_SLUG );
+
+			}
+
 		}
-		else {
-			$posts    = $wpdb->base_prefix . 'posts';
-			$postmeta = $wpdb->base_prefix . 'postmeta';
-		}
-
-		$type_filter = '';
-		if ( $point_type !== NULL && mycred_point_type_exists( sanitize_key( $point_type ) ) )
-			$type_filter = $wpdb->prepare( "INNER JOIN {$postmeta} ctype ON ( ranks.ID = ctype.post_id AND ctype.meta_key = 'ctype' AND ctype.meta_value = %s )", $point_type );
-
-		$count = $wpdb->get_var( "
-			SELECT COUNT(*) 
-			FROM {$posts} ranks 
-			{$type_filter} 
-			WHERE ranks.post_type = 'mycred_rank' 
-			AND ranks.post_status = 'publish';" );
-
-		if ( $count === NULL ) $count = 0;
 
 		return apply_filters( 'mycred_get_published_ranks_count', $count, $point_type );
 
@@ -84,7 +74,7 @@ endif;
  * Get Rank Object ID
  * Makes sure a given post ID is a rank post ID or converts a rank title into a rank ID.
  * @since 1.7
- * @version 1.0
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_get_rank_object_id' ) ) :
 	function mycred_get_rank_object_id( $identifier = NULL ) {
@@ -93,38 +83,14 @@ if ( ! function_exists( 'mycred_get_rank_object_id' ) ) :
 
 		$rank_id = false;
 
-		if ( ! mycred_override_settings() ) {
-
-			if ( absint( $identifier ) !== 0 && get_post_type( absint( $identifier ) ) === 'mycred_rank' )
-				$rank_id = absint( $identifier );
-
-			else {
-
-				$rank = get_page_by_title( $identifier, OBJECT, 'mycred_rank' );
-				if ( isset( $rank->post_type ) && $rank->post_type === 'mycred_rank' )
-					$rank_id = $rank->ID;
-
-			}
-
-		}
+		if ( absint( $identifier ) !== 0 && mycred_get_post_type( absint( $identifier ) ) == MYCRED_RANK_KEY )
+			$rank_id = absint( $identifier );
 
 		else {
 
-			$original_blog_id = get_current_blog_id();
-			switch_to_blog( 1 );
-
-			if ( absint( $identifier ) !== 0 && get_post_type( absint( $identifier ) ) === 'mycred_rank' )
-				$rank_id = absint( $identifier );
-
-			else {
-
-				$rank = get_page_by_title( $identifier, OBJECT, 'mycred_rank' );
-				if ( isset( $rank->post_type ) && $rank->post_type === 'mycred_rank' )
-					$rank_id = $rank->ID;
-
-			}
-
-			switch_to_blog( $original_blog_id );
+			$rank = mycred_get_page_by_title( $identifier, OBJECT, MYCRED_RANK_KEY );
+			if ( isset( $rank->post_type ) && $rank->post_type === MYCRED_RANK_KEY )
+				$rank_id = $rank->ID;
 
 		}
 
@@ -132,7 +98,6 @@ if ( ! function_exists( 'mycred_get_rank_object_id' ) ) :
 
 	}
 endif;
-
 
 /**
  * Get Rank
@@ -143,12 +108,23 @@ endif;
 if ( ! function_exists( 'mycred_get_rank' ) ) :
 	function mycred_get_rank( $rank_identifier = NULL ) {
 
-		$rank_id = mycred_get_rank_object_id( $rank_identifier );
+		global $mycred_rank;
+
+		$rank_id     = mycred_get_rank_object_id( $rank_identifier );
 		if ( $rank_id === false ) return false;
 
-		$rank = new myCRED_Rank( $rank_id );
+		if ( isset( $mycred_rank )
+			&& ( $mycred_rank instanceof myCRED_Rank )
+			&& ( $rank_id === $mycred_rank->post_id )
+		) {
+			return $mycred_rank;
+		}
 
-		return $rank;
+		$mycred_rank = new myCRED_Rank( $rank_id );
+
+		do_action( 'mycred_get_rank' );
+
+		return $mycred_rank;
 
 	}
 endif;
@@ -157,30 +133,31 @@ endif;
  * Rank Has Logo
  * Checks if a given rank has a logo.
  * @since 1.1
- * @version 1.3
+ * @version 1.5
  */
 if ( ! function_exists( 'mycred_rank_has_logo' ) ) :
 	function mycred_rank_has_logo( $rank_identifier = NULL ) {
 
+		$return  = false;
 		$rank_id = mycred_get_rank_object_id( $rank_identifier );
-		if ( $rank_id === false ) return false;
 
-		$return = false;
-		if ( ! mycred_override_settings() ) {
+		if ( $rank_id === false ) return $return;
+
+		if ( mycred_override_settings() && ! mycred_is_main_site() ) {
+
+			switch_to_blog( get_network()->site_id );
 
 			if ( has_post_thumbnail( $rank_id ) )
 				$return = true;
+
+			restore_current_blog();
 
 		}
-		else {
 
-			$original_blog_id = get_current_blog_id();
-			switch_to_blog( 1 );
+		else {
 
 			if ( has_post_thumbnail( $rank_id ) )
 				$return = true;
-
-			switch_to_blog( $original_blog_id );
 
 		}
 
@@ -193,7 +170,7 @@ endif;
  * Get Rank Logo
  * Returns the given ranks logo.
  * @since 1.1
- * @version 1.3
+ * @version 1.4
  */
 if ( ! function_exists( 'mycred_get_rank_logo' ) ) :
 	function mycred_get_rank_logo( $rank_identifier = NULL, $size = 'post-thumbnail', $attr = NULL ) {
@@ -204,17 +181,19 @@ if ( ! function_exists( 'mycred_get_rank_logo' ) ) :
 		if ( is_numeric( $size ) )
 			$size = array( $size, $size );
 
-		if ( ! mycred_override_settings() )
+		if ( mycred_override_settings() && ! mycred_is_main_site() ) {
+
+			switch_to_blog( get_network()->site_id );
+
 			$logo = get_the_post_thumbnail( $rank_id, $size, $attr );
+
+			restore_current_blog();
+
+		}
 
 		else {
 
-			$original_blog_id = get_current_blog_id();
-			switch_to_blog( 1 );
-
 			$logo = get_the_post_thumbnail( $rank_id, $size, $attr );
-
-			switch_to_blog( $original_blog_id );
 
 		}
 
@@ -226,36 +205,28 @@ endif;
 /**
  * Count Users with Rank
  * @since 1.6
- * @version 1.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_count_users_with_rank' ) ) :
 	function mycred_count_users_with_rank( $rank_identifier = NULL ) {
 
-		$rank_id = mycred_get_rank_object_id( $rank_identifier );
+		$rank_id    = mycred_get_rank_object_id( $rank_identifier );
 		if ( $rank_id === false ) return 0;
 
-		$user_count = get_post_meta( $rank_id, 'mycred_rank_users', true );
+		$user_count = mycred_get_post_meta( $rank_id, 'mycred_rank_users', true );
+
 		if ( $user_count == '' ) {
 
-			$type = get_post_meta( $rank_id, 'ctype', true );
-			if ( $type == '' ) return 0;
-
-			$mycred = mycred( $type );
-
-			$rank_meta_key = 'mycred_rank';
-			if ( $mycred->is_multisite && $GLOBALS['blog_id'] > 1 && ! $mycred->use_master_template )
-				$rank_meta_key .= '_' . $GLOBALS['blog_id'];
-
-			if ( $type != MYCRED_DEFAULT_TYPE_KEY )
-				$rank_meta_key .= $type;
+			$point_type = mycred_get_post_meta( $rank_id, 'ctype', true );
+			if ( $point_type == '' ) return 0;
 
 			global $wpdb;
 
-			$user_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT( user_id ) FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value = %d;", $rank_meta_key, $rank_id ) );
+			$user_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT( user_id ) FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value = %d;", mycred_get_meta_key( MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ) ), $rank_id ) );
 
 			if ( $user_count === NULL ) $user_count = 0;
 
-			update_post_meta( $rank_id, 'mycred_rank_users', $user_count );
+			mycred_update_post_meta( $rank_id, 'mycred_rank_users', $user_count );
 
 		}
 
@@ -273,11 +244,18 @@ endif;
 if ( ! function_exists( 'mycred_get_users_rank_id' ) ) :
 	function mycred_get_users_rank_id( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$end = '';
-		if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
-			$end = $point_type;
+		if ( $user_id === NULL )
+			$user_id = get_current_user_id();
 
-		$rank_id = mycred_get_user_meta( $user_id, 'mycred_rank', $end, true );
+		$user_id        = absint( $user_id );
+		if ( $user_id === 0 ) return false;
+
+		$account_object = mycred_get_account( $user_id );
+		if ( isset( $account_object->ranks ) && $account_object->balance[ $point_type ] !== false && $account_object->balance[ $point_type ]->rank !== false )
+			return $account_object->balance[ $point_type ]->rank->post_id;
+
+		$rank_id        = mycred_get_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ), true );
+
 		if ( $rank_id == '' ) {
 
 			$rank = mycred_find_users_rank( $user_id, $point_type );
@@ -306,11 +284,16 @@ if ( ! function_exists( 'mycred_save_users_rank' ) ) :
 
 		if ( $user_id === NULL || $rank_id === NULL ) return false;
 
-		$end = '';
-		if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
-			$end = $point_type;
+		$user_id        = absint( $user_id );
+		$rank_id        = absint( $rank_id );
+		$point_type     = sanitize_key( $point_type );
 
-		mycred_update_user_meta( $user_id, 'mycred_rank', $end, $rank_id );
+		global $mycred_current_account;
+
+		mycred_update_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ), $rank_id );
+
+		if ( isset( $mycred_current_account->ranks ) && $mycred_current_account->balance[ $point_type ] !== false )
+			$mycred_current_account->balance[ $point_type ]->rank = new myCRED_Rank( $rank_id );
 
 		return true;
 
@@ -321,14 +304,18 @@ endif;
  * Get My Rank
  * Returns the current users rank
  * @since 1.1
- * @version 1.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_get_my_rank' ) ) :
-	function mycred_get_my_rank() {
+	function mycred_get_my_rank( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 		if ( ! is_user_logged_in() ) return;
 
-		return mycred_get_users_rank( get_current_user_id() );
+		$account = mycred_get_current_account();
+		if ( $account !== false )
+			return $account->balance[ $point_type ]->rank;
+
+		return mycred_get_users_rank( get_current_user_id(), $point_type );
 
 	}
 endif;
@@ -338,38 +325,42 @@ endif;
  * Retreaves the users current saved rank or if rank is missing
  * finds the appropriate rank and saves it.
  * @since 1.1
- * @version 1.5.1
+ * @version 1.7
  */
 if ( ! function_exists( 'mycred_get_users_rank' ) ) :
-	function mycred_get_users_rank( $user_id = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_get_users_rank( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+
+		$rank           = false;
 
 		// User ID is required
-		if ( $user_id === NULL || ! is_numeric( $user_id ) ) return false;
+		if ( $user_id === NULL || ! is_numeric( $user_id ) ) return $rank;
 
-		$end = '';
-		if ( $type != MYCRED_DEFAULT_TYPE_KEY )
-			$end = $type;
+		$user_id        = absint( $user_id );
+		$account_object = mycred_get_account( $user_id );
+		if ( isset( $account_object->ranks ) && $account_object->balance[ $point_type ] !== false )
+			return $account_object->balance[ $point_type ]->rank;
 
 		// Get users rank
-		$rank_id = mycred_get_user_meta( $user_id, 'mycred_rank', $end, true );
+		$rank_id = mycred_get_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ), true );
 
 		// No rank, try to assign one
 		if ( $rank_id == '' ) {
 
-			$rank = mycred_find_users_rank( $user_id, $type );
+			$rank = mycred_find_users_rank( $user_id, $point_type );
 
 			// Found a rank, save it
 			if ( $rank !== false ) {
-				mycred_save_users_rank( $user_id, $rank->rank_id, $type );
+				mycred_save_users_rank( $user_id, $rank->rank_id, $point_type );
 				$rank_id = $rank->rank_id;
 			}
 
 		}
 
 		// Get Rank object
-		$rank = mycred_get_rank( $rank_id );
+		if ( $rank_id != '' )
+			$rank = mycred_get_rank( $rank_id );
 
-		return apply_filters( 'mycred_get_users_rank', $rank, $user_id, $rank_id );
+		return apply_filters( 'mycred_get_users_rank', $rank, $user_id, $rank_id, $point_type );
 
 	}
 endif;
@@ -380,87 +371,86 @@ endif;
  * @uses mycred_user_got_demoted if user got demoted to a lower rank.
  * @uses mycred_user_got_promoted if user got promoted to a higher rank.
  * @since 1.1
- * @version 1.6.1
+ * @version 1.7
  */
 if ( ! function_exists( 'mycred_find_users_rank' ) ) :
 	function mycred_find_users_rank( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY, $act = true ) {
 
-		global $wpdb;
+		if ( mycred_manual_ranks() ) return false;
 
-		$mycred = mycred( $point_type );
-
-		$end = '';
-		if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
-			$end = $point_type;
-
-		// In case user id is not set
-		if ( $user_id === NULL )
-			$user_id = get_current_user_id();
+		if ( $user_id === NULL ) $user_id = get_current_user_id();
 
 		// Non logged in users have ID 0.
 		if ( absint( $user_id ) === 0 ) return false;
 
-		// If ranks are based on total we get the total balance which in turn
-		// if not set will default to the users current balance.
-		if ( mycred_rank_based_on_total( $point_type ) ) {
+		$user_id        = absint( $user_id );
+		$account_object = mycred_get_account( $user_id );
+		$balance_object = $account_object->balance[ $point_type ];
 
-			// Since usermeta might be cached we can not trust the amount so we must query the DB for a fresh value.
-			$balance = mycred_query_users_total( $user_id, $point_type );
+		if ( $balance_object === false ) return false;
 
+		if ( isset( $account_object->ranks ) ) {
+			$current_rank_id = ( $balance_object->rank !== false ) ? $balance_object->rank->post_id : false;
+			$current_rank    = ( $balance_object->rank !== false ) ? $balance_object->rank : false;
 		}
+
 		else {
-
-			// Since usermeta might be cached we can not trust the amount so we must query the DB for a fresh value.
-			$balance = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key = %s;", $user_id, mycred_get_meta_key( $point_type ) ) );
-			if ( $balance === NULL )
-				$balance = 0;
-
+			$current_rank_id = mycred_get_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ), true );
+			$current_rank    = ( $current_rank_id != '' ) ? mycred_get_rank( $current_rank_id ) : false;
 		}
+
+		$balance        = $balance_object->current;
+		if ( mycred_rank_based_on_total( $point_type ) )
+			$balance = $balance_object->accumulated;
+
+		// We are still within the set requirements
+		if ( $current_rank !== false && $balance >= $current_rank->minimum && $balance <= $current_rank->maximum )
+			return false;
+
+		global $wpdb;
 
 		// Prep format for the db query
-		$balance_format = '%d';
-		if ( isset( $mycred->format['decimals'] ) && $mycred->format['decimals'] > 0 ) {
-			$length         = 65 - $mycred->format['decimals'];
-			$balance_format = 'CAST( %f AS DECIMAL( ' . $length . ', ' . $mycred->format['decimals'] . ' ) )';
-		}
+		$balance_format = ( isset( $balance_object->point_type->sql_format ) ) ? $balance_object->point_type->sql_format : '%d';
 
 		// Get the appropriate post tables
-		if ( ! mycred_override_settings() ) {
-			$posts    = $wpdb->posts;
-			$postmeta = $wpdb->postmeta;
-		}
-		else {
-			$posts    = $wpdb->base_prefix . 'posts';
-			$postmeta = $wpdb->base_prefix . 'postmeta';
-		}
+		$posts          = mycred_get_db_column( 'posts' );
+		$postmeta       = mycred_get_db_column( 'postmeta' );
 
 		// See where the users balance fits in
-		$results = $wpdb->get_row( $wpdb->prepare( "
-			SELECT ranks.ID AS rank_id, min.meta_value AS minimum, max.meta_value AS maximum, meta.meta_value AS current_id
+		$results        = $wpdb->get_row( $wpdb->prepare( "
+			SELECT ranks.ID AS rank_id, min.meta_value AS minimum, max.meta_value AS maximum 
 			FROM {$posts} ranks 
-			INNER JOIN {$postmeta} ctype ON ( ranks.ID = ctype.post_id AND ctype.meta_key = 'ctype' AND ctype.meta_value = %s )
-			INNER JOIN {$postmeta} min ON ( ranks.ID = min.post_id AND min.meta_key = 'mycred_rank_min' )
-			INNER JOIN {$postmeta} max ON ( ranks.ID = max.post_id AND max.meta_key = 'mycred_rank_max' ) 
-			LEFT JOIN {$wpdb->usermeta} meta ON ( meta.user_id = %d AND meta.meta_key = %s ) 
-			WHERE ranks.post_type = 'mycred_rank'
+				INNER JOIN {$postmeta} ctype ON ( ranks.ID = ctype.post_id AND ctype.meta_key = 'ctype' AND ctype.meta_value = %s )
+				INNER JOIN {$postmeta} min ON ( ranks.ID = min.post_id AND min.meta_key = 'mycred_rank_min' )
+				INNER JOIN {$postmeta} max ON ( ranks.ID = max.post_id AND max.meta_key = 'mycred_rank_max' ) 
+			WHERE ranks.post_type = %s 
 				AND ranks.post_status = 'publish'
 				AND {$balance_format} BETWEEN min.meta_value AND max.meta_value
-			LIMIT 0,1;", $point_type, $user_id, mycred_get_meta_key( 'mycred_rank', $end ), $balance ) );
+			LIMIT 0,1;", $point_type, MYCRED_RANK_KEY, $balance ) );
+
+
+		if ( isset( $results->rank_id ) )
+			$results->current_id = $current_rank_id;
 
 		// Found a new rank
-		if ( $act === true && isset( $results->rank_id ) && $results->rank_id !== $results->current_id ) {
+		if ( $act === true && isset( $results->rank_id ) ) {
 
 			// Demotions
-			if ( $results->current_id !== NULL && get_post_meta( $results->current_id, 'mycred_rank_max', true ) > $results->maximum )
-				do_action( 'mycred_user_got_demoted', $user_id, $results->rank_id, $results );
+			if ( $results->current_id !== false && $current_rank !== false && $current_rank->maximum > $results->maximum )
+				do_action( 'mycred_user_got_demoted', $user_id, $results, $current_rank, $point_type );
 
 			// Promotions
-			else
-				do_action( 'mycred_user_got_promoted', $user_id, $results->rank_id, $results );
+			else {
+
+				do_action( 'mycred_user_got_promoted', $user_id, $results->rank_id, $results, $point_type );
+
+			}
 
 			// Reset counters
-			delete_post_meta( $results->current_id, 'mycred_rank_users' );
-			delete_post_meta( $results->rank_id, 'mycred_rank_users' );
+			if ( $current_rank !== false )
+				mycred_delete_post_meta( $current_rank->post_id, 'mycred_rank_users' );
+
+			mycred_delete_post_meta( $results->rank_id, 'mycred_rank_users' );
 
 		}
 
@@ -476,36 +466,30 @@ endif;
  * Assign Ranks
  * Runs though all user balances and assigns each users their
  * appropriate ranks.
- * @returns void
+ * @returns count
  * @since 1.3.2
- * @version 1.5.2
+ * @version 1.7
  */
 if ( ! function_exists( 'mycred_assign_ranks' ) ) :
 	function mycred_assign_ranks( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
+		if ( mycred_manual_ranks() ) return 0;
+
 		global $wpdb;
 
-		$mycred = mycred( $point_type );
+		$type_object    = new myCRED_Point_Type( $point_type );
+		$rank_key       = mycred_get_meta_key( MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ) );
 
-		$end = '';
-		if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
-			$end = $point_type;
+		$balance_key    = mycred_get_meta_key( $point_type );
+		if ( isset( $mycred->rank['base'] ) && $mycred->rank['base'] == 'total' )
+			$balance_key = mycred_get_meta_key( $point_type, '_total' );
+
+		$ranks          = mycred_get_ranks( 'publish', '-1', 'ASC', $point_type );
+		$balance_format = ( isset( $type_object->sql_format ) ) ? $type_object->sql_format : '%d';
 
 		do_action( 'mycred_assign_ranks_start' );
 
-		$balance_format = '%d';
-		if ( isset( $mycred->format['decimals'] ) && $mycred->format['decimals'] > 0 ) {
-			$length         = 65 - $mycred->format['decimals'];
-			$balance_format = 'CAST( %f AS DECIMAL( ' . $length . ', ' . $mycred->format['decimals'] . ' ) )';
-		}
-
-		$ranks = mycred_get_ranks( 'publish', '-1', 'ASC', $point_type );
-
-		$balance_key =  mycred_get_meta_key( $point_type );
-		if ( mycred_rank_based_on_total( $point_type ) )
-			$balance_key =  mycred_get_meta_key( $point_type, '_total' );
-
-		$count = 0;
+		$count          = 0;
 		if ( ! empty( $ranks ) ) {
 			foreach ( $ranks as $rank ) {
 
@@ -514,7 +498,9 @@ if ( ! function_exists( 'mycred_assign_ranks' ) ) :
 						INNER JOIN {$wpdb->usermeta} balance ON ( ranks.user_id = balance.user_id AND balance.meta_key = %s )
 					SET ranks.meta_value = %d 
 					WHERE ranks.meta_key = %s 
-						AND balance.meta_value BETWEEN {$balance_format} AND {$balance_format};", $balance_key, $rank->post_id, mycred_get_meta_key( 'mycred_rank', $end ), $rank->minimum, $rank->maximum ) );
+						AND balance.meta_value BETWEEN {$balance_format} AND {$balance_format};", $balance_key, $rank->post_id, $rank_key, $rank->minimum, $rank->maximum ) );
+
+				mycred_delete_post_meta( $rank->post_id, 'mycred_rank_users' );
 
 			}
 		}
@@ -535,54 +521,44 @@ endif;
  * @param $type (string) optional point type
  * @returns (array) empty if no ranks are found or associative array with post ID as key and title as value
  * @since 1.1
- * @version 1.5.2
+ * @version 1.6
  */
 if ( ! function_exists( 'mycred_get_ranks' ) ) :
-	function mycred_get_ranks( $status = 'publish', $number = '-1', $order = 'DESC', $point_type = NULL ) {
+	function mycred_get_ranks( $status = 'publish', $number = '-1', $order = 'DESC', $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		global $wpdb;
+		$cache_key = 'ranks-published-' . $point_type;
+		$ranks     = wp_cache_get( $cache_key, MYCRED_SLUG );
 
-		// Order
-		if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) )
-			$order = 'DESC';
+		if ( $ranks === false ) {
 
-		// Limit
-		if ( $number != '-1' )
-			$limit = 'LIMIT 0,' . absint( $number );
-		else
-			$limit = '';
+			global $wpdb;
 
-		if ( ! mycred_override_settings() ) {
-			$posts    = $wpdb->posts;
-			$postmeta = $wpdb->postmeta;
-		}
-		else {
-			$posts    = $wpdb->base_prefix . 'posts';
-			$postmeta = $wpdb->base_prefix . 'postmeta';
-		}
+			$order     = ( ! in_array( $order, array( 'ASC', 'DESC' ) ) ) ? 'DESC' : $order;
+			$limit     = ( $number != '-1' ) ? 'LIMIT 0,' . absint( $number ) : '';
 
-		$type_join   = '';
-		$type_filter = '';
-		if ( $point_type !== NULL && mycred_point_type_exists( sanitize_key( $point_type ) ) ) {
-			$type_join   = "LEFT JOIN {$postmeta} ctype ON ( ranks.ID = ctype.post_id AND ctype.meta_key = 'ctype' )";
-			$type_filter = $wpdb->prepare( "AND ctype.meta_value = %s", $point_type );
-		}
+			$posts     = mycred_get_db_column( 'posts' );
+			$postmeta  = mycred_get_db_column( 'postmeta' );
 
-		// Get ranks
-		$results  = array();
-		$rank_ids = $wpdb->get_col( $wpdb->prepare( "
-			SELECT ranks.ID
-			FROM {$posts} ranks
-			{$type_join}
-			LEFT JOIN {$postmeta} min ON ( ranks.ID = min.post_id AND min.meta_key = 'mycred_rank_min' ) 
-			WHERE ranks.post_type = 'mycred_rank' 
-			AND ranks.post_status = %s 
-			{$type_filter}
-			ORDER BY min.meta_value+0 {$order} {$limit};", $status ) );
+			$results   = array();
+			$rank_ids  = $wpdb->get_col( $wpdb->prepare( "
+				SELECT ranks.ID
+				FROM {$posts} ranks
+					LEFT JOIN {$postmeta} ctype ON ( ranks.ID = ctype.post_id AND ctype.meta_key = 'ctype' )
+					LEFT JOIN {$postmeta} min ON ( ranks.ID = min.post_id AND min.meta_key = 'mycred_rank_min' ) 
+				WHERE ranks.post_type = %s 
+					AND ranks.post_status = %s 
+					AND ctype.meta_value = %s
+				ORDER BY min.meta_value+0 {$order} {$limit};", MYCRED_RANK_KEY, $status, $point_type ) );
 
-		if ( ! empty( $rank_ids ) ) {
-			foreach ( $rank_ids as $rank_id )
-				$results[] = mycred_get_rank( $rank_id );
+			if ( ! empty( $rank_ids ) ) {
+
+				foreach ( $rank_ids as $rank_id )
+					$results[] = mycred_get_rank( $rank_id );
+
+			}
+
+			wp_cache_set( $cache_key, $results, MYCRED_SLUG );
+
 		}
 
 		return apply_filters( 'mycred_get_ranks', $results, $status, $number, $order );
@@ -598,53 +574,66 @@ endif;
  * @param $number (int) number of users to return
  * @returns (array) empty if no users were found or associative array with user ID as key and display name as value
  * @since 1.1
- * @version 1.5.1
+ * @version 1.6
  */
 if ( ! function_exists( 'mycred_get_users_of_rank' ) ) :
-	function mycred_get_users_of_rank( $rank_identifier = NULL, $number = '-1', $order = 'DESC', $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_get_users_of_rank( $rank_identifier = NULL, $number = 25, $order = 'DESC', $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$rank_id = mycred_get_rank_object_id( $rank_identifier );
-		if ( $rank_id === false ) return false;
+		$rank_id       = mycred_get_rank_object_id( $rank_identifier );
+		if ( $rank_id === false || ! mycred_point_type_exists( $point_type ) ) return false;
 
-		global $wpdb;
+		$number        = ( $number > 25 || $number < 0 ) ? 25 : absint( $number );
+		$order         = ( ! in_array( $order, array( 'ASC', 'DESC' ) ) ) ? 'DESC' : $order;
+		$cache_key     = 'ranks-users-' . $rank_id;
+		$users         = wp_cache_get( $cache_key, MYCRED_SLUG );
 
-		$mycred = mycred( $point_type );
+		if ( $users === false ) {
 
-		$end = '';
-		if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
-			$end = $point_type;
+			global $wpdb;
 
-		$rank_meta_key = mycred_get_meta_key( 'mycred_rank', $end );
-		$balance_key   = mycred_get_meta_key( $point_type );
+			$rank_meta_key = mycred_get_meta_key( MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ) );
+			$balance_key   = mycred_get_meta_key( $point_type );
 
-		if ( ! mycred_override_settings() ) {
-			$posts    = $wpdb->posts;
-			$postmeta = $wpdb->postmeta;
+			$posts         = mycred_get_db_column( 'posts' );
+			$postmeta      = mycred_get_db_column( 'postmeta' );
+
+
+			$users         = $wpdb->get_results( $wpdb->prepare( "
+				SELECT users.*, creds.meta_value AS balance 
+				FROM {$wpdb->users} users 
+					LEFT JOIN {$wpdb->usermeta} rank ON ( users.ID = rank.user_id AND rank.meta_key = %s ) 
+					LEFT JOIN {$wpdb->usermeta} creds ON ( users.ID = creds.user_id AND creds.meta_key = %s ) 
+				WHERE rank.meta_value = %d 
+				ORDER BY creds.meta_value+0 DESC LIMIT 25;", $rank_meta_key, $balance_key, $rank_id ) );
+
+			wp_cache_set( $cache_key, $users, MYCRED_SLUG );
+
 		}
-		else {
-			$posts    = $wpdb->base_prefix . 'posts';
-			$postmeta = $wpdb->base_prefix . 'postmeta';
-		}
 
-		// Order
-		if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) )
-			$order = 'DESC';
+		$users         = array_slice( $users, 0, $number, true );
 
-		// Limit
-		if ( $number != '-1' )
-			$limit = 'LIMIT 0,' . absint( $number );
-		else
-			$limit = '';
-
-		$users = $wpdb->get_results( $wpdb->prepare( "
-			SELECT users.*, creds.meta_value AS balance 
-			FROM {$wpdb->users} users 
-			LEFT JOIN {$wpdb->usermeta} rank ON ( users.ID = rank.user_id AND rank.meta_key = %s ) 
-			LEFT JOIN {$wpdb->usermeta} creds ON ( users.ID = creds.user_id AND creds.meta_key = %s ) 
-			WHERE rank.meta_value = %d 
-			ORDER BY creds.meta_value+0 {$order} {$limit}", $rank_meta_key, $balance_key, $rank_id ) );
+		if ( $order == 'ASC' ) $users = array_reverse( $users, true );
 
 		return apply_filters( 'mycred_get_users_of_rank', $users, $rank_id, $number, $order, $point_type );
+
+	}
+endif;
+
+/**
+ * Manual Ranks
+ * @since 1.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_manual_ranks' ) ) :
+	function mycred_manual_ranks( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+
+		$prefs  = mycred_get_addon_settings( 'ranks', $point_type );
+
+		$result = false;
+		if ( $prefs['base'] == 'manual' )
+			$result = true;
+
+		return $result;
 
 	}
 endif;
@@ -654,19 +643,15 @@ endif;
  * Checks if ranks for a given point type are based on total or current
  * balance.
  * @since 1.6
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_rank_based_on_total' ) ) :
-	function mycred_rank_based_on_total( $type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_rank_based_on_total( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$prefs_key = 'mycred_pref_core';
-		if ( $type != MYCRED_DEFAULT_TYPE_KEY )
-			$prefs_key .= '_' . $type;
-
-		$prefs = get_option( $prefs_key );
+		$prefs  = mycred_get_addon_settings( 'ranks', $point_type );
 
 		$result = false;
-		if ( isset( $prefs['rank']['base'] ) && $prefs['rank']['base'] == 'total' )
+		if ( $prefs['base'] == 'total' )
 			$result = true;
 
 		return $result;
@@ -678,15 +663,15 @@ endif;
  * Rank Shown in BuddyPress
  * Returns either false or the location where the rank is to be shown in BuddyPress.
  * @since 1.6
- * @version 1.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_show_rank_in_buddypress' ) ) :
-	function mycred_show_rank_in_buddypress( $type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_show_rank_in_buddypress( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$prefs = mycred_get_option( 'mycred_pref_core' );
+		$prefs  = mycred_get_addon_settings( 'ranks', $point_type );
 
 		$result = false;
-		if ( isset( $prefs['rank']['bb_location'] ) && $prefs['rank']['bb_location'] != '' )
+		if ( $prefs['rank']['bb_location'] != '' )
 			$result = $prefs['rank']['bb_location'];
 
 		return $result;
@@ -698,15 +683,15 @@ endif;
  * Rank Shown in bbPress
  * Returns either false or the location where the rank is to be shown in bbPress.
  * @since 1.6
- * @version 1.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_show_rank_in_bbpress' ) ) :
-	function mycred_show_rank_in_bbpress( $type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_show_rank_in_bbpress( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$prefs = mycred_get_option( 'mycred_pref_core' );
+		$prefs  = mycred_get_addon_settings( 'ranks', $point_type );
 
 		$result = false;
-		if ( isset( $prefs['rank']['bp_location'] ) && $prefs['rank']['bp_location'] != '' )
+		if ( $prefs['rank']['bp_location'] != '' )
 			$result = $prefs['rank']['bp_location'];
 
 		return $result;

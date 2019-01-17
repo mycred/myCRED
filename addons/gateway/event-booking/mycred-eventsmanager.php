@@ -275,7 +275,7 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 				// Profit sharing
 				if ( $this->prefs['share'] != 0 ) {
 
-					$event_post = get_post( (int) $booking->event->post_id );
+					$event_post = mycred_get_post( (int) $booking->event->post_id );
 
 					if ( $event_post !== NULL ) {
 

@@ -1,27 +1,33 @@
 <?php
 /**
  * Addon: buyCRED
- * Addon URI: http://mycred.me/add-ons/buycred/
- * Version: 1.5
+ * Addon URI: http://codex.mycred.me/chapter-iii/buycred/
+ * Version: 1.6
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
-define( 'MYCRED_PURCHASE',             __FILE__ );
-define( 'MYCRED_PURCHASE_VERSION',     '1.5' );
-define( 'MYCRED_PURCHASE_DIR',         myCRED_ADDONS_DIR . 'buy-creds/' );
-define( 'MYCRED_BUYCRED_ABSTRACT_DIR', MYCRED_PURCHASE_DIR . 'abstracts/' );
-define( 'MYCRED_BUYCRED_GATEWAYS_DIR', MYCRED_PURCHASE_DIR . 'gateways/' );
-define( 'MYCRED_BUYCRED_MODULES_DIR',  MYCRED_PURCHASE_DIR . 'modules/' );
-define( 'MYCRED_BUYCRED_INCLUDES_DIR', MYCRED_PURCHASE_DIR . 'includes/' );
+define( 'MYCRED_PURCHASE',              __FILE__ );
+define( 'MYCRED_PURCHASE_VERSION',      '1.6' );
+define( 'MYCRED_PURCHASE_DIR',          myCRED_ADDONS_DIR . 'buy-creds/' );
+define( 'MYCRED_BUYCRED_ABSTRACT_DIR',  MYCRED_PURCHASE_DIR . 'abstracts/' );
+define( 'MYCRED_BUYCRED_GATEWAYS_DIR',  MYCRED_PURCHASE_DIR . 'gateways/' );
+define( 'MYCRED_BUYCRED_MODULES_DIR',   MYCRED_PURCHASE_DIR . 'modules/' );
+define( 'MYCRED_BUYCRED_INCLUDES_DIR',  MYCRED_PURCHASE_DIR . 'includes/' );
+define( 'MYCRED_BUYCRED_TEMPLATES_DIR', MYCRED_PURCHASE_DIR . 'templates/' );
 
-if ( ! defined( 'MYCRED_BUYCRED_PENDING_COMMENTS' ) )
-	define( 'MYCRED_BUYCRED_PENDING_COMMENTS', true );
+if ( ! defined( 'MYCRED_BUY_PENDING_COMMENTS' ) )
+	define( 'MYCRED_BUY_PENDING_COMMENTS', true );
+
+if ( ! defined( 'MYCRED_BUY_KEY' ) )
+	define( 'MYCRED_BUY_KEY', 'buycred_payment' );
 
 /**
  * Load Dependencies
  */
 require_once MYCRED_BUYCRED_ABSTRACT_DIR . 'mycred-abstract-payment-gateway.php';
+
 require_once MYCRED_BUYCRED_INCLUDES_DIR . 'buycred-functions.php';
+require_once MYCRED_BUYCRED_INCLUDES_DIR . 'buycred-shortcodes.php';
 
 /**
  * Load Built-in Gateways

@@ -19,7 +19,7 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 			'comment' => '-comment-',
 			'amount'  => '',
 			'nothing' => __( 'No instances found for this point type', 'mycred' )
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_hook_table' ) );
 
 		if ( ! mycred_point_type_exists( $type ) ) return __( 'Point type not found.', 'mycred' );
 
@@ -127,4 +127,4 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 
 	}
 endif;
-add_shortcode( 'mycred_hook_table', 'mycred_render_shortcode_hook_table' );
+add_shortcode( MYCRED_SLUG . '_hook_table', 'mycred_render_shortcode_hook_table' );

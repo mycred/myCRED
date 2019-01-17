@@ -182,7 +182,7 @@ if ( ! function_exists( 'mycred_post_is_for_sale' ) ) :
 	function mycred_post_is_for_sale( $post = NULL ) {
 
 		if ( ! is_object( $post ) )
-			$post = get_post( $post );
+			$post = mycred_get_post( $post );
 
 		// Invalid post - not for sale
 		if ( ! isset( $post->ID ) ) return false;
@@ -207,7 +207,7 @@ if ( ! function_exists( 'mycred_post_is_for_sale' ) ) :
 					if ( $type_id == MYCRED_DEFAULT_TYPE_KEY )
 						$suffix = '';
 
-					$sale_setup = (array) get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix, true );
+					$sale_setup = (array) mycred_get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix, true );
 					if ( array_key_exists( 'status', $sale_setup ) && $sale_setup['status'] === 'enabled' )
 						$for_sale = true;
 
@@ -301,24 +301,47 @@ endif;
  * Checks if a user has paid for the given post. Will also take into account
  * if a purchase has expired (if used).
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_user_paid_for_content' ) ) :
-	function mycred_user_paid_for_content( $user_id = NULL, $post_id = NULL ) {
+	function mycred_user_paid_for_content( $user_id = NULL, $post_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		global $wpdb, $mycred;
+		global $wpdb, $mycred_log_table;
 
-		$has_paid     = false;
-		$last_payment = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$mycred->log_table} WHERE user_id = %d AND ref = 'buy_content' AND ref_id = %d ORDER BY time DESC LIMIT 1;", $user_id, $post_id ) );
+		$has_paid = false;
+		$user_id  = absint( $user_id );
+		$post_id  = absint( $post_id );
+		$account  = mycred_get_account( $user_id );
+		$expires  = mycred_sell_content_get_expiration_length( $post_id, $point_type );
 
-		// Found a payment
-		if ( $last_payment !== NULL ) {
+		// No expirations
+		if ( $expires == 0 ) {
 
-			$has_paid = true;
+			// The history object should have a record of our payment for a quick check without the need to run the below db query
+			if ( ! empty( $account->point_types ) && in_array( $point_type, $account->point_types ) && isset( $account->balance[ $point_type ]->history ) ) {
 
-			// Check for expirations
-			if ( mycred_content_purchase_has_expired( $last_payment ) )
-				$has_paid = false;
+				$data = $account->balance[ $point_type ]->history->get( 'data' );
+				if ( array_key_exists( 'buy_content', $data ) && ! empty( $data['buy_content']->reference_ids ) && in_array( $post_id, $data['buy_content']->reference_ids ) )
+					$has_paid = true;
+
+			}
+
+		}
+
+		if ( ! $has_paid ) {
+
+			$last_payment = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$mycred_log_table} WHERE user_id = %d AND ref = 'buy_content' AND ref_id = %d ORDER BY time DESC LIMIT 1;", $user_id, $post_id ) );
+
+			// Found a payment
+			if ( $last_payment !== NULL ) {
+
+				$has_paid = true;
+
+				// Check for expirations
+				if ( mycred_content_purchase_has_expired( $last_payment ) )
+					$has_paid = false;
+
+			}
 
 		}
 
@@ -371,7 +394,7 @@ if ( ! function_exists( 'mycred_sell_content_get_expiration_length' ) ) :
 		if ( $post_id === NULL ) return $length;
 
 		$settings    = mycred_sell_content_settings();
-		$post        = get_post( $post_id );
+		$post        = mycred_get_post( $post_id );
 		$point_types = $settings['type'];
 		$has_expired = false;
 
@@ -387,7 +410,7 @@ if ( ! function_exists( 'mycred_sell_content_get_expiration_length' ) ) :
 			if ( $type == MYCRED_DEFAULT_TYPE_KEY )
 				$suffix = '';
 
-			$sale_setup = (array) get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix, true );
+			$sale_setup = (array) mycred_get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix, true );
 			if ( ! empty( $sale_setup ) && array_key_exists( 'expire', $sale_setup ) && $sale_setup['expire'] > 0 )
 				$length = $sale_setup['expire'];
 
@@ -419,7 +442,7 @@ if ( ! function_exists( 'mycred_sell_content_payment_buttons' ) ) :
 		if ( $user_id === NULL || $post_id === NULL ) return false;
 
 		$settings    = mycred_sell_content_settings();
-		$post        = get_post( $post_id );
+		$post        = mycred_get_post( $post_id );
 		$result      = false;
 
 		if ( ! empty( $settings['type'] ) ) {
@@ -438,7 +461,7 @@ if ( ! function_exists( 'mycred_sell_content_payment_buttons' ) ) :
 				if ( $settings['filters'][ $post->post_type ]['by'] == 'manual' ) {
 
 					$suffix       = ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? '_' . $point_type : '';
-					$manual_setup = (array) get_post_meta( $post_id, 'myCRED_sell_content' . $suffix, true );
+					$manual_setup = (array) mycred_get_post_meta( $post_id, 'myCRED_sell_content' . $suffix, true );
 					if ( ! empty( $manual_setup ) && array_key_exists( 'status', $manual_setup ) )
 						$status = $manual_setup['status'];
 
@@ -483,12 +506,12 @@ if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 		if ( ! is_object( $post ) || strlen( $template ) === 0 ) return $template;
 
 		$post_type         = get_post_type_object( $post->post_type );
-		$url               = get_permalink( $post->ID );
+		$url               = mycred_get_permalink( $post->ID );
 
 		// Remove old tags that are no longer supported
 		$template          = str_replace( array( '%price%', '%expires%', ), '', $template );
 
-		$template          = str_replace( '%post_title%',      get_the_title( $post->ID ), $template );
+		$template          = str_replace( '%post_title%',      mycred_get_the_title( $post->ID ), $template );
 		$template          = str_replace( '%post_type%',       $post_type->labels->singular_name, $template );
 		$template          = str_replace( '%post_url%',        $url, $template );
 		$template          = str_replace( '%link_with_title%', '<a href="' . $url . '">' . $post->post_title . '</a>', $template );
@@ -519,7 +542,7 @@ if ( ! function_exists( 'mycred_sell_content_new_purchase' ) ) :
 	function mycred_sell_content_new_purchase( $post = NULL, $user_id = NULL, $point_type = NULL ) {
 
 		if ( ! is_object( $post ) )
-			$post = get_post( $post );
+			$post = mycred_get_post( $post );
 
 		if ( ! isset( $post->ID ) ) return false;
 
@@ -597,8 +620,8 @@ if ( ! function_exists( 'mycred_sell_content_new_purchase' ) ) :
 					$result = true;
 
 					// Delete counters to trigger new db query
-					delete_post_meta( $post->ID, '_mycred_content_sales' );
-					delete_post_meta( $post->ID, '_mycred_content_buyers' );
+					mycred_delete_post_meta( $post->ID, '_mycred_content_sales' );
+					mycred_delete_post_meta( $post->ID, '_mycred_content_buyers' );
 
 				}
 
@@ -630,7 +653,7 @@ if ( ! function_exists( 'mycred_get_content_price' ) ) :
 
 		$setup     = mycred_get_option( 'mycred_sell_this_' . $point_type );
 		$price     = $mycred->number( $setup['price'] );
-		$post_type = get_post_type( $post_id );
+		$post_type = mycred_get_post_type( $post_id );
 
 		if ( array_key_exists( $post_type, $settings['filters'] ) && $settings['filters'][ $post_type ]['by'] === 'manual' ) {
 
@@ -638,7 +661,7 @@ if ( ! function_exists( 'mycred_get_content_price' ) ) :
 			if ( $point_type == MYCRED_DEFAULT_TYPE_KEY )
 				$suffix = '';
 
-			$sale_setup = (array) get_post_meta( $post_id, 'myCRED_sell_content' . $suffix, true );
+			$sale_setup = (array) mycred_get_post_meta( $post_id, 'myCRED_sell_content' . $suffix, true );
 			if ( array_key_exists( 'price', $sale_setup ) )
 				$price = $mycred->number( $sale_setup['price'] );
 
@@ -658,7 +681,7 @@ endif;
 if ( ! function_exists( 'mycred_get_users_purchased_content' ) ) :
 	function mycred_get_users_purchased_content( $user_id = NULL, $number = 25, $order = 'DESC', $point_type = NULL ) {
 
-		global $wpdb, $mycred;
+		global $wpdb, $mycred_log_table;
 
 		$limit = '';
 		if ( absint( $number ) > 0 )
@@ -676,7 +699,7 @@ if ( ! function_exists( 'mycred_get_users_purchased_content' ) ) :
 		if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) )
 			$order = 'DESC';
 
-		$sql = apply_filters( 'mycred_get_users_purchased_content', "SELECT * FROM {$mycred->log_table} log INNER JOIN {$wpdb->posts} posts ON ( log.ref_id = posts.ID ) {$wheres} ORDER BY time {$order} {$limit};", $user_id, $number, $order, $point_type );
+		$sql = apply_filters( 'mycred_get_users_purchased_content', "SELECT * FROM {$mycred_log_table} log INNER JOIN {$wpdb->posts} posts ON ( log.ref_id = posts.ID ) {$wheres} ORDER BY time {$order} {$limit};", $user_id, $number, $order, $point_type );
 
 		return $wpdb->get_results( $sql );
 
@@ -693,7 +716,7 @@ endif;
 if ( ! function_exists( 'mycred_get_posts_buyers' ) ) :
 	function mycred_get_posts_buyers( $post_id = NULL, $number = 25, $point_type = NULL ) {
 
-		global $wpdb, $mycred;
+		global $wpdb, $mycred_log_table;
 
 		$limit = '';
 		if ( absint( $number ) > 0 )
@@ -708,7 +731,7 @@ if ( ! function_exists( 'mycred_get_posts_buyers' ) ) :
 
 		$wheres = 'WHERE ' . implode( ' AND ', $wheres );
 
-		return $wpdb->get_col( "SELECT user_id FROM {$mycred->log_table} {$wheres} ORDER BY time DESC {$limit};" );
+		return $wpdb->get_col( "SELECT user_id FROM {$mycred_log_table} {$wheres} ORDER BY time DESC {$limit};" );
 
 	}
 endif;
@@ -722,11 +745,11 @@ endif;
 if ( ! function_exists( 'mycred_get_content_sales_count' ) ) :
 	function mycred_get_content_sales_count( $post_id = NULL ) {
 
-		$count = get_post_meta( $post_id, '_mycred_content_sales', true );
+		$count = mycred_get_post_meta( $post_id, '_mycred_content_sales', true );
 		if ( strlen( $count ) == 0 ) {
 
 			$count = mycred_count_ref_id_instances( 'buy_content', $post_id );
-			add_post_meta( $post_id, '_mycred_content_sales', $count, true );
+			mycred_add_post_meta( $post_id, '_mycred_content_sales', $count, true );
 
 		}
 
@@ -744,15 +767,15 @@ endif;
 if ( ! function_exists( 'mycred_get_content_buyers_count' ) ) :
 	function mycred_get_content_buyers_count( $post_id = NULL ) {
 
-		$count = get_post_meta( $post_id, '_mycred_content_buyers', true );
+		$count = mycred_get_post_meta( $post_id, '_mycred_content_buyers', true );
 		if ( strlen( $count ) == 0 ) {
 
-			global $wpdb, $mycred;
+			global $wpdb, $mycred_log_table;
 
-			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT( DISTINCT user_id ) FROM {$mycred->log_table} WHERE ref = 'buy_content' AND ref_id = %d;", $post_id ) );
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT( DISTINCT user_id ) FROM {$mycred_log_table} WHERE ref = 'buy_content' AND ref_id = %d;", $post_id ) );
 			if ( $count === NULL ) $count = 0;
 
-			add_post_meta( $post_id, '_mycred_content_buyers', $count, true );
+			mycred_add_post_meta( $post_id, '_mycred_content_buyers', $count, true );
 
 		}
 

@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * myCRED_Settings_Module class
  * @since 0.1
- * @version 1.4.1
+ * @version 1.5
  */
 if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 	class myCRED_Settings_Module extends myCRED_Module {
@@ -12,7 +12,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Construct
 		 */
-		function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( 'myCRED_Settings_Module', array(
 				'module_name' => 'general',
@@ -63,7 +63,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Empty Log Action
 		 * @since 1.3
-		 * @version 1.3.1
+		 * @version 1.4
 		 */
 		public function action_empty_log() {
 
@@ -71,7 +71,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			check_ajax_referer( 'mycred-management-actions', 'token' );
 
 			// Access
-			if ( ! is_user_logged_in() || ! $this->core->can_edit_plugin() )
+			if ( ! is_user_logged_in() || ! $this->core->user_is_point_admin() )
 				wp_send_json_error( 'Access denied' );
 
 			// Type
@@ -80,22 +80,22 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 			$type = sanitize_key( $_POST['type'] );
 
-			global $wpdb;
+			global $wpdb, $mycred_log_table;
 
 			// If we only have one point type we truncate the log
 			if ( count( $this->point_types ) == 1 && $type == MYCRED_DEFAULT_TYPE_KEY )
-				$wpdb->query( "TRUNCATE TABLE {$this->core->log_table};" );
+				$wpdb->query( "TRUNCATE TABLE {$mycred_log_table};" );
 
 			// Else we want to delete the selected point types only
 			else
 				$wpdb->delete(
-					$this->core->log_table,
+					$mycred_log_table,
 					array( 'ctype' => $type ),
 					array( '%s' )
 				);
 
 			// Count results
-			$total_rows = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->core->log_table} WHERE ctype = '{$type}';" );
+			$total_rows = $wpdb->get_var( "SELECT COUNT(*) FROM {$mycred_log_table} WHERE ctype = '{$type}';" );
 			$wpdb->flush();
 
 			// Response
@@ -121,7 +121,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			check_ajax_referer( 'mycred-management-actions', 'token' );
 
 			// Access
-			if ( ! is_user_logged_in() || ! current_user_can('administrator') )
+			if ( ! is_user_logged_in() || ! $this->core->user_is_point_admin() )
 				wp_send_json_error( 'Access denied' );
 
 			global $wpdb;
@@ -159,7 +159,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			global $wpdb;
 
 			// Log Template
-			$log = sanitize_text_field( $_POST['log_temp'] );
+			$log  = sanitize_text_field( $_POST['log_temp'] );
 
 			// Type
 			if ( ! isset( $_POST['type'] ) )
@@ -250,9 +250,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 			$decimals = absint( $_POST['decimals'] );
 
-			global $wpdb;
-
-			$table = sanitize_text_field( $this->core->log_table );
+			global $wpdb, $mycred_log_table;
 
 			if ( $decimals > 0 ) {
 				$format = 'decimal';
@@ -267,7 +265,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			}
 
 			// Alter table
-			$results = $wpdb->query( "ALTER TABLE {$table} MODIFY creds {$cred_format} DEFAULT NULL;" );
+			$results = $wpdb->query( "ALTER TABLE {$mycred_log_table} MODIFY creds {$cred_format} DEFAULT NULL;" );
 
 			// If we selected no decimals and we have multiple point types, we need to update
 			// their settings to also use no decimals.
@@ -307,7 +305,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		public function load_export() {
 
 			// Security
-			if ( $this->core->can_edit_plugin() ) {
+			if ( $this->core->user_is_point_editor() ) {
 
 				$export = get_transient( 'mycred-export-raw' );
 				if ( $export === false ) return;
@@ -337,10 +335,10 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 */
 		public function action_delete_users_log_entries( $user_id ) {
 
-			global $wpdb;
+			global $wpdb, $mycred_log_table;
 
 			$wpdb->delete(
-				$this->core->log_table,
+				$mycred_log_table,
 				array( 'user_id' => $user_id, 'ctype' => $this->mycred_type ),
 				array( '%d', '%s' )
 			);
@@ -428,6 +426,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				array(
 					'ajaxurl'       => admin_url( 'admin-ajax.php' ),
 					'token'         => wp_create_nonce( 'mycred-management-actions' ),
+					'cache'         => wp_create_nonce( 'mycred-clear-cache' ),
 					'working'       => esc_attr__( 'Processing...', 'mycred' ),
 					'confirm_log'   => esc_attr__( 'Warning! All entries in your log will be permanently removed! This can not be undone!', 'mycred' ),
 					'confirm_clean' => esc_attr__( 'All log entries belonging to deleted users will be permanently deleted! This can not be undone!', 'mycred' ),
@@ -507,36 +506,34 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Admin Page
 		 * @since 0.1
-		 * @version 1.4.2
+		 * @version 1.5
 		 */
 		public function admin_page() {
 
 			// Security
-			if ( ! $this->core->can_edit_plugin() ) wp_die( 'Access Denied' );
+			if ( ! $this->core->user_is_point_admin() ) wp_die( 'Access Denied' );
 
 			// General Settings
-			$general = $this->general;
-
-			$action_hook = '';
-			if ( ! $this->is_main_type )
-				$action_hook = $this->mycred_type;
-
-			$delete_user = 0;
-			if ( isset( $this->core->delete_user ) )
-				$delete_user = $this->core->delete_user;
+			$general     = $this->general;
+			$action_hook = ( ! $this->is_main_type ) ? $this->mycred_type : '';
+			$delete_user = ( isset( $this->core->delete_user ) ) ? $this->core->delete_user : 0;
 
 			// Social Media Links
-			$social   = array();
-			$social[] = '<a href="https://www.facebook.com/myCRED" class="facebook" target="_blank">Facebook</a>';
-			$social[] = '<a href="https://plus.google.com/+MycredMe/posts" class="googleplus" target="_blank">Google+</a>';
-			$social[] = '<a href="https://twitter.com/my_cred" class="twitter" target="_blank">Twitter</a>';
+			$social      = array();
+			$social[]    = '<a href="https://www.facebook.com/myCRED" class="facebook" target="_blank">Facebook</a>';
+			$social[]    = '<a href="https://plus.google.com/+MycredMe/posts" class="googleplus" target="_blank">Google+</a>';
+			$social[]    = '<a href="https://twitter.com/my_cred" class="twitter" target="_blank">Twitter</a>';
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php echo sprintf( __( '%s Settings', 'mycred' ), mycred_label() ); ?> <?php echo myCRED_VERSION; ?> <a href="http://codex.mycred.me/" target="_blank" class="page-title-action"><?php _e( 'Documentation', 'mycred' ); ?></a></h1>
+	<h1><?php _e( 'Settings', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/" target="_blank" class="page-title-action"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+
 	<?php $this->update_notice(); ?>
 
-	<p>&nbsp;<span id="mycred-social-media"><?php echo implode( ' ', $social ); ?></span></p>
+	<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?>
+	<p id="mycred-thank-you-text"><?php printf( __( 'Thank you for using %s. If you have a moment, please leave a %s.', 'mycred' ), mycred_label(), sprintf( '<a href="https://wordpress.org/support/plugin/mycred/reviews/?rate=5#new-post" target="_blank">%s</a>', __( 'review', 'mycred' ) ) ); ?><span id="mycred-social-media"><?php echo implode( ' ', $social ); ?></span></p>
+	<?php endif; ?>
+
 	<form method="post" action="options.php" class="form" name="mycred-core-settings-form" novalidate>
 
 		<?php settings_fields( $this->settings_name ); ?>
@@ -660,9 +657,9 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			</div>
 <?php
 
-			global $wpdb;
+			global $wpdb, $mycred_log_table;
 
-			$total_rows  = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->core->log_table} WHERE ctype = %s;", $this->mycred_type ) );
+			$total_rows  = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$mycred_log_table} WHERE ctype = %s;", $this->mycred_type ) );
 			$reset_block = false;
 
 			if ( get_transient( 'mycred-accounts-reset' ) !== false )
@@ -676,7 +673,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 					<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
 						<div class="form-group">
 							<label>Log Table</label>
-							<h1><?php echo $this->core->log_table; ?></h1>
+							<h1><?php echo esc_attr( $mycred_log_table ); ?></h1>
 						</div>
 					</div>
 					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -902,7 +899,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * Sanititze Settings
 		 * @filter 'mycred_save_core_prefs'
 		 * @since 0.1
-		 * @version 1.5
+		 * @version 1.5.1
 		 */
 		public function sanitize_settings( $post ) {
 
@@ -929,8 +926,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 						// Add if not in array already
 						if ( ! array_key_exists( $data['key'], $types ) ) {
 
-							$key = str_replace( array( ' ', '-' ), '_', $data['key'] );
-							$key = sanitize_key( $key );
+							$key           = str_replace( array( ' ', '-' ), '_', $data['key'] );
+							$key           = sanitize_key( $key );
 
 							$types[ $key ] = sanitize_text_field( $data['label'] );
 
@@ -957,13 +954,15 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			}
 			else {
 
-				$main_settings = mycred_get_option( 'mycred_pref_core' );
+				$main_settings      = mycred_get_option( 'mycred_pref_core' );
 				$new_data['format'] = $main_settings['format'];
 
 				if ( isset( $post['format']['decimals'] ) ) {
+
 					$new_decimals = absint( $post['format']['decimals'] );
 					if ( $new_decimals <= $main_settings['format']['decimals'] )
 						$new_data['format']['decimals'] = $new_decimals;
+
 				}
 
 			}
@@ -975,57 +974,61 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			$new_data['format']['separators']['thousand'] = $this->maybe_whitespace( $post['format']['separators']['thousand'] );
 
 			// Name
-			$new_data['name'] = array(
-				'singular' => sanitize_text_field( $post['name']['singular'] ),
-				'plural'   => sanitize_text_field( $post['name']['plural'] )
+			$new_data['name']    = array(
+				'singular'          => sanitize_text_field( $post['name']['singular'] ),
+				'plural'            => sanitize_text_field( $post['name']['plural'] )
 			);
 
 			// Look
-			$new_data['before'] = sanitize_text_field( $post['before'] );
-			$new_data['after']  = sanitize_text_field( $post['after'] );
+			$new_data['before']  = sanitize_text_field( $post['before'] );
+			$new_data['after']   = sanitize_text_field( $post['after'] );
 
 			// Capabilities
-			$new_data['caps'] = array(
-				'plugin' => sanitize_text_field( $post['caps']['plugin'] ),
-				'creds'  => sanitize_text_field( $post['caps']['creds'] )
+			$new_data['caps']    = array(
+				'plugin'            => sanitize_text_field( $post['caps']['plugin'] ),
+				'creds'             => sanitize_text_field( $post['caps']['creds'] )
 			);
 
 			// Max
-			$new_data['max'] = $this->core->number( $post['max'] );
+			$new_data['max']     = $this->core->number( $post['max'] );
 
 			// Make sure multisites uses capabilities that exists
-			if ( in_array( $new_data['caps']['creds'], array( 'create_users', 'delete_themes', 'edit_plugins', 'edit_themes', 'edit_users' ) ) && is_multisite() )
-				$new_data['caps']['creds'] = 'delete_users';
+			if ( in_array( $new_data['caps']['plugin'], array( 'create_users', 'delete_themes', 'edit_plugins', 'edit_themes', 'edit_users' ) ) && is_multisite() )
+				$new_data['caps']['plugin'] = 'edit_theme_options';
 
 			// Excludes
 			$new_data['exclude'] = array(
-				'plugin_editors' => ( isset( $post['exclude']['plugin_editors'] ) ) ? $post['exclude']['plugin_editors'] : 0,
-				'cred_editors'   => ( isset( $post['exclude']['cred_editors'] ) ) ? $post['exclude']['cred_editors'] : 0,
-				'list'           => sanitize_text_field( $post['exclude']['list'] )
+				'plugin_editors'    => ( isset( $post['exclude']['plugin_editors'] ) ) ? $post['exclude']['plugin_editors'] : 0,
+				'cred_editors'      => ( isset( $post['exclude']['cred_editors'] ) ) ? $post['exclude']['cred_editors'] : 0,
+				'list'              => sanitize_text_field( $post['exclude']['list'] )
 			);
 
 			// Remove Exclude users balances
 			if ( $new_data['exclude']['list'] != '' ) {
-				$excluded_ids = explode( ',', $new_data['exclude']['list'] );
+
+				$excluded_ids = wp_parse_id_list( $new_data['exclude']['list'] );
 				if ( ! empty( $excluded_ids ) ) {
-					foreach ( (array) $excluded_ids as $user_id ) {
-						$user_id = absint( trim( $user_id ) );
+					foreach ( $excluded_ids as $user_id ) {
+
+						$user_id = absint( $user_id );
 						if ( $user_id == 0 ) continue;
+
 						mycred_delete_user_meta( $user_id, $this->mycred_type );
 						mycred_delete_user_meta( $user_id, $this->mycred_type, '_total' );
+
 					}
 				}
+
 			}
 
 			// User deletions
 			$new_data['delete_user'] = ( isset( $post['delete_user'] ) ) ? $post['delete_user'] : 0;
 
-			$action_hook = '';
+			$action_hook             = '';
 			if ( ! $this->is_main_type )
 				$action_hook = $this->mycred_type;
 
-			$new_data = apply_filters( 'mycred_save_core_prefs' . $action_hook, $new_data, $post, $this );
-			return $new_data;
+			return apply_filters( 'mycred_save_core_prefs' . $action_hook, $new_data, $post, $this );
 
 		}
 

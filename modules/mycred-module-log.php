@@ -4,19 +4,19 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * myCRED_Log_Module class
  * @since 0.1
- * @version 1.1.3
+ * @version 1.2
  */
 if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 	class myCRED_Log_Module extends myCRED_Module {
 
-		public $user;
-		public $screen;
+		public $user        = NULL;
+		public $screen      = NULL;
 		public $log_columns = array();
 
 		/**
 		 * Construct
 		 */
-		function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( 'myCRED_Log_Module', array(
 				'module_name' => 'log',
@@ -41,6 +41,9 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		public function module_init() {
 
 			$this->current_user_id = get_current_user_id();
+
+			add_action( 'mycred_set_current_account',      array( $this, 'populate_current_account' ) );
+			add_action( 'mycred_get_account',              array( $this, 'populate_account' ) );
 
 			add_filter( 'mycred_add_finished',             array( $this, 'update_user_references' ), 90, 2 );
 			add_action( 'mycred_add_menu',                 array( $this, 'my_history_menu' ) );
@@ -80,6 +83,60 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		}
 
 		/**
+		 * Populate Current Account
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function populate_current_account() {
+
+			global $mycred_current_account;
+
+			if ( isset( $mycred_current_account )
+				&& ( $mycred_current_account instanceof myCRED_Account )
+				&& ( isset( $mycred_current_account->history ) && in_array( $this->mycred_type, $mycred_current_account->history ) )
+			) return;
+
+			if ( ! empty( $mycred_current_account->point_types ) && in_array( $this->mycred_type, $mycred_current_account->point_types ) && $mycred_current_account->balance[ $this->mycred_type ] !== false ) {
+
+				$mycred_current_account->balance[ $this->mycred_type ]->history = new myCRED_History( $mycred_current_account->user_id, $this->mycred_type );
+
+			}
+
+			if ( ! isset( $mycred_current_account->history ) )
+				$mycred_current_account->history = array( $this->mycred_type );
+			else
+				$mycred_current_account->history[] = $this->mycred_type;
+
+		}
+
+		/**
+		 * Populate Account
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function populate_account() {
+
+			global $mycred_account;
+
+			if ( isset( $mycred_account )
+				&& ( $mycred_account instanceof myCRED_Account )
+				&& ( isset( $mycred_account->history ) && in_array( $this->mycred_type, $mycred_account->history ) )
+			) return;
+
+			if ( ! empty( $mycred_account->point_types ) && in_array( $this->mycred_type, $mycred_account->point_types ) && $mycred_account->balance[ $this->mycred_type ] !== false ) {
+
+				$mycred_account->balance[ $this->mycred_type ]->history = new myCRED_History( $mycred_account->user_id, $this->mycred_type );
+
+			}
+
+			if ( ! isset( $mycred_account->history ) )
+				$mycred_account->history = array( $this->mycred_type );
+			else
+				$mycred_account->history[] = $this->mycred_type;
+
+		}
+
+		/**
 		 * Set Columns
 		 * Sets the table columns that are shown in the log.
 		 * @since 1.7
@@ -111,17 +168,25 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		 * Delete Point Type
 		 * Deletes log entries for a particular point type when the point type is deleted.
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function delete_point_type( $point_type = NULL ) {
 
-			if ( $point_type !== $this->mycred_type || ! $this->core->can_edit_plugin() ) return;
+			if ( $point_type !== $this->mycred_type || ! $this->core->user_is_point_admin() ) return;
 
-			global $wpdb;
+			global $wpdb, $mycred_log_table;
 
+			// Delete all entries of this point type
 			$wpdb->delete(
-				$this->core->log_table,
+				$mycred_log_table,
 				array( 'ctype' => $this->mycred_type ),
+				array( '%s' )
+			);
+
+			// Remove user histories
+			$wpdb->delete(
+				$wpdb->usermeta,
+				array( 'meta_key' => mycred_get_meta_key( $point_type, '_history' ) ),
 				array( '%s' )
 			);
 
@@ -150,7 +215,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		/**
 		 * Delete Log Entry Action
 		 * @since 1.4
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function action_delete_log_entry() {
 
@@ -158,16 +223,34 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			check_ajax_referer( 'mycred-delete-log-entry', 'token' );
 
 			// Access
-			if ( ! $this->core->can_edit_plugin() )
+			if ( ! $this->core->user_is_point_admin() )
 				wp_send_json_error( 'Access denied' );
 
 			$row_id = absint( $_POST['row'] );
 			if ( $row_id === 0 )
 				wp_send_json_error( 'Unknown Row ID' );
 
+			$point_type = sanitize_key( $_POST['ctype'] );
+			if ( ! mycred_point_type_exists( $point_type ) )
+				wp_send_json_error( 'Unknown Point Type' );
+
+			elseif ( $point_type != $this->mycred_type ) return;
+
+			do_action( 'mycred_delete_log_entry', $row_id, $point_type );
+
 			// Delete Row
-			global $wpdb;
-			$wpdb->delete( $this->core->log_table, array( 'id' => $row_id ), array( '%d' ) );
+			global $wpdb, $mycred_log_table;
+
+			$user_id = $wpdb->get_var( $wpdb->prepare( "SELECT user_id FROM {$mycred_log_table} WHERE id = %d;", $row_id ) );
+			if ( $user_id !== NULL ) {
+
+				mycred_delete_user_meta( $user_id, $this->mycred_type, '_history' );
+
+				$wpdb->delete( $mycred_log_table, array( 'id' => $row_id ), array( '%d' ) );
+
+			}
+
+			do_action( 'mycred_deleted_log_entry', $user_id, $row_id, $point_type );
 
 			// Respond
 			wp_send_json_success( __( 'Row Deleted', 'mycred' ) );
@@ -177,7 +260,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		/**
 		 * Update Log Entry Action
 		 * @since 1.4
-		 * @version 1.0.1
+		 * @version 1.2
 		 */
 		public function action_update_log_entry() {
 
@@ -185,60 +268,65 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			check_ajax_referer( 'mycred-update-log-entry', 'token' );
 
 			// Access
-			if ( ! $this->core->can_edit_plugin() )
+			if ( ! $this->core->user_is_point_editor() )
 				wp_send_json_error( array( 'message' => 'Access denied' ) );
 
 			// Make sure we handle our own point type only
-			$ctype = sanitize_key( $_POST['ctype'] );
-			if ( $ctype !== $this->mycred_type ) return;
+			$point_type       = sanitize_key( $_POST['ctype'] );
+			if ( ! mycred_point_type_exists( $point_type ) )
+				wp_send_json_error( array( 'message' => 'Unknown point type' ) );
+
+			if ( $point_type !== $this->mycred_type ) return;
 
 			// We need a row id
-			$entry_id = absint( $_POST['rowid'] );
+			$entry_id         = absint( $_POST['rowid'] );
 			if ( $entry_id === 0 )
 				wp_send_json_error( array( 'message' => 'Invalid Log Entry' ) );
 
-			$screen = sanitize_key( $_POST['screen'] );
+			$screen           = sanitize_key( $_POST['screen'] );
 
 			// Parse form submission
 			parse_str( $_POST['form'], $post );
 
 			// Apply defaults
-			$request = shortcode_atts( apply_filters( 'mycred_update_log_entry_request', array(
+			$request          = shortcode_atts( apply_filters( 'mycred_update_log_entry_request', array(
 				'ref'   => NULL,
 				'creds' => NULL,
 				'entry' => 'current'
 			), $post ), $post['mycred_manage_log'] );
 
 			// Check reference
-			$all_references = mycred_get_all_references();
+			$all_references   = mycred_get_all_references();
 			if ( $request['ref'] == '' || ! array_key_exists( $request['ref'], $all_references ) )
 				wp_send_json_error( array( 'message' => esc_attr__( 'Invalid or empty reference', 'mycred' ) ) );
 
 			// Check entry
 			$request['entry'] = wp_kses_post( $request['entry'] );
-			if ( $request['entry'] == '' )
+			if ( $request['entry'] == '' && ! $this->core->user_is_point_admin() )
 				wp_send_json_error( array( 'message' => esc_attr__( 'Log Entry cannot be empty', 'mycred' ) ) );
 
 			// Check amount
-			$amount = $this->core->number( $request['creds'] );
+			$amount           = $this->core->number( $request['creds'] );
 			if ( $amount === $this->core->zero() )
 				wp_send_json_error( array( 'message' => esc_attr__( 'Amount can not be zero', 'mycred' ) ) );
 
-			global $wpdb;
+			global $wpdb, $mycred_log_table;
 
 			// Get the current version of the entry
-			$log_entry = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->core->log_table} WHERE id = %d;", $entry_id ) );
+			$log_entry        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$mycred_log_table} WHERE id = %d;", $entry_id ) );
 			if ( ! isset( $log_entry->ref ) )
 				wp_send_json_error( array( 'message' => esc_attr__( 'Log entry not found', 'mycred' ) ) );
 
 			// Prep creds format
-			$format = '%d';
-			if ( $this->core->format['decimals'] > 0 )
-				$format = '%f';
+			$format           = ( $this->core->format['decimals'] > 0 ) ? '%f' : '%d';
+
+			do_action( 'mycred_update_log_entry', $entry_id, $point_type );
 
 			// Do the actual update
 			if ( ! $this->core->update_log_entry( $entry_id, array( 'ref' => $request['ref'], 'creds' => $amount, 'entry' => $request['entry'] ), array( '%s', $format, '%s' ) ) )
 				wp_send_json_error( array( 'message' => esc_attr__( 'Could not save the new log entry', 'mycred' ) ) );
+
+			mycred_update_users_history( $log_entry->user_id, $this->mycred_type, $log_entry->ref, $log_entry->ref_id, ( $amount - $log_entry->creds ) );
 
 			// Reset totals if amount or reference was changed
 			if ( $this->core->number( $log_entry->creds ) !== $amount || $log_entry->ref !== $request['ref'] ) {
@@ -251,9 +339,9 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			}
 
-			$wpdb->flush();
+			do_action( 'mycred_updated_log_entry', $log_entry->user_id, $entry_id, $point_type );
 
-			$log                 = new myCRED_Query_Log( array( 'entry_id' => $entry_id ) );
+			$log                 = new myCRED_Query_Log( array( 'entry_id' => $entry_id, 'ctype' => $point_type ) );
 			$log->is_admin       = true;
 			$log->headers        = $this->log_columns;
 			$log->hidden_headers = get_hidden_columns( $screen );
@@ -379,12 +467,12 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				$deleted = 0;
 				if ( ! empty( $entry_ids ) ) {
 
-					global $wpdb, $mycred;
+					global $wpdb, $mycred_log_table;
 
 					foreach ( $entry_ids as $entry_id ) {
 
 						$wpdb->delete(
-							$mycred->log_table,
+							$mycred_log_table,
 							array( 'id' => $entry_id ),
 							array( '%d' )
 						);
@@ -516,9 +604,9 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		public function admin_page() {
 
 			// Security
-			if ( ! $this->core->can_edit_creds() ) wp_die( 'Access Denied' );
+			if ( ! $this->core->user_is_point_editor() ) wp_die( 'Access Denied' );
 
-			$per_page             = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $_GET['page'] );
+			$per_page             = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $_GET['page'], '', true );
 			if ( $per_page == '' ) $per_page = 10;
 
 			$name                 = mycred_label( true );
@@ -532,6 +620,8 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			if ( ! array_key_exists( 'ctype', $search_args ) )
 				$search_args['ctype'] = $this->mycred_type;
 
+			$search_args['cache_results'] = false;
+
 			// Query Log
 			$log                  = new myCRED_Query_Log( $search_args );
 	
@@ -541,7 +631,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 ?>
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php $this->page_title( sprintf( __( '%s Log', 'mycred' ), $this->core->plural() ) ); ?> <a href="http://codex.mycred.me/chapter-i/the-log/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a></h1>
+	<h1><?php _e( 'Log', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/the-log/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 <?php
 
 			// This requirement is only checked on activation. If the library is disabled
@@ -626,25 +716,26 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			// Security
 			if ( ! is_user_logged_in() ) wp_die( 'Access Denied' );
 
-			$per_page = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $_GET['page'] );
+			$per_page                  = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $_GET['page'], '', true );
 			if ( $per_page == '' ) $per_page = 10;
 
-			$search_args = mycred_get_search_args();
+			$search_args               = mycred_get_search_args();
 
 			// Entries per page
 			if ( ! array_key_exists( 'number', $search_args ) )
 				$search_args['number'] = absint( $per_page );
 
 			// Only entries for this point type
-			$search_args['ctype'] = $this->mycred_type;
+			$search_args['ctype']      = $this->mycred_type;
 
 			// Only entries for the current user
-			$search_args['user_id'] = $this->current_user_id;
+			$search_args['user_id']    = $this->current_user_id;
 
-			$log           = new myCRED_Query_Log( $search_args );
+			$log                       = new myCRED_Query_Log( $search_args );
+			$log->is_admin             = true;
 
-			$log->is_admin = true;
 			$log->table_headers();
+
 			unset( $log->headers['username'] );
 
 ?>
@@ -710,55 +801,49 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 		/**
 		 * Handle Post Deletions
+		 * When a post is deleted in WordPress, we need to update all log entries
+		 * that might be using post related template tags so we have something to show.
 		 * @since 1.0.9.2
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function post_deletions( $post_id ) {
 
-			global $post_type, $wpdb;
+			global $post_type, $wpdb, $mycred_log_table;
 
-			// Check log
-			$sql     = "SELECT * FROM {$this->core->log_table} WHERE ref_id = %d;";
-			$records = $wpdb->get_results( $wpdb->prepare( $sql, $post_id ) );
+			// Ignore myCRED post types and added option to stop this
+			if ( in_array( $post_type, get_mycred_post_types() ) || apply_filters( 'mycred_update_post_template_tags', true, $post_id, $this ) === false ) return;
+
+			// Get all records where this post ID has been used as a post reference
+			$records = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM {$mycred_log_table} WHERE ref_id = %d AND data LIKE %s;", $post_id, '%s:8:"ref_type";s:4:"post";%' ) );
 
 			// If we have results
-			if ( $wpdb->num_rows > 0 ) {
+			if ( ! empty( $records ) ) {
 
 				// Loop though them
-				foreach ( $records as $row ) {
+				foreach ( $records as $entry ) {
 
 					// Check if the data column has a serialized array
-					$check = @unserialize( $row->data );
-					if ( $check !== false && $row->data !== 'b:0;' ) {
+					$check = @unserialize( $entry->data );
+					if ( $check !== false && $entry->data !== 'b:0;' ) {
 
 						// Unserialize
-						$data = unserialize( $row->data );
+						$new_data               = unserialize( $entry->data );
+						if ( array_key_exists( 'ID', $new_data ) && array_key_exists( 'post_title', $new_data ) ) continue;
 
-						// If this is a post
-						if ( ( isset( $data['ref_type'] ) && $data['ref_type'] == 'post' ) || ( isset( $data['post_type'] ) ) ) {
+						// Add details that will no longer be available
+						$post                   = mycred_get_post( $post_id );
+						$new_data['ID']         = $post->ID;
+						$new_data['post_title'] = $post->post_title;
+						$new_data['post_type']  = $post->post_type;
 
-							// If the entry is blank continue on to the next
-							if ( trim( $row->entry ) === '' ) continue;
-
-							// Construct a new data array
-							$new_data = array( 'ref_type' => 'post' );
-
-							// Add details that will no longer be available
-							$post                   = get_post( $post_id );
-							$new_data['ID']         = $post->ID;
-							$new_data['post_title'] = $post->post_title;
-							$new_data['post_type']  = $post->post_type;
-
-							// Save
-							$wpdb->update(
-								$this->core->log_table,
-								array( 'data' => serialize( $new_data ) ),
-								array( 'id'   => $row->id ),
-								array( '%s' ),
-								array( '%d' )
-							);
-
-						}
+						// Save
+						$wpdb->update(
+							$mycred_log_table,
+							array( 'data' => serialize( $new_data ) ),
+							array( 'id'   => $entry->id ),
+							array( '%s' ),
+							array( '%d' )
+						);
 
 					}
 
@@ -771,39 +856,48 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		/**
 		 * Handle User Deletions
 		 * @since 1.0.9.2
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function user_deletions( $user_id ) {
 
-			global $wpdb;
+			global $wpdb, $mycred_log_table;
+
+			// Ignore myCRED post types and added option to stop this
+			if ( apply_filters( 'mycred_update_user_template_tags', true, $user_id, $this ) === false ) return;
 
 			// Check log
-			$sql     = "SELECT * FROM {$this->core->log_table} WHERE user_id = %d;";
-			$records = $wpdb->get_results( $wpdb->prepare( $sql, $user_id ) );
+			$records = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM {$mycred_log_table} WHERE user_id = %d AND data LIKE %s;", $user_id, '%s:8:"ref_type";s:4:"user";%' ) );
 
 			// If we have results
-			if ( $wpdb->num_rows > 0 ) {
+			if ( ! empty( $records ) ) {
 
 				// Loop though them
-				foreach ( $records as $row ) {
+				foreach ( $records as $entry ) {
 
-					// Construct a new data array
-					$new_data = array( 'ref_type' => 'user' );
+					// Check if the data column has a serialized array
+					$check = @unserialize( $entry->data );
+					if ( $check !== false && $entry->data !== 'b:0;' ) {
 
-					// Add details that will no longer be available
-					$user                     = get_userdata( $user_id );
-					$new_data['ID']           = $user->ID;
-					$new_data['user_login']   = $user->user_login;
-					$new_data['display_name'] = $user->display_name;
+						// Unserialize
+						$new_data                 = unserialize( $entry->data );
+						if ( array_key_exists( 'ID', $new_data ) && array_key_exists( 'user_login', $new_data ) ) continue;
 
-					// Save
-					$wpdb->update(
-						$this->core->log_table,
-						array( 'data' => serialize( $new_data ) ),
-						array( 'id'   => $row->id ),
-						array( '%s' ),
-						array( '%d' )
-					);
+						// Add details that will no longer be available
+						$user                     = get_userdata( $user_id );
+						$new_data['ID']           = $user->ID;
+						$new_data['user_login']   = $user->user_login;
+						$new_data['display_name'] = $user->display_name;
+
+						// Save
+						$wpdb->update(
+							$mycred_log_table,
+							array( 'data' => serialize( $new_data ) ),
+							array( 'id'   => $entry->id ),
+							array( '%s' ),
+							array( '%d' )
+						);
+
+					}
 
 				}
 
@@ -814,53 +908,45 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		/**
 		 * Handle Comment Deletions
 		 * @since 1.0.9.2
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function comment_deletions( $comment_id ) {
 
-			global $wpdb;
+			global $wpdb, $mycred_log_table;
+
+			// Ignore myCRED post types and added option to stop this
+			if ( apply_filters( 'mycred_update_comment_template_tags', true, $comment_id, $this ) === false ) return;
 
 			// Check log
-			$sql     = "SELECT * FROM {$this->core->log_table} WHERE ref_id = %d;";
-			$records = $wpdb->get_results( $wpdb->prepare( $sql, $comment_id ) );
+			$records = $wpdb->get_results( $wpdb->prepare( "SELECT id, data FROM {$mycred_log_table} WHERE ref_id = %d AND data LIKE %s;", $comment_id, '%s:8:"ref_type";s:7:"comment";%' ) );
 
 			// If we have results
-			if ( $wpdb->num_rows > 0 ) {
+			if ( ! empty( $records ) ) {
 
 				// Loop though them
-				foreach ( $records as $row ) {
+				foreach ( $records as $entry ) {
 
 					// Check if the data column has a serialized array
-					$check = @unserialize( $row->data );
-					if ( $check !== false && $row->data !== 'b:0;' ) {
+					$check = @unserialize( $entry->data );
+					if ( $check !== false && $entry->data !== 'b:0;' ) {
 
 						// Unserialize
-						$data = unserialize( $row->data );
+						$new_data               = unserialize( $entry->data );
+						if ( array_key_exists( 'comment_ID', $new_data ) && array_key_exists( 'comment_post_ID', $new_data ) ) continue;
 
-						// If this is a post
-						if ( isset( $data['ref_type'] ) && $data['ref_type'] == 'comment' ) {
+						// Add details that will no longer be available
+						$comment                     = get_comment( $comment_id );
+						$new_data['comment_ID']      = $comment->comment_ID;
+						$new_data['comment_post_ID'] = $comment->comment_post_ID;
 
-							// If the entry is blank continue on to the next
-							if ( trim( $row->entry ) === '' ) continue;
-
-							// Construct a new data array
-							$new_data = array( 'ref_type' => 'comment' );
-
-							// Add details that will no longer be available
-							$comment                     = get_comment( $comment_id );
-							$new_data['comment_ID']      = $comment->comment_ID;
-							$new_data['comment_post_ID'] = $comment->comment_post_ID;
-
-							// Save
-							$wpdb->update(
-								$this->core->log_table,
-								array( 'data' => serialize( $new_data ) ),
-								array( 'id'   => $row->id ),
-								array( '%s' ),
-								array( '%d' )
-							);
-
-						}
+						// Save
+						$wpdb->update(
+							$mycred_log_table,
+							array( 'data' => serialize( $new_data ) ),
+							array( 'id'   => $entry->id ),
+							array( '%s' ),
+							array( '%d' )
+						);
 
 					}
 
@@ -876,7 +962,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		protected function log_editor() {
+		public function log_editor() {
 
 			$name = mycred_label( true );
 

@@ -5,49 +5,45 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Query Log
  * @see http://codex.mycred.me/classes/mycred_query_leaderboard/ 
  * @since 1.7.9.1
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 	class myCRED_Query_Leaderboard {
 
-		public $id             = '';
-		public $now            = 0;
-		public $core           = NULL;
-		public $user_id        = 0;
-		private $max_size      = 250;
+		public $cache_key       = false;
+		public $now             = 0;
+		public $core            = NULL;
+		public $user_id         = 0;
+		private $max_size       = 250;
 
-		public $args           = array();
-		public $based_on       = 'balance';
-		public $references     = array();
-		public $order          = '';
-		public $limit          = '';
+		public $args            = array();
+		public $based_on        = 'balance';
+		public $references      = array();
+		public $point_types     = array();
+		public $multitype_query = false;
+		public $order           = '';
+		public $limit           = '';
 
-		public $leaderboard    = false;
+		public $leaderboard     = false;
 
 		/**
 		 * Construct
 		 * Preps the class for getting a leaderboard based on the
 		 * given arguments. Validates these arguments.
 		 * @since 1.0
-		 * @version 1.0.1
+		 * @version 1.1.1
 		 */
 		public function __construct( $args = array() ) {
 
-			if ( ! MYCRED_ENABLE_LOGGING ) return false;
-
-			// Generate a unique ID that identifies the leaderboard we are trying to build
-			$this->id       = md5( implode( '|', $args ) );
+			$this->now      = current_time( 'timestamp' );
+			$this->user_id  = get_current_user_id();
+			$this->max_size = apply_filters( 'mycred_max_leaderboard_size', 250, $this );
 
 			// Parse and validate the given args
 			$this->parse_args( $args );
 
-			$this->now      = current_time( 'timestamp' );
-			$this->core     = mycred( $this->args['type'] );
-			$this->user_id  = get_current_user_id();
-			$this->max_size = apply_filters( 'mycred_max_leaderboard_size', 250, $this );
-
 			// What is the leaderboard based on
-			$this->based_on = $this->args['based_on'];
+			$this->based_on = ( MYCRED_ENABLE_LOGGING ) ? $this->args['based_on'] : 'balance';
 			$this->order    = $this->args['order'];
 
 			// Setup limit
@@ -62,11 +58,35 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		}
 
 		/**
+		 * Apply Defaults
+		 * @since 1.0
+		 * @version 1.0
+		 */
+		public function apply_defaults( $data = array() ) {
+
+			$defaults = array(
+				'based_on'     => 'balance',
+				'number'       => 25,
+				'offset'       => 0,
+				'type'         => MYCRED_DEFAULT_TYPE_KEY,
+				'timeframe'    => '',
+				'now'          => $this->now,
+				'order'        => 'DESC',
+				'total'        => 0,
+				'exclude_zero' => 1,
+				'forced'       => 0
+			);
+
+			return apply_filters( 'mycred_query_leaderboard_args', shortcode_atts( $defaults, $data ), $data, $this );
+
+		}
+
+		/**
 		 * Parse Arguments
 		 * We have two jobs: Make sure we provide arguments we can understand and
 		 * that the arguments we provided are valid.
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function parse_args( $args = array() ) {
 
@@ -75,41 +95,37 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			 * @uses mycred_query_leaderboard_args
 			 * @see http://codex.mycred.me/filters/mycred_query_leaderboard_args/
 			 */
-			$defaults             = array(
-				'based_on'     => 'balance',
-				'number'       => 25,
-				'offset'       => 0,
-				'type'         => MYCRED_DEFAULT_TYPE_KEY,
-				'timeframe'    => '',
-				'order'        => 'DESC',
-				'total'        => 0,
-				'exclude_zero' => 1,
-				'forced'       => 0
-			);
-			$args                 = apply_filters( 'mycred_query_leaderboard_args', shortcode_atts( $defaults, $args ), $args, $this );
+			$args                       = $this->apply_defaults( $args );
+
+			// Generate a unique ID that identifies the leaderboard we are trying to build
+			$this->cache_key            = $this->get_cache_key( $args );
 
 			// Based on
-			$based_on             = sanitize_text_field( $args['based_on'] );
+			$based_on                   = sanitize_text_field( $args['based_on'] );
+			if ( ! MYCRED_ENABLE_LOGGING ) $based_on = 'balance';
+
 			if ( $based_on != 'balance' ) {
 
 				$references = array();
 				if ( ! empty( $args['based_on'] ) ) {
 					foreach ( explode( ',', $based_on ) as $ref ) {
+
 						$ref = sanitize_key( $ref );
 						if ( strlen( $ref ) == 0 ) continue;
 						$references[] = $ref;
+
 					}
-					$this->references = $references;
 				}
+				$this->references = $references;
 
 				$based_on = 'references';
 
 			}
 
-			$args['based_on']     = $based_on;
+			$this->args['based_on']     = $based_on;
 
 			// Number or leaderboard size
-			$number               = (int) sanitize_key( $args['number'] );
+			$number                     = (int) sanitize_key( $args['number'] );
 			if ( $number < -1 )
 				$number = -1;
 
@@ -119,42 +135,54 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			elseif ( $number > $this->max_size )
 				$number = $this->max_size;
 
-			$args['number']       = $number;
+			$this->args['number']       = $number;
 
 			// Option to offset
-			$offset               = (int) sanitize_key( $args['offset'] );
+			$offset                     = (int) sanitize_key( $args['offset'] );
 			if ( ! is_numeric( $offset ) )
 				$offset = 0;
 
-			$args['offset']       = $offset;
+			$this->args['offset']       = $offset;
 
 			// Point Type
-			$point_type           = sanitize_key( $args['type'] );
-			if ( ! mycred_point_type_exists( $point_type ) )
-				$point_type = MYCRED_DEFAULT_TYPE_KEY;
+			$point_types                = explode( ',', $args['type'] );
+			$list_of_types              = array();
+			if ( ! empty( $point_types ) ) {
+				foreach ( $point_types as $potential_key ) {
 
-			$args['type']         = $point_type;
+					$type_key = sanitize_key( $potential_key );
+					if ( mycred_point_type_exists( $type_key ) || ! in_array( $type_key, $list_of_types ) )
+						$list_of_types[] = $type_key;
+
+				}
+			}
+			if ( empty( $list_of_types ) )
+				$list_of_types[] = MYCRED_DEFAULT_TYPE_KEY;
+
+			$this->point_types          = $list_of_types;
+			$this->multitype_query      = ( count( $list_of_types ) > 1 ) ? true : false;
+
+			$this->core                 = mycred( $this->point_types[0] );
 
 			// Timeframe
-			$args['timeframe']    = sanitize_text_field( $args['timeframe'] );
+			$this->args['timeframe']    = ( MYCRED_ENABLE_LOGGING ) ? sanitize_text_field( $args['timeframe'] ) : '';
+			$this->args['now']          = ( $args['now'] != '' ) ? absint( $args['now'] ) : $this->now;
 
 			// Order
 			$order = strtoupper( sanitize_text_field( $args['order'] ) );
 			if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) )
 				$order = 'DESC';
 
-			$args['order']        = $order;
+			$this->args['order']        = $order;
 
 			// Show total balance
-			$args['total']        = (bool) $args['total'];
+			$this->args['total']        = ( MYCRED_ENABLE_TOTAL_BALANCE ) ? (bool) $args['total'] : false;
 
 			// Exclude zero balances
-			$args['exclude_zero'] = (bool) $args['exclude_zero'];
+			$this->args['exclude_zero'] = (bool) $args['exclude_zero'];
 
 			// Force a new leaderboard instead of a cached one (if used)
-			$args['forced']       = (bool) $args['forced'];
-
-			$this->args           = $args;
+			$this->args['forced']       = (bool) $args['forced'];
 
 		}
 
@@ -175,10 +203,10 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 				if ( empty( $results ) )
 					$results = false;
 
-			}
+				if ( $results !== false )
+					$this->cache_result( $results );
 
-			if ( $results !== false )
-				$this->cache_result( $results );
+			}
 
 			$this->leaderboard = $results;
 
@@ -266,45 +294,76 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		 * Get Balance Database Query
 		 * Returns the SQL query required for generating a leaderboard that is based on balances.
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function get_balance_db_query() {
 
 			global $wpdb, $mycred_log_table;
 
-			$query           = '';
-			$time_filter     = $this->get_timefilter();
-			$exclude_filter  = $this->get_excludefilter();
-			$multisite_check = $this->get_multisitefilter();
+			$query             = '';
+			$exclude_filter    = $this->get_excludefilter();
+			$multisite_check   = $this->get_multisitefilter();
 
-			// Total balance
-			if ( $this->args['total'] ) {
+			/**
+			 * Total balance with timeframe
+			 * For this, we need to query the myCRED log so we can apply the timeframe.
+			 */
+			if ( MYCRED_ENABLE_LOGGING && $this->args['total'] && $this->args['timeframe'] != '' ) {
 
-				$query = $wpdb->prepare( "
+				$time_filter       = $this->get_timefilter();
+				$point_type_is     = 'l.ctype = %s';
+				$point_type_values = $this->point_types[0];
+
+				// For multiple point types
+				if ( count( $this->point_types ) > 1 ) {
+
+					$point_type_is     = 'l.ctype IN ( %s' . str_repeat( ', %s', ( count( $this->point_types ) - 1 ) ) . ' )';
+					$point_type_values = $this->point_types;
+
+				}
+
+				$query             = $wpdb->prepare( "
 					SELECT l.user_id AS ID, SUM( l.creds ) AS cred 
 					FROM {$mycred_log_table} l 
 					{$multisite_check} 
-					WHERE l.ctype = %s AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
+					WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
 					{$time_filter}
 					{$exclude_filter} 
 					GROUP BY l.user_id
 					ORDER BY SUM( l.creds ) {$this->order}, l.user_id ASC 
-					{$this->limit};", $this->args['type'] );
+					{$this->limit};", $point_type_values );
 
 			}
 
-			// Current Balance
+			/**
+			 * Current or Total Balance
+			 * For this, we will query the usermeta table for the meta_key's.
+			 */
 			else {
 
-				$query = $wpdb->prepare( "
+				$point_type_is     = 'l.meta_key = %s';
+				$point_type_values = mycred_get_meta_key( $this->point_types[0], ( ( $this->args['total'] ) ? '_total' : '' ) );
+
+				// For multiple point types
+				if ( count( $this->point_types ) > 1 ) {
+
+					$point_type_is     = 'l.meta_key IN ( %s' . str_repeat( ', %s', ( count( $this->point_types ) - 1 ) ) . ' )';
+					$point_type_values = array();
+
+					foreach ( $this->point_types as $type_key )
+						$point_type_values[] = mycred_get_meta_key( $type_key, ( ( $this->args['total'] ) ? '_total' : '' ) );
+
+				}
+
+				$query             = $wpdb->prepare( "
 					SELECT DISTINCT u.ID, l.meta_value AS cred 
 					FROM {$wpdb->users} u 
 					INNER JOIN {$wpdb->usermeta} l ON ( u.ID = l.user_id ) 
 					{$multisite_check} 
-					WHERE l.meta_key = %s 
+					WHERE {$point_type_is} 
 					{$exclude_filter} 
 					ORDER BY l.meta_value+0 {$this->order}, l.user_id ASC
-					{$this->limit};", mycred_get_meta_key( $this->args['type'] ) );
+					{$this->limit};", $point_type_values );
 
 			}
 
@@ -313,38 +372,70 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		}
 
 		/**
-		 * Get Balance Database Query
+		 * Get Reference Database Query
 		 * Returns the SQL query required for generating a leaderboard that is based on references.
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function get_reference_db_query() {
 
 			global $wpdb, $mycred_log_table;
 
-			$time_filter     = $this->get_timefilter();
-			$multisite_check = $this->get_multisitefilter();
+			$time_filter       = $this->get_timefilter();
+			$multisite_check   = $this->get_multisitefilter();
 
-			$reference   = 'l.ref = %s';
-			if ( count( $this->references ) > 1 )
-				$reference = 'l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
+			$reference_is      = 'l.ref = %s';
+			$reference_values  = $this->references[0];
 
-			if ( mycred_centralize_log() )
-				$query = $wpdb->prepare( "SELECT DISTINCT l.user_id AS ID, SUM( l.creds ) AS cred FROM {$mycred_log_table} l WHERE {$reference} {$time_filter} GROUP BY l.user_id ORDER BY SUM( l.creds ) {$this->order} {$this->limit};", $this->references );
+			if ( count( $this->references ) > 1 ) {
 
-			// Multisite support
+				$reference_is     = 'l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
+				$reference_values = $this->references;
+
+			}
+
+			$point_type_is     = 'l.ctype = %s';
+			$point_type_values = $this->point_types[0];
+
+			if ( count( $this->point_types ) > 1 ) {
+
+				$point_type_is     = 'l.ctype IN ( %s' . str_repeat( ', %s', ( count( $this->point_types ) - 1 ) ) . ' )';
+				$point_type_values = $this->point_types;
+
+			}
+
+			/**
+			 * Central Logging
+			 * When we are not using Multisite or if we do, but enabled "Central Loggign".
+			 */
+			if ( mycred_centralize_log() ) {
+
+				$query = $wpdb->prepare( "
+					SELECT DISTINCT l.user_id AS ID, SUM( l.creds ) AS cred 
+					FROM {$mycred_log_table} l 
+					WHERE {$reference_is} AND {$point_type_is} 
+					{$time_filter} 
+					GROUP BY l.user_id 
+					ORDER BY SUM( l.creds ) {$this->order}, l.user_id ASC 
+					{$this->limit};", $reference_values, $point_type_values );
+
+			}
+
+			/**
+			 * Multisites
+			 * When we are on a multisite, we need to query based on our local users.
+			 */
 			else {
 
-				$blog_id = absint( $GLOBALS['blog_id'] );
-				$query   = $wpdb->prepare( "
+				$query = $wpdb->prepare( "
 					SELECT DISTINCT l.user_id AS ID, SUM( l.creds ) AS cred 
 					FROM {$mycred_log_table} l 
 					{$multisite_check} 
-					WHERE {$reference} 
+					WHERE {$reference_is} AND {$point_type_is}
 					{$time_filter} 
 					GROUP BY l.user_id 
 					ORDER BY SUM( l.creds ) {$this->order}, l.user_id ASC
-					{$this->limit};", $this->references );
+					{$this->limit};", $reference_values, $point_type_values );
 
 			}
 
@@ -355,11 +446,12 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		/**
 		 * Get Users Leaderboard Position
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function get_users_current_position( $user_id = NULL, $no_position = '' ) {
 
-			$position    = false;
+			$position          = false;
+
 			// Better safe than sorry
 			if ( $user_id === NULL && ! is_user_logged_in() ) return $position;
 
@@ -368,69 +460,109 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			global $wpdb, $mycred_log_table;
 
-			$time_filter     = $this->get_timefilter();
-			$exclude_filter  = $this->get_excludefilter();
-			$multisite_check = $this->get_multisitefilter();
+			$time_filter       = $this->get_timefilter();
+			$exclude_filter    = $this->get_excludefilter();
+			$multisite_check   = $this->get_multisitefilter();
 
+			$point_type_is     = 'l.ctype = %s';
+			$point_type_values = $this->point_types[0];
+
+			if ( count( $this->point_types ) > 1 ) {
+
+				$point_type_is     = 'l.ctype IN ( %s' . str_repeat( ', %s', ( count( $this->point_types ) - 1 ) ) . ' )';
+				$point_type_values = $this->point_types;
+
+			}
+
+			/**
+			 * Balance Query
+			 */
 			if ( $this->based_on == 'balance' ) {
 
-				// Current Balance
-				if ( $this->args['total'] ) {
+				/**
+				 * Total balance with timeframe
+				 * For this, we need to query the myCRED log so we can apply the timeframe.
+				 */
+				if ( MYCRED_ENABLE_LOGGING && $this->args['total'] && $this->args['timeframe'] != '' ) {
 
-					$position = $wpdb->get_var( $wpdb->prepare( "
+					$position          = $wpdb->get_var( $wpdb->prepare( "
 						SELECT rank FROM (
 							SELECT s.*, @rank := @rank + 1 rank FROM (
 								SELECT l.user_id, sum( l.creds ) TotalPoints FROM {$mycred_log_table} l 
 								{$multisite_check}
-								WHERE l.ctype = %s AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
+								WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
 								{$time_filter} 
 								{$exclude_filter} 
 								GROUP BY l.user_id
 								) s, (SELECT @rank := 0) init
 							ORDER BY TotalPoints DESC, s.user_id ASC 
 						) r 
-						WHERE user_id = %d", $this->args['type'], $user_id ) );
+						WHERE user_id = %d", $point_type_values, $user_id ) );
 
 				}
 
+				/**
+				 * Current or Total Balance
+				 * For this, we will query the usermeta table for the meta_key's.
+				 */
 				else {
 
-					$position = $wpdb->get_var( $wpdb->prepare( "
+					$point_type_is     = 'l.meta_key = %s';
+					$point_type_values = mycred_get_meta_key( $this->point_types[0], ( ( $this->args['total'] ) ? '_total' : '' ) );
+
+					// For multiple point types
+					if ( count( $this->point_types ) > 1 ) {
+
+						$point_type_is     = 'l.meta_key IN ( %s' . str_repeat( ', %s', ( count( $this->point_types ) - 1 ) ) . ' )';
+						$point_type_values = array();
+
+						foreach ( $this->point_types as $type_key )
+							$point_type_values[] = mycred_get_meta_key( $type_key, ( ( $this->args['total'] ) ? '_total' : '' ) );
+
+					}
+
+					$position          = $wpdb->get_var( $wpdb->prepare( "
 						SELECT rank FROM (
 							SELECT s.*, @rank := @rank + 1 rank FROM (
 								SELECT l.user_id, l.meta_value AS Balance FROM {$wpdb->usermeta} l 
 								{$multisite_check} 
-								WHERE l.meta_key = %s 
+								WHERE {$point_type_is} 
 								{$exclude_filter}
 							) s, (SELECT @rank := 0) init
 							ORDER BY Balance+0 DESC, s.user_id ASC 
 						) r 
-						WHERE user_id = %d", mycred_get_meta_key( $this->args['type'] ), $user_id ) );
+						WHERE user_id = %d", $point_type_values, $user_id ) );
 
 				}
 
 			}
 
-			else {
+			/**
+			 * Reference Query
+			 */
+			elseif ( MYCRED_ENABLE_LOGGING ) {
 
-				$reference   = 'l.ref = %s';
-				if ( count( $this->references ) > 1 )
-					$reference = 'l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
+				$reference_is      = 'l.ref = %s';
+				$reference_values  = $this->references[0];
+				if ( count( $this->references ) > 1 ) {
+					$reference_is     = 'l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
+					$reference_values = $this->references;
+				}
 
-				$position    = $wpdb->get_var( $wpdb->prepare( "
+				$position          = $wpdb->get_var( $wpdb->prepare( "
 					SELECT rank FROM (
 						SELECT s.*, @rank := @rank + 1 rank FROM (
 							SELECT l.user_id, sum( l.creds ) TotalPoints FROM {$mycred_log_table} l 
 							{$multisite_check}
-							WHERE l.ctype = %s AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
-							{$reference} 
+							WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
+							{$reference_is} 
 							{$time_filter} 
 							{$exclude_filter} 
 							GROUP BY l.user_id
 						) s, (SELECT @rank := 0) init
 						ORDER BY TotalPoints DESC, s.user_id ASC 
 					) r 
-					WHERE user_id = %d", $this->args['type'], $user_id ) );
+					WHERE user_id = %d", $point_type_values, $reference_values, $user_id ) );
 
 			}
 
@@ -444,69 +576,122 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		/**
 		 * Get Users Leaderboard Value
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function get_users_current_value( $user_id = NULL ) {
+
+			$value             = 0;
+
+			// Better safe than sorry
+			if ( $user_id === NULL && ! is_user_logged_in() ) return $value;
 
 			if ( $user_id === NULL || absint( $user_id ) === 0 )
 				$user_id = $this->user_id;
 
 			global $wpdb, $mycred_log_table;
 
-			$time_filter     = $this->get_timefilter();
-			$multisite_check = $this->get_multisitefilter();
+			$time_filter       = $this->get_timefilter();
+			$multisite_check   = $this->get_multisitefilter();
 
+			$point_type_is     = 'l.ctype = %s';
+			$point_type_values = $this->point_types[0];
+
+			if ( count( $this->point_types ) > 1 ) {
+
+				$point_type_is     = 'l.ctype IN ( %s' . str_repeat( ', %s', ( count( $this->point_types ) - 1 ) ) . ' )';
+				$point_type_values = $this->point_types;
+
+			}
+
+			/**
+			 * Balance Query
+			 */
 			if ( $this->based_on == 'balance' ) {
 
-				$value = $this->core->get_users_balance( $user_id );
-				if ( $this->args['total'] ) {
+				/**
+				 * Total balance with timeframe
+				 * For this, we need to query the myCRED log so we can apply the timeframe.
+				 */
+				if ( MYCRED_ENABLE_LOGGING && $this->args['total'] && $this->args['timeframe'] != '' ) {
 
-					if ( $this->args['timeframe'] == '' )
-						$value = mycred_query_users_total( $user_id, $this->args['type'] );
+					$value             = $wpdb->get_var( $wpdb->prepare( "
+						SELECT TotalPoints FROM (
+							SELECT s.*, @rank := @rank + 1 rank FROM (
+								SELECT l.user_id, sum( l.creds ) TotalPoints FROM {$mycred_log_table} l 
+								{$multisite_check}
+								WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
+								{$time_filter} 
+								{$exclude_filter} 
+								GROUP BY l.user_id
+								) s, (SELECT @rank := 0) init
+							ORDER BY TotalPoints DESC, s.user_id ASC 
+						) r 
+						WHERE user_id = %d", $point_type_values, $user_id ) );
 
-					else {
+				}
 
-						$value = $wpdb->get_var( $wpdb->prepare( "
-							SELECT SUM( l.creds ) 
-							FROM {$mycred_log_table} l 
-							{$multisite_check} 
-							WHERE l.ctype = %s AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
-							AND user_id = %d 
-							{$time_filter};", $this->args['type'], $user_id ) );
+				/**
+				 * Current or Total Balance
+				 * For this, we will query the usermeta table for the meta_key's.
+				 */
+				else {
 
-						if ( $value === NULL ) $value = 0;
+					$point_type_is     = 'l.meta_key = %s';
+					$point_type_values = mycred_get_meta_key( $this->point_types[0], ( ( $this->args['total'] ) ? '_total' : '' ) );
+
+					// For multiple point types
+					if ( count( $this->point_types ) > 1 ) {
+
+						$point_type_is     = 'l.meta_key IN ( %s' . str_repeat( ', %s', ( count( $this->point_types ) - 1 ) ) . ' )';
+						$point_type_values = array();
+
+						foreach ( $this->point_types as $type_key )
+							$point_type_values[] = mycred_get_meta_key( $type_key, ( ( $this->args['total'] ) ? '_total' : '' ) );
 
 					}
+
+					$value             = $wpdb->get_var( $wpdb->prepare( "
+						SELECT Balance FROM (
+							SELECT s.*, @rank := @rank + 1 rank FROM (
+								SELECT l.user_id, l.meta_value AS Balance FROM {$wpdb->usermeta} l 
+								{$multisite_check} 
+								WHERE {$point_type_is} 
+								{$exclude_filter}
+							) s, (SELECT @rank := 0) init
+							ORDER BY Balance+0 DESC, s.user_id ASC 
+						) r 
+						WHERE user_id = %d", $point_type_values, $user_id ) );
 
 				}
 
 			}
 
-			else {
+			/**
+			 * Reference Query
+			 */
+			elseif ( MYCRED_ENABLE_LOGGING ) {
 
-				$reference   = 'l.ref = %s';
-				if ( count( $this->references ) > 1 )
-					$reference = 'l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
-
-				if ( mycred_centralize_log() )
-					$query = $wpdb->prepare( "SELECT SUM( l.creds ) FROM {$mycred_log_table} l WHERE {$reference} AND user_id = %d {$time_filter};", $this->references, $user_id );
-
-				// Multisite support
-				else {
-
-					$blog_id = absint( $GLOBALS['blog_id'] );
-					$query   = $wpdb->prepare( "
-						SELECT SUM( l.creds ) 
-						FROM {$mycred_log_table} l 
-						{$multisite_check} 
-						WHERE {$reference} 
-						AND user_id = %d
-						{$time_filter};", $this->references, $user_id );
-
+				$reference_is      = 'l.ref = %s';
+				$reference_values  = $this->references[0];
+				if ( count( $this->references ) > 1 ) {
+					$reference_is     = 'l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
+					$reference_values = $this->references;
 				}
 
-				$value = $wpdb->get_var( $query );
-				if ( $value === NULL ) $value = 0;
+				$value             = $wpdb->get_var( $wpdb->prepare( "
+					SELECT TotalPoints FROM (
+						SELECT s.*, @rank := @rank + 1 rank FROM (
+							SELECT l.user_id, sum( l.creds ) TotalPoints FROM {$mycred_log_table} l 
+							{$multisite_check}
+							WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
+							{$reference_is} 
+							{$time_filter} 
+							{$exclude_filter} 
+							GROUP BY l.user_id
+						) s, (SELECT @rank := 0) init
+						ORDER BY TotalPoints DESC, s.user_id ASC 
+					) r 
+					WHERE user_id = %d", $point_type_values, $reference_values, $user_id ) );
 
 			}
 
@@ -537,21 +722,21 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			// Filter: Daily
 			if ( $this->args['timeframe'] == 'today' )
-				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( 'today midnight', $this->now ), $this->now );
+				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( 'today midnight', $this->now ), $this->args['now'] );
 
 			// Filter: Weekly
 			elseif ( $this->args['timeframe'] == 'this-week' )
-				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( $week_starts . ' this week', $this->now ), $this->now );
+				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( $week_starts . ' this week', $this->now ), $this->args['now'] );
 
 			// Filter: Monthly
 			elseif ( $this->args['timeframe'] == 'this-month' )
-				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( date( 'Y-m-01', $this->now ) ), $this->now );
+				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( date( 'Y-m-01', $this->now ) ), $this->args['now'] );
 
 			else {
 
 				$start_from = strtotime( $this->args['timeframe'], $this->now );
 				if ( $start_from !== false && $start_from > 0 )
-					$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", $start_from, $this->now );
+					$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", $start_from, $this->args['now'] );
 
 			}
 
@@ -618,59 +803,63 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		 * @since 1.0
 		 * @version 1.0
 		 */
-		public function get_cache_key() {
+		public function get_cache_key( $args = array() ) {
 
-			return 'mycred-leaderboard-' . md5( implode( '|', $this->args ) );
+			if ( empty( $args ) ) $args = $this->args;
+			else $args = $this->apply_defaults( $args );
+
+			return 'leaderboard-' . md5( serialize( $args ) );
 
 		}
 
 		/**
 		 * Get Cached Leaderboard
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function get_cache() {
 
-			if ( $this->args['forced'] == 1 || MYCRED_DISABLE_LEADERBOARD_CACHE ) return false;
+			$data         = false;
+			$key          = $this->get_cache_key();
 
-			$cached_results = get_option( $this->get_cache_key(), false );
-			if ( $cached_results !== false )
-				$cached_results = maybe_unserialize( $cached_results );
+			// Object caching we will always do
+			$object_cache = wp_cache_get( $key, MYCRED_SLUG );
+			if ( $object_cache !== false && is_array( $object_cache ) ) {
 
-			return $cached_results;
+				if ( $this->args['forced'] )
+					wp_cache_delete( $key, MYCRED_SLUG );
+
+				else $data = $object_cache;
+
+			}
+
+			return apply_filters( 'mycred_get_cached_leaderboard', $data, $this );
 
 		}
 
 		/**
 		 * Cache Results
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function cache_result( $data = array() ) {
 
-			if ( MYCRED_DISABLE_LEADERBOARD_CACHE ) return;
+			if ( $this->args['forced'] ) return;
 
-			if ( $this->to_big_to_cache() ) return;
+			$key        = $this->get_cache_key();
+			$cache_keys = mycred_get_option( MYCRED_SLUG . '-cache-leaderboard-keys', array() );
 
-			update_option( $this->get_cache_key(), $data );
+			if ( empty( $cache_keys ) || ( ! empty( $cache_keys ) && ! in_array( $key, $cache_keys ) ) ) {
 
-		}
+				$cache_keys[] = $key;
 
-		/**
-		 * Check if the cache is too big for storage in the db.
-		 * @since 1.0
-		 * @version 1.0
-		 */
-		public function to_big_to_cache() {
-
-			$big = false;
-			if ( $this->leaderboard !== false ) {
-
-				
+				mycred_update_option( MYCRED_SLUG . '-cache-leaderboard-keys', $cache_keys );
 
 			}
 
-			return $big;
+			wp_cache_set( $key, $data, MYCRED_SLUG );
+
+			do_action( 'mycred_cache_leaderboard', $data, $this );
 
 		}
 
@@ -681,7 +870,9 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		 */
 		public function is_leaderboard( $args = array() ) {
 
-			return ( $this->id == md5( implode( '|', $args ) ) );
+			if ( $this->cache_key === false ) return false;
+
+			return ( $this->cache_key == $this->get_cache_key( $args ) );
 
 		}
 
@@ -780,16 +971,21 @@ endif;
 /**
  * Get Leaderboard
  * @since 1.7.9.1
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_get_leaderboard' ) ) :
 	function mycred_get_leaderboard( $args = array() ) {
 
 		global $mycred_leaderboard;
 
-		// No need to do extra work if we already have the correct global
-		if ( is_object( $mycred_leaderboard ) && $mycred_leaderboard->is_leaderboard( $args ) )
+		if ( isset( $mycred_leaderboard )
+			&& ( $mycred_leaderboard instanceof myCRED_Query_Leaderboard )
+			&& ( $mycred_leaderboard->is_leaderboard( $args ) )
+		) {
+
 			return $mycred_leaderboard;
+
+		}
 
 		$mycred_leaderboard = new myCRED_Query_Leaderboard( $args );
 

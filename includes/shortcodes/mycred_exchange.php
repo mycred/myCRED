@@ -20,7 +20,7 @@ if ( ! function_exists( 'mycred_render_shortcode_exchange' ) ) :
 			'rate'   => 1,
 			'min'    => 1,
 			'button' => 'Exchange'
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_exchange' ) );
 
 		if ( $from == '' || $to == '' ) return '';
 
@@ -96,7 +96,7 @@ if ( ! function_exists( 'mycred_render_shortcode_exchange' ) ) :
 
 	}
 endif;
-add_shortcode( 'mycred_exchange', 'mycred_render_shortcode_exchange' );
+add_shortcode( MYCRED_SLUG . '_exchange', 'mycred_render_shortcode_exchange' );
 
 /**
  * Catch Exchange
@@ -184,31 +184,6 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 		$reply       = apply_filters( 'mycred_decline_exchange', false, compact( 'from', 'to', 'user_id', 'rate', 'min', 'amount' ) );
 		if ( $reply === false ) {
 
-            // Minimum Amount to be enter
-            $min_amount = 1 / $rate;
-
-            // Make sure user enter greater or equal to minimum amount
-            if( $amount < $min_amount ) {
-                $mycred_exchange = array(
-                    'success' => false,
-                    'message' => sprintf( __( 'You must enter minimum %s %s', 'mycred' ), $min_amount, $mycred_from->plural() )
-                );
-                return;
-            }
-
-            // Possible Amount that can be enter
-            $no_of_new_points_float = $amount / $min_amount;
-
-            // Round up value to send amount to mycred
-            $exchanged = $mycred_to->number( $no_of_new_points_float );
-
-            // Return extra amount
-            $amount_to_use = $min_amount * $exchanged;
-            $amount_to_return = $amount - $amount_to_use;
-
-            if( $amount_to_use != $amount )
-                $amount = $amount_to_use;
-
 			$mycred_from->add_creds(
 				'exchange',
 				$user_id,
@@ -219,23 +194,21 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 				$from
 			);
 
-            $mycred_to->add_creds(
-                'exchange',
-                $user_id,
-                $exchanged,
-                sprintf( __( 'Exchange to %s', 'mycred' ), $mycred_to->plural() ),
-                0,
-                array( 'to' => $to, 'rate' => $rate, 'min' => $min ),
-                $to
-            );
+			$exchanged = $mycred_to->number( ( $amount * $rate ) );
 
-            $return_point_msg  = '';
-            if( !empty( $amount_to_return ) )
-                $return_point_msg = '<br> Return %s %s into your balance';
+			$mycred_to->add_creds(
+				'exchange',
+				$user_id,
+				$exchanged,
+				sprintf( __( 'Exchange to %s', 'mycred' ), $mycred_to->plural() ),
+				0,
+				array( 'to' => $to, 'rate' => $rate, 'min' => $min ),
+				$to
+			);
 
 			$mycred_exchange = array(
 				'success' => true,
-				'message' => sprintf( __( 'You have successfully exchanged %s into %s.'.$return_point_msg, 'mycred' ), $mycred_from->format_creds( $amount ), $mycred_to->format_creds( $exchanged ),$amount_to_return, $mycred_from->plural() )
+				'message' => sprintf( __( 'You have successfully exchanged %s into %s.', 'mycred' ), $mycred_from->format_creds( $amount ), $mycred_to->format_creds( $exchanged ) )
 			);
 
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
  * Addon: Sell Content
- * Addon URI: http://mycred.me/add-ons/sell-content/
+ * Addon URI: http://codex.mycred.me/chapter-iii/sell-content/
  * Version: 2.0.1
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
@@ -72,12 +72,12 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			add_action( 'template_redirect',               array( $this, 'template_redirect' ), 99990 );
 
 			// Register shortcodes
-			add_shortcode( 'mycred_sell_this',             'mycred_render_sell_this' );
-			add_shortcode( 'mycred_sell_this_ajax',        'mycred_render_sell_this_ajax' );
-			add_shortcode( 'mycred_sales_history',         'mycred_render_sell_history' );
-			add_shortcode( 'mycred_content_sale_count',    'mycred_render_sell_count' );
-			add_shortcode( 'mycred_content_buyer_count',   'mycred_render_sell_buyer_count' );
-			add_shortcode( 'mycred_content_buyer_avatars', 'mycred_render_sell_buyer_avatars' );
+			add_shortcode( MYCRED_SLUG . '_sell_this',             'mycred_render_sell_this' );
+			add_shortcode( MYCRED_SLUG . '_sell_this_ajax',        'mycred_render_sell_this_ajax' );
+			add_shortcode( MYCRED_SLUG . '_sales_history',         'mycred_render_sell_history' );
+			add_shortcode( MYCRED_SLUG . '_content_sale_count',    'mycred_render_sell_count' );
+			add_shortcode( MYCRED_SLUG . '_content_buyer_count',   'mycred_render_sell_buyer_count' );
+			add_shortcode( MYCRED_SLUG . '_content_buyer_avatars', 'mycred_render_sell_buyer_avatars' );
 
 			// Setup Script
 			add_action( 'mycred_register_assets',          array( $this, 'register_assets' ) );
@@ -146,7 +146,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 					'mycred-sell-this',
 					'myCREDBuyContent',
 					array(
-						'ajaxurl'    => esc_url( ( isset( $post->ID ) ) ? get_permalink( $post->ID ) : home_url( '/' ) ),
+						'ajaxurl'    => esc_url( ( isset( $post->ID ) ) ? mycred_get_permalink( $post->ID ) : home_url( '/' ) ),
 						'token'      => wp_create_nonce( 'mycred-buy-this-content' ),
 						'working'    => esc_js( $this->sell_content['working'] ),
 						'reload'     => $this->sell_content['reload'],
@@ -204,7 +204,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 					if ( mycred_post_is_for_sale( $post_id ) && ! mycred_user_paid_for_content( $this->current_user_id, $post_id ) ) {
 
 						$content  = '';
-						$post     = get_post( $post_id );
+						$post     = mycred_get_post( $post_id );
 						$purchase = mycred_sell_content_new_purchase( $post, $this->current_user_id, $point_type );
 
 						// Successfull purchase
@@ -263,7 +263,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			global $mycred_partial_content_sale, $mycred_sell_this;
 
 			$post_id = mycred_sell_content_post_id();
-			$post    = get_post( $post_id );
+			$post    = mycred_get_post( $post_id );
 
 			// If content is for sale
 			if ( mycred_post_is_for_sale( $post_id ) ) {
@@ -1046,12 +1046,12 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 					if ( $point_type == MYCRED_DEFAULT_TYPE_KEY )
 						$suffix = '';
 
-					$sale_setup = (array) get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix, true );
-					$sale_setup = wp_parse_args( $sale_setup, array(
+					$sale_setup = (array) mycred_get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix );
+					$sale_setup = shortcode_atts( array(
 						'status' => 'disabled',
 						'price'  => 0,
 						'expire' => 0 
-					) );
+					), $sale_setup );
 
 					$expiration_description = __( 'Never expires', 'mycred' );
 					if ( absint( $sale_setup['expire'] ) > 0 )
@@ -1132,12 +1132,14 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 						$mycred     = mycred( $point_type );
 
-						$new_setup  = array( 'status' => '', 'price' => 0, 'expire' => 0 );
-						$submission = wp_parse_args( $_POST['mycred_sell_this'][ $point_type ], array(
+						$new_setup  = array( 'status' => 'disabled', 'price' => 0, 'expire' => 0 );
+						$submission = shortcode_atts( array(
 							'status' => 'disabled',
-							'price'  => '',
-							'expire' => ''
-						) );
+							'price'  => 0,
+							'expire' => 0
+						), $_POST['mycred_sell_this'][ $point_type ] );
+
+						if ( $submission['status'] == '' ) $submission['status'] = 'disabled';
 
 						// If not empty and different from the general setup, save<
 						if ( in_array( $submission['status'], array( 'enabled', 'disabled' ) ) )
@@ -1155,7 +1157,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 						if ( $point_type == MYCRED_DEFAULT_TYPE_KEY )
 							$suffix = '';
 
-						update_post_meta( $post_id, 'myCRED_sell_content' . $suffix, $new_setup );
+						mycred_update_post_meta( $post_id, 'myCRED_sell_content' . $suffix, $new_setup );
 
 					}
 				}
