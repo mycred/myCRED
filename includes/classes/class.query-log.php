@@ -1266,7 +1266,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$page_links         = array();
 			$output             = '';
 			$total_pages        = $this->max_num_pages;
-			$current            = $this->get_pagenum();
+			$current            = (isset($_GET['paged']) && is_numeric($_GET['paged']) ) ? $_GET['paged'] : 1;
 			$current_url        = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
 
 			if ( ! $this->is_admin )

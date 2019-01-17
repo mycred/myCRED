@@ -47,12 +47,12 @@ if ( ! class_exists( 'myCRED_Protect' ) ) :
 
 			if ( $value === NULL || empty( $value ) ) return false;
 
-			if ( function_exists( 'mcrypt_encrypt' ) ) {
-
-				$text      = $value;
-				$iv_size   = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
-				$iv        = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
-				$crypttext = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $this->skey, $text, MCRYPT_MODE_ECB, $iv );
+		    if ( function_exists( 'openssl_encrypt' ) ) {
+				$cipher="AES-256-CBC";
+				$text  = $value;
+				$ivlen = openssl_cipher_iv_length( $cipher);
+				$iv    = openssl_random_pseudo_bytes($ivlen);
+				$crypttext = openssl_encrypt( $text, $cipher, $this->skey, 0, $iv );
 
 				return trim( $this->do_safe_b64encode( $crypttext ) );
 
@@ -69,15 +69,14 @@ if ( ! class_exists( 'myCRED_Protect' ) ) :
 
 			if ( $value === NULL || empty( $value ) ) return false;
 
-			if ( function_exists( 'mcrypt_decrypt' ) ) {
-
+		    if(function_exists( 'openssl_decrypt' )){
 				$crypttext   = $this->do_safe_b64decode( $value ); 
-				$iv_size     = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
-				$iv          = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
-				$decrypttext = mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $this->skey, $crypttext, MCRYPT_MODE_ECB, $iv );
+				$cipher      =	"AES-256-CBC";
+				$iv_size     = openssl_cipher_iv_length( $cipher);
+				$iv          = openssl_random_pseudo_bytes($iv_size);
+				$decrypttext = openssl_decrypt( $crypttext, $cipher, $this->skey, 0, $iv );
 
 				return trim( $decrypttext );
-
 			}
 
 			return $value;
@@ -91,18 +90,17 @@ if ( ! class_exists( 'myCRED_Protect' ) ) :
 
 			if ( $value === NULL || empty( $value ) ) return false;
 
-			if ( function_exists( 'mcrypt_decrypt' ) ) {
-
+			if(function_exists( 'openssl_decrypt' )){
 				$crypttext   = $this->do_safe_b64decode( $value ); 
-				$iv_size     = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
-				$iv          = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
-				$decrypttext = mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $this->skey, $crypttext, MCRYPT_MODE_ECB, $iv );
+				$cipher      =	"AES-256-CBC";
+				$iv_size     = openssl_cipher_iv_length( $cipher);
+				$iv          = openssl_random_pseudo_bytes($iv_size);
+				$decrypttext = openssl_decrypt( $crypttext, $cipher, $this->skey,  0, $iv );
 				$string      = trim( $decrypttext );
 
 				parse_str( $string, $output );
 
 				return $output;
-
 			}
 
 			return $value;

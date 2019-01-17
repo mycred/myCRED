@@ -310,7 +310,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		/**
 		 * Admin Page
 		 * @since 0.1
-		 * @version 1.2.2
+		 * @version 1.2.3
 		 */
 		public function admin_page() {
 
@@ -367,14 +367,18 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 
 				<a class="more-details" id="<?php echo $aria_action; ?>" href="<?php echo $data['addon_url']; ?>" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a>
 
-				<?php if ( $this->is_active( $key ) ) : ?>
-				<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
-				<?php else : ?>
-				<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
-				<?php endif; ?>
+				<div class="theme-id-container">
 
-				<div class="theme-actions">
-					<?php echo $this->activate_deactivate( $key ); ?>
+					<?php if ( $this->is_active( $key ) ) : ?>
+					<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
+					<?php else : ?>
+					<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
+					<?php endif; ?>
+
+					<div class="theme-actions">
+						<?php echo $this->activate_deactivate( $key ); ?>
+					</div>
+
 				</div>
 
 			</div>

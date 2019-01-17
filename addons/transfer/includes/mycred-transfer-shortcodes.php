@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Renders a transfer form that allows users to send points to other users.
  * @see http://mycred.me/functions/mycred_transfer_render/
  * @since 0.1
- * @version 1.7.3
+ * @version 1.7.4
  */
 if ( ! function_exists( 'mycred_transfer_render' ) ) :
 	function mycred_transfer_render( $atts, $content = NULL ) {
@@ -164,7 +164,7 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 		}
 
 		// Recipient Input field
-		$to_input = '<input type="text" name="mycred_new_transfer[recipient_id]" value="" aria-required="true" class="mycred-autofill form-control" data-form="' . $ref . '" placeholder="' . $placeholder . '" />';
+		$to_input = '<input type="text" name="mycred_new_transfer[recipient_id]" value="" aria-required="true" class="form-control' . ( ( $pref['autofill'] != 'none' ) ? ' mycred-autofill' : '' ) . '" data-form="' . $ref . '" placeholder="' . $placeholder . '" />';
 
 		// If recipient is set, pre-populate it with the recipients details
 		if ( $pay_to != '' ) {
@@ -174,10 +174,10 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 			if ( $user !== false ) {
 
 				$value = $user->display_name;
-				if ( isset( $user->$pref['autofill'] ) )
-					$value = $user->$pref['autofill'];
+				if ( isset( $user->{$pref['autofill']} ) )
+					$value = $user->{$pref['autofill']};
 
-				$to_input = '<p class="form-control-static">' . $value . '</p><input type="hidden" name="mycred_new_transfer[recipient_id]" value="' . ( ( isset( $user->$pref['autofill'] ) ) ? $user->$pref['autofill'] : $pay_to ) . '" />';
+				$to_input = '<p class="form-control-static">' . $value . '</p><input type="hidden" name="mycred_new_transfer[recipient_id]" value="' . ( ( isset( $user->{$pref['autofill']} ) ) ? $user->{$pref['autofill']} : $pay_to ) . '" />';
 
 			}
 

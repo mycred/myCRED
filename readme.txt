@@ -1,9 +1,9 @@
 === myCRED ===
 Contributors: mycred ,wpexpertsio
 Tags: point, credit, loyalty program, engagement, reward
-Requires at least: 4.0
+Requires at least: 4.5
 Tested up to: 4.9
-Stable tag: 1.7.9.3
+Stable tag: 1.7.9.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,15 +92,16 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-= 1.7.9.3 =
+
+= 1.7.9.4 =
 Bug fixes.
 
 
 == Other Notes ==
 
 = Requirements =
-* WordPress 4.0 or greater
-* PHP version 5.3 or greater
+* WordPress 4.5 or greater
+* PHP version 5.6 or greater
 * PHP mcrypt library enabled
 * MySQL version 5.0 or greater
 
@@ -117,17 +118,11 @@ Bug fixes.
 
 == Changelog ==
 
-= 1.7.9.3 =
-FIX - Manual badges are not removed when editing a users profile.
-FIX - Best user shortcode without any requirements causes an invalid SQL query.
-FIX - Leaderboard with an offset shows an incorrect amount of users.
-FIX - Ranks based on total balance are assigned as current balance due to bug introduced in 1.7.9.2.
-TWEAK - Updated how Jetpack subscriptions are checked.
-TWEAK - Added option to adjust pagination args for front end logs.
-TWEAK - Updated about page structure.
-TWEAK - Updated buyCRED Gatways page to start supporting 1.8 ready gateways.
-TWEAK - Improved overview widget query (thanks Jonathan)
-Tested with WordPress 4.9 beta 2.
+= 1.7.9.4 =
+FIX - Compatible with php 7.2.
+FIX - Points Log pagination issue.
+FIX - Reset all to zero myCred default balance meta key .
+Tested with WordPress 4.9 beta3
 
 = Previous Versions =
 https://mycred.me/support/changelog/

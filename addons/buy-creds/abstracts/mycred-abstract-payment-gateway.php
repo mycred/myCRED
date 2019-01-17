@@ -1713,17 +1713,11 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		/**
 		 * Trash Pending Payment
 		 * @since 1.5.3
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		function trash_pending_payment( $payment_id ) {
 
-			if ( is_numeric( $payment_id ) )
-				$post = get_post( $payment_id );
-			else
-				$post = get_page_by_title( $payment_id, OBJECT, 'buycred_payment' );
-
-			if ( isset( $post->ID ) )
-				wp_trash_post( $post->ID );
+			return buycred_trash_pending_payment( $payment_id );
 
 		}
 
