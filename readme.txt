@@ -3,7 +3,7 @@ Contributors: mycred ,wpexpertsio
 Tags: point, credit, loyalty program, engagement, reward
 Requires at least: 4.5
 Tested up to: 4.9
-Stable tag: 1.7.9.4
+Stable tag: 1.7.9.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,6 +117,10 @@ Bug fixes.
 
 
 == Changelog ==
+
+= 1.7.9.5 =
+FIX - Notification error.
+
 
 = 1.7.9.4 =
 FIX - Compatible with php 7.2.
