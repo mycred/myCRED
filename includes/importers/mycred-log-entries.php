@@ -236,11 +236,7 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 		 */
 		public function header() {
 
-			$label = __( 'Import Log Entries', 'mycred' );
-			if ( MYCRED_DEFAULT_LABEL === 'myCRED' )
-				$label .= ' <a href="' . $this->documentation . '" target="_blank" class="page-title-action">' . __( 'Documentation', 'mycred' ) . '</a>';
-
-			echo '<div class="wrap"><h1>' . $label . '</h1>';
+			echo '<div class="wrap"><h1>' . sprintf( __( 'Import Log Entries %s', 'mycred' ), '<a href="' . $this->documentation . '" target="_blank" class="page-title-action">' . __( 'Documentation', 'mycred' ) . '</a>' ) . '</h1>';
 
 		}
 

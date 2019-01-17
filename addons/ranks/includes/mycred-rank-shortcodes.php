@@ -4,9 +4,9 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * myCRED Shortcode: mycred_my_rank
  * Returns a given users rank
- * @see http://codex.mycred.me/shortcodes/mycred_my_rank/
+ * @see http://mycred.me/shortcodes/mycred_my_rank/
  * @since 1.1
- * @version 1.4
+ * @version 1.3
  */
 if ( ! function_exists( 'mycred_render_my_rank' ) ) :
 	function mycred_render_my_rank( $atts, $content = '' ) {
@@ -18,27 +18,21 @@ if ( ! function_exists( 'mycred_render_my_rank' ) ) :
 			'show_logo'  => 0,
 			'logo_size'  => 'post-thumbnail',
 			'first'      => 'logo'
-		), $atts, MYCRED_SLUG . '_my_rank' ) );
-
+		), $atts ) );
+		
 		if ( $user_id == '' && ! is_user_logged_in() ) return;
 
-		if ( ! mycred_point_type_exists( $ctype ) )
-			$ctype = MYCRED_DEFAULT_TYPE_KEY;
+		$show    = array();
+		$user_id = mycred_get_user_id( $user_id );
+		$rank    = mycred_get_users_rank( $user_id, $ctype );
 
-		$show           = array();
-		$user_id        = mycred_get_user_id( $user_id );
-		if ( $user_id === false ) return;
+		if ( $rank !== false ) {
 
-		$account_object = mycred_get_account( $user_id );
-		$rank_object    = $account_object->balance[ $point_type ]->rank;
-
-		if ( $rank_object !== false ) {
-
-			if ( $show_logo == 1 && $rank_object->has_logo )
-				$show[] = mycred_get_rank_logo( $rank_object->post_id, $logo_size );
+			if ( $show_logo == 1 && $rank->has_logo )
+				$show[] = mycred_get_rank_logo( $rank->post_id, $logo_size );
 
 			if ( $show_title == 1 )
-				$show[] = $rank_object->title;
+				$show[] = $rank->title;
 		
 			if ( $first != 'logo' )
 				$show = array_reverse( $show );
@@ -56,14 +50,12 @@ endif;
 /**
  * myCRED Shortcode: mycred_my_ranks
  * Returns the given users ranks.
- * @see http://codex.mycred.me/shortcodes/mycred_my_ranks/
+ * @see http://mycred.me/shortcodes/mycred_my_ranks/
  * @since 1.6
- * @version 1.3
+ * @version 1.2.1
  */
 if ( ! function_exists( 'mycred_render_my_ranks' ) ) :
 	function mycred_render_my_ranks( $atts, $content = '' ) {
-		
-		$ranks = new stdClass();
 
 		extract( shortcode_atts( array(
 			'user_id'    => 'current',
@@ -71,29 +63,31 @@ if ( ! function_exists( 'mycred_render_my_ranks' ) ) :
 			'show_logo'  => 0,
 			'logo_size'  => 'post-thumbnail',
 			'first'      => 'logo'
-		), $atts, MYCRED_SLUG . '_my_ranks' ) );
-
+		), $atts ) );
+		
 		if ( $user_id == '' && ! is_user_logged_in() ) return;
 
-		$user_id        = mycred_get_user_id( $user_id );
-		if ( $user_id === false ) return;
+		$user_id      = mycred_get_user_id( $user_id );
+		$mycred_types = mycred_get_usable_types();
+		$show         = array();
+		$ranks        = array();
 
-		$account_object = mycred_get_account( $user_id );
-		$show           = array();
+		// This user does not have any usable point types
+		if ( empty( $mycred_types ) ) return;
 
 		// Get the rank for each type
-		foreach ( $account_object->balance as $type_id => $balance ) {
+		foreach ( $mycred_types as $type_id ) {
 
-			$row         = array();
-			$rank_object = $balance->rank;
+			$row  = array();
+			$rank = mycred_get_users_rank( $user_id, $type_id );
 
-			if ( $rank_object !== false ) {
+			if ( $rank !== false ) {
 
-				if ( $show_logo == 1 && $rank_object->has_logo )
-					$row[] = mycred_get_rank_logo( $rank_object->post_id, $logo_size );
+				if ( $show_logo == 1 && $rank->has_logo )
+					$row[] = mycred_get_rank_logo( $rank->post_id, $logo_size );
 
 				if ( $show_title == 1 )
-					$row[] = $rank_object->title;
+					$row[] = $rank->title;
 		
 				if ( $first != 'logo' )
 					$row = array_reverse( $row );
@@ -103,13 +97,12 @@ if ( ! function_exists( 'mycred_render_my_ranks' ) ) :
 			if ( ! empty( $row ) )
 				$show[] = '<div class="mycred-my-rank ' . $type_id . '">' . implode( ' ', $row ) . '</div>';
 
+			$ranks[] = $rank;
+
 		}
 
 		if ( ! empty( $show ) )
 			$content = '<div class="mycred-all-my-ranks">' . implode( ' ', $show ) . '</div>';
-
-		if( ! empty($rank_object) )
-			$ranks = $rank_object;
 
 		return apply_filters( 'mycred_my_ranks', $content, $user_id, $ranks );
 
@@ -119,9 +112,9 @@ endif;
 /**
  * myCRED Shortcode: mycred_users_of_rank
  * Returns all users who have the given rank with the option to show the rank logo and optional content.
- * @see http://codex.mycred.me/shortcodes/mycred_users_of_rank/
+ * @see http://mycred.me/shortcodes/mycred_users_of_rank/
  * @since 1.1
- * @version 1.2
+ * @version 1.1.2
  */
 if ( ! function_exists( 'mycred_render_users_of_rank' ) ) :
 	function mycred_render_users_of_rank( $atts, $row_template = NULL ) {
@@ -132,25 +125,25 @@ if ( ! function_exists( 'mycred_render_users_of_rank' ) ) :
 			'number'  => 10,
 			'wrap'    => 'div',
 			'col'     => 1,
-			'nothing' => 'No users found with this rank',
+			'nothing' => __( 'No users found with this rank', 'mycred' ),
 			'ctype'   => MYCRED_DEFAULT_TYPE_KEY,
 			'order'   => 'DESC'
-		), $atts, MYCRED_SLUG . '_users_of_rank' ) );
+		), $atts ) );
 
 		// Rank ID required
 		if ( $rank_id === NULL )
-			return '<strong>ERROR</strong> Rank ID is required!';
+			return '<strong>ERROR</strong> ' . __( 'Rank ID is required!', 'mycred' );
+
+		if ( $ctype == '' )
+			$ctype = MYCRED_DEFAULT_TYPE_KEY;
+
+		$mycred = mycred( $ctype );
 
 		// User is not logged in
 		if ( ! is_user_logged_in() && $login != '' )
 			return $mycred->template_tags_general( $login );
 
-		if ( ! mycred_point_type_exists( $ctype ) )
-			$ctype = MYCRED_DEFAULT_TYPE_KEY;
-
-		$mycred       = mycred( $ctype );
-
-		$output       = '';
+		$output = '';
 
 		if ( $row_template === NULL || empty( $row_template ) )
 			$row_template = '<p class="user-row">%user_profile_link% with %balance% %_plural%</p>';
@@ -159,7 +152,7 @@ if ( ! function_exists( 'mycred_render_users_of_rank' ) ) :
 		$row_template = apply_filters( 'mycred_users_of_rank', $row_template, $atts, $mycred );
 
 		// Get users of this rank if there are any
-		$users        = mycred_get_users_of_rank( $rank_id, $number, $order, $ctype );
+		$users = mycred_get_users_of_rank( $rank_id, $number, $order, $ctype );
 		if ( ! empty( $users ) ) {
 
 			// Add support for table
@@ -201,7 +194,7 @@ endif;
 /**
  * myCRED Shortcode: mycred_users_of_all_ranks
  * Returns all users fore every registered rank in order.
- * @see http://codex.mycred.me/shortcodes/mycred_users_of_all_ranks/
+ * @see http://mycred.me/shortcodes/mycred_users_of_all_ranks/
  * @since 1.1
  * @version 1.2.1
  */
@@ -215,11 +208,11 @@ if ( ! function_exists( 'mycred_render_users_of_all_ranks' ) ) :
 			'show_logo' => 1,
 			'logo_size' => 'post-thumbnail',
 			'wrap'      => 'div',
-			'nothing'   => 'No users found with this rank'
-		), $atts, MYCRED_SLUG . '_users_of_all_ranks' ) );
+			'nothing'   => __( 'No users found with this rank', 'mycred' )
+		), $atts ) );
 
 		// Prep
-		$mycred    = mycred();
+		$mycred = mycred();
 
 		// User is not logged in
 		if ( ! is_user_logged_in() && $login != '' )
@@ -227,7 +220,6 @@ if ( ! function_exists( 'mycred_render_users_of_all_ranks' ) ) :
 
 		$output    = '';
 		$all_ranks = mycred_get_ranks( 'publish', '-1', 'DESC', $ctype );
-
 		// If we have ranks
 		if ( ! empty( $all_ranks ) ) {
 
@@ -274,18 +266,18 @@ endif;
 /**
  * myCRED Shortcode: mycred_list_ranks
  * Returns a list of ranks with minimum and maximum point requirements.
- * @see http://codex.mycred.me/shortcodes/mycred_list_ranks/
+ * @see http://mycred.me/shortcodes/mycred_list_ranks/
  * @since 1.1.1
  * @version 1.3
  */
 if ( ! function_exists( 'mycred_render_rank_list' ) ) :
 	function mycred_render_rank_list( $atts, $row_template = NULL ) {
 
-		$atts      = shortcode_atts( array(
+		$atts = shortcode_atts( array(
 			'order' => 'DESC',
 			'ctype' => MYCRED_DEFAULT_TYPE_KEY,
 			'wrap'  => 'div'
-		), $atts, MYCRED_SLUG . '_list_ranks' );
+		), $atts );
 
 		extract( $atts );
 

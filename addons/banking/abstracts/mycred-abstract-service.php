@@ -3,7 +3,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 /**
  * myCRED_Service class
- * @see http://codex.mycred.me/classes/mycred_service/
+ * @see http://mycred.me/classes/mycred_service/
  * @since 1.2
  * @version 1.1
  */
@@ -192,7 +192,7 @@ if ( ! class_exists( 'myCRED_Service' ) ) :
 		/**
 		 * Is Large Site?
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function is_large_site() {
 
@@ -208,9 +208,9 @@ if ( ! class_exists( 'myCRED_Service' ) ) :
 
 				else {
 
-					global $wpdb, $mycred_log_table;
+					global $wpdb, $mycred;
 
-					$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$mycred_log_table};" );
+					$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$mycred->log_table};" );
 					if ( $total !== NULL && $total > 100000 )
 						$is_large = true;
 

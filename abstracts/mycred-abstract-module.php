@@ -58,7 +58,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		/**
 		 * Construct
 		 */
-		public function __construct( $module_id = '', $args = array(), $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		function __construct( $module_id = '', $args = array(), $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			// Module ID is required
 			if ( empty( $module_id ) ) wp_die( 'myCRED_Module() Error. A Module ID is required!' );
@@ -128,7 +128,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 0.1
 		 * @version 1.2.1
 		 */
-		public function set_settings() {
+		function set_settings() {
 
 			$module = $this->module_name;
 
@@ -136,16 +136,16 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 			if ( $this->register === false ) {
 
 				// If settings does not exist apply defaults
-				if ( ! isset( $this->core->$module ) )
-					$this->$module = $this->default_prefs;
+				if ( ! isset( $this->core->{$module} ) )
+					$this->{$module} = $this->default_prefs;
 
 				// Else append settings
 				else
-					$this->$module = $this->core->$module;
+					$this->{$module} = $this->core->{$module};
 
 				// Apply defaults in case new settings have been applied
 				if ( ! empty( $this->default_prefs ) )
-					$this->$module = wp_parse_args( $this->$module, $this->default_prefs );
+					$this->{$module} = wp_parse_args( $this->{$module}, $this->default_prefs );
 
 			}
 
@@ -162,7 +162,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 						$pattern = 'mycred_pref_core';
 						//$matches = array_filter( $this->option_id, function( $a ) use ( $pattern ) { return preg_grep( $a, $pattern ); } );
 						//if ( ! empty( $matches ) )
-							$this->$module = $this->core;
+							$this->{$module} = $this->core;
 
 						// Loop and grab
 						foreach ( $this->option_id as $option_id => $option_name ) {
@@ -170,13 +170,13 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 							$settings = mycred_get_option( $option_name, false );
 
 							if ( $settings === false && array_key_exists( $option_id, $defaults ) )
-								$this->$module[ $option_name ] = $this->default_prefs[ $option_id ];
+								$this->{$module[ $option_name ]} = $this->default_prefs[ $option_id ];
 							else
-								$this->$module[ $option_name ] = $settings;
+								$this->{$module[ $option_name ]} = $settings;
 
 							// Apply defaults in case new settings have been applied
 							if ( array_key_exists( $option_id, $this->default_prefs ) )
-								$this->$module[ $option_name ] = wp_parse_args( $this->$module[ $option_name ], $this->default_prefs[ $option_id ] );
+								$this->{$module[ $option_name ]} = wp_parse_args( $this->{$module[ $option_name ]}, $this->default_prefs[ $option_id ] );
 
 						}
 
@@ -187,27 +187,27 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 
 						// General settings needs not to be loaded
 						if ( str_replace( 'mycred_pref_core', '', $this->option_id ) == '' )
-							$this->$module = $this->core;
+							$this->{$module} = $this->core;
 
 						// Grab the requested option
 						else {
 
-							$this->$module = mycred_get_option( $this->option_id, false );
+							$this->{$module} = mycred_get_option( $this->option_id, false );
 
-							if ( $this->$module === false && ! empty( $this->default_prefs ) )
-								$this->$module = $this->default_prefs;
+							if ( $this->{$module} === false && ! empty( $this->default_prefs ) )
+								$this->{$module} = $this->default_prefs;
 
 							// Apply defaults in case new settings have been applied
 							if ( ! empty( $this->default_prefs ) )
-								$this->$module = wp_parse_args( $this->$module, $this->default_prefs );
+								$this->{$module} = wp_parse_args( $this->{$module}, $this->default_prefs );
 
 						}
 
 					}
 
-					if ( is_array( $this->$module ) ) {
+					if ( is_array( $this->{$module} ) ) {
 
-						foreach ( $this->$module as $key => $value ) {
+						foreach ( $this->{$module} as $key => $value ) {
 							$this->$key = $value;
 						}
 
@@ -224,7 +224,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 0.1
 		 * @version 1.0.1
 		 */
-		public function load() {
+		function load() {
 
 			if ( ! empty( $this->screen_id ) && ! empty( $this->labels['menu'] ) ) {
 				add_action( 'mycred_add_menu',         array( $this, 'add_menu' ), $this->menu_pos );
@@ -253,42 +253,42 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 1.1.1
 		 * @version 1.0
 		 */
-		public function module_ready() { }
+		function module_ready() { }
 
 		/**
 		 * Plugins Loaded (pre init)
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function module_pre_init() { }
+		function module_pre_init() { }
 
 		/**
 		 * Init
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function module_init() { }
+		function module_init() { }
 
 		/**
 		 * Admin Init
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function module_admin_init() { }
+		function module_admin_init() { }
 
 		/**
 		 * Widgets Init
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function module_widgets_init() { }
+		function module_widgets_init() { }
 
 		/**
 		 * Get
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function get() { }
+		function get() { }
 
 		/**
 		 * Call
@@ -297,7 +297,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 0.1
 		 * @version 1.0.3
 		 */
-		public function call( $call, $callback, $return = NULL ) {
+		function call( $call, $callback, $return = NULL ) {
 
 			// Class
 			if ( is_array( $callback ) && class_exists( $callback[0] ) ) {
@@ -338,10 +338,10 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function is_installed() {
+		function is_installed() {
 
 			$module_name = $this->module_name;
-			if ( $this->$module_name === false ) return false;
+			if ( $this->module_name === false ) return false;
 			return true;
 
 		}
@@ -353,15 +353,15 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 0.1
 		 * @version 1.1
 		 */
-		public function is_active( $key = '' ) {
+		function is_active( $key = '' ) {
 
 			$module    = $this->module_name;
 			$is_active = false;
 
 			if ( ! isset( $this->active ) && ! empty( $key ) ) {
 
-				if ( isset( $this->$module['active'] ) )
-					$active = $this->$module['active'];
+				if ( isset( $this->{$module['active']} ) )
+					$active = $this->{$module['active']};
 
 				if ( in_array( $key, $active ) )
 					$is_active = true;
@@ -382,44 +382,52 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		/**
 		 * Add Admin Menu Item
 		 * @since 0.1
-		 * @version 1.3
+		 * @version 1.2.2
 		 */
-		public function add_menu() {
+		function add_menu() {
 
-			// In case we are using the Master Template feautre on multisites, and this is not the main
-			// site in the network, bail.
-			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
+			// Network Setting for Multisites
+			if ( mycred_override_settings() && $GLOBALS['blog_id'] > 1 && substr( $this->screen_id, 0, 6 ) == MYCRED_SLUG && strlen( $this->screen_id ) > 6 ) return;
 
-			// Minimum requirements
 			if ( ! empty( $this->labels ) && ! empty( $this->screen_id ) ) {
 
 				// Menu Slug
-				$menu_slug  = ( ! $this->is_main_type ) ? MYCRED_SLUG . '_' . $this->mycred_type : MYCRED_SLUG;
-				$label_menu = $label_title = 'Surprise';
-
-				// Capability
-				$capability = ( $this->cap == 'plugin' ) ? $this->core->get_point_admin_capability() : $this->core->get_point_editor_capability();
+				$menu_slug = MYCRED_SLUG;
+				if ( ! $this->is_main_type )
+					$menu_slug = MYCRED_SLUG . '_' . $this->mycred_type;
 
 				// Menu Label
-				if ( isset( $this->labels['menu'] ) )
+				if ( ! isset( $this->labels['page_title'] ) && ! isset( $this->labels['menu'] ) )
+					$label_menu = __( 'Surprise', 'mycred' );
+
+				elseif ( isset( $this->labels['menu'] ) )
 					$label_menu = $this->labels['menu'];
 
-				elseif ( isset( $this->labels['page_title'] ) )
+				else
 					$label_menu = $this->labels['page_title'];
 
 				// Page Title
-				if ( isset( $this->labels['page_title'] ) )
+				if ( ! isset( $this->labels['page_title'] ) && ! isset( $this->labels['menu'] ) )
+					$label_title = __( 'Surprise', 'mycred' );
+
+				elseif ( isset( $this->labels['page_title'] ) )
 					$label_title = $this->labels['page_title'];
 
-				elseif ( isset( $this->labels['menu'] ) )
+				else
 					$label_title = $this->labels['menu'];
+
+				if ( $this->cap != 'plugin' )
+					$cap = $this->core->edit_creds_cap();
+
+				else
+					$cap = $this->core->edit_plugin_cap();
 
 				// Add Submenu Page
 				$page = add_submenu_page(
 					$menu_slug,
 					$label_menu,
 					$label_title,
-					$capability,
+					$cap,
 					$this->screen_id,
 					array( $this, 'admin_page' )
 				);
@@ -436,14 +444,14 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function scripts_and_styles() { }
+		function scripts_and_styles() { }
 
 		/**
 		 * Save Log Entries per page
 		 * @since 0.1
 		 * @version 1.0.1
 		 */
-		public function set_entries_per_page() {
+		function set_entries_per_page() {
 
 			if ( ! isset( $_REQUEST['wp_screen_options']['option'] ) || ! isset( $_REQUEST['wp_screen_options']['value'] ) ) return;
 
@@ -461,7 +469,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 0.1
 		 * @version 1.1
 		 */
-		public function register_settings() {
+		function register_settings() {
 
 			if ( empty( $this->option_id ) || $this->register === false ) return;
 
@@ -474,7 +482,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 1.4
 		 * @version 1.0
 		 */
-		public function screen_options() {
+		function screen_options() {
 
 			$this->set_entries_per_page();
 
@@ -486,11 +494,8 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @version 1.0
 		 */
 		public function metabox_classes( $classes ) {
-
 			$classes[] = 'mycred-metabox';
-
 			return $classes;
-
 		}
 
 		/**
@@ -499,7 +504,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		 * @since 1.4
 		 * @version 1.0.1
 		 */
-		public function settings_page_enqueue() {
+		function settings_page_enqueue() {
 
 			wp_dequeue_script( 'bpge_admin_js_acc' );
 
@@ -530,21 +535,21 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 		 * @since 0.1
 		 * @version 1.2
 		 */
-		public function settings_header() { }
+		function settings_header() { }
 
 		/**
 		 * Admin Page
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function admin_page() { }
+		function admin_page() { }
 
 		/**
 		 * Update Notice
 		 * @since 1.4
 		 * @version 1.0
 		 */
-		public function update_notice( $get = 'settings-updated', $class = 'updated', $message = '' ) {
+		function update_notice( $get = 'settings-updated', $class = 'updated', $message = '' ) {
 
 			if ( empty( $message ) )
 				$message = __( 'Settings Updated', 'mycred' );
@@ -559,7 +564,7 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function sanitize_settings( $post ) {
+		function sanitize_settings( $post ) {
 
 			return $post;
 
@@ -570,14 +575,14 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function after_general_settings( $mycred = NULL ) { }
+		function after_general_settings( $mycred = NULL ) { }
 
 		/**
 		 * Sanitize Core Settings
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function sanitize_extra_settings( $new_data, $data, $core ) {
+		function sanitize_extra_settings( $new_data, $data, $core ) {
 
 			return $new_data;
 
@@ -588,7 +593,7 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function field_name( $name = '' ) {
+		function field_name( $name = '' ) {
 
 			if ( is_array( $name ) ) {
 
@@ -616,8 +621,8 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 
 			if ( $this->option_id != '' )
 				return $this->option_id . $name;
-
-			return 'mycred_pref_core' . $name;
+			else
+				return 'mycred_pref_core' . $name;
 
 		}
 
@@ -626,7 +631,7 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function field_id( $id = '' ) {
+		function field_id( $id = '' ) {
 
 			if ( is_array( $id ) ) {
 
@@ -666,7 +671,7 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 		 * @since 1.4
 		 * @version 1.0
 		 */
-		public function available_template_tags( $available = array() ) {
+		function available_template_tags( $available = array() ) {
 
 			return $this->core->available_template_tags( $available );
 
@@ -677,7 +682,7 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 		 * @since 1.4
 		 * @version 1.0.1
 		 */
-		public function get_settings_url( $module = '' ) {
+		function get_settings_url( $module = '' ) {
 
 			$variables = array( 'page' => MYCRED_SLUG . '-settings' );
 			if ( ! empty( $module ) )

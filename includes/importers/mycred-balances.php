@@ -242,11 +242,7 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 		 */
 		public function header() {
 
-			$label = __( 'Import Balances', 'mycred' );
-			if ( MYCRED_DEFAULT_LABEL === 'myCRED' )
-				$label .= ' <a href="' . $this->documentation . '" target="_blank" class="page-title-action">' . __( 'Documentation', 'mycred' ) . '</a>';
-
-			echo '<div class="wrap"><h1>' . $label . '</h1>';
+			echo '<div class="wrap"><h1>' . sprintf( __( 'Import Balances %s', 'mycred' ), '<a href="' . $this->documentation . '" target="_blank" class="page-title-action">' . __( 'Documentation', 'mycred' ) . '</a>' ) . '</h1>';
 
 		}
 

@@ -1,8 +1,8 @@
 <?php
 /**
  * Addon: Coupons
- * Addon URI: http://codex.mycred.me/chapter-iii/coupons/
- * Version: 1.4
+ * Addon URI: http://mycred.me/add-ons/coupons/
+ * Version: 1.3.1
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
@@ -10,21 +10,18 @@ define( 'myCRED_COUPONS',         __FILE__ );
 define( 'myCRED_COUPONS_DIR',     myCRED_ADDONS_DIR . 'coupons/' );
 define( 'myCRED_COUPONS_VERSION', '1.3' );
 
-// Coupon Key
-if ( ! defined( 'MYCRED_COUPON_KEY' ) )
-	define( 'MYCRED_COUPON_KEY', 'mycred_coupon' );
-
 require_once myCRED_COUPONS_DIR . 'includes/mycred-coupon-functions.php';
-require_once myCRED_COUPONS_DIR . 'includes/mycred-coupon-object.php';
 require_once myCRED_COUPONS_DIR . 'includes/mycred-coupon-shortcodes.php';
 
 /**
  * myCRED_Coupons_Module class
  * @since 1.4
- * @version 1.4
+ * @version 1.0.1
  */
 if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 	class myCRED_Coupons_Module extends myCRED_Module {
+
+		public $instances = array();
 
 		/**
 		 * Construct
@@ -61,7 +58,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 			$this->register_coupons();
 
-			add_shortcode( MYCRED_SLUG . '_load_coupon', 'mycred_render_shortcode_load_coupon' );
+			add_shortcode( 'mycred_load_coupon', 'mycred_render_shortcode_load_coupon' );
 
 			add_action( 'mycred_add_menu',       array( $this, 'add_to_menu' ), $this->menu_pos );
 			add_action( 'admin_notices',         array( $this, 'warn_bad_expiration' ), $this->menu_pos );
@@ -75,29 +72,29 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		 */
 		public function module_admin_init() {
 
-			add_filter( 'post_updated_messages',   array( $this, 'post_updated_messages' ) );
+			add_filter( 'post_updated_messages',                    array( $this, 'post_updated_messages' ) );
 
-			add_filter( 'parent_file',             array( $this, 'parent_file' ) );
-			add_filter( 'submenu_file',            array( $this, 'subparent_file' ), 10, 2 );
+			add_filter( 'manage_mycred_coupon_posts_columns',       array( $this, 'adjust_column_headers' ) );
+			add_action( 'manage_mycred_coupon_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
 
-			add_filter( 'enter_title_here',        array( $this, 'enter_title_here' ) );
-			add_filter( 'post_row_actions',        array( $this, 'adjust_row_actions' ), 10, 2 );
+			add_filter( 'parent_file',                              array( $this, 'parent_file' ) );
+			add_filter( 'submenu_file',                             array( $this, 'subparent_file' ), 10, 2 );
 
-			add_action( 'admin_head-post.php',     array( $this, 'edit_coupons_style' ) );
-			add_action( 'admin_head-post-new.php', array( $this, 'edit_coupons_style' ) );
-			add_action( 'admin_head-edit.php',     array( $this, 'coupon_style' ) );
+			add_filter( 'enter_title_here',                         array( $this, 'enter_title_here' ) );
+			add_filter( 'post_row_actions',                         array( $this, 'adjust_row_actions' ), 10, 2 );
+			add_filter( 'bulk_actions-edit-mycred_coupon',          array( $this, 'bulk_actions' ) );
+			add_action( 'save_post_mycred_coupon',                  array( $this, 'save_coupon' ), 10, 2 );
 
-			add_filter( 'manage_' . MYCRED_COUPON_KEY . '_posts_columns',       array( $this, 'adjust_column_headers' ) );
-			add_action( 'manage_' . MYCRED_COUPON_KEY . '_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
-			add_filter( 'bulk_actions-edit-' . MYCRED_COUPON_KEY,               array( $this, 'bulk_actions' ) );
-			add_action( 'save_post_' . MYCRED_COUPON_KEY,                       array( $this, 'save_coupon' ), 10, 2 );
+			add_action( 'admin_head-post.php',                      array( $this, 'edit_coupons_style' ) );
+			add_action( 'admin_head-post-new.php',                  array( $this, 'edit_coupons_style' ) );
+			add_action( 'admin_head-edit.php',                      array( $this, 'coupon_style' ) );
 
 		}
 
 		/**
 		 * Register Coupons Post Type
 		 * @since 1.4
-		 * @version 1.0.2
+		 * @version 1.0.1
 		 */
 		protected function register_coupons() {
 
@@ -132,18 +129,18 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				'register_meta_box_cb' => array( $this, 'add_metaboxes' )
 			);
 
-			register_post_type( MYCRED_COUPON_KEY, apply_filters( 'mycred_register_coupons', $args ) );
+			register_post_type( 'mycred_coupon', apply_filters( 'mycred_register_coupons', $args ) );
 
 		}
 
 		/**
 		 * Adjust Update Messages
 		 * @since 1.4
-		 * @version 1.0.2
+		 * @version 1.0.1
 		 */
 		public function post_updated_messages( $messages ) {
 
-			$messages[ MYCRED_COUPON_KEY ] = array(
+			$messages['mycred_coupon'] = array(
 				0  => '',
 				1  => __( 'Coupon updated.', 'mycred' ),
 				2  => __( 'Coupon updated.', 'mycred' ),
@@ -164,20 +161,16 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		/**
 		 * Add Admin Menu Item
 		 * @since 1.7
-		 * @version 1.1
+		 * @version 1.0.1
 		 */
 		public function add_to_menu() {
-
-			// In case we are using the Master Template feautre on multisites, and this is not the main
-			// site in the network, bail.
-			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
 
 			add_submenu_page(
 				MYCRED_SLUG,
 				__( 'Coupons', 'mycred' ),
 				__( 'Coupons', 'mycred' ),
-				$this->core->get_point_editor_capability(),
-				'edit.php?post_type=' . MYCRED_COUPON_KEY
+				$this->core->edit_creds_cap(),
+				'edit.php?post_type=mycred_coupon'
 			);
 
 		}
@@ -185,16 +178,16 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		/**
 		 * Parent File
 		 * @since 1.7
-		 * @version 1.0.2
+		 * @version 1.0.1
 		 */
 		public function parent_file( $parent = '' ) {
 
 			global $pagenow;
 
-			if ( isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_COUPON_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
+			if ( isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_coupon' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
 				return MYCRED_SLUG;
 
-			if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_COUPON_KEY )
+			if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_coupon' )
 				return MYCRED_SLUG;
 
 			return $parent;
@@ -204,21 +197,21 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		/**
 		 * Sub Parent File
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function subparent_file( $subparent = '', $parent = '' ) {
 
 			global $pagenow;
 
-			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_COUPON_KEY ) {
+			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_coupon' ) {
 
-				return 'edit.php?post_type=' . MYCRED_COUPON_KEY;
+				return 'edit.php?post_type=mycred_coupon';
 			
 			}
 
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == MYCRED_COUPON_KEY ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_coupon' ) {
 
-				return 'edit.php?post_type=' . MYCRED_COUPON_KEY;
+				return 'edit.php?post_type=mycred_coupon';
 
 			}
 
@@ -229,13 +222,13 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		/**
 		 * Adjust Enter Title Here
 		 * @since 1.4
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function enter_title_here( $title ) {
 
 			global $post_type;
 
-			if ( $post_type == MYCRED_COUPON_KEY )
+			if ( $post_type == 'mycred_coupon' )
 				return __( 'Coupon Code', 'mycred' );
 
 			return $title;
@@ -273,33 +266,36 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		 */
 		public function adjust_column_content( $column_name, $post_id ) {
 
-			$coupon = mycred_get_coupon( $post_id );
+			global $mycred;
 
 			switch ( $column_name ) {
 
 				case 'value' :
 
-					$mycred = mycred( $coupon->point_type );
+					$value = mycred_get_coupon_value( $post_id );
+					if ( empty( $value ) ) $value = 0;
 
-					echo $mycred->format_creds( $coupon->value );
+					echo $mycred->format_creds( $value );
 
 				break;
 
 				case 'usage' :
 
-					if ( $coupon->used == 0 )
+					$count = mycred_get_global_coupon_count( $post_id );
+
+					if ( $count == 0 )
 						echo '-';
 
 					else {
 
-						$set_type = $coupon->point_type;
+						$set_type = get_post_meta( $post_id, 'type', true );
 						$page     = MYCRED_SLUG;
 
 						if ( $set_type != MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $set_type, $this->point_types ) )
 							$page .= '_' . $set_type;
 
 						$url      = add_query_arg( array( 'page' => $page, 'ref' => 'coupon', 'ref_id' => $post_id ), admin_url( 'admin.php' ) );
-						echo '<a href="' . esc_url( $url ) . '">' . sprintf( _n( '1 time', '%d times', $coupon->used, 'mycred' ), $coupon->used ) . '</a>';
+						echo '<a href="' . esc_url( $url ) . '">' . sprintf( _n( '1 time', '%d times', $count, 'mycred' ), $count ) . '</a>';
 
 					}
 
@@ -307,20 +303,25 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 				case 'limits' :
 
-					printf( '%1$s: %2$d<br />%3$s: %4$d', __( 'Total', 'mycred' ), $coupon->max_global, __( 'Per User', 'mycred' ), $coupon->max_user );
+					$total = mycred_get_coupon_global_max( $post_id );
+					$user  = mycred_get_coupon_user_max( $post_id );
+
+					printf( '%1$s: %2$d<br />%3$s: %4$d', __( 'Total', 'mycred' ), $total, __( 'Per User', 'mycred' ), $user );
 
 				break;
 
 				case 'expires' :
 
-					if ( $coupon->expires === false )
+					$expires = mycred_get_coupon_expire_date( $post_id, true );
+
+					if ( $expires === false )
 						echo '-';
 
 					else {
 
-						if ( $coupon->expires < current_time( 'timestamp' ) ) {
+						if ( $expires < current_time( 'timestamp' ) ) {
 
-							mycred_trash_post( $post_id );
+							wp_trash_post( $post_id );
 
 							echo '<span style="color:red;">' . __( 'Expired', 'mycred' ) . '</span>';
 
@@ -328,7 +329,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 						else {
 
-							echo sprintf( __( 'In %s time', 'mycred' ), human_time_diff( $coupon->expires_unix ) ) . '<br /><small class="description">' . date( get_option( 'date_format' ), $coupon->expires_unix ) . '</small>';
+							echo sprintf( __( 'In %s time', 'mycred' ), human_time_diff( $expires ) ) . '<br /><small class="description">' . date( get_option( 'date_format' ), $expires ) . '</small>';
 
 						}
 
@@ -338,8 +339,10 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 				case 'ctype' :
 
-					if ( isset( $this->point_types[ $coupon->point_type ] ) )
-						echo $this->point_types[ $coupon->point_type ];
+					$type = get_post_meta( $post_id, 'type', true );
+
+					if ( isset( $this->point_types[ $type ] ) )
+						echo $this->point_types[ $type ];
 
 					else
 						echo '-';
@@ -364,11 +367,11 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		/**
 		 * Adjust Row Actions
 		 * @since 1.4
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function adjust_row_actions( $actions, $post ) {
 
-			if ( $post->post_type == MYCRED_COUPON_KEY ) {
+			if ( $post->post_type == 'mycred_coupon' ) {
 				unset( $actions['inline hide-if-no-js'] );
 				unset( $actions['view'] );
 			}
@@ -380,23 +383,27 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		/**
 		 * Edit Coupon Style
 		 * @since 1.7
-		 * @version 1.0.2
+		 * @version 1.0
 		 */
 		public function edit_coupons_style() {
 
 			global $post_type;
 
-			if ( $post_type !== MYCRED_COUPON_KEY ) return;
+			if ( $post_type !== 'mycred_coupon' ) return;
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
 			wp_enqueue_style( 'mycred-forms' );
 
-			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-setup',        array( $this, 'metabox_classes' ) );
-			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-limits',       array( $this, 'metabox_classes' ) );
-			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-requirements', array( $this, 'metabox_classes' ) );
-			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-usage',        array( $this, 'metabox_classes' ) );
+			add_filter( 'postbox_classes_mycred_coupon_mycred-coupon-setup',        array( $this, 'metabox_classes' ) );
+			add_filter( 'postbox_classes_mycred_coupon_mycred-coupon-limits',       array( $this, 'metabox_classes' ) );
+			add_filter( 'postbox_classes_mycred_coupon_mycred-coupon-requirements', array( $this, 'metabox_classes' ) );
+			add_filter( 'postbox_classes_mycred_coupon_mycred-coupon-usage',        array( $this, 'metabox_classes' ) );
 
-			echo '<style type="text/css">#misc-publishing-actions #visibility { display: none; }</style>';
+?>
+<style type="text/css">
+#misc-publishing-actions #visibility { display: none; }
+</style>
+<?php
 
 		}
 
@@ -405,12 +412,18 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function coupon_style() { }
+		public function coupon_style() {
+
+			global $post_type;
+
+			if ( $post_type !== 'mycred_coupon' ) return;
+
+		}
 
 		/**
 		 * Add Meta Boxes
 		 * @since 1.4
-		 * @version 1.1.1
+		 * @version 1.1
 		 */
 		public function add_metaboxes( $post ) {
 
@@ -418,7 +431,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				'mycred-coupon-setup',
 				__( 'Coupon Setup', 'mycred' ),
 				array( $this, 'metabox_coupon_setup' ),
-				MYCRED_COUPON_KEY,
+				'mycred_coupon',
 				'normal',
 				'core'
 			);
@@ -427,7 +440,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				'mycred-coupon-limits',
 				__( 'Coupon Limits', 'mycred' ),
 				array( $this, 'metabox_coupon_limits' ),
-				MYCRED_COUPON_KEY,
+				'mycred_coupon',
 				'normal',
 				'core'
 			);
@@ -436,7 +449,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				'mycred-coupon-requirements',
 				__( 'Coupon Requirements', 'mycred' ),
 				array( $this, 'mycred_coupon_requirements' ),
-				MYCRED_COUPON_KEY,
+				'mycred_coupon',
 				'side',
 				'core'
 			);
@@ -446,7 +459,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 					'mycred-coupon-usage',
 					__( 'Coupon Usage', 'mycred' ),
 					array( $this, 'mycred_coupon_usage' ),
-					MYCRED_COUPON_KEY,
+					'mycred_coupon',
 					'side',
 					'core'
 				);
@@ -457,18 +470,18 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		 * Admin Notice
 		 * If we are have an issue with the expiration date set for this coupon we need to warn the user.
 		 * @since 1.7.5
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function warn_bad_expiration() {
 
-			if ( isset( $_GET['post'] ) && isset( $_GET['action'] ) && $_GET['action'] == 'edit' && get_post_type( absint( $_GET['post'] ) ) == MYCRED_COUPON_KEY ) {
+			if ( isset( $_GET['post'] ) && isset( $_GET['action'] ) && $_GET['action'] == 'edit' && get_post_type( absint( $_GET['post'] ) ) == 'mycred_coupon' ) {
 
 				$post_id            = absint( $_GET['post'] );
-				$expiration_warning = mycred_get_post_meta( $post_id, '_warning_bad_expiration', true );
+				$expiration_warning = get_post_meta( $post_id, '_warning_bad_expiration', true );
 
 				if ( $expiration_warning != '' ) {
 
-					mycred_delete_post_meta( $post_id, '_warning_bad_expiration' );
+					delete_post_meta( $post_id, '_warning_bad_expiration' );
 
 					echo '<div id="message" class="error notice is-dismissible"><p>' . __( 'Warning. The previous expiration date set for this coupon was formatted incorrectly and was deleted. If you still want the coupon to expire, please enter a new date or leave empty to disable.', 'mycred' ) . '</p><button type="button" class="notice-dismiss"></button></div>';
 
@@ -626,7 +639,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 			else {
 
-				$set_type = mycred_get_post_meta( $post->ID, 'type', true );
+				$set_type = get_post_meta( $post->ID, 'type', true );
 				$page     = MYCRED_SLUG;
 
 				if ( $set_type != MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $set_type, $this->point_types ) )
@@ -646,7 +659,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		 */
 		public function save_coupon( $post_id, $post = NULL ) {
 
-			if ( $post === NULL || ! $this->core->user_is_point_editor() || ! isset( $_POST['mycred_coupon'] ) ) return $post_id;
+			if ( $post === NULL || ! current_user_can( $this->core->edit_creds_cap() ) || ! isset( $_POST['mycred_coupon'] ) ) return $post_id;
 
 			foreach ( $_POST['mycred_coupon'] as $meta_key => $meta_value ) {
 
@@ -665,9 +678,9 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				}
 
 				// No need to update if it's still the same value
-				$old_value = mycred_get_post_meta( $post_id, $meta_key, true );
+				$old_value = get_post_meta( $post_id, $meta_key, true );
 				if ( $new_value != $old_value )
-					mycred_update_post_meta( $post_id, $meta_key, $new_value );
+					update_post_meta( $post_id, $meta_key, $new_value );
 
 			}
 

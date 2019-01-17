@@ -1,17 +1,11 @@
 /**
  * myCRED Sell Content
  * @since 1.1
- * @version 1.2
+ * @version 1.1
  */
 (function($) {
 
-	var buying = false;
-
 	$( '.mycred-sell-this-wrapper' ).on( 'click', '.mycred-buy-this-content-button', function(){
-
-		if ( buying === true ) return false;
-
-		buying = true;
 
 		var button      = $(this);
 		var post_id     = button.data( 'pid' );
@@ -51,19 +45,13 @@
 
 						button.removeAttr( 'disabled' ).html( buttonlabel );
 
-						if ( response.data != '' )
-							alert( response.data );
+						alert( response.data.message );
 
 					}
 
 				}
 
 				console.log( response );
-
-			},
-			complete : function(){
-
-				buying = false;
 
 			}
 		});

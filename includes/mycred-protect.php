@@ -47,7 +47,19 @@ if ( ! class_exists( 'myCRED_Protect' ) ) :
 
 			if ( $value === NULL || empty( $value ) ) return false;
 
-            return trim( $this->do_safe_b64encode( $value ));
+		    if ( function_exists( 'openssl_encrypt' ) ) {
+				$cipher="AES-256-CBC";
+				$text  = $value;
+				$ivlen = openssl_cipher_iv_length( $cipher);
+				$iv    = openssl_random_pseudo_bytes($ivlen);
+				$crypttext = openssl_encrypt( $text, $cipher, $this->skey, 0, 'hkjhsfidfghuqwer' );
+
+				return trim( $this->do_safe_b64encode( $crypttext ) );
+
+			}
+
+			return $value;
+
 		}
 
 		/**
@@ -57,7 +69,18 @@ if ( ! class_exists( 'myCRED_Protect' ) ) :
 
 			if ( $value === NULL || empty( $value ) ) return false;
 
-            return trim( $this->do_safe_b64decode( $value ) );
+		    if(function_exists( 'openssl_decrypt' )){
+				$crypttext   = $this->do_safe_b64decode( $value ); 
+				$cipher      =	"AES-256-CBC";
+				$iv_size     = openssl_cipher_iv_length( $cipher);
+				$iv          = openssl_random_pseudo_bytes($iv_size);
+				$decrypttext = openssl_decrypt( $crypttext, $cipher, $this->skey, 0, 'hkjhsfidfghuqwer' );
+
+				return trim( $decrypttext );
+			}
+
+			return $value;
+
 		}
 
 		/**
@@ -67,12 +90,21 @@ if ( ! class_exists( 'myCRED_Protect' ) ) :
 
 			if ( $value === NULL || empty( $value ) ) return false;
 
-            $crypttext   = $this->do_safe_b64decode( $value );
-            $string      = trim( $crypttext );
+			if(function_exists( 'openssl_decrypt' )){
+				$crypttext   = $this->do_safe_b64decode( $value ); 
+				$cipher      =	"AES-256-CBC";
+				$iv_size     = openssl_cipher_iv_length( $cipher);
+				$iv          = openssl_random_pseudo_bytes($iv_size);
+				$decrypttext = openssl_decrypt( $crypttext, $cipher, $this->skey,  0, 'hkjhsfidfghuqwer' );
+				$string      = trim( $decrypttext );
 
-            parse_str( $string, $output );
+				parse_str( $string, $output );
 
-            return $output;
+				return $output;
+			}
+
+			return $value;
+
 		}
 
 		/**
@@ -157,7 +189,7 @@ endif;
 if ( ! function_exists( 'mycred_verify_token' ) ) :
 	function mycred_verify_token( $string = '', $length = 1 ) {
 
-		$reply   = false;
+		$reply = false;
 
 		$protect = mycred_protect();
 		if ( $protect !== false ) {
@@ -166,11 +198,15 @@ if ( ! function_exists( 'mycred_verify_token' ) ) :
 			$array   = explode( ':', $decoded );
 			if ( count( $array ) == $length )
 				$reply = $array;
+
 		}
 		else {
+
 			$reply = $string;
+
 		}
 
 		return apply_filters( 'mycred_verify_token', $reply, $string, $length );
+
 	}
 endif;

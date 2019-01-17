@@ -10,35 +10,21 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 if ( ! class_exists( 'myCRED_Hook' ) ) :
 	abstract class myCRED_Hook {
 
-		/**
-		 * Unique Hook ID
-		 */
-		public $id           = false;
+		// Hook ID
+		public $id;
 
-		/**
-		 * The Hooks settings
-		 */
-		public $prefs        = false;
+		// myCRED_Settings Class
+		public $core;
 
-		/**
-		 * The current point type key
-		 */
+		// Point Types
+		public $point_types;
+
+		// Multipoint types
+		public $is_main_type = true;
 		public $mycred_type  = MYCRED_DEFAULT_TYPE_KEY;
 
-		/**
-		 * The myCRED object for the current type
-		 */
-		public $core         = false;
-
-		/**
-		 * Array of all existing point types
-		 */
-		public $point_types  = array();
-
-		/**
-		 * Indicates if the current instance is for the main point type or not
-		 */
-		public $is_main_type = true;
+		// Hook Prefs
+		public $prefs = false;
 
 		/**
 		 * Construct
@@ -122,7 +108,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 0.1
 		 * @version 1.1
 		 */
-		public function field_name( $field = '' ) {
+		function field_name( $field = '' ) {
 
 			if ( is_array( $field ) ) {
 
@@ -159,7 +145,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 0.1
 		 * @version 1.2
 		 */
-		public function field_id( $field = '' ) {
+		function field_id( $field = '' ) {
 
 			global $mycred_field_id;
 
@@ -202,18 +188,15 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		/**
 		 * Check Limit
 		 * @since 1.6
-		 * @version 1.3
+		 * @version 1.2
 		 */
-		public function over_hook_limit( $instance = '', $reference = '', $user_id = NULL, $ref_id = NULL ) {
-
-			// If logging is disabled, we cant use this feature
-			if ( ! MYCRED_ENABLE_LOGGING ) return false;
+		function over_hook_limit( $instance = '', $reference = '', $user_id = NULL, $ref_id = NULL ) {
 
 			// Enforce limit if this function is used incorrectly
 			if ( ! isset( $this->prefs[ $instance ] ) && $instance != '' )
 				return true;
 
-			global $wpdb, $mycred_log_table;
+			global $wpdb;
 
 			// Prep
 			$wheres = array();
@@ -249,7 +232,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 
 			// Prep settings
 			list ( $amount, $period ) = explode( '/', $prefs );
-			$amount   = (int) $amount;
+			$amount = (int) $amount;
 
 			// We start constructing the query.
 			$wheres[] = $wpdb->prepare( "user_id = %d", $user_id );
@@ -278,28 +261,24 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 
 			}
 
+			// Put all wheres together into one string
+			$wheres = implode( " AND ", $wheres );
+
+			// Count
+			$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->core->log_table} WHERE {$wheres};" );
+			if ( $count === NULL ) $count = 0;
+
 			$over_limit = false;
 
-			if ( ! empty( $wheres ) ) {
+			// Existence check has first priority
+			if ( $count > 0 && $exists_check )
+				$over_limit = true;
 
-				// Put all wheres together into one string
-				$wheres   = implode( " AND ", $wheres );
+			// Limit check is second priority
+			elseif ( $period != 'x' && $count >= $amount )
+				$over_limit = true;
 
-				// Count
-				$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$mycred_log_table} WHERE {$wheres};" );
-				if ( $count === NULL ) $count = 0;
-
-				// Existence check has first priority
-				if ( $count > 0 && $exists_check )
-					$over_limit = true;
-
-				// Limit check is second priority
-				elseif ( $period != 'x' && $count >= $amount )
-					$over_limit = true;
-
-			}
-
-			return apply_filters( 'mycred_over_hook_limit', $over_limit, $instance, $reference, $user_id, $ref_id, $this );
+			return $over_limit;
 
 		}
 
@@ -308,7 +287,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 1.6
 		 * @version 1.0
 		 */
-		public function get_limit_types() {
+		function get_limit_types() {
 
 			return apply_filters( 'mycred_hook_limits', array(
 				'x' => __( 'No limit', 'mycred' ),
@@ -325,11 +304,11 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 1.6
 		 * @version 1.0
 		 */
-		public function hook_limit_setting( $name = '', $id = '', $selected = '' ) {
+		function hook_limit_setting( $name = '', $id = '', $selected = '' ) {
 
 			// Convert string value into an array
-			$check   = explode( '/', $selected );
-			$count   = count( $check );
+			$check = explode( '/', $selected );
+			$count = count( $check );
 
 			if ( $count == 0 || ( $count == 1 && $check[0] == 0 ) )
 				$selected = array( 0, 'x' );
@@ -341,25 +320,25 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 				$selected = $check;
 
 			// Hide value field if no limit is set
-			$hide    = 'text';
+			$hide = 'text';
 			if ( $selected[1] == 'x' )
 				$hide = 'hidden';
 
 			// The limit value field
-			$output  = '<div class="h2"><input type="' . $hide . '" size="8" class="mini" name="' . $name . '" id="' . $id . '" value="' . $selected[0] . '" />';
+			$output = '<div class="h2"><input type="' . $hide . '" size="8" class="mini" name="' . $name . '" id="' . $id . '" value="' . $selected[0] . '" />';
 
 			// Get limit options
 			$options = $this->get_limit_types();
 
 			// Adjust the field name
-			$name    = str_replace( '[limit]', '[limit_by]', $name );
-			$name    = str_replace( '[alimit]', '[alimit_by]', $name );
-			$name    = apply_filters( 'mycred_hook_limit_name_by', $name, $this );
+			$name = str_replace( '[limit]', '[limit_by]', $name );
+			$name = str_replace( '[alimit]', '[alimit_by]', $name );
+			$name = apply_filters( 'mycred_hook_limit_name_by', $name, $this );
 
 			// Adjust the field id
-			$id      = str_replace( 'limit', 'limit-by', $id );
-			$id      = str_replace( 'alimit', 'alimit-by', $id );
-			$id      = apply_filters( 'mycred_hook_limit_id_by', $id, $this );
+			$id = str_replace( 'limit', 'limit-by', $id );
+			$id = str_replace( 'alimit', 'alimit-by', $id );
+			$id = apply_filters( 'mycred_hook_limit_id_by', $id, $this );
 
 			// Generate dropdown menu
 			$output .= '<select name="' . $name . '" id="' . $id . '" class="limit-toggle">';
@@ -379,22 +358,22 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 0.1
 		 * @version 1.3
 		 */
-		public function impose_limits_dropdown( $pref_id = '', $use_select = true ) {
+		function impose_limits_dropdown( $pref_id = '', $use_select = true ) {
 
-			$settings = '';
-			$limits   = array(
+			$limits = array(
 				''           => __( 'No limit', 'mycred' ),
 				'twentyfour' => __( 'Once every 24 hours', 'mycred' ),
 				'sevendays'  => __( 'Once every 7 days', 'mycred' ),
 				'daily'      => __( 'Once per day (reset at midnight)', 'mycred' )
 			);
-			$limits   = apply_filters( 'mycred_hook_impose_limits', $limits, $this );
+			$limits = apply_filters( 'mycred_hook_impose_limits', $limits, $this );
 
 			echo '<select name="' . $this->field_name( $pref_id ) . '" id="' . $this->field_id( $pref_id ) . '" class="form-control">';
 
 			if ( $use_select )
 				echo '<option value="">' . __( 'Select', 'mycred' ) . '</option>';
 
+			$settings = '';
 			if ( is_array( $pref_id ) ) {
 
 				reset( $pref_id );
@@ -423,15 +402,12 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 0.1
 		 * @version 1.3
 		 */
-		public function has_entry( $action = '', $ref_id = '', $user_id = '', $data = '', $point_type = '' ) {
+		function has_entry( $action = '', $ref_id = '', $user_id = '', $data = '', $type = '' ) {
 
-			// If logging is disabled, we cant use this feature
-			if ( ! MYCRED_ENABLE_LOGGING ) return false;
+			if ( $type == '' )
+				$type = $this->mycred_type;
 
-			if ( $point_type == '' )
-				$point_type = $this->mycred_type;
-
-			return $this->core->has_entry( $action, $ref_id, $user_id, $data, $point_type );
+			return $this->core->has_entry( $action, $ref_id, $user_id, $data, $type );
 
 		}
 
@@ -440,7 +416,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @since 1.4
 		 * @version 1.0
 		 */
-		public function available_template_tags( $available = array(), $custom = '' ) {
+		function available_template_tags( $available = array(), $custom = '' ) {
 
 			return $this->core->available_template_tags( $available, $custom );
 
@@ -449,12 +425,11 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		/**
 		 * Over Daily Limit
 		 * @since 1.0
-		 * @version 1.1.1
+		 * @version 1.1
 		 */
 		public function is_over_daily_limit( $ref = '', $user_id = 0, $max = 0, $ref_id = NULL ) {
 
-			// If logging is disabled, we cant use this feature
-			if ( ! MYCRED_ENABLE_LOGGING ) return false;
+			global $wpdb;
 
 			// Prep
 			$reply = true;
@@ -496,18 +471,15 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		 * @param $ref_id (int) optional reference id to include in search
 		 * @returns number of entries found (int) or NULL if required params are missing
 		 * @since 1.4
-		 * @version 1.2
+		 * @version 1.1
 		 */
 		public function limit_query( $ref = '', $user_id = 0, $start = 0, $end = 0, $ref_id = NULL ) {
-
-			// If logging is disabled, we cant use this feature
-			if ( ! MYCRED_ENABLE_LOGGING ) return 0;
 
 			// Minimum requirements
 			if ( empty( $ref ) || $user_id == 0 || $start == 0 || $end == 0 )
 				return NULL;
 
-			global $wpdb, $mycred_log_table;
+			global $wpdb;
 
 			// Prep
 			$reply    = true;
@@ -516,7 +488,6 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 			$wheres[] = $wpdb->prepare( "ref = %s", $ref );
 			$wheres[] = $wpdb->prepare( "user_id = %d", $user_id );
 			$wheres[] = $wpdb->prepare( "time BETWEEN %d AND %d", $start, $end );
-			$wheres[] = $wpdb->prepare( "ctype = %s", $this->mycred_type );
 
 			if ( $ref_id !== NULL )
 				$wheres[] = $wpdb->prepare( "ref_id = %d", $ref_id );
@@ -524,7 +495,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 			$wheres   = implode( " AND ", $wheres );
 
 			// DB Query
-			$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$mycred_log_table} WHERE {$wheres};" );
+			$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->core->log_table} WHERE {$wheres};" );
 			if ( $total === NULL ) $total = 0;
 
 			return apply_filters( 'mycred_hook_limit_query', $total, $ref, $user_id, $ref_id, $start, $end );

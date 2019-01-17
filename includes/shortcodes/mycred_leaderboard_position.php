@@ -20,7 +20,9 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderbaord_position' ) ) :
 			'missing'   => '-',
 			'suffix'    => 0,
 			'timeframe' => ''
-		), $atts, MYCRED_SLUG . '_leaderboard_position' );
+		), $atts );
+
+		if ( ! MYCRED_ENABLE_LOGGING ) return $content;
 
 		// Get the user ID we need a position for
 		$user_id     = mycred_get_user_id( $args['user_id'] );
@@ -42,4 +44,20 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderbaord_position' ) ) :
 
 	}
 endif;
-add_shortcode( MYCRED_SLUG . '_leaderboard_position', 'mycred_render_shortcode_leaderbaord_position' );
+add_shortcode( 'mycred_leaderboard_position', 'mycred_render_shortcode_leaderbaord_position' );
+
+/**
+ * myCRED Shortcode: mycred_my_ranking
+ * @see http://codex.mycred.me/shortcodes/mycred_my_ranking/
+ * Depreciated since 1.7. Replaced by mycred_leaderboard_position
+ * @since 0.1
+ * @version 1.6
+ */
+if ( ! function_exists( 'mycred_render_shortcode_my_ranking' ) ) :
+	function mycred_render_shortcode_my_ranking( $atts, $content = '' ) {
+
+		return mycred_render_shortcode_leaderbaord_position( $atts, $content );
+
+	}
+endif;
+add_shortcode( 'mycred_my_ranking', 'mycred_render_shortcode_my_ranking' );

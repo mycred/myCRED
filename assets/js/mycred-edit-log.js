@@ -164,7 +164,6 @@ jQuery(function($) {
 			data       : {
 				action    : 'mycred-delete-log-entry',
 				token     : myCREDLog.tokens.delete,
-				ctype     : myCREDLog.ctype,
 				row       : entryid
 			},
 			dataType   : "JSON",

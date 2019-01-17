@@ -5,7 +5,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * myCRED_PayPal class
  * PayPal Payments Standard - Payment Gateway
  * @since 0.1
- * @version 1.3
+ * @version 1.2.1
  */
 if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 	class myCRED_PayPal_Standard extends myCRED_Payment_Gateway {
@@ -13,9 +13,9 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 		/**
 		 * Construct
 		 */
-		public function __construct( $gateway_prefs ) {
+		function __construct( $gateway_prefs ) {
 
-			$types            = mycred_get_types();
+			$types = mycred_get_types();
 			$default_exchange = array();
 			foreach ( $types as $type => $label )
 				$default_exchange[ $type ] = 1;
@@ -28,7 +28,6 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 					'sandbox'          => 0,
 					'currency'         => '',
 					'account'          => '',
-					'logo_url'         => '',
 					'item_name'        => 'Purchase of myCRED %plural%',
 					'exchange'         => $default_exchange
 				)
@@ -45,14 +44,15 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 		public function IPN_is_valid_call() {
 
 			// PayPal Host
-			$host          = 'www.paypal.com';
 			if ( $this->sandbox_mode )
 				$host = 'www.sandbox.paypal.com';
+			else
+				$host = 'www.paypal.com';
 
-			$data          = $this->POST_to_data();
+			$data = $this->POST_to_data();
 
 			// Prep Respons
-			$request       = 'cmd=_notify-validate';
+			$request = 'cmd=_notify-validate';
 			$get_magic_quotes_exists = false;
 			if ( function_exists( 'get_magic_quotes_gpc' ) )
 				$get_magic_quotes_exists = true;
@@ -68,8 +68,8 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 
 			// Call PayPal
 			$curl_attempts = apply_filters( 'mycred_paypal_standard_max_attempts', 3 );
-			$attempt       = 1;
-			$result        = '';
+			$attempt = 1;
+			$result = '';
 			// We will make a x number of curl attempts before finishing with a fsock.
 			do {
 
@@ -198,76 +198,71 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 		}
 
 		/**
-		 * Prep Sale
-		 * @since 1.8
-		 * @version 1.0
+		 * Buy Handler
+		 * @since 0.1
+		 * @version 1.2
 		 */
-		public function prep_sale( $new_transaction = false ) {
+		public function buy() {
 
-			// Set currency
-			$this->currency        = ( $this->currency == '' ) ? $this->prefs['currency'] : $this->currency;
+			if ( ! isset( $this->prefs['account'] ) || empty( $this->prefs['account'] ) ) wp_die( __( 'Please setup this gateway before attempting to make a purchase!', 'mycred' ) );
 
-			// The item name
-			$item_name             = str_replace( '%number%', $this->amount, $this->prefs['item_name'] );
-			$item_name             = $this->core->template_tags_general( $item_name );
+			// Location
+			if ( $this->sandbox_mode )
+				$location = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+			else
+				$location = 'https://www.paypal.com/cgi-bin/webscr';
 
-			// This gateway redirects, so we need to populate redirect_to
-			$this->redirect_to     = ( $this->sandbox_mode ) ? 'https://www.sandbox.paypal.com/cgi-bin/webscr' : 'https://www.paypal.com/cgi-bin/webscr';
+			// Prep
+			$type         = $this->get_point_type();
+			$mycred       = mycred( $type );
 
-			// Transaction variables that needs to be submitted
-			$this->redirect_fields = array(
+			$amount       = $mycred->number( $_REQUEST['amount'] );
+			$amount       = abs( $amount );
+
+			$cost         = $this->get_cost( $amount, $type );
+			$to           = $this->get_to();
+			$from         = get_current_user_id();
+			$thankyou_url = $this->get_thankyou();
+
+			$item_name    = str_replace( '%number%', $amount, $this->prefs['item_name'] );
+			$item_name    = $mycred->template_tags_general( $item_name );
+
+			// Revisiting pending payment
+			if ( isset( $_REQUEST['revisit'] ) )
+				$this->transaction_id = strtoupper( sanitize_text_field( $_REQUEST['revisit'] ) );
+
+			// New pending payment
+			else {
+				$post_id              = $this->add_pending_payment( array( $to, $from, $amount, $cost, $this->prefs['currency'], $type ) );
+				$this->transaction_id = get_the_title( $post_id );
+			}
+
+			$cancel_url   = $this->get_cancelled( $this->transaction_id );
+
+			// Hidden form fields
+			$hidden_fields = array(
 				'cmd'           => '_xclick',
 				'business'      => $this->prefs['account'],
 				'item_name'     => $item_name,
 				'quantity'      => 1,
-				'amount'        => $this->cost,
-				'currency_code' => $this->currency,
+				'amount'        => $cost,
+				'currency_code' => $this->prefs['currency'],
 				'no_shipping'   => 1,
 				'no_note'       => 1,
 				'custom'        => $this->transaction_id,
-				'return'        => $this->get_thankyou(),
+				'return'        => $thankyou_url,
 				'notify_url'    => $this->callback_url(),
 				'rm'            => 2,
 				'cbt'           => sprintf( _x( 'Return to %s', 'Return label. %s = Website name', 'mycred' ), get_bloginfo( 'name' ) ),
-				'cancel_return' => $this->get_cancelled( $this->transaction_id )
+				'cancel_return' => $cancel_url
 			);
 
-		}
+			// Create Checkout Page
+			$this->get_page_header( __( 'Processing payment &hellip;', 'mycred' ) );
+			$this->get_page_redirect( $hidden_fields, $location );
+			$this->get_page_footer();
 
-		/**
-		 * AJAX Buy Handler
-		 * @since 1.8
-		 * @version 1.0
-		 */
-		public function ajax_buy() {
-
-			// Construct the checkout box content
-			$content  = $this->checkout_header();
-			$content .= $this->checkout_logo();
-			$content .= $this->checkout_order();
-			$content .= $this->checkout_cancel();
-			$content .= $this->checkout_footer();
-
-			// Return a JSON response
-			$this->send_json( $content );
-
-		}
-
-		/**
-		 * Checkout Page Body
-		 * This gateway only uses the checkout body.
-		 * @since 1.8
-		 * @version 1.0
-		 */
-		public function checkout_page_body() {
-
-			echo $this->checkout_header();
-			echo $this->checkout_logo( false );
-
-			echo $this->checkout_order();
-			echo $this->checkout_cancel();
-
-			echo $this->checkout_footer();
+			exit;
 
 		}
 
@@ -276,43 +271,34 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function preferences() {
+		function preferences() {
 
 			$prefs = $this->prefs;
 
 ?>
-<div class="row">
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
-		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'account' ); ?>"><?php _e( 'Account Email', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'account' ); ?>" id="<?php echo $this->field_id( 'account' ); ?>" value="<?php echo esc_attr( $prefs['account'] ); ?>" class="form-control" />
-		</div>
-		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'item_name' ); ?>"><?php _e( 'Item Name', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'item_name' ); ?>" id="<?php echo $this->field_id( 'item_name' ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
-		</div>
-		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
-		</div>
-	</div>
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
-		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
-
-			<?php $this->currencies_dropdown( 'currency', 'mycred-gateway-paypal-standard-currency' ); ?>
-
-		</div>
-		<div class="form-group">
-			<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
-
-			<?php $this->exchange_rate_setup(); ?>
-
-		</div>
-	</div>
-</div>
+<label class="subheader" for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
+<ol>
+	<li>
+		<?php $this->currencies_dropdown( 'currency', 'mycred-gateway-paypal-standard-currency' ); ?>
+	</li>
+</ol>
+<label class="subheader" for="<?php echo $this->field_id( 'account' ); ?>"><?php _e( 'Account Email', 'mycred' ); ?></label>
+<ol>
+	<li>
+		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'account' ); ?>" id="<?php echo $this->field_id( 'account' ); ?>" value="<?php echo $prefs['account']; ?>" class="long" /></div>
+	</li>
+</ol>
+<label class="subheader" for="<?php echo $this->field_id( 'item_name' ); ?>"><?php _e( 'Item Name', 'mycred' ); ?></label>
+<ol>
+	<li>
+		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'item_name' ); ?>" id="<?php echo $this->field_id( 'item_name' ); ?>" value="<?php echo $prefs['item_name']; ?>" class="long" /></div>
+		<span class="description"><?php _e( 'Description of the item being purchased by the user.', 'mycred' ); ?></span>
+	</li>
+</ol>
+<label class="subheader"><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
+<ol>
+	<?php $this->exchange_rate_setup(); ?>
+</ol>
 <?php
 
 		}
@@ -324,13 +310,12 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 		 */
 		public function sanitise_preferences( $data ) {
 
-			$new_data              = array();
+			$new_data = array();
 
 			$new_data['sandbox']   = ( isset( $data['sandbox'] ) ) ? 1 : 0;
 			$new_data['currency']  = sanitize_text_field( $data['currency'] );
 			$new_data['account']   = sanitize_text_field( $data['account'] );
 			$new_data['item_name'] = sanitize_text_field( $data['item_name'] );
-			$new_data['logo_url']  = sanitize_text_field( $data['logo_url'] );
 
 			// If exchange is less then 1 we must start with a zero
 			if ( isset( $data['exchange'] ) ) {
@@ -339,7 +324,7 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 						$data['exchange'][ $type ] = (float) '0' . $rate;
 				}
 			}
-			$new_data['exchange']  = $data['exchange'];
+			$new_data['exchange'] = $data['exchange'];
 
 			return $new_data;
 
