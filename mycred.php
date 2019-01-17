@@ -3,7 +3,7 @@
  * Plugin Name: myCRED
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 1.7.9.7
+ * Version: 1.7.9.8
  * Tags: points, credit, balance, finance, rewards, engagement, woocommerce, bbpress, buddypress
  * Author: myCred
  * Author URI: https://mycred.me
@@ -19,7 +19,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '1.7.9.6';
+		public $version             = '1.7.9.8';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -894,7 +894,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 					$point_type = mycred( $type_id );
 
 				$history_url = add_query_arg( array( 'page' => $type_id . '-history' ), admin_url( 'users.php' ) );
-				if ( $using_buddypress )
+				if ( $using_buddypress  && isset( $mycred->buddypress['history_url'] ) )
 					$history_url = add_query_arg( array( 'show-ctype' => $type_id ), bp_loggedin_user_domain() . $mycred->buddypress['history_url'] . '/' );
 
 				$balance          = $point_type->get_users_balance( $user_id, $type_id );

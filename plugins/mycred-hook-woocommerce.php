@@ -15,8 +15,10 @@ if ( ! function_exists( 'mycred_load_woocommerce_reward' ) ) :
 		add_action( 'add_meta_boxes_product',                        'mycred_woo_add_product_metabox' );
 		add_action( 'save_post_product',                             'mycred_woo_save_reward_settings' );
 		add_action( 'woocommerce_payment_complete',                  'mycred_woo_payout_rewards' );
+		add_action( 'woocommerce_order_status_completed',            'mycred_woo_payout_rewards' );
 		add_action( 'woocommerce_product_after_variable_attributes', 'mycred_woo_add_product_variation_detail', 10, 3 );
 		add_action( 'woocommerce_save_product_variation',            'mycred_woo_save_product_variation_detail' );
+		add_filter( 'mycred_run_this', 								 'mycred_woo_refund_points' );
 
 	}
 endif;
@@ -165,6 +167,22 @@ if ( ! function_exists( 'mycred_woo_add_product_variation_detail' ) ) :
 </div>
 <?php
 
+	}
+endif;
+
+
+/**
+ * WooCommerce Points Refund
+ * @since 1.7.9.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_woo_refund_points' ) ) :
+	function mycred_woo_refund_points( $request ) {
+
+		if( $request['ref'] == 'woocommerce_refund' )
+			$request['amount'] = abs($request['amount']);
+		
+		return $request;
 	}
 endif;
 
