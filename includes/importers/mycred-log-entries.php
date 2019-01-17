@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Import: Log Entries
  * @since 1.2
- * @version 1.3
+ * @version 1.3.1
  */
 if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 	class myCRED_Importer_Log_Entires extends WP_Importer {
@@ -187,7 +187,7 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 
 						add_filter( 'mycred_log_time',    array( $this, 'log_time' ) );
 
-						$mycred->add_to_log( $reference, $user_id, $amount, $log_entry, $ref_id, $data, $point_type );
+						$mycred->add_to_log( $reference, $user_id, $amount, $entry, $ref_id, $data, $point_type );
 
 						remove_filter( 'mycred_log_time', array( $this, 'log_time' ) );
 

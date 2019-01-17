@@ -197,7 +197,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 		/**
 		 * AJAX: Recent Activity
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function ajax_get_recent_activity() {
 
@@ -270,7 +270,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 			if ( $ledger->num_rows > 5 ) {
 
-				$page = 'mycred';
+				$page = MYCRED_SLUG;
 				if ( $type != MYCRED_DEFAULT_TYPE_KEY )
 					$page .= '_' . $type;
 

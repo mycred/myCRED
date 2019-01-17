@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Returns the points history.
  * @see http://codex.mycred.me/shortcodes/mycred_history/
  * @since 1.0.9
- * @version 1.3.3
+ * @version 1.3.4
  */
 if ( ! function_exists( 'mycred_render_shortcode_history' ) ) :
 	function mycred_render_shortcode_history( $atts, $content = '' ) {
@@ -54,18 +54,6 @@ if ( ! function_exists( 'mycred_render_shortcode_history' ) ) :
 			$args['order'] = $order;
 
 		$log = new myCRED_Query_Log( apply_filters( 'mycred_front_history_args', $args, $atts ) );
-
-		$columns = array(
-			'username' => __( 'User', 'mycred' ),
-			'time'     => __( 'Date', 'mycred' ),
-			'creds'    => $log->core->plural(),
-			'entry'    => __( 'Entry', 'mycred' )
-		);
-
-		if ( $show_user == 0 )
-			unset( $columns['username'] );
-
-		$log->headers = $columns;
 
 		ob_start();
 

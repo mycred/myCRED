@@ -3,7 +3,7 @@
  * These scripts are used to edit or delete entries
  * in the myCRED Log.
  * @since 1.4
- * @version 1.2.3
+ * @version 1.2.4
  */
 jQuery(function($) {
 
@@ -318,6 +318,25 @@ jQuery(function($) {
 		 * Trigger Log Deletion
 		 */
 		$( 'tbody#the-list' ).on( 'click', '.mycred-delete-row', function(){
+
+			// Require user to confirm deletion (if used)
+			if ( myCREDLog.messages.delete_row != '' && ! confirm( myCREDLog.messages.delete ) )
+				return false;
+
+			var deletebutton = $(this);
+			var rowtodelete  = deletebutton.data( 'id' );
+
+			if ( rowtodelete === undefined || rowtodelete == '' )
+				rowtodelete = myCREDRowId;
+			else
+				myCREDRowId = rowtodelete;
+
+			mycred_delete_entry( rowtodelete );
+
+		});
+		$( '#mycred-delete-entry-in-editor' ).on( 'click', function(e){
+
+			e.preventDefault();
 
 			// Require user to confirm deletion (if used)
 			if ( myCREDLog.messages.delete_row != '' && ! confirm( myCREDLog.messages.delete ) )

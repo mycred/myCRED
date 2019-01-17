@@ -2392,7 +2392,7 @@ endif;
 /**
  * Hooks for Clicking on Links
  * @since 1.1
- * @version 1.2
+ * @version 1.3
  */
 if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 	class myCRED_Hook_Click_Links extends myCRED_Hook {
@@ -2420,10 +2420,14 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 		 */
 		public function run() {
 
+			if ( ! is_user_logged_in() ) return;
+
 			add_action( 'mycred_register_assets',      array( $this, 'register_script' ) );
 			add_action( 'mycred_front_enqueue_footer', array( $this, 'enqueue_footer' ) );
-			add_action( 'wp_ajax_mycred-click-points', array( $this, 'ajax_call_link_points' ) );
 			add_filter( 'mycred_parse_tags_link',      array( $this, 'parse_custom_tags' ), 10, 2 );
+
+			if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-click-points' && isset( $_POST['token'] ) && wp_verify_nonce( $_POST['token'], 'mycred-link-points' ) )
+				$this->ajax_call_link_points();
 
 		}
 
@@ -2452,6 +2456,7 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 			$data    = maybe_unserialize( $log_entry->data );
 			$content = str_replace( '%url%', $data['link_url'], $content );
 			$content = str_replace( '%id%',  $data['link_id'], $content );
+
 			if ( isset( $data['link_title'] ) )
 				$content = str_replace( '%title%',  $data['link_title'], $content );
 
@@ -2483,7 +2488,7 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 		/**
 		 * WP Fotter
 		 * @since 1.1
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function enqueue_footer() {
 
@@ -2491,11 +2496,13 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 
 			if ( $mycred_link_points === true ) {
 
+				global $post;
+
 				wp_localize_script(
 					'mycred-link-points',
 					'myCREDlink',
 					array(
-						'ajaxurl' => admin_url( 'admin-ajax.php' ),
+						'ajaxurl' => esc_url( isset( $post->ID ) ? get_permalink( $post->ID ) : home_url( '/' ) ),
 						'token'   => wp_create_nonce( 'mycred-link-points' )
 					)
 				);
@@ -2534,7 +2541,7 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 		/**
 		 * AJAX Call Handler
 		 * @since 1.1
-		 * @version 1.4.2
+		 * @version 1.5
 		 */
 		public function ajax_call_link_points() {
 
@@ -2542,7 +2549,7 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 			if ( ! is_user_logged_in() ) return;
 
 			// Make sure we only handle our own point type
-			if ( ! isset( $_POST['ctype'] ) || $_POST['ctype'] != $this->mycred_type ) return;
+			if ( ! isset( $_POST['ctype'] ) || $_POST['ctype'] != $this->mycred_type || ! isset( $_POST['url'] ) ) return;
 
 			// Security
 			check_ajax_referer( 'mycred-link-points', 'token' );
@@ -2558,14 +2565,17 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 
 			// Token
 			if ( ! isset( $_POST['key'] ) ) wp_send_json( 300 );
-			$token = mycred_verify_token( $_POST['key'], 3 );
+			$token = mycred_verify_token( $_POST['key'], 4 );
 			if ( $token === false ) wp_send_json( 305 );
 
-			list ( $amount, $type, $id ) = $token;
-			if ( $amount == '' || $type == '' || $id == '' ) wp_send_json( 310 );
+			list ( $amount, $point_type, $id, $url ) = $token;
+			if ( $amount == '' || $point_type == '' || $id == '' || $url == '' ) wp_send_json( 310 );
+
+			// Make sure the token is not abused
+			if ( $url != urlencode( $_POST['url'] ) ) wp_send_json( 315 );
 
 			// Bail now if this was not intenteded for this type
-			if ( $type != $this->mycred_type ) return;
+			if ( $point_type != $this->mycred_type ) return;
 
 			// Amount
 			if ( $amount == 0 )
@@ -2577,14 +2587,13 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 
 			$data = array(
 				'ref_type'   => 'link',
-				'link_url'   => $_POST['url'],
+				'link_url'   => esc_url_raw( $_POST['url'] ),
 				'link_id'    => $id,
-				'link_title' => ( isset( $_POST['etitle'] ) ) ? $_POST['etitle'] : ''
+				'link_title' => ( isset( $_POST['etitle'] ) ) ? sanitize_text_field( $_POST['etitle'] ) : ''
 			);
 
 			// Limits
 			if ( $this->prefs['limit_by'] == 'url' ) {
-				if ( ! isset( $_POST['url'] ) || empty( $_POST['url'] ) ) wp_send_json( 500 );
 				if ( $this->has_clicked( $user_id, 'link_url', $data['link_url'] ) ) wp_send_json( 600 );
 			}
 			elseif ( $this->prefs['limit_by'] == 'id' ) {
@@ -2599,7 +2608,7 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 				$this->prefs['log'],
 				'',
 				$data,
-				$type
+				$point_type
 			);
 
 			// Report the good news
@@ -2618,17 +2627,12 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 
 			global $wpdb;
 
-			$rows = $wpdb->get_results( $wpdb->prepare( "
-				SELECT * 
-				FROM {$this->core->log_table} 
-				WHERE ref = %s 
-					AND user_id = %d
-					AND ctype = %s", 'link_click', $user_id, $this->mycred_type ) );
-
-			if ( $wpdb->num_rows == 0 ) return false;
+			$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->core->log_table} WHERE ref = %s AND user_id = %d AND ctype = %s", 'link_click', $user_id, $this->mycred_type ) );
+			if ( count( $rows ) == 0 ) return false;
 
 			$reply = false;
 			foreach ( $rows as $row ) {
+
 				$data = maybe_unserialize( $row->data );
 				if ( ! is_array( $data ) || ! isset( $data[ $by ] ) ) continue;
 
@@ -2636,9 +2640,8 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 					$reply = true;
 					break;
 				}
-			}
 
-			$wpdb->flush();
+			}
 
 			return $reply;
 
@@ -2801,16 +2804,16 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 		 * Maybe Reward Points
 		 * Point rewards are moved from admin-ajax.php to the front end.
 		 * @since 1.7.6
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function maybe_reward_points( $template ) {
 
 			if ( is_user_logged_in() ) {
 
-				if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-viewing-videos' && isset( $_POST['setup'] ) && isset( $_POST['type'] ) && $_POST['ctype'] == $this->mycred_type && isset( $_POST['token'] ) && wp_verify_nonce( $_POST['token'], 'mycred-video-points' ) ) {
+				if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-viewing-videos' && isset( $_POST['setup'] ) && isset( $_POST['type'] ) && $_POST['type'] == $this->mycred_type && isset( $_POST['token'] ) && wp_verify_nonce( $_POST['token'], 'mycred-video-points' ) ) {
 
 					$user_id  = get_current_user_id();
-					if ( ! $this->core->exclude_user( $user_id ) ) wp_send_json_error();
+					if ( $this->core->exclude_user( $user_id ) ) wp_send_json_error();
 
 					$key      = sanitize_text_field( $_POST['setup'] );
 					$setup    = mycred_verify_token( $key, 5 );

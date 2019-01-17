@@ -122,7 +122,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 				'mycred-sell-this',
 				plugins_url( 'assets/js/buy-content.js', myCRED_SELL ),
 				array( 'jquery' ),
-				'1.2.1',
+				'2.0.1',
 				true
 			);
 

@@ -136,7 +136,7 @@ endif;
 /**
  * Get Cancel URL
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'buycred_get_cancel_transaction_url' ) ) :
 	function buycred_get_cancel_transaction_url( $transaction_id = NULL ) {
@@ -156,8 +156,8 @@ if ( ! function_exists( 'buycred_get_cancel_transaction_url' ) ) :
 		}
 
 		// Override
-		if ( isset( $_REQUEST['return_to'] ) && sanitize_url( $_REQUEST['return_to'] ) != '' )
-			$base = sanitize_url( $_REQUEST['return_to'] );
+		if ( isset( $_REQUEST['return_to'] ) && esc_url_raw( $_REQUEST['return_to'] ) != '' )
+			$base = esc_url_raw( $_REQUEST['return_to'] );
 
 		if ( $transaction_id !== NULL )
 			$url = add_query_arg( array( 'buycred-cancel' => $transaction_id, '_token' => wp_create_nonce( 'buycred-cancel-pending-payment' ) ), $base );

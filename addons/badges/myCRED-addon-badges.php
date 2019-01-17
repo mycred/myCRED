@@ -286,12 +286,12 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Add Admin Menu Item
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function add_to_menu() {
 
 			add_submenu_page(
-				'mycred',
+				MYCRED_SLUG,
 				__( 'Badges', 'mycred' ),
 				__( 'Badges', 'mycred' ),
 				$this->core->edit_creds_cap(),
@@ -303,7 +303,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Parent File
 		 * @since 1.6
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		public function parent_file( $parent = '' ) {
 
@@ -311,13 +311,13 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
 			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_badge' ) {
 			
-				return 'mycred';
+				return MYCRED_SLUG;
 			
 			}
 
 			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_badge' ) {
 
-				return 'mycred';
+				return MYCRED_SLUG;
 
 			}
 

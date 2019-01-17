@@ -12,7 +12,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  *
  * @see http://codex.mycred.me/shortcodes/mycred_link/
  * @since 1.1
- * @version 1.3
+ * @version 1.4
  */
 if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 	function mycred_render_shortcode_link( $atts, $link_title = '' ) {
@@ -86,15 +86,11 @@ if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 			}
 
 			// Add key
-			if ( $atts['amount'] != 0 ) {
+			$token  = mycred_create_token( array( $atts['amount'], $atts['ctype'], $atts['id'], urlencode( $atts['href'] ) ) );
+			$attr[] = 'data-token="' . $token . '"';
 
-				$token  = mycred_create_token( array( $atts['amount'], $atts['ctype'], $atts['id'] ) );
-				$attr[] = 'data-token="' . $token . '"';
-
-				// Make sure jQuery script is called
-				$mycred_link_points = true;
-
-			}
+			// Make sure jQuery script is called
+			$mycred_link_points = true;
 
 		}
 

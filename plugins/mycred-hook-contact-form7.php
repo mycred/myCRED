@@ -119,11 +119,13 @@ function mycred_load_contact_form_seven_hook() {
 		/**
 		 * Preferences for Contact Form 7 Hook
 		 * @since 0.1
-		 * @version 1.2
+		 * @version 1.2.1
 		 */
 		public function preferences() {
 
 			$prefs = $this->prefs;
+			if ( $prefs === false ) $prefs = array();
+
 			$forms = $this->get_forms();
 
 			// No forms found

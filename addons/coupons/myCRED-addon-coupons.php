@@ -178,17 +178,17 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		/**
 		 * Parent File
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function parent_file( $parent = '' ) {
 
 			global $pagenow;
 
 			if ( isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_coupon' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
-				return 'mycred';
+				return MYCRED_SLUG;
 
 			if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_coupon' )
-				return 'mycred';
+				return MYCRED_SLUG;
 
 			return $parent;
 

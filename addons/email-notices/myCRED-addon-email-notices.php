@@ -204,17 +204,17 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Parent File
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function parent_file( $parent = '' ) {
 
 			global $pagenow;
 
 			if ( isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_email_notice' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
-				return 'mycred';
+				return MYCRED_SLUG;
 
 			if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_email_notice' )
-				return 'mycred';
+				return MYCRED_SLUG;
 
 			return $parent;
 
@@ -972,7 +972,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Email Notice Check
 		 * @since 1.1
-		 * @version 1.5
+		 * @version 1.5.1
 		 */
 		public function email_check( $ran, $request, $mycred ) {
 
@@ -991,7 +991,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				mycred_add_user_meta( $user_id, 'mycred_scheduled_email_notices', '', array(
 					'events'  => $events,
 					'request' => $request
-				) );
+				), false );
 
 			}
 
@@ -1009,7 +1009,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Badge Check
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		public function badge_check( $user_id, $badge_id, $level_reached ) {
 
@@ -1034,7 +1034,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				mycred_add_user_meta( $user_id, 'mycred_scheduled_email_notices', '', array(
 					'events'  => $events,
 					'request' => $request
-				) );
+				), false );
 
 			}
 
@@ -1050,7 +1050,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Rank Promotions
 		 * @since 1.7.6
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function rank_promotion( $user_id, $promoted_to, $query ) {
 
@@ -1072,7 +1072,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				mycred_add_user_meta( $user_id, 'mycred_scheduled_email_notices', '', array(
 					'events'  => $events,
 					'request' => $request
-				) );
+				), false );
 
 			}
 
@@ -1088,7 +1088,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Rank Demotions
 		 * @since 1.7.6
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function rank_demotion( $user_id, $demoted_to, $query ) {
 
@@ -1110,7 +1110,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				mycred_add_user_meta( $user_id, 'mycred_scheduled_email_notices', '', array(
 					'events'  => $events,
 					'request' => $request
-				) );
+				), false );
 
 			}
 

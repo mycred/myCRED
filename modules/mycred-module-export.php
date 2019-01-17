@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * myCRED_Export_Module class
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 	class myCRED_Export_Module extends myCRED_Module {
@@ -34,10 +34,11 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		/**
 		 * Load
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		function load() {
 
+			add_filter( 'mycred_log_bulk_actions',          array( $this, 'adjust_log_bulk_actions' ) );
 			add_action( 'template_redirect',                array( $this, 'catch_front_end_exports' ) );
 			add_action( 'mycred_log_admin_actions',         array( $this, 'catch_admin_log_actions' ) );
 			add_action( 'mycred_log_my_admin_actions',      array( $this, 'catch_my_back_end_exports' ) );
@@ -51,6 +52,37 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 
 			add_action( 'mycred_after_core_prefs',          array( $this, 'after_general_settings' ), 1 );
 			add_filter( 'mycred_save_core_prefs',           array( $this, 'sanitize_extra_settings' ), 80, 3 );
+
+		}
+
+		/**
+		 * Adjust Bulk Actions
+		 * @since 1.7.8
+		 * @version 1.0
+		 */
+		public function adjust_log_bulk_actions( $actions ) {
+
+			if ( ! apply_filters( 'mycred_user_can_export_admin', (bool) $this->export['admin'], $this ) ) {
+
+				if ( array_key_exists( 'export-raw', $actions ) )
+					unset( $actions['export-raw'] );
+
+				if ( array_key_exists( 'export-format', $actions ) )
+					unset( $actions['export-format'] );
+
+			}
+
+			else {
+
+				if ( $this->export['admin_format'] === 'formatted' && array_key_exists( 'export-raw', $actions ) )
+					unset( $actions['export-raw'] );
+
+				elseif ( $this->export['admin_format'] === 'raw' && array_key_exists( 'export-format', $actions ) )
+					unset( $actions['export-format'] );
+
+			}
+
+			return $actions;
 
 		}
 
@@ -96,13 +128,13 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		/**
 		 * Front-end export handler
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function catch_front_end_exports() {
 
 			if ( ! is_user_logged_in() ) return;
 
-			if ( apply_filters( 'mycred_user_can_export', absint( $this->export['front'] ) ) === 0 ) return;
+			if ( apply_filters( 'mycred_user_can_export', absint( $this->export['front'] ), $this ) === 0 ) return;
 
 			if ( mycred_is_valid_export_url() ) {
 
@@ -132,13 +164,13 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		/**
 		 * Back-end export handler
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function catch_admin_log_actions( $point_type ) {
 
 			if ( ! is_user_logged_in() ) return;
 
-			if ( apply_filters( 'mycred_user_can_export_admin', absint( $this->export['admin'] ) ) === 0 ) return;
+			if ( ! apply_filters( 'mycred_user_can_export_admin', (bool) $this->export['admin'], $this ) ) return;
 
 			do_action( 'mycred_do_admin_export', $point_type, $this );
 
@@ -150,7 +182,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 				if ( $this->export['admin_format'] === 'raw' || ( $this->export['admin_format'] === 'both' && isset( $_GET['raw'] ) && $_GET['raw'] == 1 ) )
 					$args['raw'] = true;
 
-				$file_name = apply_filters( 'mycred_export_file_name', $this->export['admin_name'], $request, true );
+				$file_name = apply_filters( 'mycred_export_file_name', $this->export['admin_name'], $args, true );
 
 				// First get a clean list of ids to delete
 				$export    = new myCRED_Query_Export( $args );
@@ -194,13 +226,13 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		/**
 		 * Back-end My export handler
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function catch_my_back_end_exports( $point_type ) {
 
 			if ( ! is_user_logged_in() ) return;
 
-			if ( apply_filters( 'mycred_user_can_export_admin', absint( $this->export['admin'] ) ) === 0 ) return;
+			if ( ! apply_filters( 'mycred_user_can_export_admin', (bool) $this->export['admin'], $this ) ) return;
 
 			do_action( 'mycred_do_my_admin_export', $point_type, $this );
 
@@ -227,11 +259,11 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		/**
 		 * Add Export Trigger to Title
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function add_export_trigger_to_title( $title, $log_module ) {
 
-			if ( apply_filters( 'mycred_user_can_export_admin', absint( $this->export['admin'] ) ) === 0 ) return $title;
+			if ( ! apply_filters( 'mycred_user_can_export_admin', (bool) $this->export['admin'], $this ) ) return $title;
 
 			$title .= ' <a href="javascript:void(0)" class="toggle-exporter add-new-h2" data-toggle="export-log-history">' . __( 'Export', 'mycred' ) . '</a>';
 

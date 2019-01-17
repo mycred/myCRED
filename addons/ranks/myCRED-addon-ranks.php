@@ -359,9 +359,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_rank' ) {
 			
 				if ( isset( $_GET['ctype'] ) && sanitize_key( $_GET['ctype'] ) != MYCRED_DEFAULT_TYPE_KEY )
-					return 'mycred_' . sanitize_key( $_GET['ctype'] );
+					return MYCRED_SLUG . '_' . sanitize_key( $_GET['ctype'] );
 
-				return 'mycred';
+				return MYCRED_SLUG;
 			
 			}
 
@@ -369,15 +369,15 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_rank' ) {
 
 				if ( isset( $_GET['ctype'] ) && $_GET['ctype'] != MYCRED_DEFAULT_TYPE_KEY )
-					return 'mycred_' . sanitize_key( $_GET['ctype'] );
+					return MYCRED_SLUG . '_' . sanitize_key( $_GET['ctype'] );
 
 				$point_type = get_post_meta( $_GET['post'], 'ctype', true );
 				$point_type = sanitize_key( $point_type );
 
 				if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
-					return 'mycred_' . $point_type;
+					return MYCRED_SLUG . '_' . $point_type;
 
-				return 'mycred';
+				return MYCRED_SLUG;
 
 			}
 

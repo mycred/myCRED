@@ -6,16 +6,18 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * This shortcode is intended to be used when selling parts of a content.
  * Can only be used once per content.
  * @since 1.7
- * @version 1.0.2
+ * @version 1.0.3
  */
 if ( ! function_exists( 'mycred_render_sell_this' ) ) :
 	function mycred_render_sell_this( $atts, $content = '' ) {
 
 		global $mycred_partial_content_sale, $mycred_modules;
 
-		$post_id = mycred_sell_content_post_id();
-		$post    = get_post( $post_id );
-		$user_id = get_current_user_id();
+		$post_id  = mycred_sell_content_post_id();
+		$post     = get_post( $post_id );
+		$user_id  = get_current_user_id();
+		$is_admin = mycred_is_admin( $user_id );
+		$is_owner = ( (int) $post->post_author === $user_id ) ? true : false;
 
 		$mycred_partial_content_sale = true;
 
@@ -23,9 +25,7 @@ if ( ! function_exists( 'mycred_render_sell_this' ) ) :
 		if ( is_user_logged_in() ) {
 
 			// Authors and admins do not pay
-			if ( ! mycred_is_admin() && $post->post_author !== $user_id ) {
-
-				$status = 'mycred-sell-paid';
+			if ( ! $is_admin && ! $is_owner ) {
 
 				// In case we have not paid
 				if ( ! mycred_user_paid_for_content( $user_id, $post_id ) ) {
@@ -51,6 +51,23 @@ if ( ! function_exists( 'mycred_render_sell_this' ) ) :
 					}
 
 				}
+
+			}
+
+			/**
+			 * Incase the shortcode is used incorrectly
+			 * Since the shortcode is only used to indicate which part of the content that is for sale, we need to make sure it can only be used
+			 * on content that has been set to be purchasable. In manual mode, this means we must have clicked to enable sale in the metabox.
+			 * In auto modes, the particular post types setup must be enabled and the post must fit any filter criteria we might have set.
+			 * Since the content might have monetary value, we do not want to just show it, but to warn admin/post author and appologize to the user.
+			 * @since 1.7.8
+			 */
+			elseif ( ! mycred_post_is_for_sale( $post ) ) {
+
+				if ( $is_admin || $is_owner )
+					return '<p>' . sprintf( '%s %s', __( 'This shortcode can not be used in content that has not been set for sale!', 'mycred' ), '<a href="' . get_edit_post_link( $post_id ) ) . '">' . __( 'Edit', 'mycred' ) . '</a></p>';
+
+				return '<p>' . __( 'This content is currently unattainable. Apologies for the inconvenience.', 'mycred' ) . '</p>';
 
 			}
 

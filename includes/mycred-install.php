@@ -144,9 +144,18 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		/**
 		 * Update to Latest
 		 * @since 1.7.6
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public static function update_to_latest( $version ) {
+
+			global $wpdb;
+
+			// Reset cached pending payments (buyCRED add-on)
+			$wpdb->delete(
+				$wpdb->usermeta,
+				array( 'meta_key' => 'buycred_pending_payments' ),
+				array( '%s' )
+			);
 
 			if ( version_compare( $version, myCRED_VERSION, '<' ) ) {
 

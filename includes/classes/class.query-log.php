@@ -185,7 +185,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['entry_id']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['entry_id']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "id IN ( " . str_repeat( "%d,", ( count( $this->args['entry_id']['ids'] ) ) ) . " )", $this->args['entry_id']['ids'] );
+						$wheres[] = $wpdb->prepare( "id IN ( %d" . str_repeat( ", %d", ( count( $this->args['entry_id']['ids'] ) - 1 ) ) . " )", $this->args['entry_id']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['entry_id']['compare'], array( '=', '!=' ) ) && ! is_array( $this->args['entry_id']['ids'] ) ) {
@@ -229,7 +229,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['ctype']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['ctype']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "ctype IN ( %s" . str_repeat( ",%s", ( count( $this->args['ctype']['ids'] ) - 1 ) ) . " )", $this->args['ctype']['ids'] );
+						$wheres[] = $wpdb->prepare( "ctype IN ( %s" . str_repeat( ", %s", ( count( $this->args['ctype']['ids'] ) - 1 ) ) . " )", $this->args['ctype']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['ctype']['compare'], array( '=', '!=' ) ) && ! is_array( $this->args['ctype']['ids'] ) ) {
@@ -288,7 +288,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['user_id']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['user_id']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "user_id IN ( %d" . str_repeat( ",%d", ( count( $this->args['user_id']['ids'] ) - 1 ) ) . " )", $this->args['user_id']['ids'] );
+						$wheres[] = $wpdb->prepare( "user_id IN ( %d" . str_repeat( ", %d", ( count( $this->args['user_id']['ids'] ) - 1 ) ) . " )", $this->args['user_id']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['user_id']['compare'], array( '=', '!=' ) ) && ! is_array( $this->args['user_id']['ids'] ) ) {
@@ -347,7 +347,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['ref']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['ref']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "ref IN ( %s" . str_repeat( ",%s", ( count( $this->args['ref']['ids'] ) - 1 ) ) . " )", $this->args['ref']['ids'] );
+						$wheres[] = $wpdb->prepare( "ref IN ( %s" . str_repeat( ", %s", ( count( $this->args['ref']['ids'] ) - 1 ) ) . " )", $this->args['ref']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['ref']['compare'], array( '=', '!=' ) ) && ! is_array( $this->args['ref']['ids'] ) ) {
@@ -406,7 +406,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['ref_id']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['ref_id']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "ref_id IN ( %d" . str_repeat( ",%d", ( count( $this->args['ref_id']['ids'] ) - 1 ) ) . " )", $this->args['ref_id']['ids'] );
+						$wheres[] = $wpdb->prepare( "ref_id IN ( %d" . str_repeat( ", %d", ( count( $this->args['ref_id']['ids'] ) - 1 ) ) . " )", $this->args['ref_id']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['ref_id']['compare'], array( '=', '!=', '>', '>=', '<', '<=' ) ) && ! is_array( $this->args['ref_id']['ids'] ) ) {
@@ -1040,7 +1040,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		/**
 		 * Filter Log options
 		 * @since 0.1
-		 * @version 1.3.2
+		 * @version 1.3.3
 		 */
 		public function filter_options( $is_profile = false ) {
 
@@ -1069,7 +1069,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			// Filter by user
 			if ( $this->core->can_edit_creds() && ! $is_profile && $this->num_rows > 0 ) {
 
-				echo '<input type="text" class="form-control" name="user" id="myCRED-user-filter" size="22" placeholder="' . __( 'User ID, Username, Email or Nicename', 'mycred' ) . '" value="' . ( ( isset( $_GET['user'] ) ) ? $_GET['user'] : '' ) . '" /> ';
+				echo '<input type="text" class="form-control" name="user" id="myCRED-user-filter" size="22" placeholder="' . __( 'User ID, Username, Email or Nicename', 'mycred' ) . '" value="' . ( ( isset( $_GET['user'] ) ) ? esc_attr( $_GET['user'] ) : '' ) . '" /> ';
 				$show = true;
 
 			}
@@ -2589,7 +2589,7 @@ endif;
  * Get Search Args
  * Converts URL arguments into an array of log query friendly arguments.
  * @since 1.7
- * @version 1.0.2
+ * @version 1.0.3
  */
 if ( ! function_exists( 'mycred_get_search_args' ) ) :
 	function mycred_get_search_args( $exclude = NULL ) {
@@ -2612,6 +2612,21 @@ if ( ! function_exists( 'mycred_get_search_args' ) ) :
 
 				elseif ( $key == 'user' )
 					$value = mycred_get_user_id( $value );
+
+				elseif ( is_array( $value ) ) {
+
+					$temp = array();
+					if ( ! empty( $value ) ) {
+						foreach ( $value as $sub_key => $sub_value ) {
+							if ( ! is_array( $sub_value ) )
+								$temp[ $sub_key ] = sanitize_text_field( $sub_value );
+							else
+								$temp[ $sub_key ] = $sub_value;
+						}
+					}
+					$value = $temp;
+
+				}
 
 				else {
 					$value = sanitize_text_field( $value );

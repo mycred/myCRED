@@ -5,7 +5,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Dashboard Widget: Overview
  * @see https://codex.wordpress.org/Example_Dashboard_Widget
  * @since 1.3.3
- * @version 1.3
+ * @version 1.3.1
  */
 if ( ! class_exists( 'myCRED_Dashboard_Widget_Overview' ) ) :
 	class myCRED_Dashboard_Widget_Overview {
@@ -65,7 +65,7 @@ div.overview-module-wrap div.mycred-type .overview .section strong { padding: 0 
 
 				$mycred = mycred( $type );
 
-				$page = 'mycred';
+				$page = MYCRED_SLUG;
 				if ( $type != MYCRED_DEFAULT_TYPE_KEY )
 					$page .= '_' . $type;
 
