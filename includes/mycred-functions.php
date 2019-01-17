@@ -1389,20 +1389,26 @@ endif;
 /**
  * Get Module
  * @since 1.7.3
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_get_module' ) ) :
 	function mycred_get_module( $module = '', $type = 'solo' ) {
 
 		global $mycred_modules;
 
-		if ( ! array_key_exists( $type, $mycred_modules ) )
+		if ( $type == 'solo' ) {
+
+			if ( ! array_key_exists( $module, $mycred_modules['solo'] ) )
+				return false;
+
+			return $mycred_modules['solo'][ $module ];
+
+		}
+
+		if ( ! array_key_exists( $type, $mycred_modules['type'] ) )
 			return false;
 
-		if ( ! array_key_exists( $module, $mycred_modules[ $type ] ) )
-			return false;
-
-		return $mycred_modules[ $type ][ $module ];
+		return $mycred_modules['type'][ $type ][ $module ];
 
 	}
 endif;

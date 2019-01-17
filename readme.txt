@@ -3,7 +3,7 @@ Contributors: designbymerovingi
 Tags: point, points, tokens, credit, management, reward, charge, community, contest, buddypress, jetpack, bbpress, simple press, woocommerce, wp e-commerce, contact-form-7
 Requires at least: 4.0
 Tested up to: 4.7.4
-Stable tag: 1.7.8
+Stable tag: 1.7.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -96,8 +96,8 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-= 1.7.8 =
-Important bug fixes.
+= 1.7.8.1 =
+Minor bug fixes.
 
 
 == Other Notes ==
@@ -121,22 +121,11 @@ Important bug fixes.
 
 == Changelog ==
 
-= 1.7.8 =
-FIX - Incorrect logic prevents video views from getting points.
-FIX - Email Notifications not triggering for badges when emails are not set to be sent immediately.
-FIX - Restored PHP7 Compatibility by updating the parseCSV class constructor.
-FIX - When trying to query log entries based on log entry IDs, a stray comma sign causes a Query error.
-FIX - Exporting entries in the admin area fails due to array to string conversion error.
-FIX - Replaced sanitize_url with esc_url_raw.
-FIX - Pending buyCRED payments are shown incorrectly due to the cache not getting cleared. This causes trashed pending payments to still appear in shortcodes.
-FIX - Front end column customisations for the mycred_history shortcode is not working.
-FIX - Log entry import is not saving the log entry due to misspelled variable name.
-NEW - Added new mycred_post_type_for_sale filter.
-FIX - When setting all pages to sale by default using the Sell Content add-on, we need to make sure this excludes BuddyPress pages.
-NEW - Added warning when the shortcode mycred_sell_this is used incorrectly.
-TWEAK - Whenever the plugin is re-enabled, built in caches should be cleared.
-TWEAK - Updated the mycred_link shortcode to stop using the admin-ajax.php file for calls.
-UPDATE - Updated Sell Content script version.
+= 1.7.8.1 =
+FIX - Selecting a log entry causes all entries to be selected.
+FIX - mycred_get_module() function are returning incorrect details.
+FIX - Badge rewards not getting paid out when a badge is automatically assigned.
+FIX - The mycred_history shortcode can not render two dates correctly when using the time attribute.
 
 
 = Previous Versions =

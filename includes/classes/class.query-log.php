@@ -566,12 +566,12 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 						if ( count( $dates ) == 1 )
 							$this->args['time'] = array( 'dates' => $dates[0], 'compare' => '=' );
 
-						// Keyword time query
-						elseif ( count( $dates ) == 2 && in_array( $this->args['time'], array( 'today', 'yesterday', 'thisweek', 'thismonth' ) ) )
+						// Keyword time query or between two dates
+						elseif ( count( $dates ) == 2 || in_array( $this->args['time'], array( 'today', 'yesterday', 'thisweek', 'thismonth' ) ) )
 							$this->args['time'] = array( 'dates' => $dates, 'compare' => 'BETWEEN' );
 
 						// Multiple time query
-						elseif ( count( $dates ) > 1 )
+						else
 							$this->args['time'] = array( 'dates' => $dates, 'compare' => 'IN' );
 
 					}
@@ -1491,7 +1491,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		 * Generated a single entry row depending on the columns used / requested.
 		 * @filter mycred_log_date
 		 * @since 0.1
-		 * @version 1.4.3
+		 * @version 1.4.4
 		 */
 		public function get_the_entry( $log_entry, $wrap = 'td' ) {
 
@@ -1592,7 +1592,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				}
 
 				if ( $content !== false )
-					$entry_data .= '<' . $wrap . ' class="' . ( ( $column_id == 'username' ) ? 'column-primary ' : '' ) . 'column-' . $column_id . $hidden . '"' . $data . '>' . $content . '</' . $wrap . '>';
+					$entry_data .= '<' . $wrap . ' class="' . ( ( $column_id == 'username' ) ? 'column-primary ' : '' ) . 'column-' . $column_id . $hidden . '" data-colname="' . $column_name . '" ' . $data . '>' . $content . '</' . $wrap . '>';
 
 			}
 
