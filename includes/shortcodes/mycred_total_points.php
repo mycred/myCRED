@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Allows to show total points of a specific point type or add up
  * points from the log based on reference, reference id or user id.
  * @since 1.6.6
- * @version 1.1.1
+ * @version 1.1.2
  */
 if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 	function mycred_render_shortcode_total_points( $atts ) {
@@ -22,7 +22,6 @@ if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 		if ( ! mycred_point_type_exists( $type ) )
 			$type = MYCRED_DEFAULT_TYPE_KEY;
 
-		$ref     = sanitize_key( $ref );
 		$user_id = mycred_get_user_id( $user_id );
 		$mycred  = mycred( $type );
 

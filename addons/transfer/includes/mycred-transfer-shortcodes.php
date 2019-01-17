@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Renders a transfer form that allows users to send points to other users.
  * @see http://mycred.me/functions/mycred_transfer_render/
  * @since 0.1
- * @version 1.7.2
+ * @version 1.7.3
  */
 if ( ! function_exists( 'mycred_transfer_render' ) ) :
 	function mycred_transfer_render( $atts, $content = NULL ) {
@@ -182,6 +182,8 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 			}
 
 		}
+
+		$to_input = apply_filters( 'mycred_transfer_to_field', $to_input, $pref, $atts );
 
 		// Show Balance 
 		$extras = array();

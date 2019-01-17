@@ -176,7 +176,7 @@ endif;
  * Will show a given users payment history with links to the posts
  * they have purchased.
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 	function mycred_render_sell_history( $atts, $content = '' ) {
@@ -205,7 +205,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 			'col-expires' => __( 'Expires', 'mycred' )
 		), $atts );
 
-		if ( empty( $purchases ) && $no_result == '' ) return;
+		if ( empty( $purchases ) && $nothing == '' ) return;
 
 		ob_start();
 
@@ -227,8 +227,8 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 		if ( ! empty( $purchases ) ) {
 			foreach ( $purchases as $entry ) {
 
-				$mycred  = mycred( $entry->ctype );
-				$prefs   = mycred_get_post_sale_setup( $entry->ref_id, $entry->ctype );
+				$mycred       = mycred( $entry->ctype );
+				$expirares_in = mycred_sell_content_get_expiration_length( $entry->ref_id, $entry->ctype );
 
 				echo '<td class="mycred-sell-' . $column_id . ' ' . $column_id . '">';
 
@@ -247,15 +247,15 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 
 						$expires = __( 'Never', 'mycred' );
 						if ( $prefs['expire'] > 0 )
-							$expires = sprintf( _x( 'Purchase expires in %s', 'e.g. 10 hours', 'mycred' ), ' ' . $prefs['expire'] . ' ' . $expiration );
+							$expires = sprintf( _x( 'Purchase expires in %s', 'e.g. 10 hours', 'mycred' ), $expirares_in . ' ' . $expiration );
 
 						echo '<td class="">' . $expires . '</td>';
 
 					}
 					else {
 
-						do_action( 'mycred_sales_history_column', $column_id, $entry, $prefs );
-						do_action( 'mycred_sales_history_column_' . $column_id, $entry, $prefs );
+						do_action( 'mycred_sales_history_column', $column_id, $entry );
+						do_action( 'mycred_sales_history_column_' . $column_id, $entry );
 
 					}
 
@@ -267,7 +267,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 		}
 		else {
 
-			echo '<tr><td class="no-results" colspan="' . count( $columns ) . '">' . $no_result . '</td></tr>';
+			echo '<tr><td class="no-results" colspan="' . count( $columns ) . '">' . $nothing . '</td></tr>';
 
 		}
 

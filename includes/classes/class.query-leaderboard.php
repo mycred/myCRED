@@ -29,7 +29,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		 * Preps the class for getting a leaderboard based on the
 		 * given arguments. Validates these arguments.
 		 * @since 1.0
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function __construct( $args = array() ) {
 
@@ -55,7 +55,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 				$this->limit = 'LIMIT ' . $this->args['number'];
 				if ( $this->args['offset'] != 0 )
-					$this->limit = 'LIMIT ' . $this->args['offset'] . ', ' . $this->args['number'];
+					$this->limit .= ',' . $this->args['offset'];
 
 			}
 
@@ -207,7 +207,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			// User is not in the leaderboard so we need to append him/her to the end of the leaderboard array.
 			$new_row             = array( 'ID' => $this->user_id );
 			$new_row['position'] = $this->get_users_current_position();
-			$new_row['cred']     = $this->get_users_current_value();
+			$new_row['creds']    = $this->get_users_current_value();
 
 			if ( $return )
 				return $new_row;

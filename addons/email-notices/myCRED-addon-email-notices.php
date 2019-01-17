@@ -1009,11 +1009,17 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Badge Check
 		 * @since 1.7
-		 * @version 1.0.2
+		 * @version 1.0.3
 		 */
 		public function badge_check( $user_id, $badge_id, $level_reached ) {
 
 			if ( $level_reached === false ) return;
+
+			$meta_key      = 'mycred_badge' . $badge_id;
+
+			// No assignment should occur if we already have this badge + level
+			$current_level = mycred_get_user_meta( $user_id, $meta_key );
+			if ( $current_level != '' && $current_level == $level_reached ) return;
 
 			$events  = array( 'badges|positive' );
 			$request = array(
@@ -1126,7 +1132,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Do Email Notices
 		 * @since 1.1
-		 * @version 1.2
+		 * @version 1.2.1
 		 */
 		public function do_email_notices( $events = array(), $request = array() ) {
 
@@ -1208,23 +1214,27 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 						if ( $settings['reply_to'] != '' )
 							$headers[] = 'Reply-To: ' . $settings['reply_to'];
 
-						// Both means we blank carbon copy the admin so the user does not see email
-						if ( $settings['recipient'] == 'both' )
-							$headers[] = 'Bcc: ' . get_option( 'admin_email' );
-
 						// If email was successfully sent we update 'last_run'
-						if ( $this->wp_mail( $to, $subject, $message, $headers, $attachments, $request, $notice->ID ) === true )
+						if ( $this->wp_mail( $to, $subject, $message, $headers, $attachments, $request, $notice->ID ) === true ) {
+
 							update_post_meta( $notice->ID, 'mycred_email_last_run', time() );
+
+							if ( $settings['recipient'] == 'both' )
+								$this->wp_mail( get_option( 'admin_email' ), $subject, $message, $headers, $attachments, $request, $notice->ID );
+
+						}
 
 					}
 					else {
 
 						// If email was successfully sent we update 'last_run'
 						if ( $this->wp_mail( $to, $subject, $message, $headers, $attachments, $request, $notice->ID ) === true ) {
+
 							update_post_meta( $notice->ID, 'mycred_email_last_run', time() );
 
 							if ( $settings['recipient'] == 'both' )
 								$this->wp_mail( get_option( 'admin_email' ), $subject, $message, $headers, $attachments, $request, $notice->ID );
+
 						}
 
 					}
@@ -1262,7 +1272,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			$subject  = $mycred->parse_template_tags( $subject, $entry );
 			$message  = $mycred->parse_template_tags( $message, $entry );
 
-			if ( $this->emailnotices['use_html'] === true )
+			if ( $this->emailnotices['use_html'] )
 				$message = wpautop( $message );
 
 			$message  = wptexturize( $message );
@@ -1271,7 +1281,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			$message  = apply_filters( 'mycred_email_message_body', $message, $filtered, $this );
 
 			// Construct HTML Content
-			if ( $this->emailnotices['use_html'] === true ) {
+			if ( $this->emailnotices['use_html'] ) {
 				$styling = $this->get_email_styling( $email_id );
 				$message = '<html><head><title>' . $subject . '</title><style type="text/css" media="all"> ' . trim( $styling ) . '</style></head><body>' . $message . '</body></html>';
 			}
@@ -1297,7 +1307,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		 */
 		public function get_email_format() {
 
-			if ( $this->emailnotices['use_html'] === false )
+			if ( ! $this->emailnotices['use_html'] )
 				return 'text/plain';
 
 			return 'text/html';
@@ -1329,15 +1339,15 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			$content     = str_replace( '%new_balance%',   $new_balance, $content );
 			$content     = str_replace( '%new_balance_f%', $type->format_creds( $new_balance ), $content );
 
-			$content     = str_replace( '%amount%', $request['amount'], $content );
-			$content     = str_replace( '%entry%',  $request['entry'], $content );
-			$content     = str_replace( '%data%',   maybe_serialize( $request['data'] ), $content );
+			$content     = str_replace( '%amount%',        $request['amount'], $content );
+			$content     = str_replace( '%entry%',         $request['entry'], $content );
+			$content     = str_replace( '%data%',          maybe_serialize( $request['data'] ), $content );
 
-			$content     = str_replace( '%blog_name%',   get_option( 'blogname' ), $content );
-			$content     = str_replace( '%blog_url%',    get_option( 'home' ), $content );
-			$content     = str_replace( '%blog_info%',   get_option( 'blogdescription' ), $content );
-			$content     = str_replace( '%admin_email%', get_option( 'admin_email' ), $content );
-			$content     = str_replace( '%num_members%', $this->core->count_members(), $content );
+			$content     = str_replace( '%blog_name%',     get_option( 'blogname' ), $content );
+			$content     = str_replace( '%blog_url%',      get_option( 'home' ), $content );
+			$content     = str_replace( '%blog_info%',     get_option( 'blogdescription' ), $content );
+			$content     = str_replace( '%admin_email%',   get_option( 'admin_email' ), $content );
+			$content     = str_replace( '%num_members%',   $this->core->count_members(), $content );
 
 			return $content;
 

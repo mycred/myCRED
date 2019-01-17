@@ -2,8 +2,8 @@
 Contributors: designbymerovingi
 Tags: point, points, tokens, credit, management, reward, charge, community, contest, buddypress, jetpack, bbpress, simple press, woocommerce, wp e-commerce, contact-form-7
 Requires at least: 4.0
-Tested up to: 4.8
-Stable tag: 1.7.9
+Tested up to: 4.8.1
+Stable tag: 1.7.9.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -96,8 +96,8 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-= 1.7.9 =
-Minor bug fixes.
+= 1.7.9.1 =
+Last set of bug fixes for the 1.7.x version.
 
 
 == Other Notes ==
@@ -112,7 +112,7 @@ Minor bug fixes.
 * Swedish - Gabriel S Merovingi
 * French - Chouf1 [Dan - BuddyPress France](http://bp-fr.net/)
 * Persian - Mani Akhtar
-* Spanish - Robert Rowshan [Website](http://robertrowshan.com)
+* Spanish - Jose Maria Bescos [Website](http://www.ibidem-translations.com/spanish.php)
 * Russian - Skladchik
 * Chinese - suifengtec [Website](http://coolwp.com)
 * Portuguese (Brazil) - Guilherme
@@ -121,16 +121,26 @@ Minor bug fixes.
 
 == Changelog ==
 
-= 1.7.9 =
-FIX - Incorrect badge level labels are shown in the mycred_badges shortcode.
-FIX - Unapproved comments are sometimes seen as spam by the Points for comments hook. (Thanks thomaslhotta)
-FIX - Fixed minor logic issue in the mycred_total_points shortcode.
-FIX - Balance export option is missing in the Management section (Thanks imago).
-FIX - Removed duplicate usage of the mycred_transfer_ready action.
-FIX - Rank sorting in the front end should only be applied to the main query in the rank archive (if used).
-TWEAK - Updated export balance modal design to 1.7
-TWEAK - Updated the mycred_total_since shortcode to render potential errors when the shortcode is used incorrectly.
-Tested with WordPress 4.8
+= 1.7.9.1 =
+FIX - Events Manager Pro issue with manually approved events.
+FIX - Email notification not being sent to admins in certain instances.
+FIX - BuddyPress Points History URL is incorrect when using BuddyPress 2.8 or higher.
+FIX - Transfer add-on does not work well when a user ID is provided in the transfer shortcode on certain sites.
+FIX - Sell Content sales history shortcode causes a fatal error when showing a users purchase history.
+FIX - When providing more than one reference for the mycred_total_points shortcode, the shortcode will return zero.
+FIX - Ranks in bbPress or BuddyPress are not visible to visitors, only those who are logged in.
+FIX - Fixed issue with email notifications for new badges.
+FIX - Fixed issue with the mycred_get_users_reference_sum function. (Thanks Andy)
+NEW - Added timeframe support when basing leaderboards on total balances.
+NEW - Added new myCRED_Query_Leaderboard class for leaderboard queries.
+NEW - Added option to cache leaderboard results.
+NEW - Added new mycred_admin_show_balance filter to hide balances being inserted in the WP Toolbar.
+NEW - Added new mycred_transfer_to_field filter for transfer forms recipient field.
+TWEAK - Improved how the lowest point amount value is calculated by get_lowest_value().
+TWEAK - Referral redirects are now done using status code 301.
+TWEAK - A users earned badges are now cached to cut down on database queries.
+TWEAK - Updated how order details are retrieved in WooCommerce 3.0
+REMOVED - Events Manager Pro support. Support for EM Pro has been moved to a separate free plugin.
 
 
 = Previous Versions =

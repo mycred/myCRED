@@ -625,7 +625,7 @@ endif;
 /**
  * Assign Badge to User
  * @since 1.7
- * @version 1.0.1
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_assign_badge_to_user' ) ) :
 	function mycred_assign_badge_to_user( $user_id = NULL, $badge_id = NULL, $level = 0 ) {
@@ -650,6 +650,9 @@ if ( ! function_exists( 'mycred_assign_badge_to_user' ) ) :
 		// Save the badge connection
 		mycred_update_user_meta( $user_id, $meta_key, '', $value );
 
+		// Reset badge id cache
+		mycred_get_users_badges( $user_id, true );
+
 		return true;
 
 	}
@@ -659,34 +662,51 @@ endif;
  * Get Users Badges
  * Returns the badge post IDs that a given user currently holds.
  * @since 1.5
- * @version 1.2
+ * @version 1.3
  */
 if ( ! function_exists( 'mycred_get_users_badges' ) ) :
-	function mycred_get_users_badges( $user_id = NULL ) {
+	function mycred_get_users_badges( $user_id = NULL, $force = false ) {
 
 		if ( $user_id === NULL ) return '';
 
-		global $wpdb;
-
-		$query = $wpdb->get_results( $wpdb->prepare( "
-			SELECT * 
-			FROM {$wpdb->usermeta} 
-			WHERE user_id = %d 
-			AND meta_key LIKE %s", $user_id, 'mycred_badge%' ) );
-
 		$badge_ids = array();
-		if ( ! empty( $query ) ) {
-			foreach ( $query as $badge ) {
+		if ( ! $force ) {
 
-				$badge_id = substr( $badge->meta_key, 12 );
-				if ( $badge_id == '' ) continue;
+			$query = mycred_get_user_meta( $user_id, 'mycred_badge_ids' );
+
+			if ( is_array( $query ) && ! empty( $query ) )
+				$badge_ids = $query;
+
+		}
+
+		if ( empty( $badge_ids ) ) {
+
+			global $wpdb;
+
+			$query = $wpdb->get_results( $wpdb->prepare( "
+				SELECT * 
+				FROM {$wpdb->usermeta} 
+				WHERE user_id = %d 
+				AND meta_key LIKE %s", $user_id, 'mycred_badge%' ) );
+
+			if ( ! empty( $query ) ) {
+
+				foreach ( $query as $badge ) {
+
+					$badge_id = substr( $badge->meta_key, 12 );
+					if ( $badge_id == '' ) continue;
 				
-				$badge_id = (int) $badge_id;
-				if ( array_key_exists( $badge_id, $badge_ids ) ) continue;
+					$badge_id = (int) $badge_id;
+					if ( array_key_exists( $badge_id, $badge_ids ) ) continue;
 
-				$badge_ids[ $badge_id ] = $badge->meta_value;
+					$badge_ids[ $badge_id ] = $badge->meta_value;
+
+				}
+
+				mycred_update_user_meta( $user_id, 'mycred_badge_ids', '', $badge_ids );
 
 			}
+
 		}
 
 		return apply_filters( 'mycred_get_users_badges', $badge_ids, $user_id );

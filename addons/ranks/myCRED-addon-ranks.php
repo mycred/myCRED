@@ -632,13 +632,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * Insert Rank In Profile Header
 		 * @since 1.1
-		 * @version 1.3
+		 * @version 1.3.1
 		 */
 		public function insert_rank_header() {
 
 			$output       = '';
 			$user_id      = bp_displayed_user_id();
-			$mycred_types = mycred_get_usable_types();
+			$mycred_types = mycred_get_usable_types( $user_id );
 
 			foreach ( $mycred_types as $type_id ) {
 
@@ -677,13 +677,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * Insert Rank In Profile Details
 		 * @since 1.1
-		 * @version 1.4
+		 * @version 1.4.1
 		 */
 		public function insert_rank_profile() {
 
 			$output       = '';
 			$user_id      = bp_displayed_user_id();
-			$mycred_types = mycred_get_usable_types();
+			$mycred_types = mycred_get_usable_types( $user_id );
 
 			$count = 0;
 			foreach ( $mycred_types as $type_id ) {
@@ -736,7 +736,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * Insert Rank In bbPress Reply
 		 * @since 1.6
-		 * @version 1.1
+		 * @version 1.1.1
 		 */
 		public function insert_rank_bb_reply() {
 
@@ -744,7 +744,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			$user_id = bbp_get_reply_author_id();
 			if ( $user_id == 0 ) return;
 
-			$mycred_types = mycred_get_usable_types();
+			$mycred_types = mycred_get_usable_types( $user_id );
 
 			foreach ( $mycred_types as $type_id ) {
 
@@ -783,13 +783,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * Insert Rank In bbPress Profile
 		 * @since 1.6
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function insert_rank_bb_profile() {
 
 			$output       = '';
 			$user_id      = bbp_get_displayed_user_id();
-			$mycred_types = mycred_get_usable_types();
+			$mycred_types = mycred_get_usable_types( $user_id );
 
 			foreach ( $mycred_types as $type_id => $label ) {
 

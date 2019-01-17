@@ -295,13 +295,19 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		 * Returns the lowest point value available based on the number of decimal places
 		 * we use. So with 1 decimal = 0.1, 2 decimals 0.01 etc. Defaults to 1.
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function get_lowest_value() {
 
-			$lowest = 1;
-			if ( $this->format['decimals'] > 0 )
-				$lowest = number_format( '0.' . zeroise( 1, $this->format['decimals'] ), $this->format['decimals'], '.', '' );
+			$lowest   = 1;
+			$decimals = $this->format['decimals'] - 1;
+
+			if ( $decimals > 0 ) {
+
+				$lowest = '0.' . str_repeat( '0', $decimals ) . '1';
+				$lowest = (float) $lowest;
+
+			}
 
 			return $lowest;
 
@@ -1715,16 +1721,17 @@ endif;
  * Get Usable Point Types
  * Returns an array of point type keys that a given user is allowed to use.
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_get_usable_types' ) ) :
 	function mycred_get_usable_types( $user_id = NULL ) {
 
+		$original_id = $user_id;
 		if ( $user_id === NULL )
 			$user_id = get_current_user_id();
 
 		$usable = array();
-		if ( is_user_logged_in() ) {
+		if ( is_user_logged_in() || $original_id !== NULL ) {
 
 			global $mycred;
 

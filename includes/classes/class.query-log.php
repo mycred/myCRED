@@ -579,7 +579,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				}
 
 				// Make sure query is properly formatted
-				if ( array_key_exists( 'dates', $this->args['time'] ) && array_key_exists( 'compare', $this->args['time'] ) ) {
+				if ( is_array( $this->args['time'] ) && array_key_exists( 'dates', $this->args['time'] ) && array_key_exists( 'compare', $this->args['time'] ) ) {
 
 					// Between (requires dates to be an array)
 					if ( in_array( $this->args['time']['compare'], array( 'BETWEEN', 'NOT BETWEEN' ) ) && is_array( $this->args['time']['dates'] ) ) {
@@ -2555,28 +2555,31 @@ endif;
 /**
  * Get Users Reference Sum
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_get_users_reference_sum' ) ) :
-	function mycred_get_users_reference_sum( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+	function mycred_get_users_reference_sum( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY, $force = false ) {
 
 		if ( $user_id === NULL ) return false;
 
 		$references = (array) mycred_get_user_meta( $user_id, 'mycred_ref_sums-' . $point_type, '', true );
 		$references = maybe_unserialize( $references );
 
-		if ( empty( $references ) ) {
+		if ( $force || empty( $references ) || empty( $references[0] ) ) {
 
-			global $wpdb;
+			global $wpdb, $mycred_log_table;
 
-			$query = $wpdb->get_results( $wpdb->prepare( "SELECT SUM(creds) AS total, ref AS reference FROM {$mycred->log_table} WHERE user_id = %d AND ctype = %s GROUP BY ref ORDER BY total DESC;", $user_id, $point_type ) );
+			$query = $wpdb->get_results( $wpdb->prepare( "SELECT SUM(creds) AS total, ref AS reference FROM {$mycred_log_table} WHERE user_id = %d AND ctype = %s GROUP BY ref ORDER BY total DESC;", $user_id, $point_type ) );
 			if ( ! empty( $query ) ) {
+
+				$references = array();
 				foreach ( $query as $result ) {
 					$references[ $result->reference ] = $result->total;
 				}
-			}
 
-			mycred_update_user_meta( $user_id, 'mycred_ref_sums-' . $point_type, '', $references );
+				mycred_update_user_meta( $user_id, 'mycred_ref_sums-' . $point_type, '', $references );
+
+			}
 
 		}
 

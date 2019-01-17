@@ -41,16 +41,8 @@ function mycred_load_events_manager() {
 
 	if ( ! defined( 'EM_VERSION' ) ) return;
 
-	// Pro
-	if ( class_exists( 'EM_Pro' ) && class_exists( 'EM_Gateways' ) ) {
-
-		require_once myCRED_GATE_EVENT_DIR . 'mycred-eventsmanager-pro.php';
-		EM_Gateways::register_gateway( 'mycred', 'EM_Gateway_myCRED' );
-
-	}
-
-	// Free
-	else {
+	// Free version only
+	if ( ! class_exists( 'EM_Pro' ) ) {
 
 		require_once myCRED_GATE_EVENT_DIR . 'mycred-eventsmanager.php';
 		$events = new myCRED_Events_Manager_Gateway();

@@ -448,15 +448,13 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		/**
 		 * Save Log Entries per page
 		 * @since 0.1
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		function set_entries_per_page() {
 
 			if ( ! isset( $_REQUEST['wp_screen_options']['option'] ) || ! isset( $_REQUEST['wp_screen_options']['value'] ) ) return;
 
 			$settings_key = 'mycred_epp_' . $_GET['page'];
-			if ( ! $this->is_main_type )
-				$settings_key .= '_' . $this->mycred_type;
 
 			if ( $_REQUEST['wp_screen_options']['option'] == $settings_key ) {
 				$value = absint( $_REQUEST['wp_screen_options']['value'] );

@@ -3,13 +3,13 @@
  * Plugin Name: myCRED
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 1.7.9
- * Tags: points, tokens, credit, management, reward, charge, buddypress, bbpress, jetpack, woocommerce, marketpress, wp e-commerce, gravity forms, simplepress
+ * Version: 1.7.9.1
+ * Tags: points, credit, balance, finance, rewards, engagement, woocommerce, bbpress, buddypress
  * Author: Gabriel S Merovingi
  * Author URI: http://www.merovingi.com
  * Author Email: support@mycred.me
  * Requires at least: WP 4.0
- * Tested up to: WP 4.8
+ * Tested up to: WP 4.8.1
  * Text Domain: mycred
  * Domain Path: /lang
  * License: GPLv2 or later
@@ -19,7 +19,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '1.7.9';
+		public $version             = '1.7.9.1';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -151,22 +151,23 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * Define Constants
 		 * First, we start with defining all requires constants if they are not defined already.
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		private function define_constants() {
 
 			// Ok to override
-			$this->define( 'myCRED_VERSION',            $this->version );
-			$this->define( 'myCRED_DB_VERSION',         '1.0' );
-			$this->define( 'MYCRED_SLUG',               'mycred' );
-			$this->define( 'MYCRED_DEFAULT_LABEL',      'myCRED' );
-			$this->define( 'MYCRED_DEFAULT_TYPE_KEY',   'mycred_default' );
-			$this->define( 'MYCRED_FOR_OLDER_WP',       false );
-			$this->define( 'MYCRED_MIN_TIME_LIMIT',     3 );
-			$this->define( 'MYCRED_ENABLE_LOGGING',     true );
-			$this->define( 'MYCRED_UNINSTALL_LOG',      true );
-			$this->define( 'MYCRED_UNINSTALL_CREDS',    true );
-			$this->define( 'MYCRED_DISABLE_PROTECTION', false );
+			$this->define( 'myCRED_VERSION',                   $this->version );
+			$this->define( 'myCRED_DB_VERSION',                '1.0' );
+			$this->define( 'MYCRED_SLUG',                      'mycred' );
+			$this->define( 'MYCRED_DEFAULT_LABEL',             'myCRED' );
+			$this->define( 'MYCRED_DEFAULT_TYPE_KEY',          'mycred_default' );
+			$this->define( 'MYCRED_FOR_OLDER_WP',              false );
+			$this->define( 'MYCRED_MIN_TIME_LIMIT',            3 );
+			$this->define( 'MYCRED_ENABLE_LOGGING',            true );
+			$this->define( 'MYCRED_UNINSTALL_LOG',             true );
+			$this->define( 'MYCRED_UNINSTALL_CREDS',           true );
+			$this->define( 'MYCRED_DISABLE_PROTECTION',        false );
+			$this->define( 'MYCRED_DISABLE_LEADERBOARD_CACHE', true );
 
 			// Not ok to override
 			$this->define( 'myCRED_THIS',               __FILE__, false );
@@ -187,7 +188,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		/**
 		 * Include Plugin Files
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function includes() {
 
@@ -195,6 +196,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 
 			$this->file( myCRED_CLASSES_DIR . 'class.query-log.php' );
 			$this->file( myCRED_CLASSES_DIR . 'class.query-export.php' );
+			$this->file( myCRED_CLASSES_DIR . 'class.query-leaderboard.php' );
 
 			$this->file( myCRED_ABSTRACTS_DIR . 'mycred-abstract-hook.php' );
 			$this->file( myCRED_ABSTRACTS_DIR . 'mycred-abstract-module.php' );
@@ -275,7 +277,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * WordPress
 		 * Next we hook into WordPress
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function wordpress() {
 
@@ -287,6 +289,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			add_action( 'admin_init',        array( $this, 'admin_init' ), 50 );
 
 			add_action( 'mycred_reset_key',  array( $this, 'cron_reset_key' ), 10 );
+			add_action( 'mycred_reset_key',  array( $this, 'cron_delete_leaderboard_cache' ), 20 );
 
 		}
 
@@ -835,11 +838,11 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		/**
 		 * Toolbar
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function adjust_toolbar( $wp_admin_bar ) {
 
-			if ( ! is_user_logged_in() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) return;
+			if ( ! is_user_logged_in() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || apply_filters( 'mycred_admin_show_balance', true ) === false ) return;
 
 			global $mycred;
 
@@ -891,17 +894,17 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			// Add balance and history link for each point type
 			foreach ( $usable_types as $type_id ) {
 
-				if ( $type_id == MYCRED_DEFAULT_TYPE_KEY )
+				// Make sure we want to show the balance.
+				if ( apply_filters( 'mycred_admin_show_balance_' . $type_id, true ) === false ) continue;
+
+				if ( $type_id === MYCRED_DEFAULT_TYPE_KEY )
 					$point_type = $mycred;
 				else
 					$point_type = mycred( $type_id );
 
-				$history_url = '';
-				if ( ! $using_buddypress )
-					$history_url = add_query_arg( array( 'page' => $type_id . '-history' ), admin_url( 'users.php' ) );
-
-				else
-					$history_url = add_query_arg( array( 'show-ctype' => $type_id ), $history_url );
+				$history_url = add_query_arg( array( 'page' => $type_id . '-history' ), admin_url( 'users.php' ) );
+				if ( $using_buddypress )
+					$history_url = add_query_arg( array( 'show-ctype' => $type_id ), bp_loggedin_user_domain() . $mycred->buddypress['history_url'] . '/' );
 
 				$balance          = $point_type->get_users_balance( $user_id, $type_id );
 				$history_url      = apply_filters( 'mycred_my_history_url', $history_url, $type_id, $point_type );
@@ -941,6 +944,21 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			$protect = mycred_protect();
 			if ( $protect !== false )
 				$protect->reset_key();
+
+		}
+
+		/**
+		 * Cron: Delete Leaderboard Cache
+		 * @since 1.7.9.1
+		 * @version 1.0
+		 */
+		public function cron_delete_leaderboard_cache() {
+
+			if ( MYCRED_DISABLE_LEADERBOARD_CACHE ) return;
+
+			global $wpdb;
+
+			$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'mycred-leaderboard-%';" );
 
 		}
 

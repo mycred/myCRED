@@ -573,14 +573,24 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		/**
 		 * Get Recipient
 		 * @since 1.3.2
-		 * @version 1.2
+		 * @version 1.2.1
 		 */
 		public function get_recipient( $to = '' ) {
 
 			$recipient_id = false;
 			if ( ! empty( $to ) ) {
 
-				if ( $this->transfers['autofill'] == 'user_login' ) {
+				// A numeric ID has been provided that we need to validate
+				if ( is_numeric( $to ) ) {
+
+					$user = get_userdata( $to );
+					if ( isset( $user->ID ) )
+						$recipient_id = $user->ID;
+
+				}
+
+				// A username has been provided
+				elseif ( $this->transfers['autofill'] == 'user_login' ) {
 
 					$user = get_user_by( 'login', $to );
 					if ( isset( $user->ID ) )
@@ -588,6 +598,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 				}
 
+				// An email address has been provided
 				elseif ( $this->transfers['autofill'] == 'user_email' ) {
 
 					$user = get_user_by( 'email', $to );

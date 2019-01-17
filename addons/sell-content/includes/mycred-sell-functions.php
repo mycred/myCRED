@@ -333,50 +333,20 @@ endif;
  * Checks if a given purchase has expired. Left this in place from the old version
  * for backwards comp.
  * @since 1.7
- * @version 1.0.2
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_content_purchase_has_expired' ) ) :
 	function mycred_content_purchase_has_expired( $payment = NULL ) {
 
-		if ( ! is_object( $payment ) ) return false;
-
-		$settings    = mycred_sell_content_settings();
-		$post        = get_post( $payment->ref_id );
-		$point_types = $settings['type'];
 		$has_expired = false;
-		$length      = 0;
+		if ( ! is_object( $payment ) ) return $has_expired;
 
-		// Invalid post
-		if ( ! isset( $post->ID ) ) return $has_expired;
-
-		$filter = $settings['filters'][ $post->post_type ]['by'];
-
-		// Manual mode - expiration settings are found in the post setting
-		if ( $filter === 'manual' ) {
-
-			$suffix = '_' . $payment->ctype;
-			if ( $payment->ctype == MYCRED_DEFAULT_TYPE_KEY )
-				$suffix = '';
-
-			$sale_setup = (array) get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix, true );
-			if ( array_key_exists( 'expire', $sale_setup ) && $sale_setup['expire'] > 0 )
-				$length = $sale_setup['expire'];
-
-		}
-
-		// Else we need to check the point type setup in our add-on settings.
-		else {
-
-			$point_type_setup = mycred_get_option( 'mycred_sell_this_' . $payment->ctype );
-			if ( array_key_exists( 'expire', $point_type_setup ) && $point_type_setup['expire'] > 0 )
-				$length = $point_type_setup['expire'];
-
-		}
+		$length      = mycred_sell_content_get_expiration_length( $payment->ref_id, $payment->ctype );
 
 		// If expiration is set
 		if ( $length > 0 ) {
 
-			$expiration = apply_filters( 'mycred_sell_expire_calc', absint( $length * HOUR_IN_SECONDS ), $length, $payment->user_id, $post->ID );
+			$expiration = apply_filters( 'mycred_sell_expire_calc', absint( $length * HOUR_IN_SECONDS ), $length, $payment->user_id, $payment->ref_id );
 			$expiration = $expiration + $payment->time;
 
 			if ( $expiration <= current_time( 'timestamp' ) )
@@ -384,7 +354,55 @@ if ( ! function_exists( 'mycred_content_purchase_has_expired' ) ) :
 
 		}
 
-		return apply_filters( 'mycred_sell_content_sale_expired', $has_expired, $payment->user_id, $post->ID, $payment->time, $length );
+		return apply_filters( 'mycred_sell_content_sale_expired', $has_expired, $payment->user_id, $payment->ref_id, $payment->time, $length );
+
+	}
+endif;
+
+/**
+ * Get Expiration Length
+ * @since 1.7.9.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_sell_content_get_expiration_length' ) ) :
+	function mycred_sell_content_get_expiration_length( $post_id = NULL, $type = MYCRED_DEFAULT_TYPE_KEY ) {
+
+		$length      = 0;
+		if ( $post_id === NULL ) return $length;
+
+		$settings    = mycred_sell_content_settings();
+		$post        = get_post( $post_id );
+		$point_types = $settings['type'];
+		$has_expired = false;
+
+		// Invalid post
+		if ( ! isset( $post->ID ) ) return $length;
+
+		$filter = $settings['filters'][ $post->post_type ]['by'];
+
+		// Manual mode - expiration settings are found in the post setting
+		if ( $filter === 'manual' ) {
+
+			$suffix = '_' . $type;
+			if ( $type == MYCRED_DEFAULT_TYPE_KEY )
+				$suffix = '';
+
+			$sale_setup = (array) get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix, true );
+			if ( ! empty( $sale_setup ) && array_key_exists( 'expire', $sale_setup ) && $sale_setup['expire'] > 0 )
+				$length = $sale_setup['expire'];
+
+		}
+
+		// Else we need to check the point type setup in our add-on settings.
+		else {
+
+			$point_type_setup = (array) mycred_get_option( 'mycred_sell_this_' . $type );
+			if ( ! empty( $point_type_setup ) && array_key_exists( 'expire', $point_type_setup ) && $point_type_setup['expire'] > 0 )
+				$length = $point_type_setup['expire'];
+
+		}
+
+		return apply_filters( 'mycred_sell_content_expiration', $length, $post );
 
 	}
 endif;
@@ -624,7 +642,7 @@ endif;
  * Get Users Purchased Content
  * Returns an array of log entries for content purchases.
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_get_users_purchased_content' ) ) :
 	function mycred_get_users_purchased_content( $user_id = NULL, $number = 25, $order = 'DESC', $point_type = NULL ) {
@@ -647,7 +665,7 @@ if ( ! function_exists( 'mycred_get_users_purchased_content' ) ) :
 		if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) )
 			$order = 'DESC';
 
-		$sql = apply_filters( 'mycred_get_users_purchased_content', "SELECT * FROM {$mycred->log_table} {$wheres} ORDER BY time {$order} {$limit};", $user_id, $number, $order, $point_type );
+		$sql = apply_filters( 'mycred_get_users_purchased_content', "SELECT * FROM {$mycred->log_table} log INNER JOIN {$wpdb->posts} posts ON ( log.ref_id = posts.ID ) {$wheres} ORDER BY time {$order} {$limit};", $user_id, $number, $order, $point_type );
 
 		return $wpdb->get_results( $sql );
 

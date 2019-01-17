@@ -1,46 +1,35 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: myCRED\n"
-"Report-Msgid-Bugs-To: http://mycred.me\n"
-"POT-Creation-Date: 2017-04-19 14:58+0000\n"
-"PO-Revision-Date: 2017-04-19 14:58+0000\n"
-"Last-Translator: Gabriel Merovingi <gabriel.s@merovingi.com>\n"
-"Language-Team: Portuguese (Brazil)\n"
-"Language: pt-BR\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
+"PO-Revision-Date: 2017-08-29 08:42+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "X-Generator: Loco - https://localise.biz/\n"
-"X-Poedit-Basepath: .\n"
-"X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
-"__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
-"_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
-"esc_attr__:1;esc_html__:1;esc_attr_e:1;esc_html_e:1;esc_attr_x:1,2c;"
-"esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
-"X-Loco-Target-Locale: pt_BR\n"
-"X-Poedit-SearchPath-0: /Users/gabriel/Sites/paypana/wp-"
-"content/plugins/mycred\n"
-"X-Poedit-SearchPath-1: ."
+"Language: pt-BR\n"
+"Project-Id-Version: Plugins - myCRED - Stable (latest release)\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-29 08:42+0000\n"
+"Last-Translator: mycredlabs <gabriel.s@merovingi.com>\n"
+"Language-Team: Portuguese (Brazil)"
 
-#: mycred.php:578
+#: mycred.php:581
 msgid "Import balances via a CSV file."
 msgstr ""
 
-#: abstracts/mycred-abstract-hook.php:291
+#: abstracts/mycred-abstract-hook.php:294
 msgid "/ Day"
 msgstr ""
 
-#: abstracts/mycred-abstract-hook.php:292
+#: abstracts/mycred-abstract-hook.php:295
 msgid "/ Week"
 msgstr ""
 
-#: abstracts/mycred-abstract-hook.php:293
+#: abstracts/mycred-abstract-hook.php:296
 msgid "/ Month"
 msgstr ""
 
-#: abstracts/mycred-abstract-hook.php:294
+#: abstracts/mycred-abstract-hook.php:297
 msgid "in Total"
 msgstr ""
 
@@ -58,7 +47,7 @@ msgstr ""
 
 #: modules/mycred-module-management.php:237
 #: modules/mycred-module-management.php:775 modules/mycred-module-log.php:93
-#: modules/mycred-module-log.php:918
+#: modules/mycred-module-log.php:904
 #: includes/classes/class.query-export.php:263
 #: includes/classes/class.query-export.php:360
 #: includes/classes/class.query-log.php:904
@@ -72,12 +61,6 @@ msgstr ""
 
 #: modules/mycred-module-management.php:555
 msgid "Balances"
-msgstr ""
-
-#: modules/mycred-module-management.php:747
-#: modules/mycred-module-export.php:400 modules/mycred-module-export.php:448
-#: addons/buy-creds/modules/buycred-module-core.php:1374
-msgid "Username"
 msgstr ""
 
 #: modules/mycred-module-management.php:759
@@ -108,6 +91,10 @@ msgstr ""
 msgid "Log Updated"
 msgstr ""
 
+#: modules/mycred-module-settings.php:431
+msgid "Export %singular% Balances"
+msgstr ""
+
 #: modules/mycred-module-settings.php:432
 msgid ""
 "In order to adjust the number of decimal places you want to use we must "
@@ -130,7 +117,7 @@ msgid "<a href=\"%s\">Click here</a> to change your default point types setup."
 msgstr ""
 
 #: modules/mycred-module-settings.php:530 modules/mycred-module-addons.php:330
-#: modules/mycred-module-addons.php:368 modules/mycred-module-log.php:554
+#: modules/mycred-module-addons.php:368 modules/mycred-module-log.php:544
 #: modules/mycred-module-network.php:241 modules/mycred-module-network.php:276
 #: modules/mycred-module-network.php:292
 #: includes/importers/mycred-cubepoints.php:305
@@ -147,8 +134,8 @@ msgstr ""
 #: modules/mycred-module-settings.php:555
 #: modules/mycred-module-settings.php:605
 #: modules/mycred-module-settings.php:612
-#: modules/mycred-module-settings.php:799
-#: modules/mycred-module-settings.php:805 includes/mycred-setup.php:280
+#: modules/mycred-module-settings.php:800
+#: modules/mycred-module-settings.php:806 includes/mycred-setup.php:280
 #: includes/mycred-setup.php:286 includes/mycred-setup.php:333
 #: includes/mycred-setup.php:340 addons/coupons/myCRED-addon-coupons.php:710
 #: addons/coupons/myCRED-addon-coupons.php:717
@@ -243,7 +230,11 @@ msgstr ""
 msgid "Balance Meta Key"
 msgstr ""
 
-#: modules/mycred-module-settings.php:810
+#: modules/mycred-module-settings.php:712
+msgid "Export Balances"
+msgstr ""
+
+#: modules/mycred-module-settings.php:811
 msgid ""
 "The meta key must be lowercase and only contain letters or underscores. All "
 "other characters will be deleted!"
@@ -282,35 +273,35 @@ msgid_plural "%d Entries Deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/mycred-module-log.php:472
+#: modules/mycred-module-log.php:466
 msgid "The log entry was successfully updated."
 msgstr ""
 
-#: modules/mycred-module-log.php:473
+#: modules/mycred-module-log.php:467
 msgid "The selected log entry could not be deleted."
 msgstr ""
 
-#: modules/mycred-module-log.php:507
+#: modules/mycred-module-log.php:501
 #, php-format
 msgctxt "e.g. Log entries from April 12th 2016"
 msgid "Log entries from %s"
 msgstr ""
 
-#: modules/mycred-module-log.php:564
+#: modules/mycred-module-log.php:554
 msgid ""
 "Warning. The required Mcrypt PHP Library is not installed on this server! "
 "Certain hooks and shortcodes will not work correctly!"
 msgstr ""
 
-#: modules/mycred-module-log.php:925
+#: modules/mycred-module-log.php:911
 msgid "Original Entry"
 msgstr ""
 
-#: modules/mycred-module-log.php:937
+#: modules/mycred-module-log.php:923
 msgid "Delete Entry"
 msgstr ""
 
-#: modules/mycred-module-log.php:942
+#: modules/mycred-module-log.php:928
 msgid "Update Entry"
 msgstr ""
 
@@ -334,38 +325,38 @@ msgstr ""
 msgid "Blog IDs"
 msgstr ""
 
-#: modules/mycred-module-export.php:358
+#: modules/mycred-module-export.php:390
 msgid "Make both format options available."
 msgstr ""
 
-#: modules/mycred-module-export.php:360
+#: modules/mycred-module-export.php:392
 msgid "Exports"
 msgstr ""
 
-#: modules/mycred-module-export.php:366
+#: modules/mycred-module-export.php:398
 msgid "Front End Exports"
 msgstr ""
 
-#: modules/mycred-module-export.php:382 modules/mycred-module-export.php:430
+#: modules/mycred-module-export.php:414 modules/mycred-module-export.php:462
 msgid "Export Format"
 msgstr ""
 
-#: modules/mycred-module-export.php:398 modules/mycred-module-export.php:446
+#: modules/mycred-module-export.php:430 modules/mycred-module-export.php:478
 msgid "File Name"
 msgstr ""
 
-#: modules/mycred-module-export.php:407
+#: modules/mycred-module-export.php:439
 msgid ""
 "If enabled, users will only be able to export their own log entries! Export "
 "tools becomes available wherever you are using the mycred_history shortcode "
 "or in the users profile."
 msgstr ""
 
-#: modules/mycred-module-export.php:414
+#: modules/mycred-module-export.php:446
 msgid "Back End Exports"
 msgstr ""
 
-#: modules/mycred-module-export.php:455
+#: modules/mycred-module-export.php:487
 msgid ""
 "Raw format should be used when you intend to use the export tool to backup "
 "or import entries in another installation. Formatted exports reflect what "
@@ -377,12 +368,12 @@ msgid "Show:"
 msgstr ""
 
 #: modules/mycred-module-buddypress.php:405
-#: addons/badges/myCRED-addon-badges.php:1141
+#: addons/badges/myCRED-addon-badges.php:1166
 msgid "Include in Profile Header"
 msgstr ""
 
 #: modules/mycred-module-buddypress.php:407
-#: addons/badges/myCRED-addon-badges.php:1143
+#: addons/badges/myCRED-addon-badges.php:1168
 msgid "Include under the \"Profile\" tab and Profile Header"
 msgstr ""
 
@@ -396,70 +387,6 @@ msgstr ""
 
 #: plugins/mycred-hook-invite-anyone.php:205
 msgid "Sending Invites"
-msgstr ""
-
-#: plugins/mycred-hook-invite-anyone.php:222
-#: plugins/mycred-hook-invite-anyone.php:246
-#: plugins/mycred-hook-wp-polls.php:178
-#: plugins/mycred-hook-wp-postratings.php:208
-#: plugins/mycred-hook-wp-postratings.php:215
-#: plugins/mycred-hook-gravityforms.php:173
-#: plugins/mycred-hook-simplepress.php:308
-#: plugins/mycred-hook-simplepress.php:326
-#: plugins/mycred-hook-simplepress.php:350
-#: plugins/mycred-hook-simplepress.php:377
-#: plugins/mycred-hook-buddypress.php:630
-#: plugins/mycred-hook-buddypress.php:654
-#: plugins/mycred-hook-buddypress.php:678
-#: plugins/mycred-hook-buddypress.php:702
-#: plugins/mycred-hook-buddypress.php:726
-#: plugins/mycred-hook-buddypress.php:753
-#: plugins/mycred-hook-buddypress.php:777
-#: plugins/mycred-hook-buddypress.php:795
-#: plugins/mycred-hook-buddypress.php:819
-#: plugins/mycred-hook-buddypress.php:837
-#: plugins/mycred-hook-buddypress.php:861
-#: plugins/mycred-hook-buddypress.php:885
-#: plugins/mycred-hook-buddypress.php:1521
-#: plugins/mycred-hook-buddypress.php:1539
-#: plugins/mycred-hook-buddypress.php:1563
-#: plugins/mycred-hook-buddypress.php:1587
-#: plugins/mycred-hook-buddypress.php:1611
-#: plugins/mycred-hook-buddypress.php:1635
-#: plugins/mycred-hook-buddypress.php:1659
-#: plugins/mycred-hook-buddypress.php:1683
-#: plugins/mycred-hook-buddypress.php:1707
-#: plugins/mycred-hook-buddypress.php:1725
-#: plugins/mycred-hook-buddypress.php:1749
-#: plugins/mycred-hook-affiliatewp.php:299
-#: plugins/mycred-hook-affiliatewp.php:326
-#: plugins/mycred-hook-affiliatewp.php:370
-#: plugins/mycred-hook-affiliatewp.php:377
-#: plugins/mycred-hook-events-manager-light.php:218
-#: plugins/mycred-hook-events-manager-light.php:236
-#: plugins/mycred-hook-sharethis.php:274
-#: plugins/mycred-hook-buddypress-media.php:307
-#: plugins/mycred-hook-buddypress-media.php:331
-#: plugins/mycred-hook-buddypress-media.php:355
-#: plugins/mycred-hook-buddypress-media.php:373
-#: plugins/mycred-hook-buddypress-media.php:391
-#: plugins/mycred-hook-buddypress-media.php:409
-#: plugins/mycred-hook-wp-favorite-posts.php:249
-#: plugins/mycred-hook-wp-favorite-posts.php:256
-#: plugins/mycred-hook-wp-favorite-posts.php:274
-#: plugins/mycred-hook-wp-favorite-posts.php:289
-#: plugins/mycred-hook-contact-form7.php:176
-#: plugins/mycred-hook-jetpack.php:550 plugins/mycred-hook-jetpack.php:568
-#: plugins/mycred-hook-bbPress.php:450 plugins/mycred-hook-bbPress.php:468
-#: plugins/mycred-hook-bbPress.php:492 plugins/mycred-hook-bbPress.php:519
-#: plugins/mycred-hook-bbPress.php:543 plugins/mycred-hook-bbPress.php:567
-#: plugins/mycred-hook-bbPress.php:594 plugins/mycred-hook-woocommerce.php:517
-#: plugins/mycred-hook-badgeOS.php:328 plugins/mycred-hook-badgeOS.php:346
-#: addons/transfer/includes/mycred-transfer-widgets.php:102
-#: addons/transfer/includes/mycred-transfer-widgets.php:106
-#: addons/transfer/includes/mycred-transfer-widgets.php:110
-#: addons/transfer/includes/mycred-transfer-widgets.php:122
-msgid "required"
 msgstr ""
 
 #: plugins/mycred-hook-invite-anyone.php:229
@@ -484,18 +411,6 @@ msgstr ""
 msgid "Content Rating"
 msgstr ""
 
-#: plugins/mycred-hook-wp-postratings.php:165
-#: plugins/mycred-hook-wp-favorite-posts.php:222
-#: plugins/mycred-hook-wp-favorite-posts.php:267
-msgid "Member"
-msgstr ""
-
-#: plugins/mycred-hook-wp-postratings.php:177
-#: plugins/mycred-hook-wp-favorite-posts.php:234
-#: plugins/mycred-hook-wp-favorite-posts.php:282
-msgid "Content Author"
-msgstr ""
-
 #: plugins/mycred-hook-wp-postratings.php:192
 #: plugins/mycred-hook-wp-postratings.php:199
 msgid "Use the Rating Value instead of the amount set here."
@@ -512,7 +427,7 @@ msgid "Content Author Log Template"
 msgstr ""
 
 #: plugins/mycred-hook-gravityforms.php:156
-#: plugins/mycred-hook-contact-form7.php:159
+#: plugins/mycred-hook-contact-form7.php:162
 #, php-format
 msgid "Form: %s"
 msgstr ""
@@ -711,10 +626,6 @@ msgstr ""
 msgid "Log template - Refund"
 msgstr ""
 
-#: plugins/mycred-hook-sharethis.php:15
-msgid "%plural% for Sharing"
-msgstr ""
-
 #: plugins/mycred-hook-sharethis.php:16
 msgid ""
 "Awards %_plural% for users sharing / liking your website content to popular "
@@ -778,11 +689,11 @@ msgstr ""
 msgid "Leave empty for no rewards"
 msgstr ""
 
-#: plugins/mycred-hook-woocommerce.php:384
+#: plugins/mycred-hook-woocommerce.php:388
 msgid "WooCommerce Product Reviews"
 msgstr ""
 
-#: plugins/mycred-hook-woocommerce.php:385
+#: plugins/mycred-hook-woocommerce.php:389
 msgid ""
 "Awards %_plural% for users leaving reviews on your WooCommerce products."
 msgstr ""
@@ -849,7 +760,7 @@ msgid "Hide"
 msgstr ""
 
 #: includes/mycred-setup.php:149 includes/mycred-setup.php:149
-#: addons/email-notices/myCRED-addon-email-notices.php:1435
+#: addons/email-notices/myCRED-addon-email-notices.php:1445
 msgid "Advanced"
 msgstr ""
 
@@ -964,48 +875,48 @@ msgstr ""
 msgid "Shows multiple balances."
 msgstr ""
 
-#: includes/mycred-functions.php:2777
+#: includes/mycred-functions.php:2790
 msgid "in total"
 msgstr ""
 
-#: includes/mycred-functions.php:2779
+#: includes/mycred-functions.php:2792
 msgid "per day"
 msgstr ""
 
-#: includes/mycred-functions.php:2782
+#: includes/mycred-functions.php:2795
 msgid "per week"
 msgstr ""
 
-#: includes/mycred-functions.php:2785
+#: includes/mycred-functions.php:2798
 msgid "per month"
 msgstr ""
 
-#: includes/mycred-functions.php:2787 includes/mycred-functions.php:2793
+#: includes/mycred-functions.php:2800 includes/mycred-functions.php:2806
 #, php-format
 msgid "Maximum once"
 msgid_plural "Maximum %d times"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/mycred-functions.php:2815
+#: includes/mycred-functions.php:2828
 #, php-format
 msgctxt "e.g. 5 th"
 msgid "%d th"
 msgstr ""
 
-#: includes/mycred-functions.php:2819
+#: includes/mycred-functions.php:2832
 #, php-format
 msgctxt "e.g. 1 st"
 msgid "%d st"
 msgstr ""
 
-#: includes/mycred-functions.php:2820
+#: includes/mycred-functions.php:2833
 #, php-format
 msgctxt "e.g. 2 nd"
 msgid "%d nd"
 msgstr ""
 
-#: includes/mycred-functions.php:2821
+#: includes/mycred-functions.php:2834
 #, php-format
 msgctxt "e.g. 3 rd"
 msgid "%d rd"
@@ -1224,10 +1135,6 @@ msgstr ""
 msgid "Viewing Content (Author)"
 msgstr ""
 
-#: includes/classes/class.query-log.php:2184
-msgid "Logging in"
-msgstr ""
-
 #: includes/classes/class.query-log.php:2185
 msgid "Publishing Content"
 msgstr ""
@@ -1262,10 +1169,6 @@ msgstr ""
 
 #: includes/classes/class.query-log.php:2198
 msgid "Profile Update Removal"
-msgstr ""
-
-#: includes/classes/class.query-log.php:2199
-msgid "Avatar Upload"
 msgstr ""
 
 #: includes/classes/class.query-log.php:2200
@@ -1342,10 +1245,6 @@ msgstr ""
 
 #: includes/classes/class.query-log.php:2219
 msgid "New Group Comment"
-msgstr ""
-
-#: includes/classes/class.query-log.php:2229
-msgid "New Link"
 msgstr ""
 
 #: includes/classes/class.query-log.php:2230
@@ -1631,18 +1530,10 @@ msgid ""
 "someone who is not logged in."
 msgstr ""
 
-#: addons/transfer/myCRED-addon-transfer.php:507
-msgid "Limit Template"
-msgstr ""
-
 #: addons/transfer/myCRED-addon-transfer.php:508
 msgid ""
 "The template to use if you select to show the transfer limit in the transfer "
 "shortcode or widget. Ignored if there is no limit enforced."
-msgstr ""
-
-#: addons/transfer/myCRED-addon-transfer.php:523
-msgid "Balance Template"
 msgstr ""
 
 #: addons/transfer/myCRED-addon-transfer.php:524
@@ -1657,7 +1548,7 @@ msgid "Ranks for %s"
 msgstr ""
 
 #: addons/ranks/myCRED-addon-ranks.php:230
-#: addons/ranks/myCRED-addon-ranks.php:1375
+#: addons/ranks/myCRED-addon-ranks.php:1379
 msgid "Rank Logo"
 msgstr ""
 
@@ -1695,104 +1586,104 @@ msgstr ""
 msgid "No ranks exists."
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1189
+#: addons/ranks/myCRED-addon-ranks.php:1193
 msgid "Rank Setup"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1230
+#: addons/ranks/myCRED-addon-ranks.php:1234
 msgid "Minimum Balance Requirement"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1236
+#: addons/ranks/myCRED-addon-ranks.php:1240
 msgid "Maximum Balance Requirement"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1395
+#: addons/ranks/myCRED-addon-ranks.php:1399
 msgid "Rank Post Type"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1398
+#: addons/ranks/myCRED-addon-ranks.php:1402
 msgid "Make Ranks Public"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1402
+#: addons/ranks/myCRED-addon-ranks.php:1406
 msgid "Rank SLUG"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1404
+#: addons/ranks/myCRED-addon-ranks.php:1408
 msgid ""
 "If you have selected to make Ranks public, you can select what rank archive "
 "URL slug you want to use. Ignored if Ranks are not set to be public."
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1425
+#: addons/ranks/myCRED-addon-ranks.php:1429
 msgid "Option to set in which order Ranks should be shown on the archive page."
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1432
+#: addons/ranks/myCRED-addon-ranks.php:1436
 msgid "Rank Behaviour"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1437
+#: addons/ranks/myCRED-addon-ranks.php:1441
 msgid "Based on Current Balances"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1439
+#: addons/ranks/myCRED-addon-ranks.php:1443
 msgid ""
 "Users can be promoted or demoted depending on where their balance fits in "
 "amongst your ranks."
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1445
+#: addons/ranks/myCRED-addon-ranks.php:1449
 msgid "Based on Total Balances"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1447
+#: addons/ranks/myCRED-addon-ranks.php:1451
 msgid ""
 "Users can only be promoted and gain higher ranks even if their balance "
 "decreases."
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1454
+#: addons/ranks/myCRED-addon-ranks.php:1458
 msgid "Tools"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1455
+#: addons/ranks/myCRED-addon-ranks.php:1459
 msgid ""
 "Use this button to calculate or recalculate each individual users total "
 "balance if you think your users total balances are incorrect, or if you "
 "switch from Ranks being based on users current balance to total balance."
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1460
-#: addons/badges/myCRED-addon-badges.php:1130
+#: addons/ranks/myCRED-addon-ranks.php:1464
+#: addons/badges/myCRED-addon-badges.php:1155
 msgid "Third-party Integrations"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1495
-#: addons/ranks/myCRED-addon-ranks.php:1536
+#: addons/ranks/myCRED-addon-ranks.php:1499
+#: addons/ranks/myCRED-addon-ranks.php:1540
 msgid ""
 "Template to use when showing a users Rank in BuddyPress. Use %rank_title% "
 "for the title and %rank_logo% to show the rank logo. HTML is allowed."
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1499
-#: addons/ranks/myCRED-addon-ranks.php:1540
-#: addons/badges/myCRED-addon-badges.php:1162
-#: addons/badges/myCRED-addon-badges.php:1196
+#: addons/ranks/myCRED-addon-ranks.php:1503
+#: addons/ranks/myCRED-addon-ranks.php:1544
+#: addons/badges/myCRED-addon-badges.php:1187
+#: addons/badges/myCRED-addon-badges.php:1221
 msgid "Not installed"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1518
+#: addons/ranks/myCRED-addon-ranks.php:1522
 msgid "Include in Topic Replies"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1519
-#: addons/badges/myCRED-addon-badges.php:1175
+#: addons/ranks/myCRED-addon-ranks.php:1523
+#: addons/badges/myCRED-addon-badges.php:1200
 msgid "Include in Profile"
 msgstr ""
 
-#: addons/ranks/myCRED-addon-ranks.php:1520
+#: addons/ranks/myCRED-addon-ranks.php:1524
 msgid "Include in Topic Replies and Profile"
 msgstr ""
 
@@ -1895,32 +1786,28 @@ msgstr ""
 msgid "user gains a badge"
 msgstr ""
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1408
+#: addons/email-notices/myCRED-addon-email-notices.php:1418
 msgid "Plain Text"
 msgstr ""
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1416
+#: addons/email-notices/myCRED-addon-email-notices.php:1426
 #: addons/banking/services/mycred-service-payouts.php:825
 msgid "Schedule"
 msgstr ""
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1438
+#: addons/email-notices/myCRED-addon-email-notices.php:1448
 msgid "Filter Email Subjects"
 msgstr ""
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1441
+#: addons/email-notices/myCRED-addon-email-notices.php:1451
 msgid "Filter Email Body"
 msgstr ""
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1463
-msgid "Defaults"
-msgstr ""
-
-#: addons/email-notices/myCRED-addon-email-notices.php:1496
+#: addons/email-notices/myCRED-addon-email-notices.php:1506
 msgid "Default CSS Styling"
 msgstr ""
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1498
+#: addons/email-notices/myCRED-addon-email-notices.php:1508
 msgid ""
 "Default email CSS styling. Note that if you intend to send HTML emails, you "
 "should use inline CSS styling for best results."
@@ -1959,14 +1846,10 @@ msgstr ""
 #: addons/badges/myCRED-addon-badges.php:160
 #: addons/badges/myCRED-addon-badges.php:295
 #: addons/badges/myCRED-addon-badges.php:296
-#: addons/badges/myCRED-addon-badges.php:1127
-#: addons/badges/myCRED-addon-badges.php:1256
-#: addons/badges/myCRED-addon-badges.php:1259
+#: addons/badges/myCRED-addon-badges.php:1152
+#: addons/badges/myCRED-addon-badges.php:1281
+#: addons/badges/myCRED-addon-badges.php:1284
 msgid "Badges"
-msgstr ""
-
-#: addons/badges/myCRED-addon-badges.php:149
-msgid "Badge"
 msgstr ""
 
 #: addons/badges/myCRED-addon-badges.php:152
@@ -2011,167 +1894,159 @@ msgstr ""
 msgid "Badge Saved."
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:396
-#: addons/badges/myCRED-addon-badges.php:480
+#: addons/badges/myCRED-addon-badges.php:421
+#: addons/badges/myCRED-addon-badges.php:505
 msgid "Badge Name"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:397
-msgid "Default Image"
-msgstr ""
-
-#: addons/badges/myCRED-addon-badges.php:398
+#: addons/badges/myCRED-addon-badges.php:423
 msgid "First Level"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:399
-msgid "Requirements"
-msgstr ""
-
-#: addons/badges/myCRED-addon-badges.php:510
-#: addons/badges/myCRED-addon-badges.php:801
+#: addons/badges/myCRED-addon-badges.php:535
+#: addons/badges/myCRED-addon-badges.php:826
 msgid "Add Level"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:511
-#: addons/badges/myCRED-addon-badges.php:802
+#: addons/badges/myCRED-addon-badges.php:536
+#: addons/badges/myCRED-addon-badges.php:827
 msgid "Remove Level"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:512
-#: addons/badges/myCRED-addon-badges.php:755
-#: addons/badges/myCRED-addon-badges.php:818
-#: addons/badges/myCRED-addon-badges.php:823
+#: addons/badges/myCRED-addon-badges.php:537
+#: addons/badges/myCRED-addon-badges.php:780
+#: addons/badges/myCRED-addon-badges.php:843
+#: addons/badges/myCRED-addon-badges.php:848
 msgid "Set Image"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:513
-#: addons/badges/myCRED-addon-badges.php:755
-#: addons/badges/myCRED-addon-badges.php:823
+#: addons/badges/myCRED-addon-badges.php:538
+#: addons/badges/myCRED-addon-badges.php:780
+#: addons/badges/myCRED-addon-badges.php:848
 msgid "Change Image"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:514
+#: addons/badges/myCRED-addon-badges.php:539
 msgid "Are you sure you want to remove this level?"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:515
-#: addons/badges/myCRED-addon-badges.php:819
-#: addons/badges/myCRED-addon-badges.php:1288
+#: addons/badges/myCRED-addon-badges.php:540
+#: addons/badges/myCRED-addon-badges.php:844
+#: addons/badges/myCRED-addon-badges.php:1313
 msgid "Level"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:516
+#: addons/badges/myCRED-addon-badges.php:541
 msgid "Badge Image"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:517
+#: addons/badges/myCRED-addon-badges.php:542
 msgid "Use as Badge"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:518
-#: addons/badges/myCRED-addon-badges.php:921
+#: addons/badges/myCRED-addon-badges.php:543
+#: addons/badges/myCRED-addon-badges.php:946
 #: addons/badges/includes/mycred-badge-functions.php:272
 msgctxt "Comparison of badge requirements. A AND B"
 msgid "AND"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:519
-#: addons/badges/myCRED-addon-badges.php:921
+#: addons/badges/myCRED-addon-badges.php:544
+#: addons/badges/myCRED-addon-badges.php:946
 #: addons/badges/includes/mycred-badge-functions.php:270
 msgctxt "Comparison of badge requirements. A OR B"
 msgid "OR"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:571
+#: addons/badges/myCRED-addon-badges.php:596
 msgid "Badge Setup"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:580
+#: addons/badges/myCRED-addon-badges.php:605
 msgid "Default Badge Image"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:678
+#: addons/badges/myCRED-addon-badges.php:703
 msgid "Assign Badge"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:679
+#: addons/badges/myCRED-addon-badges.php:704
 msgid "Remove Connections"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:722
+#: addons/badges/myCRED-addon-badges.php:747
 #: addons/badges/includes/mycred-badge-functions.php:288
 msgid "This badge is manually awarded."
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:758
+#: addons/badges/myCRED-addon-badges.php:783
 msgid "Optional image to show when a user has not earned this badge."
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:777
+#: addons/badges/myCRED-addon-badges.php:802
 msgid "Time(s)"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:778
+#: addons/badges/myCRED-addon-badges.php:803
 msgid "In total"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:825
+#: addons/badges/myCRED-addon-badges.php:850
 #, php-format
 msgid "Level %d"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:849
+#: addons/badges/myCRED-addon-badges.php:874
 msgid "Select Point Type"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:863
+#: addons/badges/myCRED-addon-badges.php:888
 msgid "Select Reference"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:939
+#: addons/badges/myCRED-addon-badges.php:964
 msgid "Reward"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1158
-#: addons/badges/myCRED-addon-badges.php:1192
+#: addons/badges/myCRED-addon-badges.php:1183
+#: addons/badges/myCRED-addon-badges.php:1217
 msgid "Show all badges, including badges users have not yet earned."
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1176
+#: addons/badges/myCRED-addon-badges.php:1201
 msgid "Include in Forum Replies"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1177
+#: addons/badges/myCRED-addon-badges.php:1202
 msgid "Include in Profile and Forum Replies"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1251
+#: addons/badges/myCRED-addon-badges.php:1276
 msgid "No image set"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1283
+#: addons/badges/myCRED-addon-badges.php:1308
 msgid "Select a level"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1297
+#: addons/badges/myCRED-addon-badges.php:1322
 msgid "Earned"
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1406
+#: addons/badges/myCRED-addon-badges.php:1431
 #, php-format
 msgid "A total of %d users have received this badge."
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1408
+#: addons/badges/myCRED-addon-badges.php:1433
 msgid "No users has yet earned this badge."
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1433
+#: addons/badges/myCRED-addon-badges.php:1458
 msgid "No connections where removed."
 msgstr ""
 
-#: addons/badges/myCRED-addon-badges.php:1435
+#: addons/badges/myCRED-addon-badges.php:1460
 #, php-format
 msgid "%s connections where removed."
 msgstr ""
@@ -2458,12 +2333,6 @@ msgid "View Schedule"
 msgstr ""
 
 #: addons/banking/services/mycred-service-payouts.php:472
-#: addons/stats/widgets/mycred-stats-widget-daily-loses.php:151
-#: addons/stats/widgets/mycred-stats-widget-daily-gains.php:151
-msgid "View"
-msgstr ""
-
-#: addons/banking/services/mycred-service-payouts.php:472
 msgid "Delete Schedule"
 msgstr ""
 
@@ -2673,22 +2542,6 @@ msgstr ""
 msgid "Duplicate schedule."
 msgstr ""
 
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:41
-msgid "%plural% Cost"
-msgstr ""
-
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:213
-msgid "Your Balance"
-msgstr ""
-
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:710
-msgid "Cart & Checkout Cost"
-msgstr ""
-
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:713
-msgid "Label for cost in %plural%"
-msgstr ""
-
 #: addons/gateway/carts/mycred-woocommerce.php:30
 msgid "Let users pay using points."
 msgstr ""
@@ -2708,7 +2561,7 @@ msgid "%s Payment"
 msgstr ""
 
 #: addons/gateway/carts/mycred-woocommerce.php:319
-#: addons/sell-content/includes/mycred-sell-functions.php:512
+#: addons/sell-content/includes/mycred-sell-functions.php:534
 msgid "Insufficient funds."
 msgstr ""
 
@@ -2720,7 +2573,7 @@ msgstr ""
 
 #: addons/transfer/includes/mycred-transfer-widgets.php:113
 #: addons/transfer/includes/mycred-transfer-shortcodes.php:32
-#: addons/buy-creds/modules/buycred-module-pending.php:549
+#: addons/buy-creds/modules/buycred-module-pending.php:576
 #: addons/buy-creds/modules/buycred-module-core.php:1487
 msgid "Recipient"
 msgstr ""
@@ -2847,76 +2700,76 @@ msgstr ""
 msgid "An unknown error occurred. Coupon not used."
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:503
+#: addons/sell-content/includes/mycred-sell-functions.php:525
 #, php-format
 msgctxt "Point type name"
 msgid "You can not pay using %s"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:764
+#: addons/sell-content/includes/mycred-sell-functions.php:786
 #, php-format
 msgctxt "all post type name"
 msgid "All %s"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:768
+#: addons/sell-content/includes/mycred-sell-functions.php:790
 #, php-format
 msgctxt "all post type name"
 msgid "%s I manually select"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:772
+#: addons/sell-content/includes/mycred-sell-functions.php:794
 #, php-format
 msgctxt "%s = post type name"
 msgid "All %s except"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:773
+#: addons/sell-content/includes/mycred-sell-functions.php:795
 #, php-format
 msgctxt "%s = post type name"
 msgid "Comma separated list of %s IDs to exclude"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:776
+#: addons/sell-content/includes/mycred-sell-functions.php:798
 #, php-format
 msgctxt "%s = post type name"
 msgid "Only %s"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:777
+#: addons/sell-content/includes/mycred-sell-functions.php:799
 #, php-format
 msgctxt "%s = post type name"
 msgid "Comma separated list of %s IDs"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:789
+#: addons/sell-content/includes/mycred-sell-functions.php:811
 #, php-format
 msgctxt "e.g. Only \"Posts\" in \"Categories\""
 msgid "Only %s in %s"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:790
-#: addons/sell-content/includes/mycred-sell-functions.php:794
-#: addons/sell-content/includes/mycred-sell-functions.php:800
-#: addons/sell-content/includes/mycred-sell-functions.php:804
+#: addons/sell-content/includes/mycred-sell-functions.php:812
+#: addons/sell-content/includes/mycred-sell-functions.php:816
+#: addons/sell-content/includes/mycred-sell-functions.php:822
+#: addons/sell-content/includes/mycred-sell-functions.php:826
 #, php-format
 msgctxt "%s = taxonomy name"
 msgid "Comma separated list of %s slugs"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:793
+#: addons/sell-content/includes/mycred-sell-functions.php:815
 #, php-format
 msgctxt "e.g. Only \"Posts\" not in \"Categories\""
 msgid "Only %s not in %s"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:799
+#: addons/sell-content/includes/mycred-sell-functions.php:821
 #, php-format
 msgctxt "e.g. Only \"Posts\" with \"Tags\""
 msgid "Only %s with %s"
 msgstr ""
 
-#: addons/sell-content/includes/mycred-sell-functions.php:803
+#: addons/sell-content/includes/mycred-sell-functions.php:825
 #, php-format
 msgctxt "e.g. Only \"Posts\" without \"Tags\""
 msgid "Only %s without %s"
@@ -2944,123 +2797,32 @@ msgctxt "%s is replaced with the point amount and name."
 msgid "Received new request to purchase %s."
 msgstr ""
 
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:576
-msgid "First Name"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:582
-msgid "Last Name"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:590
-msgid "Address Line 1"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:598
-msgid "Address Line 2"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:606
-msgid "City"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:612
-msgid "Zip"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:620
-msgid "State"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:628
-msgid "Country"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:633
-msgid "Choose Country"
-msgstr ""
-
 #: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:691
 msgctxt "buyCRED order description"
 msgid "Item"
 msgstr ""
 
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1501
-msgid "January"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1502
-msgid "February"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1503
-msgid "March"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1504
-msgid "April"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1505
-msgid "May"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1506
-msgid "June"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1507
-msgid "July"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1508
-msgid "August"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1509
-msgid "September"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1510
-msgid "October"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1511
-msgid "November"
-msgstr ""
-
-#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1512
-msgid "December"
-msgstr ""
-
-#: addons/buy-creds/modules/buycred-module-pending.php:138
+#: addons/buy-creds/modules/buycred-module-pending.php:140
 msgctxt "Post Type General Name"
 msgid "Pending Payments"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:139
+#: addons/buy-creds/modules/buycred-module-pending.php:141
 msgctxt "Post Type Singular Name"
 msgid "Pending Payment"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:140
 #: addons/buy-creds/modules/buycred-module-pending.php:142
-#: addons/buy-creds/modules/buycred-module-pending.php:232
-#: addons/buy-creds/modules/buycred-module-pending.php:233
+#: addons/buy-creds/modules/buycred-module-pending.php:144
+#: addons/buy-creds/modules/buycred-module-pending.php:234
+#: addons/buy-creds/modules/buycred-module-pending.php:235
 msgid "Pending Payments"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:146
+#: addons/buy-creds/modules/buycred-module-pending.php:148
 msgid "Edit Pending Payment"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:149
-#: addons/buy-creds/modules/buycred-module-pending.php:150
-msgid "Not found in Trash"
-msgstr ""
-
-#: addons/buy-creds/modules/buycred-module-pending.php:180
-#: addons/buy-creds/modules/buycred-module-pending.php:181
 #: addons/buy-creds/modules/buycred-module-pending.php:182
 #: addons/buy-creds/modules/buycred-module-pending.php:183
 #: addons/buy-creds/modules/buycred-module-pending.php:184
@@ -3068,53 +2830,51 @@ msgstr ""
 #: addons/buy-creds/modules/buycred-module-pending.php:186
 #: addons/buy-creds/modules/buycred-module-pending.php:187
 #: addons/buy-creds/modules/buycred-module-pending.php:188
+#: addons/buy-creds/modules/buycred-module-pending.php:189
+#: addons/buy-creds/modules/buycred-module-pending.php:190
 msgid "Payment Updated."
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:216
+#: addons/buy-creds/modules/buycred-module-pending.php:218
 msgid "Pending payment successfully credited to account."
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:218
+#: addons/buy-creds/modules/buycred-module-pending.php:220
 msgid "Failed to credit the pending payment to account."
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:268
+#: addons/buy-creds/modules/buycred-module-pending.php:295
 #: addons/buy-creds/modules/buycred-module-core.php:767
 msgid "Buyer"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:272
-msgid "Type"
-msgstr ""
-
-#: addons/buy-creds/modules/buycred-module-pending.php:369
-#: addons/buy-creds/modules/buycred-module-pending.php:478
+#: addons/buy-creds/modules/buycred-module-pending.php:396
+#: addons/buy-creds/modules/buycred-module-pending.php:505
 msgid "Pay Out"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:441
+#: addons/buy-creds/modules/buycred-module-pending.php:468
 msgid "Pending Payment"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:479
+#: addons/buy-creds/modules/buycred-module-pending.php:506
 msgid "Trash"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:543
+#: addons/buy-creds/modules/buycred-module-pending.php:570
 msgid "Payer"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:652
+#: addons/buy-creds/modules/buycred-module-pending.php:679
 msgid "Pending request created."
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:700
+#: addons/buy-creds/modules/buycred-module-pending.php:727
 #, php-format
 msgid "Pending payment updated by %s"
 msgstr ""
 
-#: addons/buy-creds/modules/buycred-module-pending.php:798
+#: addons/buy-creds/modules/buycred-module-pending.php:825
 msgid "No pending payments found"
 msgstr ""
 
@@ -3285,89 +3045,84 @@ msgctxt "Return label. %s = Website name"
 msgid "Return to %s"
 msgstr ""
 
-#. Description of the plugin
-msgid "An adaptive points management system for WordPress powered websites."
-msgstr ""
-
-#: mycred.php:565
+#: mycred.php:568
 #, php-format
 msgid "%s Log Import"
 msgstr "Importar registro %s"
 
-#: mycred.php:566
+#: mycred.php:569
 msgid "Import log entries via a CSV file."
 msgstr "Importar registros de entradas via arquivo CSV."
 
-#: mycred.php:577
+#: mycred.php:580
 #, php-format
 msgid "%s Balance Import"
 msgstr "Importar saldo %s"
 
-#: mycred.php:589
+#: mycred.php:592
 #, php-format
 msgid "%s CubePoints Import"
 msgstr "%s CubePoints "
 
-#: mycred.php:590
+#: mycred.php:593
 msgid "Import CubePoints log entries and / or balances."
 msgstr "Importar registros de entradas e / ou saldo do CubePoints."
 
-#: mycred.php:632 modules/mycred-module-management.php:316
-#: modules/mycred-module-settings.php:425 modules/mycred-module-log.php:469
+#: mycred.php:635 modules/mycred-module-management.php:316
+#: modules/mycred-module-settings.php:425 modules/mycred-module-log.php:463
 #: addons/transfer/myCRED-addon-transfer.php:159
 #: addons/ranks/myCRED-addon-ranks.php:986
-#: addons/ranks/myCRED-addon-ranks.php:1568
-#: addons/badges/myCRED-addon-badges.php:702
+#: addons/ranks/myCRED-addon-ranks.php:1572
+#: addons/badges/myCRED-addon-badges.php:727
 #: addons/gateway/event-booking/mycred-eventsmanager.php:537
 msgid "Processing..."
 msgstr "Processando..."
 
-#: mycred.php:633
+#: mycred.php:636
 msgid "Sent"
-msgstr "Enviar"
+msgstr "Enviado"
 
-#: mycred.php:634
+#: mycred.php:637
 msgid "Error - Try Again"
 msgstr "Erro - Tente novamente"
 
-#: mycred.php:809 mycred.php:810
+#: mycred.php:812 mycred.php:813
 #, php-format
 msgid "About %s"
 msgstr "Sobre %s"
 
-#: mycred.php:818 mycred.php:819
+#: mycred.php:821 mycred.php:822
 msgid "Awesome People"
 msgstr "Pessoas incríveis"
 
-#: mycred.php:856 modules/mycred-module-management.php:558
+#: mycred.php:859 modules/mycred-module-management.php:558
 #: addons/transfer/includes/mycred-transfer-shortcodes.php:34
 msgid "Balance"
 msgstr "Saldo"
 
-#: mycred.php:923 modules/mycred-module-management.php:473
+#: mycred.php:926 modules/mycred-module-management.php:473
 #: modules/mycred-module-log.php:282 modules/mycred-module-log.php:283
-#: addons/buy-creds/modules/buycred-module-pending.php:444
+#: addons/buy-creds/modules/buycred-module-pending.php:471
 msgid "History"
-msgstr "Histórico"
+msgstr "História"
 
-#: mycred.php:979 mycred.php:1000
+#: mycred.php:997 mycred.php:1018
 #: addons/notifications/myCRED-addon-notifications.php:194
 #: addons/email-notices/myCRED-addon-email-notices.php:277
 #: addons/banking/services/mycred-service-interest.php:477
 #: addons/gateway/event-booking/mycred-eventsmanager.php:591
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:605
 msgid "Setup"
-msgstr "Instalação"
+msgstr "Setup"
 
-#: mycred.php:981 modules/mycred-module-settings.php:21
+#: mycred.php:999 modules/mycred-module-settings.php:21
 #: modules/mycred-module-settings.php:22 modules/mycred-module-settings.php:23
 #: modules/mycred-module-network.php:270
 #: addons/stats/abstracts/mycred-abstract-stat-widget.php:106
 #: addons/buy-creds/modules/buycred-module-core.php:592
 msgid "Settings"
-msgstr "Configurações"
+msgstr "Configura&ccedil;&otilde;es"
 
-#: mycred.php:1021
+#: mycred.php:1039
 msgid ""
 "Make sure to backup your database and files before updating, in case "
 "anything goes wrong!"
@@ -3379,27 +3134,27 @@ msgstr ""
 msgid "This Hook has no settings"
 msgstr "Esse gancho não tem configurações"
 
-#: abstracts/mycred-abstract-hook.php:290
-#: abstracts/mycred-abstract-hook.php:361 includes/mycred-functions.php:2771
+#: abstracts/mycred-abstract-hook.php:293
+#: abstracts/mycred-abstract-hook.php:364 includes/mycred-functions.php:2784
 msgid "No limit"
 msgstr "Sem limite"
 
-#: abstracts/mycred-abstract-hook.php:362
+#: abstracts/mycred-abstract-hook.php:365
 msgid "Once every 24 hours"
 msgstr "A cada 24 horas"
 
-#: abstracts/mycred-abstract-hook.php:363
+#: abstracts/mycred-abstract-hook.php:366
 msgid "Once every 7 days"
 msgstr "A cada 7 dias"
 
-#: abstracts/mycred-abstract-hook.php:364
+#: abstracts/mycred-abstract-hook.php:367
 msgid "Once per day (reset at midnight)"
 msgstr "Uma vez por dia (reiniciar a meia-noite)"
 
-#: abstracts/mycred-abstract-hook.php:371
+#: abstracts/mycred-abstract-hook.php:374
 #: addons/email-notices/myCRED-addon-email-notices.php:531
 #: addons/email-notices/myCRED-addon-email-notices.php:862
-#: addons/badges/myCRED-addon-badges.php:880
+#: addons/badges/myCRED-addon-badges.php:905
 #: addons/banking/abstracts/mycred-abstract-service.php:351
 #: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1126
 #: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1151
@@ -3407,30 +3162,30 @@ msgstr "Uma vez por dia (reiniciar a meia-noite)"
 #: addons/buy-creds/modules/buycred-module-core.php:401
 #: addons/buy-creds/gateways/zombaio.php:406
 msgid "Select"
-msgstr "Selecionar"
+msgstr "Select"
 
 #: abstracts/mycred-abstract-module.php:400
 #: abstracts/mycred-abstract-module.php:410
 msgid "Surprise"
 msgstr "Surpresa"
 
-#: abstracts/mycred-abstract-module.php:522
+#: abstracts/mycred-abstract-module.php:520
 #: modules/mycred-module-network.php:218
 msgid "click to close"
 msgstr "clique para fechar"
 
-#: abstracts/mycred-abstract-module.php:523
+#: abstracts/mycred-abstract-module.php:521
 #: modules/mycred-module-network.php:219
 msgid "click to open"
 msgstr "clique para abrir"
 
-#: abstracts/mycred-abstract-module.php:556
+#: abstracts/mycred-abstract-module.php:554
 #: modules/mycred-module-network.php:261
-#: addons/email-notices/myCRED-addon-email-notices.php:1546
+#: addons/email-notices/myCRED-addon-email-notices.php:1556
 #: addons/gateway/event-booking/mycred-eventespresso3.php:451
 #: addons/buy-creds/modules/buycred-module-core.php:597
 msgid "Settings Updated"
-msgstr "Configurações atualizadas"
+msgstr "Configurações Atualizadas"
 
 #: modules/mycred-module-management.php:101
 msgid "Update Balance"
@@ -3449,7 +3204,7 @@ msgid "Amount can not be zero"
 msgstr "Quantia não pode ser zero"
 
 #: modules/mycred-module-management.php:235 modules/mycred-module-log.php:94
-#: modules/mycred-module-log.php:910
+#: modules/mycred-module-log.php:896
 #: includes/classes/class.query-export.php:263
 #: includes/classes/class.query-export.php:399
 #: includes/classes/class.query-log.php:892
@@ -3465,7 +3220,7 @@ msgstr "Data"
 #: addons/banking/services/mycred-service-interest.php:460
 #: addons/banking/services/mycred-service-payouts.php:746
 msgid "Time"
-msgstr "Tempo"
+msgstr "Horário"
 
 #: modules/mycred-module-management.php:238 modules/mycred-module-log.php:96
 #: includes/classes/class.query-export.php:263
@@ -3480,10 +3235,10 @@ msgid "Edit Users Balance"
 msgstr "Editar saldo do usuário"
 
 #: modules/mycred-module-management.php:315
-#: modules/mycred-module-settings.php:430 modules/mycred-module-log.php:468
+#: modules/mycred-module-settings.php:430 modules/mycred-module-log.php:462
 #: addons/banking/myCRED-addon-banking.php:204
 msgid "Close"
-msgstr "Fechar"
+msgstr "fechado"
 
 #: modules/mycred-module-management.php:453
 #: modules/mycred-module-management.php:571
@@ -3510,14 +3265,20 @@ msgstr "Editar"
 
 #: modules/mycred-module-management.php:583
 #: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:479
-#: addons/buy-creds/modules/buycred-module-pending.php:718
+#: addons/buy-creds/modules/buycred-module-pending.php:745
 msgid "Cancel"
 msgstr "Cancelar"
 
 #: modules/mycred-module-management.php:741
 #: addons/banking/services/mycred-service-payouts.php:553
 msgid "ID"
-msgstr "ID"
+msgstr "Identificação"
+
+#: modules/mycred-module-management.php:747
+#: modules/mycred-module-export.php:432 modules/mycred-module-export.php:480
+#: addons/buy-creds/modules/buycred-module-core.php:1374
+msgid "Username"
+msgstr "Username"
 
 #: modules/mycred-module-management.php:753
 #: addons/gateway/event-booking/mycred-eventespresso3.php:307
@@ -3538,9 +3299,9 @@ msgstr "Saldo atual"
 #: addons/transfer/includes/mycred-transfer-widgets.php:105
 #: addons/transfer/includes/mycred-transfer-shortcodes.php:33
 #: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:692
-#: addons/buy-creds/modules/buycred-module-pending.php:269
-#: addons/buy-creds/modules/buycred-module-pending.php:615
-#: addons/buy-creds/modules/buycred-module-pending.php:733
+#: addons/buy-creds/modules/buycred-module-pending.php:296
+#: addons/buy-creds/modules/buycred-module-pending.php:642
+#: addons/buy-creds/modules/buycred-module-pending.php:760
 msgid "Amount"
 msgstr "Quantia"
 
@@ -3548,7 +3309,7 @@ msgstr "Quantia"
 msgid "A positive or negative value"
 msgstr "Um valor positivo ou negativo"
 
-#: modules/mycred-module-management.php:796 modules/mycred-module-log.php:929
+#: modules/mycred-module-management.php:796 modules/mycred-module-log.php:915
 #: addons/gateway/event-booking/mycred-eventespresso3.php:518
 msgid "Log Entry"
 msgstr "Entrada no registro"
@@ -3559,7 +3320,7 @@ msgstr "Entrada no registro"
 #: addons/transfer/includes/mycred-transfer-widgets.php:118
 #: addons/transfer/includes/mycred-transfer-widgets.php:126
 msgid "optional"
-msgstr "opcional"
+msgstr "Opcional"
 
 #: modules/mycred-module-settings.php:138
 msgid "Accounts successfully reset"
@@ -3595,30 +3356,25 @@ msgstr ""
 msgid "Done!"
 msgstr "Concluído!"
 
-#: modules/mycred-module-settings.php:431
-msgid "Export users %plural%"
-msgstr "Exportar %plural% dos usuários"
-
 #: modules/mycred-module-settings.php:530
 #, php-format
 msgid "%s Settings"
-msgstr "%s Configurações"
+msgstr "Configurações do %s"
 
 #: modules/mycred-module-settings.php:539
 msgid "Core Settings"
-msgstr "Configurações do Core"
+msgstr "Configurações do núcleo"
 
 #: modules/mycred-module-settings.php:544 includes/mycred-setup.php:275
 #: addons/gateway/event-booking/mycred-eventespresso3.php:460
 #: addons/gateway/event-booking/mycred-eventsmanager.php:658
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:686
 msgid "Labels"
-msgstr "Rótulos"
+msgstr "Labels"
 
 #: modules/mycred-module-settings.php:562 includes/mycred-setup.php:293
-#: addons/email-notices/myCRED-addon-email-notices.php:1405
+#: addons/email-notices/myCRED-addon-email-notices.php:1415
 msgid "Format"
-msgstr "Formato"
+msgstr "Formatar"
 
 #: modules/mycred-module-settings.php:566 includes/mycred-setup.php:297
 msgid "Prefix"
@@ -3652,15 +3408,15 @@ msgstr "Excluir registro de entradas quando o usuário for excluído."
 msgid "Management"
 msgstr "Administração"
 
-#: modules/mycred-module-settings.php:678 modules/mycred-module-log.php:433
+#: modules/mycred-module-settings.php:678 modules/mycred-module-log.php:427
 msgid "Entries"
-msgstr "Entradas"
+msgstr "Mensagens"
 
 #: modules/mycred-module-settings.php:684
 #: modules/mycred-module-settings.php:709
-#: addons/ranks/myCRED-addon-ranks.php:1665
-#: addons/buy-creds/modules/buycred-module-pending.php:450
-#: addons/buy-creds/modules/buycred-module-pending.php:736
+#: addons/ranks/myCRED-addon-ranks.php:1669
+#: addons/buy-creds/modules/buycred-module-pending.php:477
+#: addons/buy-creds/modules/buycred-module-pending.php:763
 msgid "Actions"
 msgstr "Ações"
 
@@ -3669,16 +3425,16 @@ msgid "Empty Log"
 msgstr "Registro em branco"
 
 #: modules/mycred-module-settings.php:703
-#: addons/ranks/myCRED-addon-ranks.php:1076
-#: addons/badges/myCRED-addon-badges.php:400
+#: addons/ranks/myCRED-addon-ranks.php:1080
+#: addons/badges/myCRED-addon-badges.php:425
 msgid "Users"
-msgstr "Usuários"
+msgstr "Assinantes"
 
 #: modules/mycred-module-settings.php:711
 msgid "Set all to zero"
 msgstr "Deifinir zero para todos"
 
-#: modules/mycred-module-settings.php:728 includes/mycred-widgets.php:573
+#: modules/mycred-module-settings.php:729 includes/mycred-widgets.php:573
 #: addons/transfer/myCRED-addon-transfer.php:370
 #: addons/sell-content/myCRED-addon-sell-content.php:581
 #: addons/transfer/includes/mycred-transfer-widgets.php:121
@@ -3686,56 +3442,55 @@ msgstr "Deifinir zero para todos"
 msgid "Point Types"
 msgstr "Tipos de pontos"
 
-#: modules/mycred-module-settings.php:742
-#: modules/mycred-module-settings.php:768
-#: modules/mycred-module-settings.php:798
+#: modules/mycred-module-settings.php:743
+#: modules/mycred-module-settings.php:769
+#: modules/mycred-module-settings.php:799
 msgid "Meta Key"
 msgstr "Meta Key"
 
-#: modules/mycred-module-settings.php:748
-#: modules/mycred-module-settings.php:774
-#: modules/mycred-module-settings.php:804
+#: modules/mycred-module-settings.php:749
+#: modules/mycred-module-settings.php:775
+#: modules/mycred-module-settings.php:805
 #: addons/email-notices/myCRED-addon-email-notices.php:578
 #: addons/gateway/carts/mycred-woocommerce.php:155
 msgid "Label"
 msgstr "Rótulo"
 
-#: modules/mycred-module-settings.php:755
-#: modules/mycred-module-settings.php:781
+#: modules/mycred-module-settings.php:756
+#: modules/mycred-module-settings.php:782
 #: includes/classes/class.query-log.php:1019
 #: includes/classes/class.query-log.php:1622
 #: addons/banking/services/mycred-service-payouts.php:472
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:496
 msgid "Delete"
-msgstr "Deletar"
+msgstr "Apagar"
 
-#: modules/mycred-module-settings.php:794
+#: modules/mycred-module-settings.php:795
 msgid "Add New Type"
-msgstr "Adicionar novo tipo"
+msgstr "Adicionar Novo Tipo"
 
-#: modules/mycred-module-settings.php:822
+#: modules/mycred-module-settings.php:823
 #: addons/gateway/event-booking/mycred-eventespresso3.php:551
 #: addons/buy-creds/modules/buycred-module-core.php:650
 msgid "Update Settings"
-msgstr "Atualizar configurações"
+msgstr "Atualizar Configurações"
 
-#: modules/mycred-module-settings.php:831
+#: modules/mycred-module-settings.php:836
 msgid "Identify users by"
 msgstr "Identificar usuários por"
 
-#: modules/mycred-module-settings.php:837
+#: modules/mycred-module-settings.php:842
 msgid "User ID"
-msgstr "ID do usuário"
+msgstr "User ID"
 
-#: modules/mycred-module-settings.php:838
+#: modules/mycred-module-settings.php:843
 msgid "User Email"
 msgstr "E-mail do usuário"
 
-#: modules/mycred-module-settings.php:839
+#: modules/mycred-module-settings.php:844
 msgid "User Login"
-msgstr "Login do usuário"
+msgstr "Nome de Usuário"
 
-#: modules/mycred-module-settings.php:847
+#: modules/mycred-module-settings.php:852
 msgid ""
 "Use ID if you intend to use this export as a backup of your current site "
 "while Email is recommended if you want to export to a different site."
@@ -3744,11 +3499,11 @@ msgstr ""
 "atual, enquanto o e-mail é recomendado se você deseja exportar para um site "
 "diferente."
 
-#: modules/mycred-module-settings.php:850
+#: modules/mycred-module-settings.php:857
 msgid "Import Log Entry"
 msgstr "Importar registro de entrada"
 
-#: modules/mycred-module-settings.php:852
+#: modules/mycred-module-settings.php:859
 #, php-format
 msgid ""
 "Optional log entry to use if you intend to import this file in a different "
@@ -3757,15 +3512,15 @@ msgstr ""
 "Entrada de registro opcional se você pretende importar este arquivo em uma "
 "instalação %s diferente."
 
-#: modules/mycred-module-settings.php:855 modules/mycred-module-export.php:236
-#: modules/mycred-module-export.php:263 modules/mycred-module-export.php:313
+#: modules/mycred-module-settings.php:866 modules/mycred-module-export.php:268
+#: modules/mycred-module-export.php:295 modules/mycred-module-export.php:345
 msgid "Export"
-msgstr "Exportar"
+msgstr "Exportação"
 
 #: modules/mycred-module-addons.php:25 modules/mycred-module-addons.php:26
 #: includes/mycred-setup.php:171
 msgid "Add-ons"
-msgstr "Add-ons"
+msgstr "Extensões (Add-ons)"
 
 #: modules/mycred-module-addons.php:186
 msgid ""
@@ -3872,7 +3627,7 @@ msgstr "Desativado"
 msgid "Log"
 msgstr "Registro"
 
-#: modules/mycred-module-log.php:92 modules/mycred-module-log.php:906
+#: modules/mycred-module-log.php:92 modules/mycred-module-log.php:892
 #: includes/classes/class.query-export.php:263
 #: includes/classes/class.query-export.php:371
 #: includes/classes/class.query-log.php:891
@@ -3890,26 +3645,26 @@ msgstr "Linha deletada"
 msgid "Log entry not found"
 msgstr "Registro de entrada não encontrado"
 
-#: modules/mycred-module-log.php:467
+#: modules/mycred-module-log.php:461
 msgid "Edit Log Entry"
 msgstr "Editar registro de entradas"
 
-#: modules/mycred-module-log.php:471
+#: modules/mycred-module-log.php:465
 msgid "Are you sure you want to delete this log entry? This can not be undone!"
 msgstr ""
 "Tem certeza que deseja excluir esta entrada de registros? Isso não pode ser "
 "desfeito!"
 
-#: modules/mycred-module-log.php:502
+#: modules/mycred-module-log.php:496
 msgid "Search results for"
 msgstr "Resultados da busca por"
 
-#: modules/mycred-module-log.php:554
+#: modules/mycred-module-log.php:544
 #, php-format
 msgid "%s Log"
 msgstr "%s Registro"
 
-#: modules/mycred-module-log.php:666
+#: modules/mycred-module-log.php:652
 #, php-format
 msgid "My %s History"
 msgstr "Meu %s histórico"
@@ -3919,7 +3674,7 @@ msgid "Master Template"
 msgstr "Modelo mestre"
 
 #: modules/mycred-module-network.php:156 modules/mycred-module-network.php:280
-#: modules/mycred-module-network.php:296 modules/mycred-module-export.php:354
+#: modules/mycred-module-network.php:296 modules/mycred-module-export.php:386
 #: addons/sell-content/myCRED-addon-sell-content.php:481
 msgid "Enabled"
 msgstr "Habilitado"
@@ -3939,12 +3694,12 @@ msgid "Note! %s has not yet been setup."
 msgstr "Nota! %s não foi configurado ainda."
 
 #: modules/mycred-module-network.php:285 modules/mycred-module-network.php:301
-#: modules/mycred-module-export.php:353 plugins/mycred-hook-affiliatewp.php:362
+#: modules/mycred-module-export.php:385 plugins/mycred-hook-affiliatewp.php:362
 #: addons/sell-content/myCRED-addon-sell-content.php:396
 #: addons/sell-content/myCRED-addon-sell-content.php:480
 #: addons/buy-creds/modules/buycred-module-core.php:1127
 msgid "Disabled"
-msgstr "Desabilitado"
+msgstr "Desativado"
 
 #: modules/mycred-module-network.php:291
 msgid "Central Logging"
@@ -3964,7 +3719,7 @@ msgstr ""
 msgid "Save Network Settings"
 msgstr "Salvar configurações de rede"
 
-#: modules/mycred-module-export.php:285 modules/mycred-module-export.php:332
+#: modules/mycred-module-export.php:317 modules/mycred-module-export.php:364
 #: includes/classes/class.query-log.php:1687
 msgid ""
 "Log entries are exported to a CSV file and depending on the number of "
@@ -3973,26 +3728,25 @@ msgstr ""
 "As entradas de registro são exportadas para um arquivo CSV e, dependendo do "
 "número de entradas selecionadas, o processo pode demorar alguns segundos."
 
-#: modules/mycred-module-export.php:400 modules/mycred-module-export.php:448
+#: modules/mycred-module-export.php:432 modules/mycred-module-export.php:480
 #: includes/mycred-widgets.php:183 includes/mycred-widgets.php:365
 #: includes/importers/mycred-cubepoints.php:353
 #: includes/classes/class.query-export.php:263
 #: includes/classes/class.query-export.php:391
-#: addons/ranks/myCRED-addon-ranks.php:1079
-#: addons/ranks/myCRED-addon-ranks.php:1247
-#: addons/ranks/myCRED-addon-ranks.php:1254
+#: addons/ranks/myCRED-addon-ranks.php:1083
+#: addons/ranks/myCRED-addon-ranks.php:1251
+#: addons/ranks/myCRED-addon-ranks.php:1258
 #: addons/email-notices/myCRED-addon-email-notices.php:280
 #: addons/email-notices/myCRED-addon-email-notices.php:585
 #: addons/coupons/myCRED-addon-coupons.php:256
 #: addons/coupons/myCRED-addon-coupons.php:520
 #: addons/gateway/event-booking/mycred-eventespresso3.php:483
 #: addons/gateway/event-booking/mycred-eventsmanager.php:604
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:611
 #: addons/gateway/carts/mycred-wpecommerce.php:383
 #: addons/gateway/carts/mycred-woocommerce.php:125
 #: addons/gateway/carts/mycred-woocommerce.php:166
-#: addons/buy-creds/modules/buycred-module-pending.php:557
-#: addons/buy-creds/modules/buycred-module-pending.php:735
+#: addons/buy-creds/modules/buycred-module-pending.php:584
+#: addons/buy-creds/modules/buycred-module-pending.php:762
 msgid "Point Type"
 msgstr "Tipo de ponto"
 
@@ -4047,15 +3801,15 @@ msgstr "Ir"
 
 #: modules/mycred-module-buddypress.php:404
 #: modules/mycred-module-buddypress.php:411
-#: addons/badges/myCRED-addon-badges.php:1140
-#: addons/badges/myCRED-addon-badges.php:1174
+#: addons/badges/myCRED-addon-badges.php:1165
+#: addons/badges/myCRED-addon-badges.php:1199
 #: addons/gateway/carts/mycred-woocommerce.php:147
 msgid "Do not show"
 msgstr "Não exibir"
 
 #: modules/mycred-module-buddypress.php:406
-#: addons/ranks/myCRED-addon-ranks.php:1478
-#: addons/badges/myCRED-addon-badges.php:1142
+#: addons/ranks/myCRED-addon-ranks.php:1482
+#: addons/badges/myCRED-addon-badges.php:1167
 msgid "Include under the \"Profile\" tab"
 msgstr "Incluir abaixo da aba \"Profile\""
 
@@ -4068,8 +3822,8 @@ msgid "%singular% Balance"
 msgstr "Saldo de %singular%"
 
 #: modules/mycred-module-buddypress.php:453
-#: addons/ranks/myCRED-addon-ranks.php:1493
-#: addons/ranks/myCRED-addon-ranks.php:1534
+#: addons/ranks/myCRED-addon-ranks.php:1497
+#: addons/ranks/myCRED-addon-ranks.php:1538
 #: addons/notifications/myCRED-addon-notifications.php:198
 msgid "Template"
 msgstr "Modelo"
@@ -4113,7 +3867,7 @@ msgstr "Número de entradas no histórico à exibir"
 
 #: plugins/mycred-hook-invite-anyone.php:15
 msgid "Invite Anyone Plugin"
-msgstr "Invite Anyone Plugin"
+msgstr "Plugin Invite Anyone"
 
 #: plugins/mycred-hook-invite-anyone.php:16
 msgid ""
@@ -4155,13 +3909,13 @@ msgstr ""
 #: plugins/mycred-hook-buddypress-media.php:348
 #: plugins/mycred-hook-wp-favorite-posts.php:228
 #: plugins/mycred-hook-wp-favorite-posts.php:240
-#: plugins/mycred-hook-contact-form7.php:169
+#: plugins/mycred-hook-contact-form7.php:172
 #: plugins/mycred-hook-bbPress.php:443 plugins/mycred-hook-bbPress.php:485
 #: plugins/mycred-hook-bbPress.php:536 plugins/mycred-hook-bbPress.php:560
-#: plugins/mycred-hook-woocommerce.php:510
+#: plugins/mycred-hook-woocommerce.php:514
 #: includes/shortcodes/mycred_hook_table.php:79
 msgid "Limit"
-msgstr "Limite"
+msgstr "Limitar"
 
 #: plugins/mycred-hook-invite-anyone.php:221
 #: plugins/mycred-hook-invite-anyone.php:245
@@ -4204,15 +3958,79 @@ msgstr "Limite"
 #: plugins/mycred-hook-buddypress-media.php:372
 #: plugins/mycred-hook-buddypress-media.php:390
 #: plugins/mycred-hook-buddypress-media.php:408
-#: plugins/mycred-hook-contact-form7.php:175
+#: plugins/mycred-hook-contact-form7.php:178
 #: plugins/mycred-hook-jetpack.php:549 plugins/mycred-hook-jetpack.php:567
 #: plugins/mycred-hook-bbPress.php:449 plugins/mycred-hook-bbPress.php:467
 #: plugins/mycred-hook-bbPress.php:491 plugins/mycred-hook-bbPress.php:518
 #: plugins/mycred-hook-bbPress.php:542 plugins/mycred-hook-bbPress.php:566
 #: plugins/mycred-hook-bbPress.php:593
-#: addons/badges/myCRED-addon-badges.php:949
+#: addons/badges/myCRED-addon-badges.php:974
 msgid "Log template"
 msgstr "Modelo de registro"
+
+#: plugins/mycred-hook-invite-anyone.php:222
+#: plugins/mycred-hook-invite-anyone.php:246
+#: plugins/mycred-hook-wp-polls.php:178
+#: plugins/mycred-hook-wp-postratings.php:208
+#: plugins/mycred-hook-wp-postratings.php:215
+#: plugins/mycred-hook-gravityforms.php:173
+#: plugins/mycred-hook-simplepress.php:308
+#: plugins/mycred-hook-simplepress.php:326
+#: plugins/mycred-hook-simplepress.php:350
+#: plugins/mycred-hook-simplepress.php:377
+#: plugins/mycred-hook-buddypress.php:630
+#: plugins/mycred-hook-buddypress.php:654
+#: plugins/mycred-hook-buddypress.php:678
+#: plugins/mycred-hook-buddypress.php:702
+#: plugins/mycred-hook-buddypress.php:726
+#: plugins/mycred-hook-buddypress.php:753
+#: plugins/mycred-hook-buddypress.php:777
+#: plugins/mycred-hook-buddypress.php:795
+#: plugins/mycred-hook-buddypress.php:819
+#: plugins/mycred-hook-buddypress.php:837
+#: plugins/mycred-hook-buddypress.php:861
+#: plugins/mycred-hook-buddypress.php:885
+#: plugins/mycred-hook-buddypress.php:1521
+#: plugins/mycred-hook-buddypress.php:1539
+#: plugins/mycred-hook-buddypress.php:1563
+#: plugins/mycred-hook-buddypress.php:1587
+#: plugins/mycred-hook-buddypress.php:1611
+#: plugins/mycred-hook-buddypress.php:1635
+#: plugins/mycred-hook-buddypress.php:1659
+#: plugins/mycred-hook-buddypress.php:1683
+#: plugins/mycred-hook-buddypress.php:1707
+#: plugins/mycred-hook-buddypress.php:1725
+#: plugins/mycred-hook-buddypress.php:1749
+#: plugins/mycred-hook-affiliatewp.php:299
+#: plugins/mycred-hook-affiliatewp.php:326
+#: plugins/mycred-hook-affiliatewp.php:370
+#: plugins/mycred-hook-affiliatewp.php:377
+#: plugins/mycred-hook-events-manager-light.php:218
+#: plugins/mycred-hook-events-manager-light.php:236
+#: plugins/mycred-hook-sharethis.php:274
+#: plugins/mycred-hook-buddypress-media.php:307
+#: plugins/mycred-hook-buddypress-media.php:331
+#: plugins/mycred-hook-buddypress-media.php:355
+#: plugins/mycred-hook-buddypress-media.php:373
+#: plugins/mycred-hook-buddypress-media.php:391
+#: plugins/mycred-hook-buddypress-media.php:409
+#: plugins/mycred-hook-wp-favorite-posts.php:249
+#: plugins/mycred-hook-wp-favorite-posts.php:256
+#: plugins/mycred-hook-wp-favorite-posts.php:274
+#: plugins/mycred-hook-wp-favorite-posts.php:289
+#: plugins/mycred-hook-contact-form7.php:179
+#: plugins/mycred-hook-jetpack.php:550 plugins/mycred-hook-jetpack.php:568
+#: plugins/mycred-hook-bbPress.php:450 plugins/mycred-hook-bbPress.php:468
+#: plugins/mycred-hook-bbPress.php:492 plugins/mycred-hook-bbPress.php:519
+#: plugins/mycred-hook-bbPress.php:543 plugins/mycred-hook-bbPress.php:567
+#: plugins/mycred-hook-bbPress.php:594 plugins/mycred-hook-woocommerce.php:521
+#: plugins/mycred-hook-badgeOS.php:328 plugins/mycred-hook-badgeOS.php:346
+#: addons/transfer/includes/mycred-transfer-widgets.php:102
+#: addons/transfer/includes/mycred-transfer-widgets.php:106
+#: addons/transfer/includes/mycred-transfer-widgets.php:110
+#: addons/transfer/includes/mycred-transfer-widgets.php:122
+msgid "required"
+msgstr "Necessário"
 
 #: plugins/mycred-hook-wp-polls.php:15
 msgid "WP-Polls"
@@ -4227,7 +4045,7 @@ msgstr ""
 #: plugins/mycred-hook-wp-polls.php:177
 #: plugins/mycred-hook-wp-favorite-posts.php:273
 #: plugins/mycred-hook-wp-favorite-posts.php:288
-#: plugins/mycred-hook-woocommerce.php:516 plugins/mycred-hook-badgeOS.php:144
+#: plugins/mycred-hook-woocommerce.php:520 plugins/mycred-hook-badgeOS.php:144
 #: plugins/mycred-hook-badgeOS.php:146 plugins/mycred-hook-badgeOS.php:157
 #: plugins/mycred-hook-badgeOS.php:327 plugins/mycred-hook-badgeOS.php:345
 #: addons/coupons/myCRED-addon-coupons.php:764
@@ -4241,16 +4059,28 @@ msgstr ""
 msgid "Log Template"
 msgstr "Modelo de registro"
 
+#: plugins/mycred-hook-wp-postratings.php:165
+#: plugins/mycred-hook-wp-favorite-posts.php:222
+#: plugins/mycred-hook-wp-favorite-posts.php:267
+msgid "Member"
+msgstr "Membro"
+
+#: plugins/mycred-hook-wp-postratings.php:177
+#: plugins/mycred-hook-wp-favorite-posts.php:234
+#: plugins/mycred-hook-wp-favorite-posts.php:282
+msgid "Content Author"
+msgstr "Autor do conteúdo"
+
 #: plugins/mycred-hook-gravityforms.php:15
 msgid "Gravityform Submissions"
-msgstr "Gravityform Submissions"
+msgstr "Envios do Gravityform"
 
 #: plugins/mycred-hook-gravityforms.php:16
 msgid "Awards %_plural% for successful form submissions."
 msgstr "Recompensar com %_plural% formulários submetidos com sucesso."
 
 #: plugins/mycred-hook-gravityforms.php:130
-#: plugins/mycred-hook-contact-form7.php:131
+#: plugins/mycred-hook-contact-form7.php:134
 msgid "No forms found."
 msgstr "Nenhum formulário encontrado."
 
@@ -4280,7 +4110,6 @@ msgstr ""
 
 #: plugins/mycred-hook-buddypress.php:310
 #: addons/gateway/event-booking/mycred-eventsmanager.php:692
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:727
 #: addons/gateway/carts/mycred-wpecommerce.php:415
 msgid "Insufficient Funds"
 msgstr "Fundos insuficientes"
@@ -4293,7 +4122,6 @@ msgstr "Visitantes por referência"
 #: includes/shortcodes/mycred_exchange.php:75
 #: addons/gateway/event-booking/mycred-eventespresso3.php:498
 #: addons/gateway/event-booking/mycred-eventsmanager.php:634
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:650
 #: addons/gateway/carts/mycred-wpecommerce.php:389
 #: addons/gateway/carts/mycred-woocommerce.php:136
 msgid "Exchange Rate"
@@ -4315,11 +4143,15 @@ msgstr "Recompensar com %_plural% os usuários que aceitaram eventos."
 
 #: plugins/mycred-hook-events-manager-light.php:201
 msgid "Attending Event"
-msgstr "Eventos aceitos"
+msgstr "Comparecer a evento"
 
 #: plugins/mycred-hook-events-manager-light.php:225
 msgid "Cancelling Attendance"
-msgstr "Cancelamento de aceitação"
+msgstr "Cancelar comparecimento"
+
+#: plugins/mycred-hook-sharethis.php:15
+msgid "%plural% for Sharing"
+msgstr "%plural% por compartilhar"
 
 #: plugins/mycred-hook-buddypress-media.php:15
 msgid "rtMedia Galleries"
@@ -4377,7 +4209,7 @@ msgstr ""
 
 #: plugins/mycred-hook-jetpack.php:15
 msgid "Jetpack Subscriptions"
-msgstr "Jetpack Subscriptions"
+msgstr "Assinaturas Jetpack"
 
 #: plugins/mycred-hook-jetpack.php:16
 msgid ""
@@ -4393,7 +4225,7 @@ msgstr "Assinaturas no site"
 
 #: plugins/mycred-hook-jetpack.php:557
 msgid "Comment Subscriptions"
-msgstr "Comentário de assinaturas"
+msgstr "Assinaturas de comentários"
 
 #: plugins/mycred-hook-bbPress.php:16
 msgid "Awards %_plural% for bbPress actions."
@@ -4456,7 +4288,7 @@ msgstr "Instalação do myCRED"
 #: addons/sell-content/myCRED-addon-sell-content.php:639
 #, php-format
 msgid "%s Setup"
-msgstr "Instalação do %s"
+msgstr "Configuração %s"
 
 #: includes/mycred-remote.php:581
 msgid "This feature requires WordPress Permalinks to be setup and enabled!"
@@ -4480,7 +4312,7 @@ msgstr "Acesso remoto"
 
 #: includes/mycred-remote.php:615 addons/buy-creds/gateways/bitpay.php:245
 msgid "API Key"
-msgstr "Chave de API"
+msgstr "Chave da API"
 
 #: includes/mycred-remote.php:618
 msgid "Key"
@@ -4587,14 +4419,14 @@ msgid "(%s) My Balance"
 msgstr "(%s) Meu saldo"
 
 #: includes/mycred-widgets.php:176 includes/mycred-widgets.php:359
-#: includes/mycred-widgets.php:567 addons/ranks/myCRED-addon-ranks.php:1369
+#: includes/mycred-widgets.php:567 addons/ranks/myCRED-addon-ranks.php:1373
 #: addons/gateway/carts/mycred-woocommerce.php:96
 #: addons/transfer/includes/mycred-transfer-widgets.php:91
 #: addons/sell-content/includes/mycred-sell-shortcodes.php:203
 #: addons/buy-creds/gateways/bank-transfer.php:190
 #: addons/buy-creds/gateways/skrill.php:333
 msgid "Title"
-msgstr "Título"
+msgstr "Title"
 
 #: includes/mycred-widgets.php:199
 msgid "Include history"
@@ -4619,7 +4451,7 @@ msgstr "Exibir mensagem quando não logado"
 #: includes/mycred-widgets.php:222 includes/mycred-widgets.php:590
 #: addons/transfer/includes/mycred-transfer-shortcodes.php:35
 msgid "Message"
-msgstr "Mensagem"
+msgstr "پیغام"
 
 #: includes/mycred-widgets.php:282
 #, php-format
@@ -4646,7 +4478,7 @@ msgstr ""
 
 #: includes/mycred-widgets.php:396
 msgid "Order"
-msgstr "Pedido"
+msgstr "Ordem"
 
 #: includes/mycred-widgets.php:401 includes/classes/class.query-log.php:1081
 msgid "Ascending"
@@ -4683,51 +4515,51 @@ msgstr "Ponto"
 
 #: includes/mycred-functions.php:86
 msgid "Points"
-msgstr "Pontos"
+msgstr "Ponto(s)"
 
-#: includes/mycred-functions.php:466
+#: includes/mycred-functions.php:472
 msgid "Deleted"
 msgstr "Excluídos"
 
-#: includes/mycred-functions.php:607
+#: includes/mycred-functions.php:613
 msgid "Deleted Item"
 msgstr "Item excluído"
 
-#: includes/mycred-functions.php:671
+#: includes/mycred-functions.php:677
 #: addons/email-notices/myCRED-addon-email-notices.php:864
 #: addons/gateway/carts/mycred-wpecommerce.php:370
 msgid "General"
 msgstr "Geral"
 
-#: includes/mycred-functions.php:678
+#: includes/mycred-functions.php:684
 msgid "User Related"
 msgstr "Usuário relacionado"
 
-#: includes/mycred-functions.php:685
+#: includes/mycred-functions.php:691
 msgid "Post Related"
 msgstr "Post relacionado"
 
-#: includes/mycred-functions.php:692
+#: includes/mycred-functions.php:698
 msgid "Comment Related"
 msgstr "Comentário relacionado"
 
-#: includes/mycred-functions.php:699
+#: includes/mycred-functions.php:705
 msgid "Widget Related"
 msgstr "Widget relacionado"
 
-#: includes/mycred-functions.php:706
+#: includes/mycred-functions.php:712
 msgid "Amount Related"
 msgstr "Quantia relacionada"
 
-#: includes/mycred-functions.php:713
+#: includes/mycred-functions.php:719
 msgid "Video Related"
 msgstr "Vídeo relacionado"
 
-#: includes/mycred-functions.php:724
+#: includes/mycred-functions.php:730
 msgid "and"
 msgstr "e"
 
-#: includes/mycred-functions.php:726
+#: includes/mycred-functions.php:732
 msgid "Available Template Tags:"
 msgstr "Modelo de etiqueta disponível:"
 
@@ -4837,7 +4669,7 @@ msgstr "Mostrar na ordem"
 
 #: includes/classes/class.query-log.php:1101
 msgid "Filter"
-msgstr "Filtro"
+msgstr "Filtre"
 
 #: includes/classes/class.query-log.php:1694
 msgid "No export options available."
@@ -4852,9 +4684,21 @@ msgstr "Buscar no registro"
 msgid "search log entries"
 msgstr "buscar entradas de registro"
 
+#: includes/classes/class.query-log.php:2184
+msgid "Logging in"
+msgstr "Fazendo login"
+
 #: includes/classes/class.query-log.php:2186
 msgid "Approved Comment"
 msgstr "Comentário aprovado"
+
+#: includes/classes/class.query-log.php:2199
+msgid "Avatar Upload"
+msgstr "Upload de Avatar"
+
+#: includes/classes/class.query-log.php:2229
+msgid "New Link"
+msgstr "Novo link"
 
 #: includes/classes/class.query-log.php:2280
 #: addons/banking/myCRED-addon-banking.php:150
@@ -4884,7 +4728,7 @@ msgstr "%s Banking"
 #: addons/banking/myCRED-addon-banking.php:273
 #: addons/buy-creds/modules/buycred-module-core.php:618
 msgid "Enable"
-msgstr "Habilitar"
+msgstr "Activar"
 
 #: addons/banking/myCRED-addon-banking.php:292
 msgid "Update Changes"
@@ -4961,12 +4805,12 @@ msgstr "E-mail do usuário (user_email)"
 #: addons/transfer/myCRED-addon-transfer.php:355
 #: addons/buy-creds/gateways/bitpay.php:299
 msgid "Yes"
-msgstr "Sim"
+msgstr "Sìm"
 
 #: addons/transfer/myCRED-addon-transfer.php:356
 #: addons/buy-creds/gateways/bitpay.php:298
 msgid "No"
-msgstr "Não"
+msgstr "Nao"
 
 #: addons/transfer/myCRED-addon-transfer.php:363
 msgid "Transfers"
@@ -4996,7 +4840,6 @@ msgstr "Limites"
 #: addons/transfer/myCRED-addon-transfer.php:456
 #: addons/sell-content/myCRED-addon-sell-content.php:685
 #: addons/gateway/event-booking/mycred-eventsmanager.php:641
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:657
 msgid "Log Templates"
 msgstr "Modelos de registro"
 
@@ -5008,14 +4851,22 @@ msgstr "Modelo de registro para envio."
 msgid "Log template for receiving"
 msgstr "Modelo de registro para recebimento."
 
+#: addons/transfer/myCRED-addon-transfer.php:507
+msgid "Limit Template"
+msgstr "Modelo de limite"
+
+#: addons/transfer/myCRED-addon-transfer.php:523
+msgid "Balance Template"
+msgstr "Modelo de saldo"
+
 #: addons/ranks/myCRED-addon-ranks.php:218
 #: addons/ranks/myCRED-addon-ranks.php:227
 #: addons/ranks/myCRED-addon-ranks.php:237
 #: addons/ranks/myCRED-addon-ranks.php:339
 #: addons/ranks/myCRED-addon-ranks.php:340
 #: addons/ranks/myCRED-addon-ranks.php:724
-#: addons/ranks/myCRED-addon-ranks.php:1359
-#: addons/ranks/myCRED-addon-ranks.php:1654
+#: addons/ranks/myCRED-addon-ranks.php:1363
+#: addons/ranks/myCRED-addon-ranks.php:1658
 msgid "Ranks"
 msgstr "Ranks"
 
@@ -5035,7 +4886,7 @@ msgstr "Rank"
 #: addons/badges/myCRED-addon-badges.php:151
 #: addons/banking/services/mycred-service-payouts.php:896
 msgid "Add New"
-msgstr "Adicionar novo"
+msgstr "Incluir Novo"
 
 #: addons/ranks/myCRED-addon-ranks.php:225
 msgid "Edit Rank"
@@ -5054,7 +4905,7 @@ msgid "Search Ranks"
 msgstr "Buscar Categoria"
 
 #: addons/ranks/myCRED-addon-ranks.php:234
-#: addons/ranks/myCRED-addon-ranks.php:1286
+#: addons/ranks/myCRED-addon-ranks.php:1290
 msgid "No ranks found"
 msgstr "Nenhuma categoria encontrada"
 
@@ -5075,121 +4926,121 @@ msgstr "Aviso! Todos os rankings serão apagados! Isso não pode ser desfeito!"
 msgid "Are you sure you want to re-assign user ranks?"
 msgstr "Tem certeza de que quer voltar a atribuir ranking de usuário?"
 
-#: addons/ranks/myCRED-addon-ranks.php:1073
-#: addons/ranks/myCRED-addon-ranks.php:1174
+#: addons/ranks/myCRED-addon-ranks.php:1077
+#: addons/ranks/myCRED-addon-ranks.php:1178
 msgid "Rank Title"
 msgstr "Título da Categoria"
 
-#: addons/ranks/myCRED-addon-ranks.php:1074
+#: addons/ranks/myCRED-addon-ranks.php:1078
 msgid "Logo"
-msgstr "Logotipo"
+msgstr "Logo"
 
-#: addons/ranks/myCRED-addon-ranks.php:1075
-#: addons/badges/myCRED-addon-badges.php:828
-#: addons/badges/myCRED-addon-badges.php:829
+#: addons/ranks/myCRED-addon-ranks.php:1079
+#: addons/badges/myCRED-addon-badges.php:853
+#: addons/badges/myCRED-addon-badges.php:854
 msgid "Requirement"
 msgstr "Requerimento"
 
-#: addons/ranks/myCRED-addon-ranks.php:1101
+#: addons/ranks/myCRED-addon-ranks.php:1105
 msgid "No Logo Set"
 msgstr "Nenhum logotipo deifinido"
 
-#: addons/ranks/myCRED-addon-ranks.php:1116
-#: addons/ranks/myCRED-addon-ranks.php:1121
+#: addons/ranks/myCRED-addon-ranks.php:1120
+#: addons/ranks/myCRED-addon-ranks.php:1125
 msgid "Any Value"
 msgstr "Qualquer valor"
 
-#: addons/ranks/myCRED-addon-ranks.php:1118
+#: addons/ranks/myCRED-addon-ranks.php:1122
 #: addons/buy-creds/modules/buycred-module-core.php:345
 msgid "Minimum %plural%"
 msgstr "%plural% mínimos"
 
-#: addons/ranks/myCRED-addon-ranks.php:1123
+#: addons/ranks/myCRED-addon-ranks.php:1127
 msgid "Maximum %plural%"
 msgstr "Máximo de %plural%"
 
-#: addons/ranks/myCRED-addon-ranks.php:1275
-#: addons/ranks/myCRED-addon-ranks.php:1276
+#: addons/ranks/myCRED-addon-ranks.php:1279
+#: addons/ranks/myCRED-addon-ranks.php:1280
 msgid "Not Set"
 msgstr "Não definido"
 
-#: addons/ranks/myCRED-addon-ranks.php:1366
+#: addons/ranks/myCRED-addon-ranks.php:1370
 msgid "Rank Features"
 msgstr "Características do rank"
 
-#: addons/ranks/myCRED-addon-ranks.php:1372
+#: addons/ranks/myCRED-addon-ranks.php:1376
 msgid "%plural% requirement"
 msgstr "Requerimentos de %plural%"
 
-#: addons/ranks/myCRED-addon-ranks.php:1378
+#: addons/ranks/myCRED-addon-ranks.php:1382
 msgid "Content"
 msgstr "Conteúdo"
 
-#: addons/ranks/myCRED-addon-ranks.php:1381
+#: addons/ranks/myCRED-addon-ranks.php:1385
 msgid "Excerpt"
-msgstr "Resumo"
+msgstr "Excerpt"
 
-#: addons/ranks/myCRED-addon-ranks.php:1384
+#: addons/ranks/myCRED-addon-ranks.php:1388
 msgid "Comments"
-msgstr "Comentários"
+msgstr "Comentario"
 
-#: addons/ranks/myCRED-addon-ranks.php:1387
+#: addons/ranks/myCRED-addon-ranks.php:1391
 msgid "Page Attributes"
 msgstr "Atributos da página"
 
-#: addons/ranks/myCRED-addon-ranks.php:1390
+#: addons/ranks/myCRED-addon-ranks.php:1394
 msgid "Custom Fields"
-msgstr "Campos personalizados"
+msgstr "Os campos personalizados"
 
-#: addons/ranks/myCRED-addon-ranks.php:1407
+#: addons/ranks/myCRED-addon-ranks.php:1411
 msgid "Display Order"
 msgstr "Ordem de exibição"
 
-#: addons/ranks/myCRED-addon-ranks.php:1413
+#: addons/ranks/myCRED-addon-ranks.php:1417
 msgid "Ascending - Lowest rank to highest"
 msgstr "Crescente - rank mais baixo para o mais alto"
 
-#: addons/ranks/myCRED-addon-ranks.php:1414
+#: addons/ranks/myCRED-addon-ranks.php:1418
 msgid "Descending - Highest rank to lowest"
 msgstr "Decrescente - rank mais alto para o mais baixo"
 
-#: addons/ranks/myCRED-addon-ranks.php:1456
+#: addons/ranks/myCRED-addon-ranks.php:1460
 msgid "Calculate Totals"
 msgstr "Totais calculados"
 
-#: addons/ranks/myCRED-addon-ranks.php:1476
-#: addons/ranks/myCRED-addon-ranks.php:1517
+#: addons/ranks/myCRED-addon-ranks.php:1480
+#: addons/ranks/myCRED-addon-ranks.php:1521
 msgid "Do not show."
 msgstr "Não exibir."
 
-#: addons/ranks/myCRED-addon-ranks.php:1477
+#: addons/ranks/myCRED-addon-ranks.php:1481
 msgid "Include in Profile Header."
 msgstr "Incluir no cabeçalho do perfil."
 
-#: addons/ranks/myCRED-addon-ranks.php:1479
+#: addons/ranks/myCRED-addon-ranks.php:1483
 msgid "Include under the \"Profile\" tab and Profile Header."
 msgstr "Incluir abaixo da aba \"Profile\" e no cabeçalho do perfil."
 
-#: addons/ranks/myCRED-addon-ranks.php:1546
-#: addons/email-notices/myCRED-addon-email-notices.php:1456
-#: addons/badges/myCRED-addon-badges.php:1202
+#: addons/ranks/myCRED-addon-ranks.php:1550
+#: addons/email-notices/myCRED-addon-email-notices.php:1466
+#: addons/badges/myCRED-addon-badges.php:1227
 #: addons/buy-creds/modules/buycred-module-core.php:460
 msgid "Available Shortcodes"
 msgstr "Shortcodes disponíveis"
 
-#: addons/ranks/myCRED-addon-ranks.php:1657
+#: addons/ranks/myCRED-addon-ranks.php:1661
 msgid "User Meta Key"
 msgstr "Utilizar Meta Key"
 
-#: addons/ranks/myCRED-addon-ranks.php:1661
+#: addons/ranks/myCRED-addon-ranks.php:1665
 msgid "No. of ranks"
 msgstr "No. de ranks"
 
-#: addons/ranks/myCRED-addon-ranks.php:1666
+#: addons/ranks/myCRED-addon-ranks.php:1670
 msgid "Remove All Ranks"
 msgstr "Remover todos os Ranks"
 
-#: addons/ranks/myCRED-addon-ranks.php:1666
+#: addons/ranks/myCRED-addon-ranks.php:1670
 msgid "Assign Ranks to Users"
 msgstr "Atribuir Ranks de usuários"
 
@@ -5233,7 +5084,7 @@ msgstr "Assunto do e-mail"
 #: addons/banking/services/mycred-service-payouts.php:565
 #: addons/banking/services/mycred-service-payouts.php:880
 msgid "Status"
-msgstr "Status"
+msgstr "Estatísticas"
 
 #: addons/email-notices/myCRED-addon-email-notices.php:302
 msgid "Not Active"
@@ -5247,7 +5098,7 @@ msgstr "Agendado:<br /><strong>%1$s</strong>"
 #: addons/email-notices/myCRED-addon-email-notices.php:310
 #: addons/banking/services/mycred-service-payouts.php:31
 msgid "Active"
-msgstr "Ativado"
+msgstr "Ativar"
 
 #: addons/email-notices/myCRED-addon-email-notices.php:312
 #, php-format
@@ -5279,7 +5130,7 @@ msgstr "Ambos, administrador e usuário"
 
 #: addons/email-notices/myCRED-addon-email-notices.php:388
 msgid "Email Settings"
-msgstr "Configurações de e-mail"
+msgstr "Configuração de Email"
 
 #: addons/email-notices/myCRED-addon-email-notices.php:397
 msgid "Available Template Tags"
@@ -5319,12 +5170,12 @@ msgid "Both"
 msgstr "Ambos"
 
 #: addons/email-notices/myCRED-addon-email-notices.php:610
-#: addons/email-notices/myCRED-addon-email-notices.php:1467
+#: addons/email-notices/myCRED-addon-email-notices.php:1477
 msgid "Senders Name:"
 msgstr "Nome do remetente:"
 
 #: addons/email-notices/myCRED-addon-email-notices.php:614
-#: addons/email-notices/myCRED-addon-email-notices.php:1473
+#: addons/email-notices/myCRED-addon-email-notices.php:1483
 msgid "Senders Email:"
 msgstr "E-mail do remetente:"
 
@@ -5424,29 +5275,29 @@ msgstr "usuário é rebaixado"
 msgid "user is promoted"
 msgstr "usuário é promovido"
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1400
+#: addons/email-notices/myCRED-addon-email-notices.php:1410
 #: addons/coupons/myCRED-addon-coupons.php:114
 msgid "Email Notices"
 msgstr "Avisos por e-mail"
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1420
+#: addons/email-notices/myCRED-addon-email-notices.php:1430
 msgid "WordPress Cron is disabled. Emails will be sent immediately."
 msgstr ""
 "WordPress Cron está desativado. Os e-mails serão enviados imediatamente."
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1423
+#: addons/email-notices/myCRED-addon-email-notices.php:1433
 msgid "Send emails immediately"
 msgstr "Enviar emails imediatamente"
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1426
+#: addons/email-notices/myCRED-addon-email-notices.php:1436
 msgid "Send emails once an hour"
 msgstr "Enviar e-mails uma vez por hora"
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1429
+#: addons/email-notices/myCRED-addon-email-notices.php:1439
 msgid "Send emails once a day"
 msgstr "Enviar e-mails uma vez por dia"
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1450
+#: addons/email-notices/myCRED-addon-email-notices.php:1460
 msgid ""
 "SMTP Debug. Enable if you are experiencing issues with wp_mail() or if you "
 "use a SMTP plugin for emails."
@@ -5454,34 +5305,50 @@ msgstr ""
 "SMTP Debug. Ative se você estiver enfrentando problemas com wp_mail() ou se "
 "você usar um plug-in SMTP para e-mails."
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1479
+#: addons/email-notices/myCRED-addon-email-notices.php:1473
+msgid "Defaults"
+msgstr "Padrões"
+
+#: addons/email-notices/myCRED-addon-email-notices.php:1489
 msgid "Reply-To:"
 msgstr "Responder para:"
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1487
+#: addons/email-notices/myCRED-addon-email-notices.php:1497
 msgid "Default Email Content"
 msgstr "Conteúdo padrão do e-mail"
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1489
+#: addons/email-notices/myCRED-addon-email-notices.php:1499
 msgid "Default email content."
 msgstr "Conteúdo padrão do e-mail."
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1596
+#: addons/email-notices/myCRED-addon-email-notices.php:1606
 msgid "Unsubscribe"
-msgstr "Cancelar assinatura"
+msgstr "Anular a subscrição"
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1597
+#: addons/email-notices/myCRED-addon-email-notices.php:1607
 msgid "Email Notice"
 msgstr "E-mail de aviso"
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1618
+#: addons/email-notices/myCRED-addon-email-notices.php:1628
 msgid "There are no email notifications yet."
 msgstr "Não há notificações de e-mail ainda."
 
-#: addons/email-notices/myCRED-addon-email-notices.php:1625
-#: addons/buy-creds/modules/buycred-module-pending.php:490
+#: addons/email-notices/myCRED-addon-email-notices.php:1635
+#: addons/buy-creds/modules/buycred-module-pending.php:517
 msgid "Save Changes"
-msgstr "Salvar alterações"
+msgstr "Guardar Alterações"
+
+#: addons/badges/myCRED-addon-badges.php:149
+msgid "Badge"
+msgstr "Badge"
+
+#: addons/badges/myCRED-addon-badges.php:422
+msgid "Default Image"
+msgstr "Imagem padrão"
+
+#: addons/badges/myCRED-addon-badges.php:424
+msgid "Requirements"
+msgstr "requisitos"
 
 #: addons/coupons/myCRED-addon-coupons.php:102
 #: addons/coupons/myCRED-addon-coupons.php:108
@@ -5498,7 +5365,7 @@ msgstr "Cupom"
 #: addons/coupons/myCRED-addon-coupons.php:104
 #: addons/coupons/myCRED-addon-coupons.php:105
 msgid "Create New"
-msgstr "Criar novo"
+msgstr "Criar Novo"
 
 #: addons/coupons/myCRED-addon-coupons.php:106
 msgid "Edit Coupon"
@@ -5538,7 +5405,7 @@ msgstr "Cupom publicado."
 #: addons/coupons/myCRED-addon-coupons.php:232
 #: addons/coupons/myCRED-addon-coupons.php:249
 msgid "Coupon Code"
-msgstr "Código do cupom"
+msgstr "Código do Cupom"
 
 #: addons/coupons/myCRED-addon-coupons.php:250
 #: addons/coupons/myCRED-addon-coupons.php:513
@@ -5556,7 +5423,7 @@ msgstr "Por usuário"
 
 #: addons/coupons/myCRED-addon-coupons.php:326
 msgid "Expired"
-msgstr "Expirado"
+msgstr "Expirou"
 
 #: addons/coupons/myCRED-addon-coupons.php:332
 #, php-format
@@ -5682,7 +5549,7 @@ msgstr ""
 
 #: addons/coupons/myCRED-addon-coupons.php:757
 msgid "Success Message"
-msgstr "Mensagem de sucesso"
+msgstr "Mensagem de Sucesso"
 
 #: addons/coupons/myCRED-addon-coupons.php:759
 msgid ""
@@ -5712,7 +5579,6 @@ msgstr "Tipos de posts"
 #: addons/sell-content/myCRED-addon-sell-content.php:719
 #: addons/gateway/event-booking/mycred-eventespresso3.php:473
 #: addons/gateway/event-booking/mycred-eventsmanager.php:675
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:703
 #: addons/transfer/includes/mycred-transfer-widgets.php:101
 msgid "Button Label"
 msgstr "Rótulo do botão"
@@ -5721,10 +5587,8 @@ msgstr "Rótulo do botão"
 #: addons/gateway/event-booking/mycred-eventespresso3.php:495
 #: addons/gateway/event-booking/mycred-eventsmanager.php:369
 #: addons/gateway/event-booking/mycred-eventsmanager.php:373
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:153
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:156
 msgid "Price"
-msgstr "Preço"
+msgstr "Valor"
 
 #: addons/banking/services/mycred-service-interest.php:28
 msgid "%plural% interest rate payment"
@@ -5734,6 +5598,12 @@ msgstr "Pagamento de %plural% da taxa de juro"
 #: addons/banking/services/mycred-service-interest.php:652
 msgid "Interest Rate"
 msgstr "Taxa de juros"
+
+#: addons/banking/services/mycred-service-payouts.php:472
+#: addons/stats/widgets/mycred-stats-widget-daily-loses.php:151
+#: addons/stats/widgets/mycred-stats-widget-daily-gains.php:151
+msgid "View"
+msgstr "Visualizar"
 
 #: addons/banking/services/mycred-service-payouts.php:591
 #: addons/gateway/carts/mycred-wpecommerce.php:396
@@ -5746,7 +5616,7 @@ msgstr "De hora em hora"
 
 #: addons/banking/includes/mycred-banking-functions.php:84
 msgid "Daily"
-msgstr "Diariamente"
+msgstr "Diáriamente"
 
 #: addons/banking/includes/mycred-banking-functions.php:89
 msgid "Weekly"
@@ -5770,15 +5640,13 @@ msgstr "Anualmente"
 
 #: addons/gateway/event-booking/mycred-eventespresso3.php:26
 #: addons/gateway/event-booking/mycred-eventsmanager.php:594
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:626
 #: addons/buy-creds/modules/buycred-module-core.php:710
 msgid "Payments"
 msgstr "Pagamentos"
 
 #: addons/gateway/event-booking/mycred-eventespresso3.php:27
 #: addons/gateway/event-booking/mycred-eventsmanager.php:36
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:39
-#: addons/buy-creds/modules/buycred-module-pending.php:717
+#: addons/buy-creds/modules/buycred-module-pending.php:744
 msgid "Pay Now"
 msgstr "Pagar agora"
 
@@ -5814,7 +5682,6 @@ msgstr "Configurações do método"
 
 #: addons/gateway/event-booking/mycred-eventespresso3.php:442
 #: addons/gateway/event-booking/mycred-eventsmanager.php:580
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:595
 #, php-format
 msgid "How many %s is 1 %s worth?"
 msgstr "Qual vale %s em 1 %s?"
@@ -5829,7 +5696,7 @@ msgstr "Título para exibir na página do pagamento"
 
 #: addons/gateway/event-booking/mycred-eventespresso3.php:468
 msgid "Payment Type"
-msgstr "Tipo de pagamento"
+msgstr "Tipo de Pagamento"
 
 #: addons/gateway/event-booking/mycred-eventespresso3.php:470
 msgid "Title to show on receipts and logs"
@@ -5857,7 +5724,6 @@ msgstr "Usuários precisam estar logados para utilizar este método!"
 
 #: addons/gateway/event-booking/mycred-eventespresso3.php:510
 #: addons/gateway/event-booking/mycred-eventsmanager.php:625
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:641
 #: addons/gateway/carts/mycred-wpecommerce.php:393
 #: addons/gateway/carts/mycred-woocommerce.php:176
 msgid "Profit Sharing"
@@ -5865,7 +5731,6 @@ msgstr "Participação nos lucros"
 
 #: addons/gateway/event-booking/mycred-eventespresso3.php:512
 #: addons/gateway/event-booking/mycred-eventsmanager.php:628
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:644
 #: addons/gateway/carts/mycred-wpecommerce.php:397
 #: addons/gateway/carts/mycred-woocommerce.php:178
 msgid "Option to share sales with the product owner. Use zero to disable."
@@ -5911,45 +5776,37 @@ msgstr ""
 "pagamento."
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:30
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:33
 msgid "Payment for tickets to %link_with_title%"
 msgstr "Pagamento de bilhetes para %link_with_title%"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:31
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:34
 msgid "Ticket refund for %link_with_title%"
 msgstr "Reembolso de bilhetes para %link_with_title%"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:35
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:38
 msgid "Pay using your %_plural% balance"
 msgstr "Pagar utilizando seu saldo de %_plural%"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:37
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:40
 msgid "Pay"
 msgstr "Pagar"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:40
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:44
 msgid "Thank you for your payment!"
 msgstr "Obrigado pelo seu pagamento!"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:41
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:45
 msgid "I'm sorry but you can not pay for these tickets using %_plural%"
 msgstr ""
 "Sentimos muito, mas você não pode pagar por estes bilhetes usando %_plural%"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:366
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:150
 msgid "Ticket Type"
 msgstr "Tipo de bilhete"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:377
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:159
 msgid "Spaces"
-msgstr "Espaços"
+msgstr "Lugares"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:472
 msgid "Balance After Payment"
@@ -5957,7 +5814,7 @@ msgstr "Saldo após o pagamento"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:585
 msgid "Click to toggle"
-msgstr "Clique aqui para alternar"
+msgstr "Clique para expandir"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:586
 #, php-format
@@ -5965,17 +5822,14 @@ msgid "%s Payments"
 msgstr "%s Pagamentos"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:596
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:628
 msgid "Disabled - Users CAN NOT pay for tickets using %plural%."
 msgstr "Desabilitado - Usuários NÃO PODEM pagar bilhetes utilizando %plural%."
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:597
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:629
 msgid "Single - Users can ONLY pay for tickets using %plural%."
 msgstr "Único - Usuários SOMENTE podem pagar bilhetes utilizando %plural%."
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:598
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:630
 msgid "Multi - Users can pay for tickets using other gateways or %plural%."
 msgstr ""
 "Múltiplo - Usuários podem pagar bilhetes utilizando outros métodos e "
@@ -5983,8 +5837,6 @@ msgstr ""
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:618
 #: addons/gateway/event-booking/mycred-eventsmanager.php:651
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:634
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:667
 msgid "Refunds"
 msgstr "Reembolsos"
 
@@ -5997,17 +5849,14 @@ msgstr ""
 "para nenhum reembolso. Nenhum reembolso é dado para reservas \"Rejected\"."
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:644
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:660
 msgid "Purchases"
 msgstr "Compras"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:661
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:689
 msgid "Payment Link Label"
 msgstr "Rótulo do link de pagamento"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:664
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:692
 msgid ""
 "The payment link shows / hides the payment form under \"My Bookings\". No "
 "HTML allowed."
@@ -6016,58 +5865,30 @@ msgstr ""
 "HTML não é permitido."
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:668
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:696
 msgid "Payment Header"
 msgstr "Cabeçalho do pagamento"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:671
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:699
 msgid "Shown on top of the payment form. No HTML allowed."
 msgstr "Mostrado no topo do formulário de pagamento. HTML não é permitido."
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:678
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:706
 msgid "The button label for payments. No HTML allowed!"
 msgstr "O rótulo do botão de pagamento. HTML não é permitido!"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:682
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:717
 #: addons/gateway/carts/mycred-wpecommerce.php:404
 msgid "Messages"
 msgstr "Mensagens"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:685
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:720
 msgid "Successful Payments"
 msgstr "Pagamentos com sucesso"
 
 #: addons/gateway/event-booking/mycred-eventsmanager.php:688
 #: addons/gateway/event-booking/mycred-eventsmanager.php:695
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:723
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:730
 msgid "No HTML allowed!"
 msgstr "HTML não é permitido"
-
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:374
-msgid "You can not pay using this gateway."
-msgstr "Você não pode pagar utilizando este método."
-
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:492
-msgid "Reject"
-msgstr "Rjeitar"
-
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:501
-msgid "Edit/View"
-msgstr "Editar/Ver"
-
-#: addons/gateway/event-booking/mycred-eventsmanager-pro.php:637
-msgid ""
-"The percentage of the paid amount to refund if a user cancels their booking. "
-"Use zero for no refunds. No refunds are given to \"Rejected\" bookings!"
-msgstr ""
-"A porcentagem do valor pago a reembolso se um usuário cancelar sua reserva. "
-"Use zero para nenhum reembolso. Nenhum reembolso é dado para \"Rejected\" de "
-"reservas!"
 
 #: addons/gateway/carts/mycred-wpecommerce.php:20
 msgid "Payment for Order: #%order_id%"
@@ -6092,7 +5913,7 @@ msgstr "Descontar o valor do seu saldo."
 #: addons/gateway/carts/mycred-wpecommerce.php:107
 #: addons/buy-creds/gateways/bank-transfer.php:139
 msgid "Item"
-msgstr "Item"
+msgstr "Ítem"
 
 #: addons/gateway/carts/mycred-wpecommerce.php:128
 #: addons/gateway/carts/mycred-woocommerce.php:808
@@ -6133,7 +5954,7 @@ msgstr ""
 
 #: addons/gateway/carts/mycred-woocommerce.php:89
 msgid "Enable/Disable"
-msgstr "Habilitar/Desabilitar"
+msgstr "Habilita/Desabilita"
 
 #: addons/gateway/carts/mycred-woocommerce.php:91
 msgid "Enable myCRED Payment"
@@ -6254,9 +6075,9 @@ msgstr "Ganchos"
 
 #: addons/sell-content/includes/mycred-sell-shortcodes.php:204
 #: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:693
-#: addons/buy-creds/modules/buycred-module-pending.php:270
-#: addons/buy-creds/modules/buycred-module-pending.php:621
-#: addons/buy-creds/modules/buycred-module-pending.php:734
+#: addons/buy-creds/modules/buycred-module-pending.php:297
+#: addons/buy-creds/modules/buycred-module-pending.php:648
+#: addons/buy-creds/modules/buycred-module-pending.php:761
 #: addons/buy-creds/gateways/bank-transfer.php:141
 msgid "Cost"
 msgstr "Preço"
@@ -6272,12 +6093,48 @@ msgstr "Selecionar uma moeda"
 #: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:445
 #: addons/buy-creds/gateways/bank-transfer.php:125
 msgid "Test Payment"
-msgstr "Pagamento teste"
+msgstr "Pagamento de Teste"
 
 #: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:451
 #: addons/buy-creds/gateways/bank-transfer.php:129
 msgid "Payment"
 msgstr "Pagamento"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:576
+msgid "First Name"
+msgstr "Primeiro nome"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:582
+msgid "Last Name"
+msgstr "Último Nome"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:590
+msgid "Address Line 1"
+msgstr "Endereço (linha 1)"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:598
+msgid "Address Line 2"
+msgstr "Endereço Linha 2:"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:606
+msgid "City"
+msgstr "Localidade"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:612
+msgid "Zip"
+msgstr "CEP"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:620
+msgid "State"
+msgstr "Estado/UF"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:628
+msgid "Country"
+msgstr "Nacionalidade"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:633
+msgid "Choose Country"
+msgstr "Escolha o país"
 
 #: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:685
 #: addons/buy-creds/gateways/bank-transfer.php:147
@@ -6295,38 +6152,95 @@ msgstr "Continue para %s"
 msgid "Click here if you are not automatically redirected"
 msgstr "Clique aqui se você não for redirecionado automaticamente"
 
-#: addons/buy-creds/modules/buycred-module-pending.php:266
-#: addons/buy-creds/modules/buycred-module-pending.php:731
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1501
+msgid "January"
+msgstr "janeiro"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1502
+msgid "February"
+msgstr "fevereiro"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1503
+msgid "March"
+msgstr "MARÇO"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1504
+msgid "April"
+msgstr "abril"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1505
+msgid "May"
+msgstr "Mai."
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1506
+msgid "June"
+msgstr "junho"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1507
+msgid "July"
+msgstr "julho"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1508
+msgid "August"
+msgstr "agosto"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1509
+msgid "September"
+msgstr "setembro"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1510
+msgid "October"
+msgstr "outubro"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1511
+msgid "November"
+msgstr "novembro"
+
+#: addons/buy-creds/abstracts/mycred-abstract-payment-gateway.php:1512
+msgid "December"
+msgstr "dezembro"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:151
+#: addons/buy-creds/modules/buycred-module-pending.php:152
+msgid "Not found in Trash"
+msgstr "Nada na lixeira"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:293
+#: addons/buy-creds/modules/buycred-module-pending.php:758
 #: addons/buy-creds/modules/buycred-module-core.php:771
 #: addons/buy-creds/gateways/bank-transfer.php:142
 msgid "Transaction ID"
-msgstr "ID da transação"
+msgstr "Código da Transação"
 
-#: addons/buy-creds/modules/buycred-module-pending.php:271
-#: addons/buy-creds/modules/buycred-module-pending.php:596
-#: addons/buy-creds/modules/buycred-module-pending.php:732
+#: addons/buy-creds/modules/buycred-module-pending.php:298
+#: addons/buy-creds/modules/buycred-module-pending.php:623
+#: addons/buy-creds/modules/buycred-module-pending.php:759
 #: addons/buy-creds/modules/buycred-module-core.php:766
 #: addons/buy-creds/includes/buycred-functions.php:119
 msgid "Gateway"
-msgstr "Métodos de pagamento"
+msgstr "Meio de Pagamento"
 
-#: addons/buy-creds/modules/buycred-module-pending.php:473
+#: addons/buy-creds/modules/buycred-module-pending.php:299
+msgid "Type"
+msgstr "Tipo"
+
+#: addons/buy-creds/modules/buycred-module-pending.php:500
 msgid "Save"
-msgstr "Salvar"
+msgstr "Guardar"
 
-#: addons/buy-creds/modules/buycred-module-pending.php:627
+#: addons/buy-creds/modules/buycred-module-pending.php:654
 #: addons/buy-creds/gateways/bank-transfer.php:209
 #: addons/buy-creds/gateways/bitpay.php:251
 #: addons/buy-creds/gateways/paypal-standard.php:279
 #: addons/buy-creds/gateways/skrill.php:294
 msgid "Currency"
-msgstr "Moeda"
+msgstr "moedas"
 
 #: addons/buy-creds/modules/buycred-module-core.php:28
 #: addons/buy-creds/modules/buycred-module-core.php:29
 #: addons/buy-creds/modules/buycred-module-core.php:30
 msgid "Payment Gateways"
-msgstr "Métodos de pagamento"
+msgstr "Gateways de Pagamento"
 
 #: addons/buy-creds/modules/buycred-module-core.php:301
 msgid "Please login to purchase %_plural%"
@@ -6384,7 +6298,7 @@ msgstr "Nenhuma compra encontrada"
 
 #: addons/buy-creds/modules/buycred-module-core.php:1369
 msgid "Buy Now"
-msgstr "Comprar agora"
+msgstr "Compre Já"
 
 #: addons/buy-creds/gateways/bank-transfer.php:88
 #: addons/buy-creds/gateways/bitpay.php:163
@@ -6439,15 +6353,15 @@ msgstr "Velocidade da transação"
 
 #: addons/buy-creds/gateways/bitpay.php:276
 msgid "High"
-msgstr "Alta"
+msgstr "Alto"
 
 #: addons/buy-creds/gateways/bitpay.php:277
 msgid "Medium"
-msgstr "Média"
+msgstr "Mediano"
 
 #: addons/buy-creds/gateways/bitpay.php:278
 msgid "Low"
-msgstr "Baixa"
+msgstr "Baixo"
 
 #: addons/buy-creds/gateways/bitpay.php:291
 msgid "Full Notifications"
@@ -6531,7 +6445,7 @@ msgstr "Não verificar se as chamadas de retorno são provenientes do Zombaio."
 
 #: addons/buy-creds/gateways/zombaio.php:345
 msgid "Language"
-msgstr "Idioma"
+msgstr "Língua"
 
 #: addons/buy-creds/gateways/zombaio.php:352
 msgid "Postback URL (ZScript)"
@@ -6585,7 +6499,7 @@ msgstr "Palavra secreta"
 
 #: addons/buy-creds/gateways/skrill.php:324
 msgid "Confirmation Email"
-msgstr "E-mail de confirmação"
+msgstr "Email de confirmação"
 
 #: addons/buy-creds/gateways/skrill.php:327
 msgid ""

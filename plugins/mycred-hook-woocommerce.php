@@ -232,7 +232,7 @@ endif;
 /**
  * Payout Rewards
  * @since 1.5
- * @version 1.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_woo_payout_rewards' ) ) :
 	function mycred_woo_payout_rewards( $order_id ) {
@@ -240,14 +240,18 @@ if ( ! function_exists( 'mycred_woo_payout_rewards' ) ) :
 		// Get Order
 		$order    = wc_get_order( $order_id );
 
+		global $woocommerce;
+
+		$paid_with = ( version_compare( $woocommerce->version, '3.0', '>=' ) ) ? $order->get_payment_method() : $order->payment_method;
+		$buyer_id  = ( version_compare( $woocommerce->version, '3.0', '>=' ) ) ? $order->get_user_id() : $order->user_id;
+
 		// If we paid with myCRED we do not award points by default
-		if ( $order->payment_method == 'mycred' && apply_filters( 'mycred_woo_reward_mycred_payment', false, $order ) === false )
+		if ( $paid_with == 'mycred' && apply_filters( 'mycred_woo_reward_mycred_payment', false, $order ) === false )
 			return;
 
 		// Get items
 		$items    = $order->get_items();
 		$types    = mycred_get_types();
-		$buyer_id = $order->user_id;
 
 		// Loop through each point type
 		foreach ( $types as $point_type => $point_type_label ) {

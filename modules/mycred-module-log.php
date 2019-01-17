@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * myCRED_Log_Module class
  * @since 0.1
- * @version 1.1.2
+ * @version 1.1.3
  */
 if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 	class myCRED_Log_Module extends myCRED_Module {
@@ -301,7 +301,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			$screen = get_current_screen();
 
-			if ( substr( $screen->id, 0, 20 ) != 'toplevel_page_' . MYCRED_SLUG ) return;
+			if ( substr( $screen->id, 0, ( 14 + strlen( MYCRED_SLUG ) ) ) != 'toplevel_page_' . MYCRED_SLUG ) return;
 
 			if ( isset( $_GET['deleted'] ) && isset( $_GET['ctype'] ) && $_GET['ctype'] == $this->mycred_type )
 				echo '<div id="message" class="updated notice is-dismissible"><p>' . sprintf( _n( '1 Entry Deleted', '%d Entries Deleted', absint( $_GET['deleted'] ), 'mycred' ), absint( $_GET['deleted'] ) ) . '</p><button type="button" class="notice-dismiss"></button></div>';
@@ -322,14 +322,14 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		/**
 		 * Screen Actions
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		public function screen_actions() {
 
 			$screen = get_current_screen();
 
 			// "My History" screen and not Log archive
-			if ( substr( $screen->id, 0, 20 ) != 'toplevel_page_' . MYCRED_SLUG ) {
+			if ( substr( $screen->id, 0, ( 14 + strlen( MYCRED_SLUG ) ) ) != 'toplevel_page_' . MYCRED_SLUG ) {
 
 				do_action( 'mycred_log_my_admin_actions', $this->mycred_type );
 				return;
@@ -337,15 +337,13 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			}
 
 			$settings_key = 'mycred_epp_' . $_GET['page'];
-			if ( ! $this->is_main_type )
-				$settings_key .= '_' . $this->mycred_type;
 
 			// Update Entries per page option
 			if ( isset( $_REQUEST['wp_screen_options']['option'] ) && isset( $_REQUEST['wp_screen_options']['value'] ) ) {
-			
+
 				if ( $_REQUEST['wp_screen_options']['option'] == $settings_key ) {
 					$value = absint( $_REQUEST['wp_screen_options']['value'] );
-					update_user_meta( $this->current_user_id, $settings_key, $value );
+					mycred_update_user_meta( $this->current_user_id, $settings_key, '', $value );
 				}
 
 				$hidden_columns  = get_hidden_columns( $screen );
@@ -418,21 +416,17 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		/**
 		 * Screen Options
 		 * @since 1.4
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function screen_options() {
 
 			$this->screen_actions();
 
-			$settings_key = 'mycred_epp_' . $_GET['page'];
-			if ( ! $this->is_main_type )
-				$settings_key .= '_' . $this->mycred_type;
-
 			// Prep Per Page
 			$args = array(
 				'label'   => __( 'Entries', 'mycred' ),
 				'default' => 10,
-				'option'  => $settings_key
+				'option'  => 'mycred_epp_' . $_GET['page']
 			);
 			add_screen_option( 'per_page', $args );
 
@@ -441,13 +435,13 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		/**
 		 * Log Header
 		 * @since 0.1
-		 * @version 1.3
+		 * @version 1.3.1
 		 */
 		public function settings_header() {
 
 			$screen        = get_current_screen();
 
-			if ( substr( $screen->id, 0, 20 ) != 'toplevel_page_' . MYCRED_SLUG ) return;
+			if ( substr( $screen->id, 0, ( 14 + strlen( MYCRED_SLUG ) ) ) != 'toplevel_page_' . MYCRED_SLUG ) return;
 
 			$references    = mycred_get_all_references();
 			$js_references = array();
@@ -524,15 +518,11 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			// Security
 			if ( ! $this->core->can_edit_creds() ) wp_die( 'Access Denied' );
 
-			$settings_key = 'mycred_epp_' . $_GET['page'];
-			if ( ! $this->is_main_type )
-				$settings_key .= '_' . $this->mycred_type;
-
-			$per_page = mycred_get_user_meta( $this->current_user_id, $settings_key, '', true );
+			$per_page             = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $_GET['page'] );
 			if ( $per_page == '' ) $per_page = 10;
 
-			$name        = mycred_label( true );
-			$search_args = mycred_get_search_args();
+			$name                 = mycred_label( true );
+			$search_args          = mycred_get_search_args();
 
 			// Entries per page
 			if ( ! array_key_exists( 'number', $search_args ) )
@@ -543,7 +533,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				$search_args['ctype'] = $this->mycred_type;
 
 			// Query Log
-			$log = new myCRED_Query_Log( $search_args );
+			$log                  = new myCRED_Query_Log( $search_args );
 	
 			$log->is_admin        = true;
 			$log->hidden_headers  = get_hidden_columns( get_current_screen() );
@@ -636,11 +626,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			// Security
 			if ( ! is_user_logged_in() ) wp_die( 'Access Denied' );
 
-			$settings_key = 'mycred_epp_' . $_GET['page'];
-			if ( ! $this->is_main_type )
-				$settings_key .= '_' . $this->mycred_type;
-
-			$per_page = mycred_get_user_meta( $this->current_user_id, $settings_key, '', true );
+			$per_page = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $_GET['page'] );
 			if ( $per_page == '' ) $per_page = 10;
 
 			$search_args = mycred_get_search_args();

@@ -188,7 +188,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 		/**
 		 * Check Limit
 		 * @since 1.6
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		function over_hook_limit( $instance = '', $reference = '', $user_id = NULL, $ref_id = NULL ) {
 
@@ -226,6 +226,9 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 
 			if ( count( explode( '/', $prefs ) ) != 2 )
 				$prefs = '0/x';
+
+			// Set to "no limit"
+			if ( ! $exists_check && $prefs === '0/x' ) return false;
 
 			// Prep settings
 			list ( $amount, $period ) = explode( '/', $prefs );
