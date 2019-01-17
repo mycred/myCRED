@@ -29,7 +29,7 @@ if ( ! class_exists( 'myCRED_Query_Export' ) ) :
 		 */
 		public function __construct( $args = array(), $headers = array() ) {
 
-			global $mycred;
+			global $mycred_log_table;
 
 			$this->args = apply_filters( 'mycred_export_args', shortcode_atts( array(
 				'raw'         => false,
@@ -39,7 +39,7 @@ if ( ! class_exists( 'myCRED_Query_Export' ) ) :
 				'date_format' => get_option( 'date_format' )
 			), $args ), $args );
 
-			$this->db          = $mycred->log_table;
+			$this->db          = $mycred_log_table;
 			$this->raw         = $this->args['raw'];
 			$this->references  = mycred_get_all_references();
 

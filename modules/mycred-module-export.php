@@ -4,7 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * myCRED_Export_Module class
  * @since 1.7
- * @version 1.0.1
+ * @version 1.1
  */
 if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 	class myCRED_Export_Module extends myCRED_Module {
@@ -12,7 +12,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		/**
 		 * Construct
 		 */
-		function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( 'myCRED_Export_Module', array(
 				'module_name' => 'export',
@@ -36,7 +36,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		 * @since 1.7
 		 * @version 1.0.1
 		 */
-		function load() {
+		public function load() {
 
 			add_filter( 'mycred_log_bulk_actions',          array( $this, 'adjust_log_bulk_actions' ) );
 			add_action( 'template_redirect',                array( $this, 'catch_front_end_exports' ) );
@@ -50,7 +50,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 			add_action( 'mycred_top_log_page',              array( $this, 'add_export_buttons' ) );
 			add_action( 'mycred_top_my_log_page',           array( $this, 'add_my_export_buttons' ) );
 
-			add_action( 'mycred_after_core_prefs',          array( $this, 'after_general_settings' ), 1 );
+			add_action( 'mycred_after_core_prefs',          array( $this, 'after_general_settings' ), 20 );
 			add_filter( 'mycred_save_core_prefs',           array( $this, 'sanitize_extra_settings' ), 80, 3 );
 
 		}
@@ -89,7 +89,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		/**
 		 * Insert Export Front
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function insert_export_front( $user_id ) {
 
@@ -102,9 +102,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 			unset( $exports['all'] );
 			unset( $exports['search'] );
 
-?>
-<p class="text-right mycred-export">
-<?php
+			echo '<p class="text-right mycred-export">';
 
 			$raw = false;
 			if ( $this->export['front_format'] === 'raw' || ( $this->export['front_format'] === 'both' && isset( $_GET['raw'] ) && $_GET['raw'] == 1 ) )
@@ -115,13 +113,11 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 				$url = mycred_get_export_url( $id, $raw );
 				if ( $url === false ) continue;
 
-				echo '<a href="' . esc_url( $url ) . '" class="' . $data['class'] . '">' . $data['my_label'] . '</a> ';
+				echo '<a href="' . esc_url( $url ) . '" class="' . esc_attr( $data['class'] ) . '">' . esc_html( $data['my_label'] ) . '</a> ';
 
 			}
 
-?>
-</p>
-<?php
+			echo '</p>';
 
 		}
 
@@ -168,9 +164,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		 */
 		public function catch_admin_log_actions( $point_type ) {
 
-			if ( ! is_user_logged_in() ) return;
-
-			if ( ! apply_filters( 'mycred_user_can_export_admin', (bool) $this->export['admin'], $this ) ) return;
+			if ( ! is_user_logged_in() || ! apply_filters( 'mycred_user_can_export_admin', (bool) $this->export['admin'], $this ) ) return;
 
 			do_action( 'mycred_do_admin_export', $point_type, $this );
 
@@ -230,9 +224,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		 */
 		public function catch_my_back_end_exports( $point_type ) {
 
-			if ( ! is_user_logged_in() ) return;
-
-			if ( ! apply_filters( 'mycred_user_can_export_admin', (bool) $this->export['admin'], $this ) ) return;
+			if ( ! is_user_logged_in() || ! apply_filters( 'mycred_user_can_export_admin', (bool) $this->export['admin'], $this ) ) return;
 
 			do_action( 'mycred_do_my_admin_export', $point_type, $this );
 

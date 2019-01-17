@@ -164,7 +164,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Interest' ) ) :
 				$select = "SQL_CALC_FOUND_ROWS " . $select;
 
 				// Used to store the time at which tomorrows run should be running
-				$original_start = get_option( 'mycred_todays_compound_started', false );
+				$original_start = mycred_get_option( 'mycred_todays_compound_started', false );
 				if ( $original_start === false )
 					update_option( 'mycred_todays_compound_started', $this->now );
 
@@ -218,7 +218,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Interest' ) ) :
 					if ( $balance <= $this->core->zero() && apply_filters( 'mycred_compound_negative_interest', false, $this ) === false ) continue;
 
 					// Get the interest we have earned up until now
-					$saved_interest = mycred_get_user_meta( $entry->user_id, $this->compound_meta_key );
+					$saved_interest = mycred_get_user_meta( $entry->user_id, $this->compound_meta_key, '', true );
 					if ( $saved_interest == '' ) $saved_interest = 0;
 
 					// Allow customization of the calculated interest
@@ -252,7 +252,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Interest' ) ) :
 					delete_transient( $transient_key );
 
 					// Get the time we should have started
-					$original_start = (int) get_option( 'mycred_todays_compound_started', $this->now );
+					$original_start = (int) mycred_get_option( 'mycred_todays_compound_started', $this->now );
 					delete_option( 'mycred_todays_compound_started' );
 
 					// Schedule tomorrows run
@@ -287,7 +287,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Interest' ) ) :
 				wp_schedule_single_event( ( $now + 180 ), $this->cron_payout_key );
 
 				// Used to store the time at which the next run should be running
-				$original_start = get_option( 'mycred_todays_compound_payout_started', false );
+				$original_start = mycred_get_option( 'mycred_todays_compound_payout_started', false );
 				if ( $original_start === false )
 					update_option( 'mycred_todays_compound_payout_started', $now );
 
@@ -333,7 +333,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Interest' ) ) :
 			if ( $total_rows <= 0 ) {
 
 				// Get the time we should have done our scheduling
-				$original_start = (int) get_option( 'mycred_todays_compound_payout_started', $now );
+				$original_start = (int) mycred_get_option( 'mycred_todays_compound_payout_started', $now );
 				if ( $original_start != $now )
 					delete_option( 'mycred_todays_compound_payout_started' );
 
@@ -371,7 +371,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Interest' ) ) :
 		public function get_users_interest_rate( $user_id = 0, $default = 0 ) {
 
 			$rate  = $default;
-			$saved = mycred_get_user_meta( $user_id, 'mycred_banking_rate_' . $this->mycred_type );
+			$saved = mycred_get_user_meta( $user_id, 'mycred_banking_rate_' . $this->mycred_type, '', true );
 			if ( strlen( $saved ) > 0 )
 				$rate = $saved;
 
@@ -644,7 +644,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Interest' ) ) :
 			// Only visible to admins
 			if ( ! mycred_is_admin() ) return;
 
-			$users_rate = mycred_get_user_meta( $user->ID, 'mycred_banking_rate_' . $this->mycred_type );
+			$users_rate = mycred_get_user_meta( $user->ID, 'mycred_banking_rate_' . $this->mycred_type, '', true );
 
 ?>
 <table class="form-table">

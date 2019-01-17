@@ -4,7 +4,7 @@ if ( ! defined( 'MYCRED_PURCHASE' ) ) exit;
 /**
  * buyCRED_Pending_Payments class
  * @since 1.7
- * @version 1.0.1
+ * @version 1.2
  */
 if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 	class buyCRED_Pending_Payments extends myCRED_Module {
@@ -40,45 +40,57 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		/**
 		 * Module Init
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.2
 		 */
 		public function module_init() {
 
 			$this->register_pending_payments();
 
-			add_shortcode( 'mycred_buy_pending', array( $this, 'render_shortcode_pending' ) );
+			add_shortcode( MYCRED_SLUG . '_buy_pending', 'mycred_render_pending_purchases' );
 
-			add_action( 'mycred_add_menu',       array( $this, 'add_to_menu' ), $this->menu_pos );
-			add_action( 'template_redirect',     array( $this, 'intercept_cancellations' ) );
+			add_action( 'mycred_pre_process_buycred', array( $this, 'intercept_cancellations' ) );
+
+			add_action( 'mycred_add_menu',            array( $this, 'add_to_menu' ), $this->menu_pos );
+			add_action( 'transition_post_status',     array( $this, 'pending_transitions' ), 10, 3 );
 
 		}
 
 		/**
 		 * Intercept Cancellations
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function intercept_cancellations() {
+
+			global $buycred_instance;
 
 			// Intercept payment cancellations
 			if ( isset( $_REQUEST['buycred-cancel'] ) && isset( $_REQUEST['_token'] ) && wp_verify_nonce( $_REQUEST['_token'], 'buycred-cancel-pending-payment' ) ) {
 
 				// Get pending payment object
 				$pending_payment_id = sanitize_text_field( $_REQUEST['buycred-cancel'] );
-				$pending_payment    = buycred_get_pending_payment( $pending_payment_id );
-
-				// Make sure pending payment still exists and that we are cancelling our own and not someone elses
-				if ( $pending_payment === false || $pending_payment->buyer_id != get_current_user_id() ) return;
-
-				// Delete cache
-				delete_user_meta( $pending_payment->buyer_id, 'buycred_pending_payments' );
 
 				// Move item to trash
-				wp_trash_post( $pending_payment->payment_id );
+				buycred_trash_pending_payment( $pending_payment_id );
 
 				// Redirect
-				wp_redirect( remove_query_arg( array( 'buycred-cancel', '_token' ) ) );
+				wp_safe_redirect( remove_query_arg( array( 'buycred-cancel', '_token' ) ) );
 				exit;
+
+			}
+
+		}
+
+		/**
+		 * Pending Transitions
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function pending_transitions( $new_status, $old_status, $post ) {
+
+			if ( $post->post_status == MYCRED_BUY_KEY ) {
+
+				mycred_delete_user_meta( $post->post_author, 'buycred_pending_payments' );
 
 			}
 
@@ -87,7 +99,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		/**
 		 * Module Admin Init
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function module_admin_init() {
 
@@ -95,21 +107,22 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 			add_filter( 'submenu_file',                               array( $this, 'subparent_file' ), 10, 2 );
 
 			add_action( 'admin_notices',                              array( $this, 'admin_notices' ) );
-			add_filter( 'manage_buycred_payment_posts_columns',       array( $this, 'adjust_column_headers' ) );
-			add_action( 'manage_buycred_payment_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
-			add_filter( 'bulk_actions-edit-buycred_payment',          array( $this, 'bulk_actions' ) );
 			add_filter( 'post_row_actions',                           array( $this, 'adjust_row_actions' ), 10, 2 );
 			add_action( 'admin_head-post.php',                        array( $this, 'edit_pending_payment_style' ) );
 			add_action( 'admin_head-edit.php',                        array( $this, 'pending_payments_style' ) );
-			add_action( 'save_post_buycred_payment',                  array( $this, 'save_pending_payment' ), 10, 2 );
 			add_filter( 'post_updated_messages',                      array( $this, 'post_updated_messages' ) );
+
+			add_filter( 'manage_' . MYCRED_BUY_KEY . '_posts_columns',       array( $this, 'adjust_column_headers' ) );
+			add_action( 'manage_' . MYCRED_BUY_KEY . '_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
+			add_filter( 'bulk_actions-edit-' . MYCRED_BUY_KEY,               array( $this, 'bulk_actions' ) );
+			add_action( 'save_post_' . MYCRED_BUY_KEY,                       array( $this, 'save_pending_payment' ), 10, 2 );
 
 			// Intercept payment completions
 			if ( isset( $_GET['credit'] ) && isset( $_GET['token'] ) && wp_verify_nonce( $_GET['token'], 'buycred-payout-pending' ) ) {
 
 				$pending_id = absint( $_GET['credit'] );
 
-				if ( $this->core->can_edit_creds() ) {
+				if ( $this->core->user_is_point_editor() ) {
 
 					$url = remove_query_arg( array( 'credit', 'token' ) );
 
@@ -132,7 +145,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		/**
 		 * Register Pending Payments
 		 * @since 1.5
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		protected function register_pending_payments() {
 
@@ -166,18 +179,18 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 				'publicly_queryable'   => false,
 				'register_meta_box_cb' => array( $this, 'add_metaboxes' )
 			);
-			register_post_type( 'buycred_payment', apply_filters( 'mycred_setup_pending_payment', $args ) );
+			register_post_type( MYCRED_BUY_KEY, apply_filters( 'mycred_setup_pending_payment', $args ) );
 
 		}
 
 		/**
 		 * Adjust Post Updated Messages
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function post_updated_messages( $messages ) {
 
-			$messages['buycred_payment'] = array(
+			$messages[ MYCRED_BUY_KEY ] = array(
 				0 => '',
 				1 => __( 'Payment Updated.', 'mycred' ),
 				2 => __( 'Payment Updated.', 'mycred' ),
@@ -209,15 +222,18 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		/**
 		 * Admin Notices
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function admin_notices() {
 
-			if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'buycred_payment' && isset( $_GET['credited'] ) ) {
+			if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_BUY_KEY && isset( $_GET['credited'] ) ) {
+
 				if ( $_GET['credited'] == 1 )
 					echo '<div id="message" class="updated notice is-dismissible"><p>' . __( 'Pending payment successfully credited to account.', 'mycred' ) . '</p><button type="button" class="notice-dismiss"></button></div>';
+
 				elseif ( $_GET['credited'] == 0 )
 					echo '<div id="message" class="error notice is-dismissible"><p>' . __( 'Failed to credit the pending payment to account.', 'mycred' ) . '</p><button type="button" class="notice-dismiss"></button></div>';
+
 			}
 
 		}
@@ -225,16 +241,20 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		/**
 		 * Add Admin Menu Item
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function add_to_menu() {
+
+			// In case we are using the Master Template feautre on multisites, and this is not the main
+			// site in the network, bail.
+			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
 
 			add_submenu_page(
 				MYCRED_SLUG,
 				__( 'Pending Payments', 'mycred' ),
 				__( 'Pending Payments', 'mycred' ),
-				$this->core->edit_creds_cap(),
-				'edit.php?post_type=buycred_payment'
+				$this->core->get_point_editor_capability(),
+				'edit.php?post_type=' . MYCRED_BUY_KEY
 			);
 
 		}
@@ -248,7 +268,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 
 			global $pagenow;
 
-			if ( isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'buycred_payment' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
+			if ( isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BUY_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
 				return MYCRED_SLUG;
 
 			return $parent;
@@ -264,15 +284,15 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 
 			global $pagenow;
 
-			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'buycred_payment' ) {
+			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_BUY_KEY ) {
 
-				return 'edit.php?post_type=buycred_payment';
+				return 'edit.php?post_type=' . MYCRED_BUY_KEY;
 			
 			}
 
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'buycred_payment' ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BUY_KEY ) {
 
-				return 'edit.php?post_type=buycred_payment';
+				return 'edit.php?post_type=' . MYCRED_BUY_KEY;
 
 			}
 
@@ -313,7 +333,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 			switch ( $column_name ) {
 				case 'author' :
 
-					$from = (int) get_post_meta( $post_id, 'from', true );
+					$from = (int) mycred_get_post_meta( $post_id, 'from', true );
 					$user = get_userdata( $from );
 
 					if ( isset( $user->display_name ) )
@@ -324,8 +344,8 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 				break;
 				case 'amount';
 
-					$type   = get_post_meta( $post_id, 'point_type', true );
-					$amount = get_post_meta( $post_id, 'amount', true );
+					$type   = mycred_get_post_meta( $post_id, 'point_type', true );
+					$amount = mycred_get_post_meta( $post_id, 'amount', true );
 					$mycred = mycred( $type );
 
 					echo $mycred->format_creds( $amount );
@@ -333,15 +353,15 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 				break;
 				case 'cost';
 
-					$cost     = get_post_meta( $post_id, 'cost', true );
-					$currency = get_post_meta( $post_id, 'currency', true );
+					$cost     = mycred_get_post_meta( $post_id, 'cost', true );
+					$currency = mycred_get_post_meta( $post_id, 'currency', true );
 
 					echo $cost . ' ' . $currency;
 
 				break;
 				case 'gateway';
 
-					$gateway   = get_post_meta( $post_id, 'gateway', true );
+					$gateway   = mycred_get_post_meta( $post_id, 'gateway', true );
 					$installed = $mycred_modules['solo']['buycred']->get();
 
 					if ( isset( $installed[ $gateway ] ) )
@@ -352,7 +372,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 				break;
 				case 'ctype';
 
-					$type = get_post_meta( $post_id, 'point_type', true );
+					$type = mycred_get_post_meta( $post_id, 'point_type', true );
 
 					if ( isset( $this->point_types[ $type ] ) )
 						echo $this->point_types[ $type ];
@@ -379,16 +399,16 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		/**
 		 * Pending Payment Row Actions
 		 * @since 1.5
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		public function adjust_row_actions( $actions, $post ) {
 
-			if ( $post->post_type == 'buycred_payment' && $post->post_status != 'trash' ) {
+			if ( $post->post_type == MYCRED_BUY_KEY && $post->post_status != 'trash' ) {
 
 				unset( $actions['inline hide-if-no-js'] );
 
 				// Add option to "Pay Out" now
-				if ( $this->core->can_edit_creds() )
+				if ( $this->core->user_is_point_editor() )
 					$actions['credit'] = '<a href="' . esc_url( add_query_arg( array(
 						'post_type' => $post->post_type,
 						'credit'    => $post->ID,
@@ -410,7 +430,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 
 			global $post_type;
 
-			if ( $post_type !== 'buycred_payment' ) return;
+			if ( $post_type !== MYCRED_BUY_KEY ) return;
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
 			wp_enqueue_style( 'mycred-forms' );
@@ -442,7 +462,7 @@ jQuery(function($){
 
 			global $post_type;
 
-			if ( $post_type !== 'buycred_payment' ) return;
+			if ( $post_type !== MYCRED_BUY_KEY ) return;
 
 ?>
 <script type="text/javascript">
@@ -461,20 +481,41 @@ jQuery(function($){
 		/**
 		 * Add Metaboxes
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function add_metaboxes() {
 
-			add_meta_box( 'buycred-pending-payment', __( 'Pending Payment', 'mycred' ), array( $this, 'metabox_pending_payment' ), 'buycred_payment', 'normal', 'high' );
+			add_meta_box(
+				'buycred-pending-payment',
+				__( 'Pending Payment', 'mycred' ),
+				array( $this, 'metabox_pending_payment' ),
+				MYCRED_BUY_KEY,
+				'normal',
+				'high'
+			);
 
-			if ( MYCRED_BUYCRED_PENDING_COMMENTS !== false )
-				add_meta_box( 'buycred-pending-comments', __( 'History', 'mycred' ), array( $this, 'metabox_pending_comments' ), 'buycred_payment', 'normal', 'default' );
+			if ( MYCRED_BUY_PENDING_COMMENTS )
+				add_meta_box(
+					'buycred-pending-comments',
+					__( 'History', 'mycred' ),
+					array( $this, 'metabox_pending_comments' ),
+					MYCRED_BUY_KEY,
+					'normal',
+					'default'
+				);
 
-			remove_meta_box( 'commentstatusdiv', 'buycred_payment', 'normal' );
-			remove_meta_box( 'commentsdiv', 'buycred_payment', 'normal' );
+			remove_meta_box( 'commentstatusdiv', MYCRED_BUY_KEY, 'normal' );
+			remove_meta_box( 'commentsdiv', MYCRED_BUY_KEY, 'normal' );
 
-			remove_meta_box( 'submitdiv', 'buycred_payment', 'side' );
-			add_meta_box( 'submitdiv', __( 'Actions', 'mycred' ), array( $this, 'metabox_pending_actions' ), 'buycred_payment', 'side', 'high' );
+			remove_meta_box( 'submitdiv', MYCRED_BUY_KEY, 'side' );
+			add_meta_box(
+				'submitdiv',
+				__( 'Actions', 'mycred' ),
+				array( $this, 'metabox_pending_actions' ),
+				MYCRED_BUY_KEY,
+				'side',
+				'high'
+			);
 
 		}
 
@@ -706,7 +747,7 @@ jQuery(function($){
 		 */
 		public function save_pending_payment( $post_id, $post ) {
 
-			if ( ! current_user_can( $this->core->edit_creds_cap() ) || ! isset( $_POST['buycred_pending_payment'] ) ) return;
+			if ( ! $this->core->user_is_point_editor() || ! isset( $_POST['buycred_pending_payment'] ) ) return;
 
 			$pending_payment = $_POST['buycred_pending_payment'];
 			$changed         = false;
@@ -714,9 +755,9 @@ jQuery(function($){
 			foreach ( $pending_payment as $meta_key => $meta_value ) {
 
 				$new_value = sanitize_text_field( $meta_value );
-				$old_value = get_post_meta( $post_id, $meta_key, true );
+				$old_value = mycred_get_post_meta( $post_id, $meta_key, true );
 				if ( $new_value != $old_value ) {
-					update_post_meta( $post_id, $meta_key, $new_value );
+					mycred_update_post_meta( $post_id, $meta_key, $new_value );
 					$changed = true;
 				}
 
@@ -726,118 +767,6 @@ jQuery(function($){
 				$user = wp_get_current_user();
 				$this->add_comment( $post_id, sprintf( __( 'Pending payment updated by %s', 'mycred' ), $user->user_login ) );
 			}
-
-		}
-
-		/**
-		 * Render Shortcode Pending
-		 * @since 1.5
-		 * @version 1.1
-		 */
-		public function render_shortcode_pending( $attr, $content = '' ) {
-
-			// Must be logged in
-			if ( ! is_user_logged_in() ) return $content;
-
-			extract( shortcode_atts( array(
-				'ctype'   => MYCRED_DEFAULT_TYPE_KEY,
-				'pay_now' => __( 'Pay Now', 'mycred' ),
-				'cancel'  => __( 'Cancel', 'mycred' )
-			), $attr ) );
-
-			$user_id = get_current_user_id();
-			$pending = buycred_get_users_pending_payments( $user_id, $ctype );
-
-			ob_start();
-
-?>
-<div id="pending-buycred-payments-<?php echo $ctype; ?>">
-	<table class="table">
-		<thead>
-			<tr>
-				<th class="column-transaction-id"><?php _e( 'Transaction ID', 'mycred' ); ?></th>
-				<th class="column-gateway"><?php _e( 'Gateway', 'mycred' ); ?></th>
-				<th class="column-amount"><?php _e( 'Amount', 'mycred' ); ?></th>
-				<th class="column-cost"><?php _e( 'Cost', 'mycred' ); ?></th>
-				<?php if ( $ctype == '' ) : ?><th class="column-ctype"><?php _e( 'Point Type', 'mycred' ); ?></th><?php endif; ?>
-				<th class="column-actions"><?php _e( 'Actions', 'mycred' ); ?></th>
-			</tr>
-		</thead>
-		<tbody>
-<?php
-
-			if ( ! empty( $pending ) ) {
-
-				// Showing all point types
-				if ( $ctype == '' ) {
-
-					foreach ( $pending as $point_type => $entries ) {
-
-						if ( empty( $entries ) ) continue;
-
-						foreach ( $entries as $entry ) {
-
-?>
-			<tr>
-				<td class="column-transaction-id"><?php echo esc_attr( $entry->public_id ); ?></td>
-				<td class="column-gateway"><?php echo $this->adjust_column_content( 'gateway', $entry->payment_id ); ?></td>
-				<td class="column-amount"><?php echo $this->adjust_column_content( 'amount', $entry->payment_id ); ?></td>
-				<td class="column-cost"><?php echo $this->adjust_column_content( 'cost', $entry->payment_id ); ?></td>
-				<td class="column-ctype"><?php echo mycred_get_point_type_name( $entry->point_type, false ); ?></td>
-				<td class="column-actions">
-					<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo $pay_now; ?></a> &bull; <a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo $cancel; ?></a>
-				</td>
-			</tr>
-<?php
- 
- 						}
- 
-					}
-
-				}
-
-				// Showing a particular point type
-				else {
-
-					foreach ( $pending as $entry ) {
-
-?>
-			<tr>
-				<td class="column-transaction-id"><?php echo esc_attr( $entry->public_id ); ?></td>
-				<td class="column-gateway"><?php echo $this->adjust_column_content( 'gateway', $entry->payment_id ); ?></td>
-				<td class="column-amount"><?php echo $this->adjust_column_content( 'amount', $entry->payment_id ); ?></td>
-				<td class="column-cost"><?php echo $this->adjust_column_content( 'cost', $entry->payment_id ); ?></td>
-				<td class="column-actions">
-					<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo $pay_now; ?></a> &bull; <a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo $cancel; ?></a>
-				</td>
-			</tr>
-<?php
-
-					}
-
-				}
-
-			}
-			else {
-
-?>
-			<tr>
-				<td colspan="<?php if ( $ctype == '' ) echo '6'; else echo '5'; ?>"><?php _e( 'No pending payments found', 'mycred' ); ?></td>
-			</tr>
-<?php
-
-			}
-
-?>
-		</tbody>
-	</table>
-</div>
-<?php
-
-			$output = ob_get_contents();
-			ob_end_clean();
-
-			return $output;
 
 		}
 

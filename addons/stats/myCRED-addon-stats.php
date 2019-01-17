@@ -2,188 +2,442 @@
 /**
  * Addon: Stats
  * Addon URI: http://mycred.me/add-ons/stats/
- * Version: 1.2.1
+ * Version: 2.0
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
+define( 'myCRED_STATS_VERSION',     '2.0' );
 define( 'myCRED_STATS',             __FILE__ );
-define( 'myCRED_STATS_VERSION',     '1.2.1' );
 define( 'myCRED_STATS_DIR',         myCRED_ADDONS_DIR . 'stats/' );
-define( 'myCRED_STATS_WIDGETS_DIR', myCRED_STATS_DIR . 'widgets/' );
 
-/**
- * Required Files
- */
+// Acceptable values: hex, rgb or rgba
+if ( ! defined( 'MYCRED_STATS_COLOR_TYPE' ) )
+	define( 'MYCRED_STATS_COLOR_TYPE', 'hex' );
+
 require_once myCRED_STATS_DIR . 'includes/mycred-stats-functions.php';
+require_once myCRED_STATS_DIR . 'includes/mycred-stats-object.php';
 require_once myCRED_STATS_DIR . 'includes/mycred-stats-shortcodes.php';
-
-require_once myCRED_STATS_DIR . 'includes/classes/class.query-stats.php';
-
-require_once myCRED_STATS_DIR . 'abstracts/mycred-abstract-stat-widget.php';
-
-/**
- * Core Widgets
- */
-require_once myCRED_STATS_WIDGETS_DIR . 'mycred-stats-widget-circulation.php';
-require_once myCRED_STATS_WIDGETS_DIR . 'mycred-stats-widget-daily-gains.php';
-require_once myCRED_STATS_WIDGETS_DIR . 'mycred-stats-widget-daily-loses.php';
 
 do_action( 'mycred_stats_load_widgets' );
 
 /**
  * myCRED_Stats_Module class
  * @since 1.6
- * @version 1.1
+ * @version 2.0
  */
 if ( ! class_exists( 'myCRED_Stats_Module' ) ) :
 	class myCRED_Stats_Module extends myCRED_Module {
 
-		public $user;
-		public $screen;
-		public $ctypes;
-		public $colors;
-
 		/**
 		 * Construct
 		 */
-		function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( 'myCRED_Stats_Module', array(
 				'module_name' => 'stats',
+				'defaults'    => array(
+					'color_positive' => '',
+					'color_negative' => '',
+					'animate'        => 1,
+					'bezier'         => 1,
+					'caching'        => 'off'
+				),
 				'accordion'   => false,
 				'register'    => false,
 				'add_to_core' => false
 			), $type );
 
-			$this->label  = sprintf( '%s %s', mycred_label(), __( 'Statistics', 'mycred' ) );
-			$this->colors = mycred_get_type_color();
+		}
+
+		/**
+		 * Load
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function load() {
+
+			global $mycred_stats_cleared, $mycred_user_stats_cleared;
+
+			$mycred_stats_cleared      = false;
+			$mycred_user_stats_cleared = false;
+
+			add_action( 'mycred_register_assets',      array( $this, 'register_assets' ) );
+			add_action( 'mycred_init',                 array( $this, 'module_init' ) );
+			add_action( 'mycred_admin_init',           array( $this, 'module_admin_init' ) );
+			add_action( 'mycred_front_enqueue_footer', array( $this, 'maybe_enqueue_scripts' ) );
+
+			add_action( 'mycred_update_user_balance',  array( $this, 'clear_user_data' ) );
+			add_action( 'mycred_set_user_balance',     array( $this, 'clear_user_data' ) );
+
+			add_filter( 'mycred_add_finished',         array( $this, 'clear_data' ) );
+
+			add_action( 'mycred_delete_log_entry',     array( $this, 'force_clear_data' ) );
+			add_action( 'mycred_update_log_entry',     array( $this, 'force_clear_data' ) );
+
+			add_action( 'mycred_deleted_log_entry',    array( $this, 'force_clear_user_data' ) );
+			add_action( 'mycred_updated_log_entry',    array( $this, 'force_clear_user_data' ) );
 
 		}
 
 		/**
 		 * Init
 		 * @since 1.6
-		 * @version 1.0.1
+		 * @version 1.0
 		 */
 		public function module_init() {
 
-			global $mycred_types, $mycred_load_stats;
+			$this->register_shortcodes();
 
-			$mycred_load_stats = false;
-
-			// Scripts & Styles
-			add_action( 'mycred_front_enqueue',  array( $this, 'register_scripts' ), 30 );
-			add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts' ) );
-			add_action( 'wp_footer',             array( $this, 'load_front_scripts' ), 5 );
-
-			// Add shortcode
-			add_shortcode( 'mycred_statistics', 'mycred_statistics_shortcode_render' );
-
-			// Add color options to each point type
-			add_action( 'mycred_core_prefs',      array( $this, 'color_settings' ) );
-			add_filter( 'mycred_save_core_prefs', array( $this, 'sanitize_extra_settings' ), 10, 3 );
-			foreach ( $mycred_types as $type_id => $type ) {
-
-				if ( $type_id === MYCRED_DEFAULT_TYPE_KEY ) continue;
-
-				add_action( 'mycred_core_prefs' . $type_id,      array( $this, 'color_settings' ) );
-				add_filter( 'mycred_save_core_prefs' . $type_id, array( $this, 'sanitize_extra_settings' ), 10, 3 );
-
-			}
-
-			// Add admin screen
-			add_action( 'admin_menu', array( $this, 'add_menu' ) );
+			add_action( 'mycred_admin_enqueue', array( $this, 'admin_enqueue' ) );
 
 		}
 
 		/**
-		 * Register Front Scripts
+		 * Register Shortcodes
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function register_shortcodes() {
+
+			add_shortcode( MYCRED_SLUG . '_chart_circulation',      'mycred_render_chart_circulation' );
+			add_shortcode( MYCRED_SLUG . '_chart_gain_loss',        'mycred_render_chart_gain_vs_loss' );
+
+			add_shortcode( MYCRED_SLUG . '_chart_history',          'mycred_render_chart_history' );
+			add_shortcode( MYCRED_SLUG . '_chart_balance_history',  'mycred_render_chart_balance_history' );
+			add_shortcode( MYCRED_SLUG . '_chart_instance_history', 'mycred_render_chart_instance_history' );
+
+			add_shortcode( MYCRED_SLUG . '_chart_top_balances',     'mycred_render_chart_top_balances' );
+			add_shortcode( MYCRED_SLUG . '_chart_top_instances',    'mycred_render_chart_top_instances' );
+
+		}
+
+		/**
+		 * Init
 		 * @since 1.6
 		 * @version 1.1
 		 */
-		public function register_scripts() {
+		public function module_admin_init() {
 
-			// Stylesheets
-			wp_register_style(
-				'mycred-stats',
-				plugins_url( 'assets/css/mycred-statistics.css', myCRED_STATS ),
-				array(),
-				'1.1',
-				'all'
-			);
+			add_action( 'mycred_overview_after',  array( $this, 'overview_after' ) );
 
-			// Stylesheets
-			wp_register_style(
-				'mycred-stats-admin',
-				plugins_url( 'assets/css/mycred-statistics-admin.css', myCRED_STATS ),
-				array(),
-				myCRED_STATS_VERSION,
-				'all'
-			);
+			foreach ( $this->point_types as $type_id => $label ) {
 
-			// Scripts
-			wp_register_script(
-				'chart-js',
-				plugins_url( 'assets/js/Chart.js', myCRED_STATS ),
-				array( 'jquery' ),
-				myCRED_STATS_VERSION,
-				true
-			);
+				add_action( 'mycred_overview_total_' . $type_id, array( $this, 'overview_total' ), 10, 3 );
 
-		}
+			}
 
-		/**
-		 * Admin Screen Styles
-		 * @since 1.6.8
-		 * @version 1.1
-		 */
-		public function load_front_scripts() {
+			add_action( 'mycred_after_core_prefs', array( $this, 'after_general_settings' ) );
+			add_filter( 'mycred_save_core_prefs',  array( $this, 'sanitize_extra_settings' ), 90, 3 );
 
-			global $mycred_load_stats;
+			if ( count( $this->point_types ) > 1 ) {
 
-			if ( $mycred_load_stats === true ) {
+				$priority = 10;
+				foreach ( $this->point_types as $type_id => $label ) {
 
-				wp_enqueue_style( 'mycred-stats' );
-				wp_enqueue_script( 'chart-js' );
+					add_action( 'mycred_after_core_prefs' . $type_id, array( $this, 'after_general_settings' ), $priority );
+					add_filter( 'mycred_save_core_prefs' . $type_id,  array( $this, 'sanitize_extra_settings' ), $priority, 3 );
 
+					$priority += 10;
+
+				}
 			}
 
 		}
 
 		/**
-		 * Color Settings
-		 * @since 1.7
+		 * Register Assets
+		 * @since 2.0
 		 * @version 1.0
 		 */
-		public function color_settings( $settings ) {
+		public function register_assets() {
 
-			$colors = mycred_get_type_color( $settings->mycred_type );
-			if ( ! is_array( $colors ) ) {
-				$colors = array(
-					'positive' => mycred_rgb_to_hex( $colors ),
-					'negative' => ''
+			global $mycred_charts;
+
+			$mycred_charts = array();
+
+			// Built-in
+			wp_register_style( 'mycred-stats', plugins_url( 'assets/css/mycred-statistics.css', myCRED_STATS ), array(), myCRED_STATS_VERSION, 'all' );
+
+			// Chart Libraries
+			wp_register_script( 'peity',     plugins_url( 'assets/libs/peity.min.js', myCRED_STATS ), array( 'jquery' ), '3.2.1', true );
+			wp_register_script( 'charts-js', plugins_url( 'assets/libs/Chart.bundle.min.js', myCRED_STATS ), array( 'jquery' ), '2.7', true );
+
+			wp_register_script( 'mycred-stats', plugins_url( 'assets/js/mycred-statistics.js', myCRED_STATS ), array( 'jquery', 'charts-js' ), myCRED_STATS_VERSION, true );
+
+		}
+
+		/**
+		 * Maybe Enqueue Scripts
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function maybe_enqueue_scripts() {
+
+			global $mycred_charts;
+
+			if ( ! empty( $mycred_charts ) && is_array( $mycred_charts ) ) {
+
+				wp_localize_script(
+					'mycred-stats',
+					'myCREDStats',
+					array(
+						'globals' => array(),
+						'charts'  => $mycred_charts
+					)
 				);
-				$colors['negative'] = mycred_inverse_hex_color( $colors['positive'] );
+
+				wp_enqueue_script( 'mycred-stats' );
+
 			}
-			elseif ( is_array( $colors ) && $colors['positive'] != '' && $colors['negative'] == '' )
-				$colors['negative'] = mycred_rgb_to_hex( $colors );
+
+		}
+
+		/**
+		 * Clear Data
+		 * Will attempt to clear the stats data, assuming we can based on our setup.
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function clear_data( $value ) {
+
+			global $mycred_stats_cleared;
+
+			if ( $mycred_stats_cleared === true ) return $value;
+
+			mycred_delete_stats_data();
+
+			$mycred_stats_cleared = true;
+
+			return $value;
+
+		}
+
+		/**
+		 * Clear User Data
+		 * Will attempt to clear the stats data for a user, assuming we can based on our setup.
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function clear_user_data( $user_id ) {
+
+			global $mycred_user_stats_cleared;
+
+			if ( $mycred_user_stats_cleared === true ) return $user_id;
+
+			mycred_delete_user_stats_data( $user_id );
+
+			$mycred_user_stats_cleared = true;
+
+			return $user_id;
+
+		}
+
+		/**
+		 * Force Clear Data
+		 * Situations where stats data must be cleared no matter what we set for our setup.
+		 * Mainly used when admin edits / deletes log entries in the wp-admin area.
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function force_clear_data() {
+
+			mycred_delete_stats_data( true );
+
+		}
+
+		/**
+		 * Force Clear User Data
+		 * Situations where stats data must be cleared no matter what we set for our setup.
+		 * Mainly used when admin edits / deletes log entries in the wp-admin area.
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function force_clear_user_data( $user_id ) {
+
+			mycred_delete_user_stats_data( $user_id, true );
+
+		}
+
+		/**
+		 * Overview Total
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function overview_total( $point_type, $total, $data ) {
+
+			$color = mycred_get_type_color( $point_type );
+			$data  = mycred_get_history_data( $point_type );
+
+			if ( ! empty( $data ) ) {
+
+				$values = array();
+				foreach ( $data as $dataset ) {
+					foreach ( $dataset as $set )
+						$values[] = $set->value;
+				}
+
+				echo '<span class="' . MYCRED_SLUG . '-stats-bar" data-type="' . $point_type . '" data-positive="' . $color['positive'] . '" data-negative="' . $color['negative'] . '" style="display: none;">' . implode( ',', $values ) . '</span>';
+
+			}
+
+		}
+
+		/**
+		 * Overview After
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function overview_after() {
 
 ?>
-<h3><?php _e( 'Statistics Color', 'mycred' ); ?></h3>
-<div class="row">
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<div class="form-group">
-			<label for="<?php echo $settings->field_id( array( 'colors' => 'positive' ) ); ?>"><?php _e( 'Positive Values', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $settings->field_name( array( 'colors' => 'positive' ) ); ?>" id="<?php echo $settings->field_id( array( 'colors' => 'positive' ) ); ?>" value="<?php echo esc_attr( $colors['positive'] ); ?>" class="wp-color-picker-field" data-default-color="#dedede" />
+<script type="text/javascript">
+jQuery(function($){
+
+	$( 'span.<?php echo MYCRED_SLUG; ?>-stats-bar' ).each(function(index,item){
+
+		var barchart      = $(this);
+		var positivecolor = barchart.data( 'positive' );
+		var negativecolor = barchart.data( 'negative' );
+
+		barchart.peity( "bar", {
+			width : '56',
+			fill  : function(value) {
+				if ( value == 0 ) return '#ededed';
+				return value > 0 ? positivecolor : negativecolor
+			}
+		});
+
+	});
+
+});
+</script>
+<?php
+
+		}
+
+		/**
+		 * Admin Enqueue
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function admin_enqueue( $hook ) {
+
+			$screen = get_current_screen();
+
+			if ( 'dashboard' == $screen->id ) {
+
+				wp_enqueue_script( 'peity' );
+
+			}
+
+		}
+
+		/**
+		 * Add-on Settings
+		 * @since 2.0
+		 * @version 1.0
+		 */
+		public function after_general_settings( $mycred = NULL ) {
+
+			$prefs             = $this->stats;
+			$this->add_to_core = true;
+			if ( $mycred->mycred_type != MYCRED_DEFAULT_TYPE_KEY ) {
+
+				if ( ! isset( $mycred->stats ) )
+					$prefs = $this->default_prefs;
+				else
+					$prefs = $mycred->stats;
+
+				$this->option_id = $mycred->option_id;
+
+			}
+
+			$colors = mycred_get_type_color( $mycred->mycred_type );
+			if ( empty( $prefs['color_positive'] ) ) $prefs['color_positive'] = $colors['positive'];
+			if ( empty( $prefs['color_negative'] ) ) $prefs['color_negative'] = $colors['negative'];
+
+?>
+<h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Statistics', 'mycred' ); ?></h4>
+<div class="body" style="display:none;">
+
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+			<h3><?php _e( 'Statistics Color', 'mycred' ); ?></h3>
+			<div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+					<div class="form-group">
+						<label for="<?php echo $this->field_id( 'color_positive' ); ?>"><?php _e( 'Positive Values', 'mycred' ); ?></label>
+						<input type="text" name="<?php echo $this->field_name( 'color_positive' ); ?>" id="<?php echo $this->field_id( 'color_positive' ); ?>" value="<?php echo esc_attr( $prefs['color_positive'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
+					</div>
+
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+					<div class="form-group">
+						<label for="<?php echo $this->field_id( 'color_negative' ); ?>"><?php _e( 'Negative Values', 'mycred' ); ?></label>
+						<input type="text" name="<?php echo $this->field_name( 'color_negative' ); ?>" id="<?php echo $this->field_id( 'color_negative' ); ?>" value="<?php echo esc_attr( $prefs['color_negative'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+<?php
+
+			if ( $mycred->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) :
+
+				$cache_options = mycred_get_stats_cache_times();
+
+?>
+
+			<h3><?php _e( 'Optimization', 'mycred' ); ?></h3>
+			<p><span class="description"><?php _e( 'Disabling these features can improve render time of your charts, especially if you are showing a large number of charts on a single page. You can also select to disable these features when using the chart shortcodes.', 'mycred' ); ?></span></p>
+			<div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+					<div class="form-group">
+						<div class="checkbox">
+							<label for="<?php echo $this->field_id( 'animate' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'animate' ); ?>" id="<?php echo $this->field_id( 'animate' ); ?>"<?php checked( $prefs['animate'], 1 ); ?> value="1" /> <?php _e( 'Animate Charts', 'mycred' ); ?></label>
+						</div>
+					</div>
+
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+					<div class="form-group">
+						<div class="checkbox">
+							<label for="<?php echo $this->field_id( 'bezier' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'bezier' ); ?>" id="<?php echo $this->field_id( 'bezier' ); ?>"<?php checked( $prefs['bezier'], 1 ); ?> value="1" /> <?php _e( 'Use Bezier Curves', 'mycred' ); ?></label>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'caching' ); ?>"><?php _e( 'Caching', 'mycred' ); ?></label>
+				<select name="<?php echo $this->field_name( 'caching' ); ?>" id="<?php echo $this->field_id( 'caching' ); ?>" class="form-control">
+<?php
+
+				foreach ( $cache_options as $value => $label ) {
+					echo '<option value="' . $value . '"';
+					if ( $prefs['caching'] == $value ) echo ' selected="selected"';
+					echo '>' . $label . '</option>';
+				}
+
+?>
+				</select>
+			</div>
+
+			<?php endif; ?>
+
 		</div>
 	</div>
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<div class="form-group">
-			<label for="<?php echo $settings->field_id( array( 'colors' => 'negative' ) ); ?>"><?php _e( 'Negative Values', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $settings->field_name( array( 'colors' => 'negative' ) ); ?>" id="<?php echo $settings->field_id( array( 'colors' => 'negative' ) ); ?>" value="<?php echo esc_attr( $colors['negative'] ); ?>" class="wp-color-picker-field" data-default-color="" />
-		</div>
-	</div>
-</div>
+
+<?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) : ?>
 <script type="text/javascript">
 jQuery(document).ready(function($){
 
@@ -192,242 +446,40 @@ jQuery(document).ready(function($){
 	
 });
 </script>
+<?php endif; ?>
+
+</div>
 <?php
 
 		}
 
 		/**
-		 * Sanitize & Save Settings
-		 * @since 1.7
-		 * @version 1.0.1
-		 */
-		public function sanitize_extra_settings( $new_data, $data, $general ) {
-
-			if ( array_key_exists( 'colors', $data ) ) {
-
-				$colors             = array();
-				$colors['positive'] = sanitize_text_field( $data['colors']['positive'] );
-				$colors['negative'] = sanitize_text_field( $data['colors']['negative'] );
-
-				$saved                          = mycred_get_type_color();
-				$saved[ $general->mycred_type ] = $colors;
-
-				mycred_update_option( 'mycred-point-colors', $saved );
-
-			}
-
-			if ( array_key_exists( 'colors', $new_data ) )
-				unset( $new_data['colors'] );
-
-			return $new_data;
-
-		}
-
-		/**
-		 * Add Menu
-		 * @since 1.6
+		 * Sanitize Settings
+		 * @since 2.0
 		 * @version 1.0
 		 */
-		public function add_menu() {
+		public function sanitize_extra_settings( $new_data, $data, $core ) {
 
-			$page = add_dashboard_page(
-				$this->label,
-				$this->label,
-				$this->core->edit_creds_cap(),
-				'mycred-stats',
-				array( $this, 'admin_page' )
+			$new_data['stats']['color_positive'] = sanitize_text_field( $data['stats']['color_positive'] );
+			$new_data['stats']['color_negative'] = sanitize_text_field( $data['stats']['color_negative'] );
+
+			$colors                       = mycred_get_type_color();
+			$colors[ $core->mycred_type ] = array(
+				'positive' => $new_data['stats']['color_positive'],
+				'negative' => $new_data['stats']['color_negative']
 			);
 
-			add_action( 'admin_print_styles-' . $page, array( $this, 'admin_page_header' ) );
+			mycred_update_option( 'mycred-point-colors', $colors );
 
-		}
+			if ( $core->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) {
 
-		public function get_tabs() {
-
-			$tabs = array();
-			$tabs['overview'] = __( 'Overview', 'mycred' );
-
-			foreach ( $this->point_types as $type_id => $label ) {
-				$mycred = mycred( $type_id );
-				$tabs[ 'view_' . $type_id ] = $mycred->plural();
-			}
-
-			return apply_filters( 'mycred_statistics_tabs', $tabs );
-
-		}
-
-		/**
-		 * Admin Page Header
-		 * @since 1.6
-		 * @version 1.1
-		 */
-		public function admin_page_header() {
-
-			wp_enqueue_style( 'mycred-stats' );
-			wp_enqueue_style( 'mycred-stats-admin' );
-			wp_enqueue_script( 'chart-js' );
-
-			do_action( 'mycred_stats_page_header', $this );
-
-		}
-
-		/**
-		 * Has Entries
-		 * @since 1.6
-		 * @version 1.0
-		 */
-		public function has_entries() {
-
-			global $wpdb;
-
-			$reply = true;
-			$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->core->log_table};" );
-			if ( $count === NULL || $count < 1 )
-				$reply = false;
-
-			return apply_filters( 'mycred_stats_has_entries', $reply, $this );
-
-		}
-
-		/**
-		 * Admin Page
-		 * @since 1.6
-		 * @version 1.0.2
-		 */
-		public function admin_page() {
-
-			// Security
-			if ( ! $this->core->can_edit_creds() ) wp_die( 'Access Denied' );
-
-			$current = 'overview';
-			if ( isset( $_GET['view'] ) )
-				$current = $_GET['view'];
-
-			$tabs = $this->get_tabs();
-
-?>
-<div id="mycred-stats" class="wrap">
-	<h1><?php echo $this->label; ?><a href="javascript:void(0);" onClick="window.location.href=window.location.href" class="add-new-h2" id="refresh-mycred-stats"><?php _e( 'Refresh', 'mycred' ); ?></a></h1>
-<?php
-
-			do_action( 'mycred_stats_page_before', $this );
-
-			// No use loading the widgets if no log entries exists
-			if ( $this->has_entries() ) {
-
-?>
-	<ul id="section-nav" class="nav-tab-wrapper">
-<?php
-
-				foreach ( $tabs as $tab_id => $tab_label ) {
-
-					$classes = 'nav-tab';
-					if ( $current == $tab_id ) $classes .= ' nav-tab-active';
-
-					if ( $tab_id != 'general' )
-						$url = add_query_arg( array( 'page' => $_GET['page'], 'view' => $tab_id ), admin_url( 'admin.php' ) );
-					else
-						$url = add_query_arg( array( 'page' => $_GET['page'] ), admin_url( 'admin.php' ) );
-
-					echo '<li class="' . $classes . '"><a href="' . esc_url( $url ) . '">' . $tab_label . '</a></li>';
-
-				}
-
-?>
-	</ul>
-
-	<div id="mycred-stats-body" class="clear clearfix">
-		
-<?php
-
-				// Render tab
-				if ( has_action( 'mycred_stats_screen_' . $current ) ) {
-
-					do_action( 'mycred_stats_screen_' . $current );
-
-				}
-
-				elseif ( $current === 'overview' ) {
-
-					$widgets = apply_filters( 'mycred_stats_overview_widgets', array(
-						0 => array( 'id' => 'overallcirculation', 'class' => 'myCRED_Stats_Widget_Circulation', 'args' => array( 'ctypes' => 'all' ) ),
-						1 => array( 'id' => 'overallgains', 'class' => 'myCRED_Stats_Widget_Daily_Gains', 'args' => array( 'ctypes' => 'all', 'span' => 10, 'number' => 5 ) ),
-						2 => array( 'id' => 'overallloses', 'class' => 'myCRED_Stats_Widget_Daily_Loses', 'args' => array( 'ctypes' => 'all', 'span' => 10, 'number' => 5 ) )
-					), $this );
-
-					if ( ! empty( $widgets ) ) {
-						foreach ( $widgets as $num => $swidget ) {
-		
-							$widget = $swidget['class'];
-							if ( class_exists( $widget ) ) {
-
-								$w = new $widget( $swidget['id'], $swidget['args'] );
-
-								echo '<div class="mycred-stat-widget">';
-		
-								$w->widget();
-		
-								echo '</div>';
-
-								$w = NULL;
-		
-							}
-		
-						}
-					}
-
-				}
-
-				elseif ( substr( $current, 0, 5 ) === 'view_' ) {
-
-					$widgets = apply_filters( 'mycred_stats_' . $current . '_widgets', array(
-						0 => array( 'id' => $current . 'circulation', 'class' => 'myCRED_Stats_Widget_Circulation', 'args' => array( 'ctypes' => str_replace( 'view_', '', $current ) ) ),
-						1 => array( 'id' => $current . 'gains', 'class' => 'myCRED_Stats_Widget_Daily_Gains', 'args' => array( 'ctypes' => str_replace( 'view_', '', $current ), 'span' => 10, 'number' => 5 ) ),
-						2 => array( 'id' => $current . 'loses', 'class' => 'myCRED_Stats_Widget_Daily_Loses', 'args' => array( 'ctypes' => str_replace( 'view_', '', $current ), 'span' => 10, 'number' => 5 ) )
-					), $this );
-
-					if ( ! empty( $widgets ) ) {
-						foreach ( $widgets as $num => $swidget ) {
-
-							$widget = $swidget['class'];
-							if ( class_exists( $widget ) ) {
-
-								$w = new $widget( $swidget['id'], $swidget['args'] );
-
-								echo '<div class="mycred-stat-widget">';
-
-								$w->widget();
-
-								echo '</div>';
-
-								$w = NULL;
-
-							}
-
-						}
-					}
-
-				}
-
-			}
-			else {
-
-?>
-<div id="mycred-log-is-empty">
-	<p><?php _e( 'Your log is empty. No statistics can be shown.', 'mycred' ); ?></p>
-</div>
-<?php
+				$new_data['stats']['animate'] = ( array_key_exists( 'animate', $data['stats'] ) ? 1 : 0 );
+				$new_data['stats']['bezier']  = ( array_key_exists( 'bezier', $data['stats'] ) ? 1 : 0 );
+				$new_data['stats']['caching'] = sanitize_text_field( $data['stats']['caching'] );
 
 			}
 
-?>
-		</div>
-	</div>
-
-</div>
-<?php
-
-			do_action( 'mycred_stats_page_after', $this );
+			return $new_data;
 
 		}
 

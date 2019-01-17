@@ -5,7 +5,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * myCRED_Object class
  * @see http://codex.mycred.me/classes/mycred_object/
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! class_exists( 'myCRED_Object' ) ) :
 	abstract class myCRED_Object {
@@ -13,25 +13,89 @@ if ( ! class_exists( 'myCRED_Object' ) ) :
 		/**
 		 * Construct
 		 */
-		function __construct() {
+		function __construct() { }
 
-			if ( ! did_action( 'init' ) )
-				wp_die( 'myCRED_Account class used too early. This class should be called after the init action fires.' );
+		/**
+		 * Get
+		 */
+		public function get( $name = '', $nothing = false ) {
 
-		}
+			if ( $name == '' ) return $nothing;
 
-		public function get_mycred( $object = NULL, $type_id = MYCRED_DEFAULT_TYPE_KEY ) {
+			$value = $nothing;
+			if ( is_array( $name ) && ! empty( $name ) ) {
 
-			if ( ! is_object( $object ) ) {
+				foreach ( $name as $key => $array_value ) {
 
-				if ( ! is_string( $type_id ) || ! mycred_point_type_exists( $type_id ) )
-					$type_id = MYCRED_DEFAULT_TYPE_KEY;
+					// Example 1: array( 'balance' => 'mycred_default' )
+					// $this->balance['mycred_default']
+					if ( isset( $this->$key ) ) {
 
-				$object = mycred( $type_id );
+						if ( $array_value != '' && is_array( $this->$key ) && ! empty( $this->$key ) && array_key_exists( $array_value, $this->$key ) )
+							$value = $this->$key[ $array_value ];
+
+					}
+
+					// Example 2: array( 'total' )
+					// $this->total
+					elseif ( isset( $this->$array_value ) )
+						$value = $this->$array_value;
+
+				}
+
+			}
+			elseif ( ! is_array( $name ) && ! empty( $name ) ) {
+
+				if ( isset( $this->$name ) )
+					$value = $this->$name;
 
 			}
 
-			return $object;
+			return $value;
+
+		}
+
+		/**
+		 * Set
+		 */
+		public function set( $name = '', $new_value = false ) {
+
+			if ( $name == '' ) return false;
+
+			if ( is_array( $name ) && ! empty( $name ) ) {
+
+				foreach ( $name as $key => $array_value ) {
+
+					// Example 1: array( 'balance' => 'mycred_default' )
+					// $this->balance['mycred_default']
+					if ( isset( $this->$key ) ) {
+
+						if ( $array_value != '' ) {
+
+							if ( ! is_array( $this->$key ) )
+								$this->$key = array();
+						
+							$this->$key[ $array_value ] = $new_value;
+
+						}
+
+					}
+
+					// Example 2: array( 'total' )
+					// $this->total
+					elseif ( isset( $this->$array_value ) )
+						$this->$value = $new_value;
+
+				}
+
+			}
+			elseif ( ! is_array( $name ) && ! empty( $name ) && isset( $this->$name ) ) {
+
+				$this->$name = $new_value;
+
+			}
+
+			return true;
 
 		}
 

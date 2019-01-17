@@ -1,14 +1,18 @@
 <?php
 /**
  * Addon: Ranks
- * Addon URI: http://mycred.me/add-ons/ranks/
- * Version: 1.5
+ * Addon URI: http://codex.mycred.me/chapter-iii/ranks/
+ * Version: 1.6
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 define( 'myCRED_RANKS',         __FILE__ );
 define( 'myCRED_RANKS_DIR',     myCRED_ADDONS_DIR . 'ranks/' );
-define( 'myCRED_RANKS_VERSION', '1.5' );
+define( 'myCRED_RANKS_VERSION', '1.6' );
+
+// Rank key
+if ( ! defined( 'MYCRED_RANK_KEY' ) )
+	define( 'MYCRED_RANK_KEY', 'mycred_rank' );
 
 // Default badge width
 if ( ! defined( 'MYCRED_RANK_WIDTH' ) )
@@ -28,7 +32,7 @@ require_once myCRED_RANKS_DIR . 'includes/mycred-rank-shortcodes.php';
  * points, ranks are titles that can be given to users when their reach a certain
  * amount.
  * @since 1.1
- * @version 1.4
+ * @version 1.6
  */
 if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 	class myCRED_Ranks_Module extends myCRED_Module {
@@ -36,14 +40,15 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * Construct
 		 */
-		function __construct() {
+		public function __construct() {
 
 			parent::__construct( 'myCRED_Ranks_Module', array(
 				'module_name' => 'rank',
 				'defaults'    => array(
+					'manual'      => 0,
 					'public'      => 0,
 					'base'        => 'current',
-					'slug'        => 'mycred_rank',
+					'slug'        => MYCRED_RANK_KEY,
 					'bb_location' => 'top',
 					'bb_template' => 'Rank: %rank_title%',
 					'bp_location' => '',
@@ -116,6 +121,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			$this->add_default_rank();
 			$this->add_multiple_point_types_support();
 
+			add_action( 'mycred_set_current_account', array( $this, 'populate_current_account' ) );
+			add_action( 'mycred_get_account',         array( $this, 'populate_account' ) );
+
 			add_action( 'pre_get_posts',                            array( $this, 'adjust_wp_query' ), 20 );
 			add_action( 'mycred_admin_enqueue',                     array( $this, 'enqueue_scripts' ), $this->menu_pos );
 
@@ -135,11 +143,11 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			}
 
 			// Shortcodes
-			add_shortcode( 'mycred_my_rank',                        'mycred_render_my_rank' );
-			add_shortcode( 'mycred_my_ranks',                       'mycred_render_my_ranks' );
-			add_shortcode( 'mycred_users_of_rank',                  'mycred_render_users_of_rank' );
-			add_shortcode( 'mycred_users_of_all_ranks',             'mycred_render_users_of_all_ranks' );
-			add_shortcode( 'mycred_list_ranks',                     'mycred_render_rank_list' );
+			add_shortcode( MYCRED_SLUG . '_my_rank',            'mycred_render_my_rank' );
+			add_shortcode( MYCRED_SLUG . '_my_ranks',           'mycred_render_my_ranks' );
+			add_shortcode( MYCRED_SLUG . '_users_of_rank',      'mycred_render_users_of_rank' );
+			add_shortcode( MYCRED_SLUG . '_users_of_all_ranks', 'mycred_render_users_of_all_ranks' );
+			add_shortcode( MYCRED_SLUG . '_list_ranks',         'mycred_render_rank_list' );
 
 			// Admin Management items
 			add_action( 'wp_ajax_mycred-calc-totals',               array( $this, 'calculate_totals' ) );
@@ -153,25 +161,42 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function module_admin_init() {
 
-			add_filter( 'parent_file',                            array( $this, 'parent_file' ) );
-			add_filter( 'submenu_file',                           array( $this, 'subparent_file' ), 10, 2 );
-			add_filter( 'admin_url',                              array( $this, 'replace_add_new_rank_url' ), 10, 3 );
+			add_filter( 'parent_file',                        array( $this, 'parent_file' ) );
+			add_filter( 'submenu_file',                       array( $this, 'subparent_file' ), 10, 2 );
+			add_filter( 'admin_url',                          array( $this, 'replace_add_new_rank_url' ), 10, 3 );
 
-			add_filter( 'manage_mycred_rank_posts_columns',       array( $this, 'adjust_column_headers' ), 50 );
-			add_action( 'manage_mycred_rank_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
+			add_filter( 'post_row_actions',                   array( $this, 'adjust_row_actions' ), 10, 2 );
 
-			add_filter( 'post_row_actions',                       array( $this, 'adjust_row_actions' ), 10, 2 );
+			add_filter( 'post_updated_messages',              array( $this, 'post_updated_messages' ) );
+			add_filter( 'enter_title_here',                   array( $this, 'enter_title_here' ) );
 
-			add_filter( 'post_updated_messages',                  array( $this, 'post_updated_messages' ) );
-			add_filter( 'enter_title_here',                       array( $this, 'enter_title_here' ) );
-			add_action( 'save_post_mycred_rank',                  array( $this, 'save_rank' ), 10, 2 );
+			add_action( 'wp_ajax_mycred-action-delete-ranks', array( $this, 'action_delete_ranks' ) );
+			add_action( 'wp_ajax_mycred-action-assign-ranks', array( $this, 'action_assign_ranks' ) );
 
-			add_action( 'wp_ajax_mycred-action-delete-ranks',     array( $this, 'action_delete_ranks' ) );
-			add_action( 'wp_ajax_mycred-action-assign-ranks',     array( $this, 'action_assign_ranks' ) );
+			add_filter( 'mycred_users_balance_column',        array( $this, 'custom_user_column_content' ), 10, 3 );
 
-			add_filter( 'mycred_users_balance_column',            array( $this, 'custom_user_column_content' ), 10, 3 );
+			add_action( 'mycred_user_edit_after_balance',     array( $this, 'show_rank_in_user_editor' ), 40, 3 );
+			add_action( 'personal_options_update',            array( $this, 'save_manual_rank' ), 50 );
+			add_action( 'edit_user_profile_update',           array( $this, 'save_manual_rank' ), 50 );
 
-			add_action( 'mycred_user_edit_after_balance',         array( $this, 'show_rank_in_user_editor' ), 40, 3 );
+			add_filter( 'manage_' . MYCRED_RANK_KEY . '_posts_columns',       array( $this, 'adjust_column_headers' ), 50 );
+			add_action( 'manage_' . MYCRED_RANK_KEY . '_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
+			add_action( 'save_post_' . MYCRED_RANK_KEY,                       array( $this, 'save_rank' ), 10, 2 );
+
+		}
+
+		/**
+		 * Is Manual Mode
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function is_manual_mode() {
+
+			$manual_mode = false;
+			if ( $this->rank['base'] == 'manual' )
+				$manual_mode = true;
+
+			return $manual_mode;
 
 		}
 
@@ -186,7 +211,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			add_action( 'mycred_after_core_prefs', array( $this, 'after_general_settings' ) );
 			add_filter( 'mycred_save_core_prefs',  array( $this, 'sanitize_extra_settings' ), 90, 3 );
 
-			add_action( 'mycred_add_menu', array( $this, 'add_menus' ), $this->menu_pos );
+			add_action( 'mycred_add_menu',         array( $this, 'add_menus' ), $this->menu_pos );
 
 			if ( count( $this->point_types ) > 1 ) {
 
@@ -194,11 +219,11 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				foreach ( $this->point_types as $type_id => $label ) {
 
 					add_action( 'mycred_management_prefs' . $type_id, array( $this, 'rank_management' ), $priority );
-					
+
 					add_action( 'mycred_after_core_prefs' . $type_id, array( $this, 'after_general_settings' ), $priority );
 					add_filter( 'mycred_save_core_prefs' . $type_id,  array( $this, 'sanitize_extra_settings' ), $priority, 3 );
 
-					$priority = $priority+10;
+					$priority += 10;
 
 				}
 			}
@@ -212,7 +237,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function register_ranks() {
 
-			if ( isset( $_GET['ctype'] ) && array_key_exists( $_GET['ctype'], $this->point_types ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_rank' )
+			if ( isset( $_GET['ctype'] ) && array_key_exists( $_GET['ctype'], $this->point_types ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_RANK_KEY )
 				$name = sprintf( __( 'Ranks for %s', 'mycred' ), $this->point_types[ $_GET['ctype'] ] );
 			else
 				$name = __( 'Ranks', 'mycred' );
@@ -242,7 +267,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			if ( isset( $this->rank['support']['content'] ) && $this->rank['support']['content'] )
 				$supports[] = 'editor';
 			if ( isset( $this->rank['support']['excerpt'] ) && $this->rank['support']['excerpt'] )
-				$supports[] = 'excerpts';
+				$supports[] = 'excerpt';
 			if ( isset( $this->rank['support']['comments'] ) && $this->rank['support']['comments'] )
 				$supports[] = 'comments';
 			if ( isset( $this->rank['support']['page-attributes'] ) && $this->rank['support']['page-attributes'] )
@@ -267,7 +292,71 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			if ( $this->rank['public'] && ! empty( $this->rank['slug'] ) )
 				$args['rewrite'] = array( 'slug' => $this->rank['slug'] );
 
-			register_post_type( 'mycred_rank', apply_filters( 'mycred_register_ranks', $args, $this ) );
+			register_post_type( MYCRED_RANK_KEY, apply_filters( 'mycred_register_ranks', $args, $this ) );
+
+		}
+
+		/**
+		 * Populate Current Account
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function populate_current_account() {
+
+			global $mycred_current_account;
+
+			if ( isset( $mycred_current_account )
+				&& ( $mycred_current_account instanceof myCRED_Account )
+				&& ( isset( $mycred_current_account->ranks ) )
+			) return;
+
+			$ranks = 0;
+			if ( ! empty( $mycred_current_account->balance ) ) {
+				foreach ( $mycred_current_account->balance as $type_id => $balance ) {
+
+					if ( $balance === false ) continue;
+
+					$rank = mycred_get_users_rank( $mycred_current_account->user_id, $type_id );
+					if ( $rank !== false ) $ranks ++; 
+
+					$mycred_current_account->balance[ $type_id ]->rank = $rank;
+
+				}
+			}
+
+			$mycred_current_account->ranks = $ranks;
+
+		}
+
+		/**
+		 * Populate Account
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function populate_account() {
+
+			global $mycred_account;
+
+			if ( isset( $mycred_account )
+				&& ( $mycred_account instanceof myCRED_Account )
+				&& ( isset( $mycred_account->ranks ) )
+			) return;
+
+			$ranks = 0;
+			if ( ! empty( $mycred_account->balance ) ) {
+				foreach ( $mycred_account->balance as $type_id => $balance ) {
+
+					if ( $balance === false ) continue;
+
+					$rank = mycred_get_users_rank( $mycred_account->user_id, $type_id );
+					if ( $rank !== false ) $ranks ++; 
+
+					$mycred_account->balance[ $type_id ]->rank = $rank;
+
+				}
+			}
+
+			$mycred_account->ranks = $ranks;
 
 		}
 
@@ -278,7 +367,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function post_updated_messages( $messages ) {
 
-			$messages['mycred_rank'] = array(
+			$messages[ MYCRED_RANK_KEY ] = array(
 				0 => '',
 				1 => __( 'Rank Updated.', 'mycred' ),
 				2 => __( 'Rank Updated.', 'mycred' ),
@@ -305,13 +394,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			global $post;
 
-			if ( $path == 'post-new.php?post_type=mycred_rank' ) {
+			if ( $path == 'post-new.php?post_type=' . MYCRED_RANK_KEY ) {
 
 				if ( isset( $_GET['ctype'] ) )
-					return get_site_url( $blog_id, 'wp-admin/', 'admin' ) . 'post-new.php?post_type=mycred_rank&ctype=' . ( ( isset( $_GET['ctype'] ) ) ? $_GET['ctype'] : MYCRED_DEFAULT_TYPE_KEY );
+					return get_site_url( $blog_id, 'wp-admin/', 'admin' ) . 'post-new.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . ( ( isset( $_GET['ctype'] ) ) ? $_GET['ctype'] : MYCRED_DEFAULT_TYPE_KEY );
 
-				elseif ( isset( $post->post_type ) && $post->post_type == 'mycred_rank' && get_post_meta( $post->ID, 'ctype', true ) != '' )
-					return get_site_url( $blog_id, 'wp-admin/', 'admin' ) . 'post-new.php?post_type=mycred_rank&ctype=' . get_post_meta( $post->ID, 'ctype', true );
+				elseif ( isset( $post->post_type ) && $post->post_type == MYCRED_RANK_KEY && mycred_get_post_meta( $post->ID, 'ctype', true ) != '' )
+					return get_site_url( $blog_id, 'wp-admin/', 'admin' ) . 'post-new.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . mycred_get_post_meta( $post->ID, 'ctype', true );
 
 			}
 
@@ -322,24 +411,26 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * Add Admin Menu Item
 		 * @since 1.6
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function add_menus() {
 
-			$cap = $this->core->edit_creds_cap();
+			// In case we are using the Master Template feautre on multisites, and this is not the main
+			// site in the network, bail.
+			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
+
+			$capability = $this->core->get_point_editor_capability();
 
 			foreach ( $this->point_types as $type_id => $label ) {
 
-				$menu_slug = MYCRED_SLUG;
-				if ( $type_id != MYCRED_DEFAULT_TYPE_KEY )
-					$menu_slug = MYCRED_SLUG . '_' . $type_id;
+				$menu_slug = ( $type_id != MYCRED_DEFAULT_TYPE_KEY ) ? MYCRED_SLUG . '_' . $type_id : MYCRED_SLUG;
 
 				add_submenu_page(
 					$menu_slug,
 					__( 'Ranks', 'mycred' ),
 					__( 'Ranks', 'mycred' ),
-					$cap,
-					'edit.php?post_type=mycred_rank&ctype=' . $type_id
+					$capability,
+					'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . $type_id
 				);
 
 			}
@@ -356,7 +447,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			global $pagenow;
 
 			// When listing ranks, we need to indicate that we are under the appropriate point type menu
-			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_rank' ) {
+			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_RANK_KEY ) {
 			
 				if ( isset( $_GET['ctype'] ) && sanitize_key( $_GET['ctype'] ) != MYCRED_DEFAULT_TYPE_KEY )
 					return MYCRED_SLUG . '_' . sanitize_key( $_GET['ctype'] );
@@ -366,12 +457,12 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			}
 
 			// When editing a rank, we need to indicate that we are under the appropriate point type menu
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_rank' ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_RANK_KEY ) {
 
 				if ( isset( $_GET['ctype'] ) && $_GET['ctype'] != MYCRED_DEFAULT_TYPE_KEY )
 					return MYCRED_SLUG . '_' . sanitize_key( $_GET['ctype'] );
 
-				$point_type = get_post_meta( $_GET['post'], 'ctype', true );
+				$point_type = mycred_get_post_meta( $_GET['post'], 'ctype', true );
 				$point_type = sanitize_key( $point_type );
 
 				if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
@@ -395,28 +486,28 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			global $pagenow;
 
 			// When listing ranks, we need to highlight the "Ranks" submenu to indicate where we are
-			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_rank' ) {
+			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_RANK_KEY ) {
 
 				if ( isset( $_GET['ctype'] ) )
-					return 'edit.php?post_type=mycred_rank&ctype=' . $_GET['ctype'];
+					return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . $_GET['ctype'];
 
-				return 'edit.php?post_type=mycred_rank&ctype=' . MYCRED_DEFAULT_TYPE_KEY;
+				return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . MYCRED_DEFAULT_TYPE_KEY;
 			
 			}
 
 			// When editing a rank, we need to highlight the "Ranks" submenu to indicate where we are
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_rank' ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_RANK_KEY ) {
 
 				if ( isset( $_GET['ctype'] ) )
-					return 'edit.php?post_type=mycred_rank&ctype=' . $_GET['ctype'];
+					return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . $_GET['ctype'];
 
-				$point_type = get_post_meta( $_GET['post'], 'ctype', true );
+				$point_type = mycred_get_post_meta( $_GET['post'], 'ctype', true );
 				$point_type = sanitize_key( $point_type );
 
 				if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
-					return 'edit.php?post_type=mycred_rank&ctype=' . $point_type;
+					return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . $point_type;
 
-				return 'edit.php?post_type=mycred_rank&ctype=' . MYCRED_DEFAULT_TYPE_KEY;
+				return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . MYCRED_DEFAULT_TYPE_KEY;
 
 			}
 
@@ -431,7 +522,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function exclude_ranks( $excludes ) {
 
-			$excludes[] = 'mycred_rank';
+			$excludes[] = MYCRED_RANK_KEY;
 			return $excludes;
 
 		}
@@ -439,22 +530,16 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * AJAX: Calculate Totals
 		 * @since 1.2
-		 * @version 1.3.2
+		 * @version 1.4
 		 */
 		public function calculate_totals() {
 
 			// Security
 			check_ajax_referer( 'mycred-calc-totals', 'token' );
 
-			$type = MYCRED_DEFAULT_TYPE_KEY;
-			if ( isset( $_POST['ctype'] ) && array_key_exists( $_POST['ctype'], $this->point_types ) )
-				$type = sanitize_text_field( $_POST['ctype'] );
-
-			$balance_key = $type;
-			$mycred      = mycred( $type );
-
-			if ( $mycred->is_multisite && $GLOBALS['blog_id'] > 1 && ! $mycred->use_central_logging )
-				$balance_key .= '_' . $GLOBALS['blog_id'];
+			$point_type = MYCRED_DEFAULT_TYPE_KEY;
+			if ( isset( $_POST['ctype'] ) && mycred_point_type_exists( sanitize_key( $_POST['ctype'] ) ) )
+				$point_type = sanitize_key( $_POST['ctype'] );
 
 			global $wpdb;
 
@@ -462,7 +547,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			$users = $wpdb->get_col( $wpdb->prepare( "
 				SELECT DISTINCT user_id 
 				FROM {$wpdb->usermeta} 
-				WHERE meta_key = %s", $balance_key ) );
+				WHERE meta_key = %s", mycred_get_meta_key( $point_type ) ) );
 
 			$count = 0;
 			if ( ! empty( $users ) ) {
@@ -470,8 +555,8 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				// Get the total for each user with a balance
 				foreach ( $users as $user_id ) {
 
-					$total = mycred_query_users_total( $user_id, $type );
-					mycred_update_user_meta( $user_id, $type, '_total', $total );
+					$total = mycred_query_users_total( $user_id, $point_type );
+					mycred_update_user_meta( $user_id, $point_type, '_total', $total );
 					$count ++;
 
 				}
@@ -486,9 +571,12 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 * Balance Adjustment
 		 * Check if users rank should change.
 		 * @since 1.1
-		 * @version 1.5.1
+		 * @version 1.6
 		 */
 		public function balance_adjustment( $result, $request, $mycred ) {
+
+			// Manual mode
+			if ( $this->is_manual_mode() ) return $result;
 
 			// If the result was declined
 			if ( $result === false ) return $result;
@@ -514,28 +602,34 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 * Publishing Content
 		 * Check if users rank should change.
 		 * @since 1.1
-		 * @version 1.4
+		 * @version 1.6
 		 */
 		public function post_status_change( $new_status, $old_status, $post ) {
 
 			global $mycred_ranks;
 
 			// Only ranks please
-			if ( $post->post_type != 'mycred_rank' ) return;
+			if ( $post->post_type != MYCRED_RANK_KEY ) return;
 
-			$type = get_post_meta( $post->ID, 'ctype', true );
-			if ( $type == '' ) {
-				$type = MYCRED_DEFAULT_TYPE_KEY;
-				update_post_meta( $post->ID, 'ctype', $type );
+			$point_type = mycred_get_post_meta( $post->ID, 'ctype', true );
+			if ( $point_type == '' ) {
+
+				$point_type = MYCRED_DEFAULT_TYPE_KEY;
+				mycred_update_post_meta( $post->ID, 'ctype', $point_type );
+
 			}
 
-			// Publishing rank
-			if ( $new_status == 'publish' && $old_status != 'publish' )
+			if ( $this->is_manual_mode() ) return;
+
+			// Publishing or trashing of ranks
+			if ( ( $new_status == 'publish' && $old_status != 'publish' ) || ( $new_status == 'trash' && $old_status != 'trash' ) ) {
+
+				wp_cache_delete( 'ranks-published-' . $point_type, MYCRED_SLUG );
+				wp_cache_delete( 'ranks-published-count-' . $point_type, MYCRED_SLUG );
+
 				mycred_assign_ranks( $type );
 
-			// Trashing of rank
-			elseif ( $new_status == 'trash' && $old_status != 'trash' )
-				mycred_assign_ranks( $type );
+			}
 
 		}
 
@@ -612,11 +706,11 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 					else {
 
 						if ( $type_id == MYCRED_DEFAULT_TYPE_KEY ) {
-							$content = str_replace( '%rank%',      get_the_title( $rank_id ),        $content );
+							$content = str_replace( '%rank%',      mycred_get_the_title( $rank_id ), $content );
 							$content = str_replace( '%rank_logo%', mycred_get_rank_logo( $rank_id ), $content );
 						}
 						else {
-							$content = str_replace( '%rank_' . $type_id . '%',      get_the_title( $rank_id ),        $content );
+							$content = str_replace( '%rank_' . $type_id . '%',      mycred_get_the_title( $rank_id ), $content );
 							$content = str_replace( '%rank_logo_' . $type_id . '%', mycred_get_rank_logo( $rank_id ), $content );
 						}
 
@@ -643,7 +737,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			foreach ( $mycred_types as $type_id ) {
 
 				// Load type
-				$mycred = mycred( $type_id );
+				$mycred     = mycred( $type_id );
 
 				// No settings
 				if ( ! isset( $mycred->rank['bb_location'] ) ) continue;
@@ -656,15 +750,15 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				if ( $users_rank === false ) continue;
 
 				// Parse template
-				$template = $mycred->rank['bb_template'];
-				$template = str_replace( '%rank_title%', get_the_title( $users_rank ), $template );
-				$template = str_replace( '%rank_logo%',  mycred_get_rank_logo( $users_rank, 'full' ), $template );
+				$template   = $mycred->rank['bb_template'];
+				$template   = str_replace( '%rank_title%', mycred_get_the_title( $users_rank ), $template );
+				$template   = str_replace( '%rank_logo%',  mycred_get_rank_logo( $users_rank, 'full' ), $template );
 
-				$template = $mycred->template_tags_general( $template );
-				$template = '<div class="mycred-my-rank ' . $type_id . '">' . $template . '</div>';
+				$template   = $mycred->template_tags_general( $template );
+				$template   = '<div class="mycred-my-rank ' . $type_id . '">' . $template . '</div>';
 
 				// Let others play
-				$output .= apply_filters( 'mycred_bp_header_ranks_row', $template, $user_id, $users_rank, $mycred, $this );
+				$output    .= apply_filters( 'mycred_bp_header_ranks_row', $template, $user_id, $users_rank, $mycred, $this );
 
 			}
 
@@ -689,7 +783,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			foreach ( $mycred_types as $type_id ) {
 
 				// Load type
-				$mycred = mycred( $type_id );
+				$mycred     = mycred( $type_id );
 
 				// No settings
 				if ( ! isset( $mycred->rank['bb_location'] ) ) continue;
@@ -702,15 +796,15 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				if ( $users_rank === false ) continue;
 
 				// Parse template
-				$template = $mycred->rank['bb_template'];
-				$template = str_replace( '%rank_title%', get_the_title( $users_rank ), $template );
-				$template = str_replace( '%rank_logo%',  mycred_get_rank_logo( $users_rank ), $template );
+				$template   = $mycred->rank['bb_template'];
+				$template   = str_replace( '%rank_title%', mycred_get_the_title( $users_rank ), $template );
+				$template   = str_replace( '%rank_logo%',  mycred_get_rank_logo( $users_rank ), $template );
 
-				$template = $mycred->template_tags_general( $template );
-				$template = '<div class="mycred-my-rank ' . $type_id . '">' . $template . '</div>';
+				$template   = $mycred->template_tags_general( $template );
+				$template   = '<div class="mycred-my-rank ' . $type_id . '">' . $template . '</div>';
 
 				// Let others play
-				$output .= apply_filters( 'mycred_bp_profile_ranks_row', $template, $user_id, $users_rank, $mycred, $this );
+				$output    .= apply_filters( 'mycred_bp_profile_ranks_row', $template, $user_id, $users_rank, $mycred, $this );
 				$count ++;
 
 			}
@@ -749,7 +843,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			foreach ( $mycred_types as $type_id ) {
 
 				// Load type
-				$mycred = mycred( $type_id );
+				$mycred     = mycred( $type_id );
 
 				// No settings
 				if ( ! isset( $mycred->rank['bp_location'] ) ) continue;
@@ -762,15 +856,15 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				if ( $users_rank === false ) continue;
 
 				// Parse template
-				$template = $mycred->rank['bp_template'];
-				$template = str_replace( '%rank_title%', get_the_title( $users_rank ), $template );
-				$template = str_replace( '%rank_logo%',  mycred_get_rank_logo( $users_rank ), $template );
+				$template   = $mycred->rank['bp_template'];
+				$template   = str_replace( '%rank_title%', mycred_get_the_title( $users_rank ), $template );
+				$template   = str_replace( '%rank_logo%',  mycred_get_rank_logo( $users_rank ), $template );
 
-				$template = $mycred->template_tags_general( $template );
-				$template = '<div class="mycred-my-rank ' . $type_id . '">' . $template . '</div>';
+				$template   = $mycred->template_tags_general( $template );
+				$template   = '<div class="mycred-my-rank ' . $type_id . '">' . $template . '</div>';
 
 				// Let others play
-				$output .= apply_filters( 'mycred_bb_reply_ranks_row', $template, $user_id, $users_rank, $mycred, $this );
+				$output    .= apply_filters( 'mycred_bb_reply_ranks_row', $template, $user_id, $users_rank, $mycred, $this );
 
 			}
 
@@ -794,7 +888,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			foreach ( $mycred_types as $type_id => $label ) {
 
 				// Load type
-				$mycred = mycred( $type_id );
+				$mycred     = mycred( $type_id );
 
 				// No settings
 				if ( ! isset( $mycred->rank['bp_location'] ) ) continue;
@@ -807,15 +901,15 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				if ( $users_rank === false ) continue;
 
 				// Parse template
-				$template = $mycred->rank['bp_template'];
-				$template = str_replace( '%rank_title%', get_the_title( $users_rank ), $template );
-				$template = str_replace( '%rank_logo%',  mycred_get_rank_logo( $users_rank ), $template );
+				$template   = $mycred->rank['bp_template'];
+				$template   = str_replace( '%rank_title%', mycred_get_the_title( $users_rank ), $template );
+				$template   = str_replace( '%rank_logo%',  mycred_get_rank_logo( $users_rank ), $template );
 
-				$template = $mycred->template_tags_general( $template );
-				$template = '<div class="mycred-my-rank ' . $type_id . '">' . $template . '</div>';
+				$template   = $mycred->template_tags_general( $template );
+				$template   = '<div class="mycred-my-rank ' . $type_id . '">' . $template . '</div>';
 
 				// Let others play
-				$output .= apply_filters( 'mycred_bb_profile_ranks_row', $template, $user_id, $users_rank, $mycred, $this );
+				$output    .= apply_filters( 'mycred_bb_profile_ranks_row', $template, $user_id, $users_rank, $mycred, $this );
 
 			}
 
@@ -842,16 +936,16 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				// Construct a new post
 				$rank                = array();
 				$rank['post_title']  = 'Newbie';
-				$rank['post_type']   = 'mycred_rank';
+				$rank['post_type']   = MYCRED_RANK_KEY;
 				$rank['post_status'] = 'publish';
 
 				// Insert new rank post
 				$rank_id = wp_insert_post( $rank );
 
 				// Update min and max values
-				update_post_meta( $rank_id, 'mycred_rank_min', 0 );
-				update_post_meta( $rank_id, 'mycred_rank_max', 9999999 );
-				update_post_meta( $rank_id, 'ctype',           MYCRED_DEFAULT_TYPE_KEY );
+				mycred_update_post_meta( $rank_id, 'mycred_rank_min', 0 );
+				mycred_update_post_meta( $rank_id, 'mycred_rank_max', 9999999 );
+				mycred_update_post_meta( $rank_id, 'ctype',           MYCRED_DEFAULT_TYPE_KEY );
 
 				$mycred_ranks = 1;
 				mycred_assign_ranks();
@@ -882,7 +976,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * Show Rank in User Editor
 		 * @since 1.7
-		 * @version 1.2
+		 * @version 1.3
 		 */
 		public function show_rank_in_user_editor( $point_type, $user, $data ) {
 
@@ -896,12 +990,80 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				return;
 			}
 
-			$rank = mycred_get_users_rank( $user->ID, $point_type );
+			$users_rank = mycred_get_users_rank( $user->ID, $point_type );
 			$rank_title = '-';
-			if ( isset( $rank->title ) )
-				$rank_title = $rank->title;
+			if ( isset( $users_rank->title ) )
+				$rank_title = $users_rank->title;
 
-			echo '<div class="balance-desc current-rank">' . sprintf( '<strong>%s:</strong> %s', __( 'Rank', 'mycred' ), $rank_title ) . '</div>';
+			// In manual mode we want to show a dropdown menu so an admin can adjust a users rank
+			if ( $this->is_manual_mode() && mycred_is_admin( NULL, $point_type ) ) {
+
+				$ranks = mycred_get_ranks( 'publish', '-1', 'DESC', $point_type );
+				echo '<div class="balance-desc current-rank"><select name="rank-' . $point_type . '" id="mycred-rank">';
+
+				echo '<option value=""';
+				if ( $users_rank === false )
+					echo ' selected="selected"';
+				echo '>' . __( 'No rank', 'mycred' ) . '</option>';
+
+				foreach ( $ranks as $rank ) {
+					echo '<option value="' . $rank->rank_id . '"';
+					if ( $users_rank->rank_id == $rank->rank_id ) echo ' selected="selected"';
+					echo '>' . $rank->title . '</option>';
+				}
+
+				echo '</select></div>';
+
+			}
+			else {
+
+				echo '<div class="balance-desc current-rank">' . sprintf( '<strong>%s:</strong> %s', __( 'Rank', 'mycred' ), $rank_title ) . '</div>';
+
+			}
+
+		}
+
+		/**
+		 * Save Users Rank
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function save_manual_rank( $user_id ) {
+
+			if ( $this->is_manual_mode() ) {
+
+				$point_types = mycred_get_types();
+				foreach ( $point_types as $type_key => $label ) {
+
+					if ( isset( $_POST[ 'rank-' . $type_key ] ) && mycred_is_admin( NULL, $type_key ) ) {
+
+						// Get users current rank for comparison
+						$users_rank = mycred_get_users_rank( $user_id, $type_key );
+
+						$rank       = false;
+						if ( $_POST[ 'rank-' . $type_key ] != '' )
+							$rank = absint( $_POST[ 'rank-' . $type_key ] );
+
+						// Save users rank if a valid rank id is provided and it differs from the users current one
+						if ( $rank !== false && $rank > 0 && $users_rank !== false && $users_rank->rank_id != $rank )
+							mycred_save_users_rank( $user_id, $rank, $type_key );
+
+						// Delete users rank
+						elseif ( $rank === false ) {
+
+							$end     = '';
+							if ( $type_key != MYCRED_DEFAULT_TYPE_KEY )
+								$end = $type_key;
+
+							mycred_delete_user_meta( $user_id, MYCRED_RANK_KEY, $end );
+
+						}
+
+					}
+
+				}
+
+			}
 
 		}
 
@@ -937,7 +1099,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			);
 
 			// Ranks List Page
-			if ( strpos( 'edit-mycred_rank', $screen->id ) > -1 ) {
+			if ( strpos( 'edit-' . MYCRED_RANK_KEY, $screen->id ) > -1 ) {
 
 				wp_enqueue_style( 'mycred-admin' );
 
@@ -957,13 +1119,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			}
 
 			// Edit Rank Page
-			if ( strpos( 'mycred_rank', $screen->id ) > -1 ) {
+			if ( strpos( MYCRED_RANK_KEY, $screen->id ) > -1 ) {
 
 				wp_dequeue_script( 'autosave' );
 				wp_enqueue_style( 'mycred-bootstrap-grid' );
 				wp_enqueue_style( 'mycred-forms' );
 
-				add_filter( 'postbox_classes_mycred_rank_mycred-rank-setup', array( $this, 'metabox_classes' ) );
+				add_filter( 'postbox_classes_' . MYCRED_RANK_KEY . '_mycred-rank-setup', array( $this, 'metabox_classes' ) );
 
 ?>
 <style type="text/css">
@@ -1008,7 +1170,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			if ( ! is_admin() ) {
 
 				// Only applicable on the post archive page (if used) and only for the main query
-				if ( ! is_post_type_archive( 'mycred_rank' ) || ! $query->is_main_query() ) return;
+				if ( ! is_post_type_archive( MYCRED_RANK_KEY ) || ! $query->is_main_query() ) return;
 
 				// By default we want to only show ranks for the main point type
 				if ( ! isset( $_GET['ctype'] ) ) {
@@ -1038,7 +1200,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			else {
 
 				// Only applicable when we are quering ranks
-				if ( ! isset( $query->query['post_type'] ) || $query->query['post_type'] != 'mycred_rank' ) return;
+				if ( ! isset( $query->query['post_type'] ) || $query->query['post_type'] != MYCRED_RANK_KEY ) return;
 
 				// If ctype is set, filter ranks according to it's value
 				if ( isset( $_GET['ctype'] ) && array_key_exists( $_GET['ctype'], $this->point_types ) ) {
@@ -1070,8 +1232,8 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function adjust_column_headers( $defaults ) {
 
-			$columns       = array();
-			$columns['cb'] = $defaults['cb'];
+			$columns                      = array();
+			$columns['cb']                = $defaults['cb'];
 
 			// Add / Adjust
 			$columns['title']             = __( 'Rank Title', 'mycred' );
@@ -1094,7 +1256,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function adjust_column_content( $column_name, $post_id ) {
 
-			$type = get_post_meta( $post_id, 'ctype', true );
+			$type = mycred_get_post_meta( $post_id, 'ctype', true );
 			if ( $type == '' )
 				$type = MYCRED_DEFAULT_TYPE_KEY;
 
@@ -1115,12 +1277,12 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				if ( $type != MYCRED_DEFAULT_TYPE_KEY )
 					$mycred = mycred( $type );
 
-				$min = get_post_meta( $post_id, 'mycred_rank_min', true );
+				$min = mycred_get_post_meta( $post_id, 'mycred_rank_min', true );
 				if ( empty( $min ) && (int) $min !== 0 )
 					$min = __( 'Any Value', 'mycred' );
 
 				$min = $mycred->template_tags_general( __( 'Minimum %plural%', 'mycred' ) ) . ': ' . $min;
-				$max = get_post_meta( $post_id, 'mycred_rank_max', true );
+				$max = mycred_get_post_meta( $post_id, 'mycred_rank_max', true );
 				if ( empty( $max ) )
 					$max = __( 'Any Value', 'mycred' );
 
@@ -1155,7 +1317,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function adjust_row_actions( $actions, $post ) {
 
-			if ( $post->post_type == 'mycred_rank' ) {
+			if ( $post->post_type == MYCRED_RANK_KEY ) {
 				unset( $actions['inline hide-if-no-js'] );
 
 				if ( ! $this->rank['public'] )
@@ -1174,7 +1336,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		public function enter_title_here( $title ) {
 
 			global $post_type;
-			if ( $post_type == 'mycred_rank' )
+			if ( $post_type == MYCRED_RANK_KEY )
 				return __( 'Rank Title', 'mycred' );
 
 			return $title;
@@ -1192,7 +1354,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				'mycred-rank-setup',
 				__( 'Rank Setup', 'mycred' ),
 				array( $this, 'rank_settings' ),
-				'mycred_rank',
+				MYCRED_RANK_KEY,
 				'normal',
 				'high'
 			);
@@ -1207,10 +1369,10 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		public function rank_settings( $post ) {
 
 			// Get type
-			$type = get_post_meta( $post->ID, 'ctype', true );
+			$type = mycred_get_post_meta( $post->ID, 'ctype', true );
 			if ( $type == '' ) {
 				$type = MYCRED_DEFAULT_TYPE_KEY;
-				update_post_meta( $post->ID, 'ctype', $type );
+				mycred_update_post_meta( $post->ID, 'ctype', $type );
 			}
 
 			// If a custom type has been requested via the URL
@@ -1302,42 +1464,45 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * Save Rank Details
 		 * @since 1.1
-		 * @version 1.4.1
+		 * @version 1.5
 		 */
 		public function save_rank( $post_id, $post ) {
 
 			// Make sure fields exists
-			if ( $post === NULL || ! current_user_can( $this->core->edit_creds_cap() ) || ! isset( $_POST['mycred_rank'] ) ) return;
+			if ( $post === NULL || ! $this->core->user_is_point_editor() || ! isset( $_POST['mycred_rank'] ) ) return;
 
-			$changed    = 0;
 			$point_type = sanitize_key( $_POST['mycred_rank']['ctype'] );
-			if ( ! mycred_point_type_exists( $point_type ) )
+			if ( ! array_key_exists( $point_type, $this->point_types ) )
 				$point_type = MYCRED_DEFAULT_TYPE_KEY;
 
-			update_post_meta( $post_id, 'ctype', $point_type );
+			mycred_update_post_meta( $post_id, 'ctype', $point_type );
 
-			$mycred = $this->core;
-			if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
-				$mycred = mycred( $point_type );
+			$type_object = new myCRED_Point_Type( $point_type );
 
 			foreach ( $_POST['mycred_rank'] as $meta_key => $meta_value ) {
 
 				if ( $meta_key == 'ctype' ) continue;
 
 				$new_value = sanitize_text_field( $meta_value );
-				$new_value = $mycred->number( $new_value );
-				update_post_meta( $post_id, $meta_key, $new_value );
+				$new_value = $type_object->number( $new_value );
+
+				mycred_update_post_meta( $post_id, $meta_key, $new_value );
 
 			}
 
-			mycred_assign_ranks( $point_type );
+			// Delete caches
+			wp_cache_delete( 'ranks-published-' . $point_type, MYCRED_SLUG );
+			wp_cache_delete( 'ranks-published-count-' . $point_type, MYCRED_SLUG );
+
+			if ( ! $this->is_manual_mode() )
+				mycred_assign_ranks( $point_type );
 
 		}
 
 		/**
 		 * Add to General Settings
 		 * @since 1.1
-		 * @version 1.4
+		 * @version 1.5
 		 */
 		public function after_general_settings( $mycred = NULL ) {
 
@@ -1435,7 +1600,15 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 	<h3><?php _e( 'Rank Behaviour', 'mycred' ); ?></h3>
 	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="radio">
+					<label for="<?php echo $this->field_id( array( 'base' => 'manual' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'base' ); ?>" id="<?php echo $this->field_id( array( 'base' => 'manual' ) ); ?>"<?php checked( $prefs['base'], 'manual' ); ?> value="current" /> <?php _e( 'Manual Mode', 'mycred' ); ?></label>
+				</div>
+				<p><span class="description"><?php _e( 'Ranks are assigned manually for each user.', 'mycred' ); ?></span></p>
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
 					<label for="<?php echo $this->field_id( array( 'base' => 'current' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'base' ); ?>" id="<?php echo $this->field_id( array( 'base' => 'current' ) ); ?>"<?php checked( $prefs['base'], 'current' ); ?> value="current" /> <?php _e( 'Based on Current Balances', 'mycred' ); ?></label>
@@ -1443,7 +1616,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				<p><span class="description"><?php _e( 'Users can be promoted or demoted depending on where their balance fits in amongst your ranks.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
 					<label for="<?php echo $this->field_id( array( 'base' => 'total' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'base' ); ?>" id="<?php echo $this->field_id( array( 'base' => 'total' ) ); ?>"<?php checked( $prefs['base'], 'total' ); ?> value="total" /> <?php _e( 'Based on Total Balances', 'mycred' ); ?></label>
@@ -1610,7 +1783,7 @@ jQuery(function($){
 		/**
 		 * Save Settings
 		 * @since 1.1
-		 * @version 1.3.2
+		 * @version 1.4
 		 */
 		public function sanitize_extra_settings( $new_data, $data, $core ) {
 
@@ -1620,7 +1793,7 @@ jQuery(function($){
 			$new_data['rank']['support']['page-attributes'] = ( isset( $data['rank']['support']['page-attributes'] ) ) ? true : false;
 			$new_data['rank']['support']['custom-fields']   = ( isset( $data['rank']['support']['custom-fields'] ) ) ? true : false;
 
-			$new_data['rank']['base']                       = sanitize_text_field( $data['rank']['base'] );
+			$new_data['rank']['base']                       = sanitize_key( $data['rank']['base'] );
 			$new_data['rank']['public']                     = ( isset( $data['rank']['public'] ) ) ? true : false;
 			$new_data['rank']['slug']                       = ( isset( $data['rank']['slug'] ) ) ? sanitize_title( $data['rank']['slug'] ) : '';
 			$new_data['rank']['order']                      = ( isset( $data['rank']['order'] ) ) ? sanitize_text_field( $data['rank']['order'] ) : '';
@@ -1641,13 +1814,12 @@ jQuery(function($){
 		 */
 		public function rank_management( $mycred ) {
 
-			$count = mycred_get_published_ranks_count( $mycred->mycred_type );
-
-			$reset_block = false;
+			$count         = mycred_get_published_ranks_count( $mycred->mycred_type );
+			$reset_block   = false;
 			if ( $count == 0 || $count === false )
 				$reset_block = true;
 
-			$rank_meta_key = 'mycred_rank';
+			$rank_meta_key = MYCRED_RANK_KEY;
 			if ( $this->core->is_multisite && $GLOBALS['blog_id'] > 1 && ! $this->core->use_master_template )
 				$rank_meta_key .= '_' . $GLOBALS['blog_id'];
 
@@ -1667,7 +1839,7 @@ jQuery(function($){
 	</li>
 	<li>
 		<label><?php _e( 'Actions', 'mycred' ); ?></label>
-		<div class="h2"><input type="button" id="mycred-manage-action-reset-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Remove All Ranks', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>" /> <input type="button" id="mycred-manage-action-assign-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Assign Ranks to Users', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; ?>" /></div>
+		<div class="h2"><input type="button" id="mycred-manage-action-reset-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Remove All Ranks', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>" /><?php if ( ! $this->is_manual_mode() ) : ?> <input type="button" id="mycred-manage-action-assign-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Assign Ranks to Users', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; ?>" /></div><?php endif; ?>
 	</li>
 </ol>
 <?php
@@ -1679,23 +1851,18 @@ jQuery(function($){
 		 * When an admin selects to zero out all balances
 		 * we want to remove all ranks as well.
 		 * @since 1.6
-		 * @version 1.0
+		 * @version 1.1
 		 */
-		public function zero_balance_action( $type = '' ) {
+		public function zero_balance_action( $point_type = '' ) {
 
 			global $wpdb;
 
-			// Get rank key
-			$rank_meta_key = 'mycred_rank';
-			if ( $this->core->is_multisite && $GLOBALS['blog_id'] > 1 && ! $this->core->use_master_template )
-				$rank_meta_key .= '_' . $GLOBALS['blog_id'];
-
-			if ( array_key_exists( $type, $this->point_types ) && $type != MYCRED_DEFAULT_TYPE_KEY )
-				$rank_meta_key .= $type;
+			if ( ! array_key_exists( $point_type, $this->point_types ) )
+				$point_type = MYCRED_DEFAULT_TYPE_KEY;
 
 			$wpdb->delete(
 				$wpdb->usermeta,
-				array( 'meta_key' => $rank_meta_key ),
+				array( 'meta_key' => mycred_get_meta_key( MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ) ) ),
 				array( '%s' )
 			);
 
@@ -1704,7 +1871,7 @@ jQuery(function($){
 		/**
 		 * Delete Ranks
 		 * @since 1.3.2
-		 * @version 1.1
+		 * @version 1.3
 		 */
 		public function action_delete_ranks() {
 
@@ -1712,79 +1879,82 @@ jQuery(function($){
 			check_ajax_referer( 'mycred-management-actions-roles', 'token' );
 
 			// Define type
-			$type = MYCRED_DEFAULT_TYPE_KEY;
-			if ( isset( $_POST['ctype'] ) && array_key_exists( $_POST['ctype'], $this->point_types ) )
-				$type = sanitize_text_field( $_POST['ctype'] );
+			$point_type     = MYCRED_DEFAULT_TYPE_KEY;
+			if ( isset( $_POST['ctype'] ) && array_key_exists( sanitize_key( $_POST['ctype'] ), $this->point_types ) )
+				$point_type = sanitize_key( $_POST['ctype'] );
 
 			global $wpdb;
 
 			// Get the appropriate tables based on setup
-			if ( ! mycred_override_settings() ) {
-				$posts = $wpdb->posts;
-				$postmeta = $wpdb->postmeta;
-			}
-			else {
-				$posts = $wpdb->base_prefix . 'posts';
-				$postmeta = $wpdb->base_prefix . 'postmeta';
-			}
+			$posts_table    = mycred_get_db_column( 'posts' );
+			$postmeta_table = mycred_get_db_column( 'postmeta' );
 
 			// First get the ids of all existing ranks
-			$rank_ids = $wpdb->get_col( $wpdb->prepare( "
+			$rank_key       = MYCRED_RANK_KEY;
+			$rank_ids       = $wpdb->get_col( $wpdb->prepare( "
 				SELECT DISTINCT ranks.ID 
-				FROM {$posts} ranks 
-				INNER JOIN {$postmeta} ctype 
-					ON ( ranks.ID = ctype.post_id AND ctype.meta_key = %s )
-				WHERE ranks.post_type = %s
-				AND ctype.meta_value = %s;", 'ctype', 'mycred_rank', $type ) );
+				FROM {$posts_table} ranks 
+				INNER JOIN {$postmeta_table} ctype 
+					ON ( ranks.ID = ctype.post_id AND ctype.meta_key = 'ctype' )
+				WHERE ranks.post_type = '{$rank_key}' 
+				AND ctype.meta_value = %s;", $point_type ) );
 
 			// If ranks were found
-			$rows = 0;
+			$rows           = 0;
 			if ( ! empty( $rank_ids ) ) {
 
-				$id_list = implode( ',', $rank_ids );
+				$id_list = implode( ', ', $rank_ids );
 
 				// Remove posts
 				$wpdb->query( "
-					DELETE FROM {$posts} 
-					WHERE post_type = 'mycred_rank'
+					DELETE FROM {$posts_table} 
+					WHERE post_type = '{$rank_key}' 
 					AND post_id IN ({$id_list});" );
 
 				// Remove post meta
 				$wpdb->query( "
-					DELETE FROM {$postmeta} 
+					DELETE FROM {$postmeta_table} 
 					WHERE post_id IN ({$id_list});" );
 
 				// Confirm that ranks are gone by counting ranks
 				// If all went well this should return zero.
-				$rows = $wpdb->get_var( $wpdb->prepare( "
+				$rows    = $wpdb->get_var( $wpdb->prepare( "
 					SELECT COUNT(*) 
-					FROM {$posts} ranks 
-					INNER JOIN {$postmeta} ctype 
-						ON ( ranks.ID = ctype.post_id AND ctype.meta_key = %s )
-					WHERE ranks.post_type = %s
-					AND ctype.meta_value = %s;", 'ctype', 'mycred_rank', $type ) );
+					FROM {$posts_table} ranks 
+					INNER JOIN {$postmeta_table} ctype 
+						ON ( ranks.ID = ctype.post_id AND ctype.meta_key = 'ctype' )
+					WHERE ranks.post_type = '{$rank_key}' 
+					AND ctype.meta_value = %s;", $point_type ) );
+				if ( $rows === NULL ) $rows = 0;
+
+				// Delete users rank meta
+				$this->zero_balance_action( $point_type );
 
 			}
 
-			die( json_encode( array( 'status' => 'OK', 'rows' => $rows ) ) );
+			// Delete caches
+			wp_cache_delete( 'ranks-published-' . $point_type, MYCRED_SLUG );
+			wp_cache_delete( 'ranks-published-count-' . $point_type, MYCRED_SLUG );
+
+			wp_send_json( array( 'status' => 'OK', 'rows' => $rows ) );
 
 		}
 
 		/**
 		 * Assign Ranks
 		 * @since 1.3.2
-		 * @version 1.1
+		 * @version 1.3
 		 */
 		public function action_assign_ranks() {
 
 			check_ajax_referer( 'mycred-management-actions-roles', 'token' );
 
-			$type = MYCRED_DEFAULT_TYPE_KEY;
-			if ( isset( $_POST['ctype'] ) && array_key_exists( $_POST['ctype'], $this->point_types ) )
-				$type = sanitize_text_field( $_POST['ctype'] );
+			$point_type     = MYCRED_DEFAULT_TYPE_KEY;
+			if ( isset( $_POST['ctype'] ) && array_key_exists( sanitize_key( $_POST['ctype'] ), $this->point_types ) )
+				$point_type = sanitize_key( $_POST['ctype'] );
 
-			$adjustments = mycred_assign_ranks( $type );
-			die( json_encode( array( 'status' => 'OK', 'rows' => $adjustments ) ) );
+			$adjustments = mycred_assign_ranks( $point_type );
+			wp_send_json( array( 'status' => 'OK', 'rows' => $adjustments ) );
 
 		}
 

@@ -17,7 +17,7 @@ if ( ! function_exists( 'mycred_render_shortcode_total_since' ) ) :
 			'ref'       => '',
 			'user_id'   => 'current',
 			'formatted' => 1
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_total_since' ) );
 
 		if ( ! mycred_point_type_exists( $type ) )
 			$type = MYCRED_DEFAULT_TYPE_KEY;
@@ -35,4 +35,4 @@ if ( ! function_exists( 'mycred_render_shortcode_total_since' ) ) :
 
 	}
 endif;
-add_shortcode( 'mycred_total_since', 'mycred_render_shortcode_total_since' );
+add_shortcode( MYCRED_SLUG . '_total_since', 'mycred_render_shortcode_total_since' );

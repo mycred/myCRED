@@ -47,11 +47,11 @@ if ( ! class_exists( 'myCRED_Network_Module' ) ) :
 		/**
 		 * Init
 		 * @since 0.1
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function module_init() {
 
-			if ( MYCRED_ENABLE_LOGGING && $this->blog_id > 1 ) {
+			if ( MYCRED_ENABLE_LOGGING && ! mycred_is_main_site() ) {
 
 				/**
 				 * In situations where we are enforcing our main sites settings on all blogs and
@@ -238,7 +238,7 @@ h4.ui-accordion-header:before { content: "<?php _e( 'click to open', 'mycred' );
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php printf( __( '%s Network', 'mycred' ), $name ); ?> <a href="http://codex.mycred.me/chapter-i/multisites/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a></h1>
+	<h1><?php printf( __( '%s Network', 'mycred' ), $name ); ?><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/multisites/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 <?php
 
 			if ( wp_is_large_network() ) {

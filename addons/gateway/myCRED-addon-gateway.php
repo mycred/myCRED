@@ -1,7 +1,7 @@
 <?php
 /**
  * Addon: Gateway
- * Addon URI: http://mycred.me/add-ons/gateway/
+ * Addon URI: http://codex.mycred.me/chapter-iii/gateway/
  * Version: 1.4
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
@@ -41,7 +41,7 @@ function mycred_load_events_manager() {
 
 	if ( ! defined( 'EM_VERSION' ) ) return;
 
-	// Free version only
+	// Free only
 	if ( ! class_exists( 'EM_Pro' ) ) {
 
 		require_once myCRED_GATE_EVENT_DIR . 'mycred-eventsmanager.php';
