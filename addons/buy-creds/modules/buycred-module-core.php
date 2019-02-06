@@ -1457,7 +1457,7 @@ jQuery(function($) {
 			else :
 
 				// One amount - this is the amount a user must buy
-				if ( count( $amount ) > 1 ) {
+				if ( count( $amounts ) === 1 ) {
 
 ?>
 				<p class="form-control-static"><?php echo $mycred->format_creds( $amounts[0] ); ?></p>
