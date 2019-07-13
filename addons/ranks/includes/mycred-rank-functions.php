@@ -539,7 +539,7 @@ if ( ! function_exists( 'mycred_get_ranks' ) ) :
 			$posts     = mycred_get_db_column( 'posts' );
 			$postmeta  = mycred_get_db_column( 'postmeta' );
 
-			$results   = array();
+			$ranks   = array();
 			$rank_ids  = $wpdb->get_col( $wpdb->prepare( "
 				SELECT ranks.ID
 				FROM {$posts} ranks
@@ -553,15 +553,15 @@ if ( ! function_exists( 'mycred_get_ranks' ) ) :
 			if ( ! empty( $rank_ids ) ) {
 
 				foreach ( $rank_ids as $rank_id )
-					$results[] = mycred_get_rank( $rank_id );
+					$ranks[] = mycred_get_rank( $rank_id );
 
 			}
 
-			wp_cache_set( $cache_key, $results, MYCRED_SLUG );
+			wp_cache_set( $cache_key, $ranks, MYCRED_SLUG );
 
 		}
 
-		return apply_filters( 'mycred_get_ranks', $results, $status, $number, $order );
+		return apply_filters( 'mycred_get_ranks', $ranks, $status, $number, $order );
 
 	}
 endif;
