@@ -67,13 +67,13 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			$this->cred_id             = ( ( ! is_string( $point_type ) || sanitize_key( $point_type ) == '' || $point_type === NULL ) ? $this->default_cred_id : $point_type );
 			$this->is_main_type        = ( ( $this->cred_id == $this->default_cred_id ) ? true : false );
 
-			// Log table
-			$this->log_table           = $this->get_log_table();
-
 			// Multisite related
 			$this->is_multisite        = is_multisite();
 			$this->use_master_template = mycred_override_settings();
 			$this->use_central_logging = mycred_centralize_log();
+
+			// Log table
+			$this->log_table           = $this->get_log_table();
 
 			// Option ID
 			$this->option_id           = 'mycred_pref_core';
@@ -100,6 +100,7 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		public function defaults() {
 
 			return array(
+				'cred_id'   => MYCRED_DEFAULT_TYPE_KEY,
 				'format'      => array(
 					'type'        => 'bigint',
 					'decimals'    => 0,
@@ -150,16 +151,32 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		/**
 		 * Default Settings
 		 * @since 1.8
-		 * @version 1.0
+		 * @version 1.2
 		 */
 		public function get_log_table() {
 
 			global $wpdb;
 
 			if ( $this->is_multisite && $this->use_central_logging )
-				$table_name = $wpdb->base_prefix . 'myCRED_log';
+				$wp_prefix = $wpdb->base_prefix;
 			else
-				$table_name = $wpdb->prefix . 'myCRED_log';
+				$wp_prefix = $wpdb->prefix;
+
+			$table_name = wp_cache_get('mycred_log_table_name');
+			if( FALSE === $table_name ) {
+				$table_name = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $wp_prefix . 'myCRED_log' ) );
+				if( $table_name !== NULL ) {
+					wp_cache_set('mycred_log_table_name', $table_name);
+				}
+			}
+
+			if( $table_name == NULL ) {
+				$table_name = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $wp_prefix . 'mycred_log' ) );
+				if( $table_name == NULL ) {
+					$table_name = $wp_prefix . 'myCRED_log';
+				}
+				wp_cache_set('mycred_log_table_name', $table_name);
+			}
 
 			if ( defined( 'MYCRED_LOG_TABLE' ) )
 				$table_name = MYCRED_LOG_TABLE;
@@ -512,7 +529,7 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			$post_url = '#item-has-been-deleted';
 
 			// Post does not exist - see if we can re-construct
-			if ( isset( $post->ID ) ) {
+			if ( !isset( $post->ID ) ) {
 
 				// Nope, no backup, bye
 				if ( ! is_array( $data ) || ! array_key_exists( 'ID', $data ) ) return $content;
@@ -1431,7 +1448,11 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 				// Update total balance (if enabled)
 				if ( MYCRED_ENABLE_TOTAL_BALANCE && MYCRED_ENABLE_LOGGING && ( $run_this['amount'] > 0 || ( $run_this['amount'] < 0 && $run_this['ref'] == 'manual' ) ) ) {
 
-					$this->update_users_total_balance( (int) $run_this['user_id'], $run_this['amount'], $run_this['type'] );
+					$is_update_total_balance = apply_filters( 'mycred_update_total_balance', true, $run_this );
+
+					if ( $is_update_total_balance ) {
+						$this->update_users_total_balance( (int) $run_this['user_id'], $run_this['amount'], $run_this['type'] );
+					}
 
 				}
 
@@ -2644,7 +2665,9 @@ if ( ! function_exists( 'mycred_get_option' ) ) :
 
 		}
 
-		return get_option( $option_id, $default );
+		$get_option_id = apply_filters( 'mycred_get_option_id', $option_id );
+
+		return get_option( $get_option_id, $default );
 
 	}
 endif;
@@ -3009,6 +3032,29 @@ if ( ! function_exists( 'mycred_trash_post' ) ) :
 			switch_to_blog( get_network()->site_id );
 
 		$results = wp_trash_post( $post_id );
+
+		if ( $override )
+			restore_current_blog();
+
+		return $results;
+
+	}
+endif;
+
+/**
+ * Get Attachment URL
+ * @since 1.8.11
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_attachment_url' ) ) :
+	function mycred_get_attachment_url( $post_id = NULL ) {
+
+		$override = ( mycred_override_settings() && ! mycred_is_main_site() );
+
+		if ( $override )
+			switch_to_blog( get_network()->site_id );
+
+		$results = wp_get_attachment_url( $post_id );
 
 		if ( $override )
 			restore_current_blog();
@@ -3441,7 +3487,7 @@ endif;
  * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_translate_limit_code' ) ) :
-	function mycred_translate_limit_code( $code = '' ) {
+	function mycred_translate_limit_code( $code = '', $id, $mycred ) {
 
 		if ( $code == '' ) return '-';
 
@@ -3472,7 +3518,7 @@ if ( ! function_exists( 'mycred_translate_limit_code' ) ) :
 
 		}
 
-		return apply_filters( 'mycred_translate_limit_code', $result, $code );
+		return apply_filters( 'mycred_translate_limit_code', $result, $code, $id, $mycred );
 
 	}
 endif;

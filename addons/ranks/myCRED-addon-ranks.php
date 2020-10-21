@@ -190,11 +190,20 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 * @since 1.8
 		 * @version 1.0
 		 */
-		public function is_manual_mode() {
+		public function is_manual_mode( $type_id ) {
 
 			$manual_mode = false;
-			if ( $this->rank['base'] == 'manual' )
-				$manual_mode = true;
+
+			$point_type = 'mycred_pref_core';
+
+			if ( $type_id != MYCRED_DEFAULT_TYPE_KEY ) {
+				$point_type = 'mycred_pref_core_' . $type_id;
+			}
+
+			$setting = mycred_get_option( $point_type );
+
+			if ( ! empty( $setting['rank']['base'] ) && $setting['rank']['base'] == 'manual' )
+				$manual_mode = $setting['rank']['base'];
 
 			return $manual_mode;
 
@@ -555,7 +564,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				// Get the total for each user with a balance
 				foreach ( $users as $user_id ) {
 
-					$total = mycred_query_users_total( $user_id, $point_type );
+					$total = mycred_calculate_users_total( $user_id, $point_type );
 					mycred_update_user_meta( $user_id, $point_type, '_total', $total );
 					$count ++;
 
@@ -575,13 +584,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function balance_adjustment( $result, $request, $mycred ) {
 
-			// Manual mode
-			if ( $this->is_manual_mode() ) return $result;
-
 			// If the result was declined
 			if ( $result === false ) return $result;
 
 			extract( $request );
+
+			// Manual mode
+			if ( $this->is_manual_mode( $type ) ) return $result;
 
 			// If ranks for this type is based on total and this is not a admin adjustment
 			if ( mycred_rank_based_on_total( $type ) && $amount < 0 && $ref != 'manual' )
@@ -619,7 +628,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			}
 
-			if ( $this->is_manual_mode() ) return;
+			if ( $this->is_manual_mode( $point_type ) ) return;
 
 			// Publishing or trashing of ranks
 			if ( ( $new_status == 'publish' && $old_status != 'publish' ) || ( $new_status == 'trash' && $old_status != 'trash' ) ) {
@@ -627,7 +636,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				wp_cache_delete( 'ranks-published-' . $point_type, MYCRED_SLUG );
 				wp_cache_delete( 'ranks-published-count-' . $point_type, MYCRED_SLUG );
 
-				mycred_assign_ranks( $type );
+				mycred_assign_ranks( $point_type );
 
 			}
 
@@ -739,6 +748,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				// Load type
 				$mycred     = mycred( $type_id );
 
+				//Nothing to do if we are excluded
+				if ( $mycred->exclude_user( $user_id ) ) continue;
+
 				// No settings
 				if ( ! isset( $mycred->rank['bb_location'] ) ) continue;
 
@@ -784,6 +796,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 				// Load type
 				$mycred     = mycred( $type_id );
+
+				//Nothing to do if we are excluded
+				if ( $mycred->exclude_user( $user_id ) ) continue;
 
 				// No settings
 				if ( ! isset( $mycred->rank['bb_location'] ) ) continue;
@@ -848,6 +863,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				// No settings
 				if ( ! isset( $mycred->rank['bp_location'] ) ) continue;
 
+				//Nothing to do if we are excluded
+				if ( $mycred->exclude_user( $user_id ) ) continue;
+
 				// Not shown
 				if ( ! in_array( $mycred->rank['bp_location'], array( 'reply', 'both' ) ) || $mycred->rank['bp_template'] == '' ) continue;
 
@@ -892,6 +910,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 				// No settings
 				if ( ! isset( $mycred->rank['bp_location'] ) ) continue;
+
+				//Nothing to do if we are excluded
+				if ( $mycred->exclude_user( $user_id ) ) continue;
 
 				// Not shown
 				if ( ! in_array( $mycred->rank['bp_location'], array( 'profile', 'both' ) ) || $mycred->rank['bp_template'] == '' ) continue;
@@ -996,7 +1017,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				$rank_title = $users_rank->title;
 
 			// In manual mode we want to show a dropdown menu so an admin can adjust a users rank
-			if ( $this->is_manual_mode() && mycred_is_admin( NULL, $point_type ) ) {
+			if ( $this->is_manual_mode( $point_type ) && mycred_is_admin( NULL, $point_type ) ) {
 
 				$ranks = mycred_get_ranks( 'publish', '-1', 'DESC', $point_type );
 				echo '<div class="balance-desc current-rank"><select name="rank-' . $point_type . '" id="mycred-rank">';
@@ -1007,8 +1028,8 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				echo '>' . __( 'No rank', 'mycred' ) . '</option>';
 
 				foreach ( $ranks as $rank ) {
-					echo '<option value="' . $rank->rank_id . '"';
-					if ( $users_rank->rank_id == $rank->rank_id ) echo ' selected="selected"';
+					echo '<option value="' . $rank->post_id . '"';
+					if ( ! empty( $users_rank ) && $users_rank->post_id == $rank->post_id ) echo ' selected="selected"';
 					echo '>' . $rank->title . '</option>';
 				}
 
@@ -1030,10 +1051,10 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function save_manual_rank( $user_id ) {
 
-			if ( $this->is_manual_mode() ) {
+			$point_types = mycred_get_types();
+			foreach ( $point_types as $type_key => $label ) {
 
-				$point_types = mycred_get_types();
-				foreach ( $point_types as $type_key => $label ) {
+				if ( $this->is_manual_mode( $type_key ) ) {
 
 					if ( isset( $_POST[ 'rank-' . $type_key ] ) && mycred_is_admin( NULL, $type_key ) ) {
 
@@ -1041,13 +1062,14 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 						$users_rank = mycred_get_users_rank( $user_id, $type_key );
 
 						$rank       = false;
+
 						if ( $_POST[ 'rank-' . $type_key ] != '' )
 							$rank = absint( $_POST[ 'rank-' . $type_key ] );
 
 						// Save users rank if a valid rank id is provided and it differs from the users current one
-						if ( $rank !== false && $rank > 0 && $users_rank !== false && $users_rank->rank_id != $rank )
+						if ( $rank !== false && $rank > 0 && $users_rank->rank_id != $rank )
 							mycred_save_users_rank( $user_id, $rank, $type_key );
-
+						
 						// Delete users rank
 						elseif ( $rank === false ) {
 
@@ -1060,7 +1082,6 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 						}
 
 					}
-
 				}
 
 			}
@@ -1494,7 +1515,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			wp_cache_delete( 'ranks-published-' . $point_type, MYCRED_SLUG );
 			wp_cache_delete( 'ranks-published-count-' . $point_type, MYCRED_SLUG );
 
-			if ( ! $this->is_manual_mode() )
+			if ( ! $this->is_manual_mode( $point_type ) )
 				mycred_assign_ranks( $point_type );
 
 		}
@@ -1603,7 +1624,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
-					<label for="<?php echo $this->field_id( array( 'base' => 'manual' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'base' ); ?>" id="<?php echo $this->field_id( array( 'base' => 'manual' ) ); ?>"<?php checked( $prefs['base'], 'manual' ); ?> value="current" /> <?php _e( 'Manual Mode', 'mycred' ); ?></label>
+					<label for="<?php echo $this->field_id( array( 'base' => 'manual' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'base' ); ?>" id="<?php echo $this->field_id( array( 'base' => 'manual' ) ); ?>"<?php checked( $prefs['base'], 'manual' ); ?> value="manual" /> <?php _e( 'Manual Mode', 'mycred' ); ?></label>
 				</div>
 				<p><span class="description"><?php _e( 'Ranks are assigned manually for each user.', 'mycred' ); ?></span></p>
 			</div>
@@ -1839,7 +1860,7 @@ jQuery(function($){
 	</li>
 	<li>
 		<label><?php _e( 'Actions', 'mycred' ); ?></label>
-		<div class="h2"><input type="button" id="mycred-manage-action-reset-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Remove All Ranks', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>" /><?php if ( ! $this->is_manual_mode() ) : ?> <input type="button" id="mycred-manage-action-assign-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Assign Ranks to Users', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; ?>" /></div><?php endif; ?>
+		<div class="h2"><input type="button" id="mycred-manage-action-reset-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Remove All Ranks', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>" /><?php if ( ! $this->is_manual_mode( $mycred->mycred_type ) ) : ?> <input type="button" id="mycred-manage-action-assign-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Assign Ranks to Users', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; ?>" /></div><?php endif; ?>
 	</li>
 </ol>
 <?php
@@ -1909,7 +1930,7 @@ jQuery(function($){
 				$wpdb->query( "
 					DELETE FROM {$posts_table} 
 					WHERE post_type = '{$rank_key}' 
-					AND post_id IN ({$id_list});" );
+					AND ID IN ({$id_list});" );
 
 				// Remove post meta
 				$wpdb->query( "

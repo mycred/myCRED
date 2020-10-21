@@ -177,8 +177,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'Give your users badges based on their interaction with your website.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/badges/',
 				'version'     => '1.3',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/badges-addon.png', myCRED_THIS ),
 				'requires'    => array()
 			);
@@ -189,8 +189,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'Setup recurring payouts or offer / charge interest on user account balances.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/banking/',
 				'version'     => '2.0',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/banking-addon.png', myCRED_THIS ),
 				'requires'    => array()
 			);
@@ -201,8 +201,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'The <strong>buy</strong>CRED Add-on allows your users to buy points using PayPal, Skrill (Moneybookers) or NETbilling. <strong>buy</strong>CRED can also let your users buy points for other members.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/buycred/',
 				'version'     => '1.5',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/buy-creds-addon.png', myCRED_THIS ),
 				'requires'    => array()
 			);
@@ -213,8 +213,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'The coupons add-on allows you to create coupons that users can use to add points to their accounts.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/coupons/',
 				'version'     => '1.4',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/coupons-addon.png', myCRED_THIS ),
 				'requires'    => array()
 			);
@@ -225,8 +225,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'Create email notices for any type of myCRED instance.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/email-notice/',
 				'version'     => '1.4',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/email-notifications-addon.png', myCRED_THIS ),
 				'requires'    => array()
 			);
@@ -237,8 +237,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'Let your users pay using their <strong>my</strong>CRED points balance. Supported Carts: WooCommerce, MarketPress and WP E-Commerce. Supported Event Bookings: Event Espresso and Events Manager (free & pro).', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/gateway/',
 				'version'     => '1.4',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/gateway-addon.png', myCRED_THIS ),
 				'requires'    => array()
 			);
@@ -249,8 +249,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'Create pop-up notifications for when users gain or loose points.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/notifications/',
 				'version'     => '1.1.2',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'pro_url'     => 'https://mycred.me/store/notifications-plus-add-on/',
 				'screenshot'  =>  plugins_url( 'assets/images/notifications-addon.png', myCRED_THIS ),
 				'requires'    => array()
@@ -262,8 +262,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'Create ranks for users reaching a certain number of %_plural% with the option to add logos for each rank.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/ranks/',
 				'version'     => '1.6',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/ranks-addon.png', myCRED_THIS ),
 				'requires'    => array()
 			);
@@ -274,8 +274,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'This add-on allows you to sell posts, pages or any public post types on your website. You can either sell the entire content or using our shortcode, sell parts of your content allowing you to offer "teasers".', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/sell-content/',
 				'version'     => '2.0.1',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/sell-content-addon.png', myCRED_THIS ),
 				'requires'    => array( 'log' )
 			);
@@ -286,8 +286,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'Gives you access to your myCRED Statistics based on your users gains and loses.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/statistics/',
 				'version'     => '2.0',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/statistics-addon.png', myCRED_THIS )
 			);
 
@@ -297,8 +297,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'description' => __( 'Allow your users to send or "donate" points to other members by either using the mycred_transfer shortcode or the myCRED Transfer widget.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/transfers/',
 				'version'     => '1.6',
-				'author'      => 'Gabriel S Merovingi',
-				'author_url'  => 'https://www.merovingi.com',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
 				'pro_url'     => 'https://mycred.me/store/transfer-plus/',
 				'screenshot'  => plugins_url( 'assets/images/transfer-addon.png', myCRED_THIS ),
 				'requires'    => array()

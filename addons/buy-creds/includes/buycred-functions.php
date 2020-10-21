@@ -94,17 +94,6 @@ if ( ! function_exists( 'mycred_get_buycred_gateways' ) ) :
 			'custom_rate'   => true
 		);
 
-		// Zombaio
-		$installed['zombaio'] = array(
-			'title'         => 'Zombaio',
-			'callback'      => array( 'myCRED_Zombaio' ),
-			'documentation' => 'http://codex.mycred.me/chapter-iii/buycred/payment-gateways/zombaio/',
-			'icon'          => 'dashicons-admin-generic',
-			'sandbox'       => false,
-			'external'      => true,
-			'custom_rate'   => false
-		);
-
 		// Bank Transfers
 		$installed['bank'] = array(
 			'title'         => __( 'Bank Transfer', 'mycred' ),
@@ -175,7 +164,6 @@ if ( ! function_exists( 'mycred_get_buycred_gateway_refs' ) ) :
 		$references = array(
 			'buy_creds_with_paypal_standard',
 			'buy_creds_with_skrill',
-			'buy_creds_with_zombaio',
 			'buy_creds_with_netbilling',
 			'buy_creds_with_bitpay',
 			'buy_creds_with_bank'
@@ -486,7 +474,7 @@ if ( ! function_exists( 'buycred_add_pending_comment' ) ) :
 			'comment_author'       => $author,
 			'comment_author_email' => $author_email,
 			'comment_content'      => $comment,
-			'comment_type'         => 'comment',
+			'comment_type'         => 'buycred',
 			'comment_author_IP'    => $_SERVER['REMOTE_ADDR'],
 			'comment_date'         => $time,
 			'comment_approved'     => 1,
@@ -645,7 +633,7 @@ if ( ! function_exists( 'buycred_trash_pending_payment' ) ) :
 
 		mycred_delete_user_meta( $pending_payment->buyer_id, 'buycred_pending_payments' );
 
-		return mycred_trash_post( $pending_payment->payment_id );
+		return wp_trash_post( $pending_payment->payment_id );
 
 	}
 endif;

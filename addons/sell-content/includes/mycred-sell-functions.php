@@ -328,6 +328,8 @@ if ( ! function_exists( 'mycred_user_paid_for_content' ) ) :
 
 		}
 
+		$last_payment = '';
+		
 		if ( ! $has_paid ) {
 
 			$last_payment = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$mycred_log_table} WHERE user_id = %d AND ref = 'buy_content' AND ref_id = %d ORDER BY time DESC LIMIT 1;", $user_id, $post_id ) );

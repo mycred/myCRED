@@ -74,7 +74,8 @@ if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 			if ( $atts['amount'] == 0 ) {
 
 				// Get hook settings
-				$hooks = mycred_get_option( 'mycred_pref_hooks', false );
+				$prf_hook = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
+				$hooks = mycred_get_option( $prf_hook, false );
 				if ( $atts['ctype'] != MYCRED_DEFAULT_TYPE_KEY )
 					$hooks = mycred_get_option( 'mycred_pref_hooks_' . sanitize_key( $atts['ctype'] ), false );
 

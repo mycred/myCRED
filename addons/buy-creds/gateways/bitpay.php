@@ -663,7 +663,7 @@ if ( ! function_exists( 'buycred_bitpay_decrypt' ) ) :
 
             // Strict base64 char check
             if (false === base64_decode($decrypted, true)) {
-                $error_string .= '    [Warning] In bitpay_decrypt: data appears to have already been decrypted. Strict base64 check failed.';
+                $error_string = '    [Warning] In bitpay_decrypt: data appears to have already been decrypted. Strict base64 check failed.';
             } else {
                 $decrypted = base64_decode($decrypted);
             }

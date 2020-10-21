@@ -19,19 +19,20 @@ jQuery(function($){
 			url      : buyCRED.ajaxurl,
 			success  : function( response ) {
 
-				console.log( response );
-				buyCREDform.slideUp(function(){
-					buyCREDform.empty().append( response ).slideDown();
-				});
+				console.log(response);
 
-			},
-			error    : function( jqXHR, textStatus, errorThrown ) {
-				console.log( textStatus );
-				console.log( errorThrown );
-				buyCREDform.slideUp(function(){
-					buyCREDform.empty().append( '<div class="padded error">' + buyCRED.error + '</div>' ).slideDown();
-				});
-				buyCREDcancel.addClass( 'on' );
+				if ( typeof response.validationFail === "undefined" ) {
+					buyCREDform.slideUp(function(){
+						buyCREDform.empty().append( response ).slideDown();
+					});
+				} 
+				else {
+					buyCREDform.slideUp(function(){
+						buyCREDform.empty().append( '<div class="padded error">' + response.errors[0] + '</div>' ).slideDown();
+					});
+					buyCREDcancel.addClass( 'on' );
+				}
+
 			}
 		});
 
@@ -106,10 +107,16 @@ console.log( formdata );
 
 			if ( buttontype == 'redirect' ) {
 
-				buyCREDform.attr( 'action', buttonvalue );
-				buyCREDform.submit();
-
 				$(this).attr( 'disabled', 'disabled' ).html( buyCRED.redirecting );
+				
+				if ( $(this).hasClass('bitpay') ) {
+					window.location = buttonvalue;
+				}
+				else
+				{
+					buyCREDform.attr( 'action', buttonvalue );
+					buyCREDform.submit();
+				}
 
 			}
 
@@ -137,8 +144,13 @@ console.log( formdata );
 
 			if ( buttontype == 'redirect' ) {
 
-				pageform.attr( 'action', buttonvalue );
-				pageform.submit();
+				if ( $(this).hasClass('bitpay') ) { 
+					window.location = buttonvalue;
+				}
+				else {
+					pageform.attr( 'action', buttonvalue );
+					pageform.submit();
+				}
 
 				$(this).attr( 'disabled', 'disabled' ).html( buyCRED.redirecting );
 

@@ -584,7 +584,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 				'ctype'        => MYCRED_DEFAULT_TYPE_KEY,
 				'amount'       => NULL,
 				'reference'    => 'transfer',
-				'message'      => ''
+				'message'      => isset( $posted['message'] ) ? $posted['message'] : ''
 			), $posted ), $request );
 
 			// Security
@@ -908,7 +908,8 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 
 			}
 
-			$placeholder = '';
+			$placeholder = $this->args['placeholder'];
+			
 			if ( $this->args['placeholder'] == '' ) {
 
 				if ( $this->settings['autofill'] == 'user_login' )
@@ -925,8 +926,9 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( $this->args['recipient_label'] != '' ) $field .= '<label>' . esc_html( $this->args['recipient_label'] ) . '</label>';
 
 			// No recipient, one needs to be nominated
-			if ( count( $recipients ) <= 1 )
+			if ( count( $recipients ) < 1 ) {
 				$field .= '<input type="text" name="mycred_new_transfer[recipient_id]" value="" aria-required="true" class="mycred-autofill form-control" data-form="' . esc_attr( $this->reference ) . '" placeholder="' . $placeholder . '" />';
+			}
 
 			// One specific recipient is set
 			elseif ( count( $recipients ) == 1 ) {
@@ -996,7 +998,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 				$field .= $this->get_transfer_amount_field( true );
 				$field .= '</div>';
 
-				$field  = '<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">';
+				$field .= '<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">';
 				$field .= $this->get_transfer_point_type_field( true );
 				$field .= '</div>';
 

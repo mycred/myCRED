@@ -3351,7 +3351,7 @@ msgid "Gabriel S Merovingi"
 msgstr ""
 
 #. Author URI of the plugin
-msgid "https://www.merovingi.com"
+msgid "https://www.mycred.me"
 msgstr ""
 
 #: mycred.php:622

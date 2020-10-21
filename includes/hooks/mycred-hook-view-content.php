@@ -55,6 +55,8 @@ if ( ! class_exists( 'myCRED_Hook_View_Contents' ) ) :
 			// First instance where we can safely use conditional template tags
 			add_action( 'template_redirect', array( $this, 'content_loading' ), 999 );
 
+			add_filter( 'mycred_hook_limit_query', array( $this, 'view_content_query' ), 10, 7 );
+
 		}
 
 		/**
@@ -388,6 +390,17 @@ if ( ! class_exists( 'myCRED_Hook_View_Contents' ) ) :
 
 			return $data;
 
+		}
+
+		public function view_content_query( $query, $instance, $reference, $user_id, $ref_id, $wheres ) {
+
+			global $wpdb, $mycred_log_table;
+
+			if ( 'view_content' == $reference || 'view_content_author' == $reference ) {
+				$query = "SELECT COUNT(l.id) FROM {$mycred_log_table} as l JOIN {$wpdb->prefix}posts as p on l.ref_id = p.ID WHERE p.post_type = '{$instance}' AND {$wheres}";
+			}
+
+			return $query;
 		}
 
 	}

@@ -47,7 +47,7 @@ if ( ! class_exists( 'myCRED_Caching_Module' ) ) :
 			}
 
 			add_action( 'mycred_update_user_balance',    array( $this, 'balance_change' ), 10, 4 );
-			add_action( 'mycred_cron_reset_key',         array( $this, 'cron_tasks' ) );
+			add_filter( 'mycred_cron_reset_key',         array( $this, 'cron_tasks' ) );
 
 			add_action( 'mycred_admin_init',             array( $this, 'module_admin_init' ) );
 
@@ -155,7 +155,7 @@ if ( ! class_exists( 'myCRED_Caching_Module' ) ) :
 		 * @since 1.8
 		 * @version 1.0
 		 */
-		public function cron_tasks() {
+		public function cron_tasks( $period ) {
 
 			if ( $this->caching['history'] == 'day' ) {
 
@@ -183,6 +183,8 @@ if ( ! class_exists( 'myCRED_Caching_Module' ) ) :
 				$wpdb->query( $wpdb->prepare( "DELETE FROM {$mycred->log_table} WHERE time < %d AND ctype = %s;", $timestamp, $this->mycred_type ) );
 
 			}
+			
+			return $period;
 
 		}
 
@@ -202,7 +204,7 @@ if ( ! class_exists( 'myCRED_Caching_Module' ) ) :
 			$this->clear_cache( $cache );
 
 
-
+			$description =array("success");
 			wp_send_json_success( $description );
 
 		}
@@ -220,7 +222,7 @@ if ( ! class_exists( 'myCRED_Caching_Module' ) ) :
 			$cache_id   = apply_filters( 'mycred_get_cache_id', $cache_id, $cache_type, $this );
 
 			$cache_keys = mycred_get_option( $cache_id, array() );
-			if ( empty( $cache_keys ) ) {
+			if ( !empty( $cache_keys ) ) {
 
 				foreach ( $cache_keys as $key )
 					wp_cache_delete( $key, MYCRED_SLUG );

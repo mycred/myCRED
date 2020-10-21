@@ -245,10 +245,6 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		 */
 		public function add_to_menu() {
 
-			// In case we are using the Master Template feautre on multisites, and this is not the main
-			// site in the network, bail.
-			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
-
 			add_submenu_page(
 				MYCRED_SLUG,
 				__( 'Pending Payments', 'mycred' ),

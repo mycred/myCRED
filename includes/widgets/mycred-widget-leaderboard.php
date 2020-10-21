@@ -29,11 +29,26 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
          * Widget Output
          */
         public function widget( $args, $instance ) {
- 
+            
+            $instance['title']         = isset( $instance['title'] )         ? $instance['title']         : 'Leaderboard';
+            $instance['type']          = isset( $instance['type'] )          ? $instance['type']          : MYCRED_DEFAULT_TYPE_KEY;
+            $instance['based_on']      = isset( $instance['based_on'] )      ? $instance['based_on']      : 'balance';
+            $instance['total']         = isset( $instance['total'] )         ? $instance['total']         : 0;
+            $instance['number']        = isset( $instance['number'] )        ? $instance['number']        : 5;
+            $instance['show_visitors'] = isset( $instance['show_visitors'] ) ? $instance['show_visitors'] : 0;
+            $instance['row_layout']    = isset( $instance['row_layout'] )    ? $instance['row_layout']    : '<span>#%position%</span> <span>%user_profile_link%</span> <span>%cred_f%</span>';
+            $instance['offset']        = isset( $instance['offset'] )        ? $instance['offset']        : 0;
+            $instance['order']         = isset( $instance['order'] )         ? $instance['order']         : 'DESC';
+            $instance['current']       = isset( $instance['current'] )       ? $instance['current']       : 0;
+            $instance['timeframe']     = isset( $instance['timeframe'] )     ? $instance['timeframe']     : '';
+            $instance['wrap']          = isset( $instance['wrap'] )          ? $instance['wrap']          : 'li';
+            $instance['nothing']       = isset( $instance['nothing'] )       ? $instance['nothing']       : 'Leaderboard is empty';
+            $instance['exclude_zero']  = isset( $instance['exclude_zero'] )  ? $instance['exclude_zero']  : 1;
+            
             extract( $args, EXTR_SKIP );
  
             // Check if we want to show this to visitors
-            if ( ! $instance['show_visitors'] && ! is_user_logged_in() ) return;
+            if ( (! isset($instance['show_visitors']) || ! $instance['show_visitors']) && ! is_user_logged_in() ) return;
  
             if ( ! isset( $instance['type'] ) || empty( $instance['type'] ) )
                 $instance['type'] = MYCRED_DEFAULT_TYPE_KEY;

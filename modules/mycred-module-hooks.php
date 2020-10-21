@@ -16,9 +16,10 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 		 */
 		public function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
+			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
 			parent::__construct( 'myCRED_Hooks_Module', array(
 				'module_name' => 'hooks',
-				'option_id'   => 'mycred_pref_hooks',
+				'option_id'   => $option_id,
 				'defaults'    => array(
 					'installed'   => array(),
 					'active'      => array(),
@@ -161,6 +162,8 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 
 			$installed = apply_filters( 'mycred_setup_hooks', $installed, $this->mycred_type );
 
+			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
+
 			if ( $save === true && $this->core->user_is_point_admin() ) {
 				$new_data = array(
 					'active'     => $this->active,
@@ -223,6 +226,8 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 		 */
 		public function settings_header() {
 
+			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
+
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
 			wp_enqueue_style( 'mycred-forms' );
 
@@ -230,7 +235,8 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 				'mycred-widgets',
 				'myCREDHooks',
 				array(
-					'type' => $this->mycred_type
+					'type' => $this->mycred_type,
+					'option_id' => $option_id
 				)
 			);
 			wp_enqueue_script( 'mycred-widgets' );
@@ -250,9 +256,11 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 			// Security
 			if ( ! $this->core->user_is_point_admin() ) wp_die( 'Access Denied' );
 
+			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
+
 			// Get installed
 			$installed   = $this->get();
-			$this->setup = mycred_get_option( $this->option_id . '_sidebar', 'default' );
+			$this->setup = mycred_get_option( $option_id . '_sidebar', 'default' );
 			$button      = '';
 
 ?>
@@ -417,6 +425,8 @@ jQuery(function($) {
 				</div>
 <?php
 
+			do_action( 'mycred_before_active_hooks',$this->mycred_type );
+			
 			// If we have hooks
 			if ( ! empty( $this->installed ) ) {
 
@@ -497,6 +507,7 @@ jQuery(function($) {
 			if ( ! isset( $_POST['sidebars'] ) ) die;
 
 			$ctype      = sanitize_key( $_POST['ctype'] );
+			$option_id  = sanitize_key( $_POST['option_id'] );
 			if ( $ctype !== $this->mycred_type ) return;
 
 			$installed  = $this->get();
@@ -567,6 +578,7 @@ jQuery(function($) {
 			$sidebar    = sanitize_text_field( $_POST['sidebar'] );
 			$hook_id    = sanitize_key( $_POST['id_base'] );
 			$ctype      = sanitize_key( $_POST['ctype'] );
+			$option_id  = sanitize_key( $_POST['option_id'] );
 			$hook_prefs = false;
 
 			if ( $ctype !== $this->mycred_type ) return;
@@ -576,14 +588,15 @@ jQuery(function($) {
 			// $_POST['mycred_pref_hooks'] will not be available if we remove the last active hook
 			// Removing all hooks from the active sidebar will trigger this method so we need to take that
 			// into account
-			if ( isset( $_POST['mycred_pref_hooks'] ) || isset($_POST[ 'mycred_pref_hooks_' . $ctype ]) ) {
+			$mycred_pref_hooks_save = $option_id;
+			if ( isset( $_POST[$mycred_pref_hooks_save] ) || isset($_POST[ $mycred_pref_hooks_save.'_' . $ctype ]) ) {
 
 				// Get hook settings
-				if ( $ctype == MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST['mycred_pref_hooks']['hook_prefs'] ) )
-					$hook_prefs = $_POST['mycred_pref_hooks']['hook_prefs'][ $hook_id ];
+				if ( $ctype == MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[$mycred_pref_hooks_save]['hook_prefs'] ) )
+					$hook_prefs = $_POST[$mycred_pref_hooks_save]['hook_prefs'][ $hook_id ];
 
-				elseif ( $ctype != MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[ 'mycred_pref_hooks_' . $ctype ]['hook_prefs'] ) )
-					$hook_prefs = $_POST[ 'mycred_pref_hooks_' . $ctype ]['hook_prefs'][ $hook_id ];
+				elseif ( $ctype != MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[ $mycred_pref_hooks_save.'_' . $ctype ]['hook_prefs'] ) )
+					$hook_prefs = $_POST[ $mycred_pref_hooks_save.'_' . $ctype ]['hook_prefs'][ $hook_id ];
 
 				if ( $hook_prefs === false ) die;
 

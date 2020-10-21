@@ -121,7 +121,7 @@ if ( ! class_exists( 'myCRED_Hook_Comments' ) ) :
 			if ( $comment === NULL ) return;
 
 			// Ignore Pingbacks or Trackbacks
-			if ( $comment->comment_type != '' ) return;
+			if ( ! in_array( $comment->comment_type, array( '', 'comment' ) ) ) return;
 
 			// Logged out users miss out
 			if ( $comment->user_id == 0 ) return;

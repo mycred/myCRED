@@ -25,6 +25,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 		public $current_user_id = 0;
 		public $priority        = 10;
+		public $bbp_content     = '';
 
 		/**
 		 * Construct
@@ -82,6 +83,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			// Setup Script
 			add_action( 'mycred_register_assets',          array( $this, 'register_assets' ) );
 			add_action( 'mycred_front_enqueue_footer',     array( $this, 'enqueue_footer' ) );
+			add_action( 'bbp_template_redirect',           array( $this, 'bbp_content' ), 10 ); 
 
 		}
 
@@ -197,7 +199,9 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 					$post_id    = absint( $_POST['postid'] );
 					$point_type = sanitize_key( $_POST['ctype'] );
 
-					if ( mycred_force_singular_session( $this->current_user_id, 'mycred-last-content-purchase' ) )
+					global $mycred_types;
+
+					if ( ! array_key_exists( $point_type, $mycred_types ) || mycred_force_singular_session( $this->current_user_id, 'mycred-last-content-purchase' ) )
 						wp_send_json( 'ERROR' );
 
 					// If the content is for sale and we have not paid for it
@@ -324,6 +328,116 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 			return $content;
 
+		}
+
+
+
+		public function bbp_content() {
+
+			global $mycred_partial_content_sale, $mycred_sell_this;
+
+			$post_id = mycred_sell_content_post_id();
+			$post    = mycred_get_post( $post_id );
+			$content = '';
+
+			// If content is for sale
+			if ( mycred_post_is_for_sale( $post_id ) && ( bbp_is_single_forum() || bbp_is_single_topic() || bbp_is_single_reply() ) ) {
+
+				$mycred_sell_this = true;
+
+				// Partial Content Sale - We have already done the work in the shortcode
+				if ( $mycred_partial_content_sale === true ) return;
+
+				// Logged in users
+				if ( is_user_logged_in() ) {
+
+					// Authors and admins do not pay
+					if ( ! mycred_is_admin() && $post->post_author != $this->current_user_id ) {
+
+						// In case we have not paid
+						if ( ! mycred_user_paid_for_content( $this->current_user_id, $post_id ) ) {
+
+							// Get Payment Options
+							$payment_options = mycred_sell_content_payment_buttons( $this->current_user_id, $post_id );
+
+							// User can buy
+							if ( $payment_options !== false ) {
+
+								$content = $this->sell_content['templates']['members'];
+								$content = str_replace( '%buy_button%', $payment_options, $content );
+								$content = mycred_sell_content_template( $content, $post, 'mycred-sell-entire-content', 'mycred-sell-unpaid' );
+								$this->mycred_bbp_sell_forum_actions();
+
+							}
+
+							// Can not afford to buy
+							else {
+
+								$content = $this->sell_content['templates']['cantafford'];
+								$content = mycred_sell_content_template( $content, $post, 'mycred-sell-entire-content', 'mycred-sell-insufficient' );
+								$this->mycred_bbp_sell_forum_actions();
+
+							}
+
+						}
+
+					}
+
+				}
+
+				// Visitors
+				else {
+
+					$content = $this->sell_content['templates']['visitors'];
+					$content = mycred_sell_content_template( $content, $post, 'mycred-sell-entire-content', 'mycred-sell-visitor' );
+					$this->mycred_bbp_sell_forum_actions();
+
+				}
+
+			}
+
+			$this->bbp_content = $content;
+
+		}
+
+
+		public function mycred_bbp_sell_forum_actions() {
+
+			add_action( 'bbp_template_before_single_forum', array( $this, 'bbp_template_before_single' ) );
+			add_action( 'bbp_template_before_single_topic', array( $this, 'bbp_template_before_single' ) );
+			add_filter( 'bbp_no_breadcrumb', 				array( $this, 'bbp_remove_breadcrumb' ), 10 );
+			add_filter( 'bbp_get_forum_subscribe_link', 	array( $this, 'bbp_remove_subscribe_link' ), 10 , 3 );
+			add_filter( 'bbp_get_topic_subscribe_link', 	array( $this, 'bbp_remove_subscribe_link' ), 10 , 3 );
+			add_filter( 'bbp_get_topic_favorite_link', 		array( $this, 'bbp_remove_subscribe_link' ), 10 , 3 );
+			add_filter( 'bbp_get_template_part', 			array( $this, 'bbp_remove_templates' ), 10 , 3 );
+			add_filter( 'bbp_get_single_forum_description', array( $this, 'bbp_get_single_description' ), 10 , 3 );
+			add_filter( 'bbp_get_single_topic_description', array( $this, 'bbp_get_single_description' ), 10 , 3 );
+
+		}
+
+		public function bbp_template_before_single() {
+			
+			echo $this->bbp_content;
+
+		}
+
+		public function bbp_remove_breadcrumb( $is_front ) {
+			return true;
+		}
+
+		public function bbp_remove_subscribe_link( $retval, $r, $args ) {
+			return '';
+		}
+
+		public function bbp_remove_templates( $templates, $slug, $name ) {
+
+			if ( $slug == 'content' ) return $templates;
+
+			return array('');
+		}
+
+		public function bbp_get_single_description( $retstr, $r, $args ) {
+			return '';
 		}
 
 		/**
@@ -993,7 +1107,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			$settings = mycred_sell_content_settings();
 
 			// Do not add the metabox unless we set this post type to be "manual"
-			if ( $settings['filters'][ $post->post_type ]['by'] !== 'manual' ) return;
+			if ( empty( $settings['filters'][ $post->post_type ] ) || $settings['filters'][ $post->post_type ]['by'] !== 'manual' ) return;
 
 			add_meta_box(
 				'mycred-sell-content-setup',
@@ -1047,6 +1161,9 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 						$suffix = '';
 
 					$sale_setup = (array) mycred_get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix );
+
+					$sale_setup = empty($sale_setup) ? $sale_setup : $sale_setup[0];
+
 					$sale_setup = shortcode_atts( array(
 						'status' => 'disabled',
 						'price'  => 0,

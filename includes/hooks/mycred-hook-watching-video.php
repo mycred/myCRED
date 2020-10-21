@@ -169,58 +169,66 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 					$max           = abs( $num_intervals * $amount );
 					$users_log     = $this->get_users_video_log( $video_id, $user_id );
 
-					// Film is playing and we just started
-					if ( $state == 1 && $users_log === NULL ) {
+					// Execution Override
+					// Allows us to stop an execution. 
+					$execute       = apply_filters( 'mycred_video_interval', true, $video_data, false );
 
-						// Add points without using mycred_add to prevent
-						// notifications from being sent as this amount will change.
-						$this->core->update_users_balance( $user_id, $amount );
+					if ( $execute ) {
 
-						$this->core->add_to_log(
-							'watching_video',
-							$user_id,
-							$amount,
-							$this->prefs['log'],
-							0,
-							$video_id,
-							$this->mycred_type
-						);
+						// Film is playing and we just started
+						if ( $state == 1 && $users_log === NULL ) {
 
-						$status = 'added';
+							// Add points without using mycred_add to prevent
+							// notifications from being sent as this amount will change.
+							$this->core->update_users_balance( $user_id, $amount );
 
-					}
+							$this->core->add_to_log(
+								'watching_video',
+								$user_id,
+								$amount,
+								$this->prefs['log'],
+								0,
+								$video_id,
+								$this->mycred_type
+							);
 
-					// Film is playing and we have not yet reached maximum on this movie
-					elseif ( $state == 1 && isset( $users_log->creds ) && $users_log->creds+$amount <= $max ) {
+							$status = 'added';
 
-						$this->update_creds( $users_log->id, $user_id, $users_log->creds+$amount );
-						$this->core->update_users_balance( $user_id, $amount );
-						$amount = $users_log->creds+$amount;
+						}
 
-						$status = 'added';
+						// Film is playing and we have not yet reached maximum on this movie
+						elseif ( $state == 1 && isset( $users_log->creds ) && $users_log->creds+$amount <= $max ) {
 
-					}
+							$this->update_creds( $users_log->id, $user_id, $users_log->creds+$amount );
+							$this->core->update_users_balance( $user_id, $amount );
+							$amount = $users_log->creds+$amount;
 
-					// Film has ended and we have not reached maximum
-					elseif ( $state == 0 && isset( $users_log->creds ) && $users_log->creds+$amount <= $max ) {
+							$status = 'added';
 
-						$this->update_creds( $users_log->id, $user_id, $users_log->creds+$amount );
-						$this->core->update_users_balance( $user_id, $amount );
-						$amount = $users_log->creds+$amount;
+						}
 
-						$status = 'max';
+						// Film has ended and we have not reached maximum
+						elseif ( $state == 0 && isset( $users_log->creds ) && $users_log->creds+$amount <= $max ) {
 
-						// If enabled, add notification
-						if ( function_exists( 'mycred_add_new_notice' ) ) {
+							$this->update_creds( $users_log->id, $user_id, $users_log->creds+$amount );
+							$this->core->update_users_balance( $user_id, $amount );
+							$amount = $users_log->creds+$amount;
 
-							if ( $amount < 0 )
-								$color = '<';
-							else
-								$color = '>';
+							$status = 'max';
 
-							$message = str_replace( '%amount%', $amount, $this->prefs['template'] );
-							if ( ! empty( $message ) )
-								mycred_add_new_notice( array( 'user_id' => $user_id, 'message' => $message, 'color' => $color ) );
+							// If enabled, add notification
+							if ( function_exists( 'mycred_add_new_notice' ) ) {
+
+								if ( $amount < 0 )
+									$color = '<';
+								else
+									$color = '>';
+
+								$message = str_replace( '%amount%', $amount, $this->prefs['template'] );
+								if ( ! empty( $message ) )
+									mycred_add_new_notice( array( 'user_id' => $user_id, 'message' => $message, 'color' => $color ) );
+
+							}
 
 						}
 

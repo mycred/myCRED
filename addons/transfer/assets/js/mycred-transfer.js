@@ -79,10 +79,11 @@
 			url        : myCREDTransfer.ajaxurl,
 			beforeSend : function() {
 
-				$( formid + 'input.form-control' ).each(function(index){
+				$( formid + ' input.form-control' ).each(function(index){
 					$(this).attr( 'disabled', 'disabled' );
 				});
 
+				submitbutton.attr( 'disabled', 'disabled' );
 				submitbutton.val( myCREDTransfer.working );
 
 			},
@@ -94,6 +95,7 @@
 					$(this).removeAttr( 'disabled' );
 				});
 
+				submitbutton.removeAttr( 'disabled', 'disabled' );
 				submitbutton.val( buttonlabel );
 
 				if ( response.success !== undefined ) {

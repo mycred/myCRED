@@ -256,6 +256,9 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 						$having = 'SUM(creds)';
 
 					$query  = $wpdb->get_var( $wpdb->prepare( "SELECT {$having} FROM {$mycred_log_table} WHERE ctype = %s AND ref = %s AND user_id = %d;", $requirement['type'], $requirement['reference'], $user_id ) );
+
+					$query  = apply_filters( 'mycred_badge_requirement', $query, $requirement_id, $requirement, $having, $user_id );
+
 					if ( $query === NULL ) $query = 0;
 
 					$results[ $requirement['reference'] ] = $query;
@@ -349,19 +352,27 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 				$this->current_level = $new_level;
 			}
 
-			$new_level = apply_filters( 'mycred_badge_user_value', $new_level, $user_id, $this->post_id );
-			mycred_update_user_meta( $user_id, $this->user_meta_key, '', $new_level );
+			$execute = apply_filters( 'mycred_badge_assign', true, $user_id, $new_level, $this );
 
-			// Need to update counter with new assignments
-			if ( $new_level == 0 ) {
+			if ( $execute ) {
+				
+				$new_level = apply_filters( 'mycred_badge_user_value', $new_level, $user_id, $this->post_id );
+				mycred_update_user_meta( $user_id, $this->user_meta_key, '', $new_level );
 
-				$this->earnedby ++;
+				// Need to update counter with new assignments
+				if ( $new_level == 0 ) {
 
-				mycred_update_post_meta( $this->post_id, 'total-users-with-badge', $this->earnedby );
+					$this->earnedby ++;
+
+					mycred_update_post_meta( $this->post_id, 'total-users-with-badge', $this->earnedby );
+
+				}
+
+				$this->payout_reward( $previous_level, $new_level );
+				
+				do_action( 'mycred_after_badge_assign', $user_id, $this->post_id, $new_level );
 
 			}
-
-			$this->payout_reward( $previous_level, $new_level );
 
 			return true;
 
@@ -385,19 +396,23 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 				// Make sure we only get points once for each level we reach for each badge
 				if ( ! $mycred->has_entry( 'badge_reward', $this->post_id, $this->user_id, 0, $reward['type'] ) ) {
 
-					$mycred->add_to_log(
-						'badge_reward',
-						$this->user_id,
-						$reward['amount'],
-						$reward['log'],
-						$this->post_id,
-						0,
-						$reward['type']
-					);
+					$exec = apply_filters( 'customize_mycred_badge_condition', true, $this->post_id, $this->user_id, $reward['type']);
 
-					$mycred->update_users_balance( $this->user_id, $reward['amount'], $reward['type'] );
+					if( $exec ) {
 
-					do_action( 'mycred_badge_rewardes', $this->user_id, $previous_level, $new_level, $reward, $this );
+						$mycred->add_creds(
+							'badge_reward',
+							$this->user_id,
+							$reward['amount'],
+							$reward['log'],
+							$this->post_id,
+							0,
+							$reward['type']
+						);
+
+						do_action( 'mycred_badge_rewardes', $this->user_id, $previous_level, $new_level, $reward, $this );
+
+					}
 
 				}
 
@@ -417,19 +432,23 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 					// Make sure we only get points once for each level we reach for each badge
 					if ( ! $mycred->has_entry( 'badge_reward', $this->post_id, $this->user_id, $i, $reward['type'] ) ) {
 
-						$mycred->add_to_log(
-							'badge_reward',
-							$this->user_id,
-							$reward['amount'],
-							$reward['log'],
-							$this->post_id,
-							$i,
-							$reward['type']
-						);
+						$exec = apply_filters( 'customize_mycred_badge_condition', true, $this->post_id, $this->user_id, $reward['type']);
 
-						$mycred->update_users_balance( $this->user_id, $reward['amount'], $reward['type'] );
+						if( $exec ) {
 
-						do_action( 'mycred_badge_rewardes', $this->user_id, $previous_level, $new_level, $reward, $this );
+							$mycred->add_creds(
+								'badge_reward',
+								$this->user_id,
+								$reward['amount'],
+								$reward['log'],
+								$this->post_id,
+								$i,
+								$reward['type']
+							);
+
+							do_action( 'mycred_badge_rewardes', $this->user_id, $previous_level, $new_level, $reward, $this );
+
+						}
 
 					}
 
@@ -461,7 +480,7 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 				if ( count( $this->levels[0]['requires'] ) == 1 ) {
 
 					$requirement         = $this->levels[0]['requires'][0];
-					$having              = ( $requirement['by'] != 'count' ) ? 'SUM( cred )' : 'COUNT( id )';
+					$having              = ( $requirement['by'] != 'count' ) ? 'SUM( creds )' : 'COUNT( id )';
 					$requirement['type'] = ( $requirement['type'] == '' ) ? MYCRED_DEFAULT_TYPE_KEY : $requirement['type'];
 
 					$results             = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT user_id, {$having} as total FROM {$mycred_log_table} WHERE ctype = %s AND ref = %s GROUP BY user_id HAVING {$having} >= %f;", $requirement['type'], $requirement['reference'], $requirement['amount'] ) );
@@ -470,14 +489,14 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 					if ( ! empty( $results ) ) {
 						foreach ( $results as $row ) {
 
-							$level_id          = 0;
+							$badge_level_id = 0;
 
 							foreach ( $this->levels as $level_id => $setup ) {
 								if ( $row->total >= $setup['requires'][0]['amount'] )
-									$level_id = $level_id;
+									$badge_level_id = $level_id;
 							}
 
-							$results->level_id = $level_id;
+							$row->level_id = $badge_level_id;
 
 						}
 					}
@@ -502,7 +521,7 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 						if ( ! empty( $level_setup['requires'] ) ) {
 							foreach ( $level_setup['requires'] as $requirement_id => $requirement ) {
 
-								$having              = ( $requirement['by'] != 'count' ) ? 'SUM( cred )' : 'COUNT( id )';
+								$having              = ( $requirement['by'] != 'count' ) ? 'SUM( creds )' : 'COUNT( id )';
 								$requirement['type'] = ( $requirement['type'] == '' ) ? MYCRED_DEFAULT_TYPE_KEY : $requirement['type'];
 
 								$level_user_ids[ $requirement_id ] = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT user_id FROM {$mycred_log_table} WHERE ctype = %s AND ref = %s GROUP BY user_id HAVING {$having} >= %f;", $requirement['type'], $requirement['reference'], $requirement['amount'] ) );
@@ -571,7 +590,7 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 					}
 
 				}
-
+				
 				// Assign results
 				if ( ! empty( $results ) ) {
 
@@ -689,8 +708,9 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 			if ( $image_identification === false || strlen( $image_identification ) == 0 ) return false;
 
 			$image_url    = $image_identification;
-			if ( is_numeric( $image_identification ) &&  strpos( '://', $image_identification ) === false )
-				$image_url = wp_get_attachment_url( $image_identification );
+
+			if ( is_numeric( $image_identification ) &&  strpos( '://', (string) $image_identification ) === false )
+				$image_url = mycred_get_attachment_url( $image_identification );
 
 			$image_width  = ( $this->image_width !== false ) ? ' width="' . esc_attr( $this->image_width ) . '"' : '';
 			$image_height = ( $this->image_height !== false ) ? ' height="' . esc_attr( $this->image_height ) . '"' : '';

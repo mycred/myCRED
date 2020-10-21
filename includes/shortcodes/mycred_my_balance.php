@@ -62,9 +62,9 @@ if ( ! function_exists( 'mycred_render_shortcode_my_balance' ) ) :
 			$output .= '<' . $balance_el . '>';
 
 		if ( $formatted )
-			$output .= $balance->type->format( $balance->current );
+			$output .= $balance->point_type->format( $balance->current );
 		else
-			$output .= $balance->type->number( $balance->current );
+			$output .= $balance->point_type->number( $balance->current );
 
 		if ( ! empty( $balance_el ) )
 			$output .= '</' . $balance_el . '>';

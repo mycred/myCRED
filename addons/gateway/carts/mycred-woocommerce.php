@@ -27,10 +27,13 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 				$this->has_fields                = true;
 				$this->method_title              = mycred_label();
 				$this->method_description        = __( 'Let users pay using points.', 'mycred' );
-				$this->supports                  = array(
+
+				$gateway_suppots = array(
 					'products',
 					'refunds'
 				);
+
+				$this->supports = apply_filters( 'mycred_woocommerce_gateway_supports', $gateway_suppots );
 
 				if ( ! $this->use_exchange() )
 					$this->mycred_type = get_woocommerce_currency();
@@ -772,7 +775,7 @@ if ( ! function_exists( 'mycred_woo_after_order_total' ) ) :
 		$balance_label      = $available_gateways['mycred']->get_option( 'balance_format' );
 
 		// If we should show the total in points
-		if ( ( $show_total == 'both' ) 
+		if ( ( $show_total == 'both' || $show_total == 'all') 
 			|| ( $show_total == 'cart' && is_cart() ) 
 			|| ( $show_total == 'checkout' && is_checkout() ) 
 		) {

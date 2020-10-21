@@ -367,7 +367,7 @@ if ( ! class_exists( 'myCRED_Remote' ) ) :
 						$type = $this->core->get_cred_id();
 
 					// Prep Amount
-					$amount = $this->core->format_number( $this->request['amount'] );
+					$amount = floatval( $this->request['amount'] );
 					if ( $this->request['action'] == 'DEBIT' )
 						$amount = 0-$amount;
 					else

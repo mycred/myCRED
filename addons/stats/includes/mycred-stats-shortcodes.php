@@ -112,7 +112,7 @@ if ( ! function_exists( 'mycred_render_chart_history' ) ) :
 			'type'    => 'line',
 			'ctype'   => MYCRED_DEFAULT_TYPE_KEY,
 			'period'  => 'days',
-			'length'  => 10,
+			'number'  => 10,
 			'order'   => 'DESC',
 			'title'   => '',
 			'animate' => 1,
@@ -127,7 +127,7 @@ if ( ! function_exists( 'mycred_render_chart_history' ) ) :
 		$type  = ( ! in_array( $type, array( 'line', 'bar' ) ) ) ? 'line' : $type;
 
 		// Get data
-		$data  = mycred_get_history_data( $ctype, $period, $length, $order );
+		$data  = mycred_get_history_data( $ctype, $period, $number, $order );
 		if ( empty( $data ) ) return $no_data;
 
 		// New Chart Object
@@ -255,7 +255,7 @@ if ( ! function_exists( 'mycred_render_chart_balance_history' ) ) :
 			'ctype'   => MYCRED_DEFAULT_TYPE_KEY,
 			'user'    => 'current',
 			'period'  => 'days',
-			'length'  => 10,
+			'number'  => 10,
 			'order'   => 'DESC',
 			'title'   => '',
 			'animate' => 1,
@@ -274,7 +274,7 @@ if ( ! function_exists( 'mycred_render_chart_balance_history' ) ) :
 		$type  = ( ! in_array( $type, array( 'line', 'bar' ) ) ) ? 'line' : $type;
 
 		// Get data
-		$data  = mycred_get_users_history_data( $user_id, $ctype, $period, $length, $order );
+		$data  = mycred_get_users_history_data( $user_id, $ctype, $period, $number, $order );
 		if ( empty( $data ) ) return $no_data;
 
 		// New Chart Object
@@ -308,7 +308,7 @@ if ( ! function_exists( 'mycred_render_chart_instance_history' ) ) :
 			'ctype'   => MYCRED_DEFAULT_TYPE_KEY,
 			'ref'     => '',
 			'period'  => 'days',
-			'length'  => 10,
+			'number'  => 10,
 			'order'   => 'DESC',
 			'title'   => '',
 			'animate' => 1,
@@ -325,7 +325,7 @@ if ( ! function_exists( 'mycred_render_chart_instance_history' ) ) :
 		$type  = ( ! in_array( $type, array( 'line', 'bar', 'radar' ) ) ) ? 'line' : $type;
 
 		// Get data
-		$data  = mycred_get_ref_history_data( $ref, $ctype, $period, $length, $order );
+		$data  = mycred_get_ref_history_data( $ref, $ctype, $period, $number, $order );
 		if ( empty( $data ) ) return $no_data;
 
 		// New Chart Object

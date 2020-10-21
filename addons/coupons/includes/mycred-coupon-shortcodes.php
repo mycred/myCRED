@@ -57,8 +57,12 @@ if ( ! function_exists( 'mycred_render_shortcode_load_coupon' ) ) :
 				// Success!
 				else {
 
-					$message = $mycred->template_tags_amount( $mycred->coupons['success'], $coupon->value );
-					$message = str_replace( '%amount%', $mycred->format_creds( $coupon->value ), $message );
+					//$message = $mycred->template_tags_amount( $mycred->coupons['success'], $coupon->value );
+					$updated_coupon_value=$coupon->value;
+					$updated_coupon_value=apply_filters('mycred_show_custom_coupon_value',$updated_coupon_value);
+					$coupon_settings = mycred_get_addon_settings( 'coupons' ,  $coupon->point_type  );
+					$message = $mycred->template_tags_amount( $coupon_settings['success'], $updated_coupon_value );   // without filter
+					$message = str_replace( '%amount%', $mycred->format_creds( $updated_coupon_value ), $message );
 					$output .= '<div class="alert alert-success">' . $message . '</div>';
 
 				}

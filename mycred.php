@@ -1,15 +1,15 @@
 <?php
 /**
- * Plugin Name: myCRED
+ * Plugin Name: myCred
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 1.8
+ * Version: 1.8.14.2
  * Tags: point, credit, loyalty program, engagement, reward, woocommerce rewards
- * Author: myCRED
+ * Author: myCred
  * Author URI: https://mycred.me
  * Author Email: support@mycred.me
  * Requires at least: WP 4.8
- * Tested up to: WP 5.1
+ * Tested up to: WP 5.5.1
  * Text Domain: mycred
  * Domain Path: /lang
  * License: GPLv2 or later
@@ -19,7 +19,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '1.8';
+		public $version             = '1.8.14.2';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -53,14 +53,14 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '1.7' ); }
+		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '1.8.14.2' ); }
 
 		/**
 		 * Not allowed
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '1.7' ); }
+		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '1.8.14.2' ); }
 
 		/**
 		 * Get
@@ -81,7 +81,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( ! defined( $name ) )
 				define( $name, $value );
 			elseif ( ! $definable && defined( $name ) )
-				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . $name . ' as it is already defined somewhere else!', '1.7' );
+				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . $name . ' as it is already defined somewhere else!', '1.8.14.2' );
 		}
 
 		/**
@@ -93,7 +93,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( file_exists( $required_file ) )
 				require_once $required_file;
 			else
-				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . $required_file . ' not found.', '1.7' );
+				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . $required_file . ' not found.', '1.8.14.2' );
 		}
 
 		/**
@@ -143,7 +143,8 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			// Plugin Related
 			add_filter( 'plugin_action_links_mycred/mycred.php', array( $this, 'plugin_links' ), 10, 4 );
 			add_filter( 'plugin_row_meta',                       array( $this, 'plugin_description_links' ), 10, 2 );
-
+			add_filter( 'pre_http_request', 					 array( $this, 'handle_license_request' ), 10, 3 );
+			add_filter( 'http_request_args',                     array( $this, 'license_request_args' ), 10, 2 );
 		}
 
 		/**
@@ -182,6 +183,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			$this->define( 'myCRED_INCLUDES_DIR',         myCRED_ROOT_DIR . 'includes/', false );
 			$this->define( 'myCRED_LANG_DIR',             myCRED_ROOT_DIR . 'lang/', false );
 			$this->define( 'myCRED_MODULES_DIR',          myCRED_ROOT_DIR . 'modules/', false );
+			$this->define( 'myCRED_MEMBERSHIP_DIR',	      myCRED_ROOT_DIR . 'membership/', false );
 			$this->define( 'myCRED_CLASSES_DIR',          myCRED_INCLUDES_DIR . 'classes/', false );
 			$this->define( 'myCRED_IMPORTERS_DIR',        myCRED_INCLUDES_DIR . 'importers/', false );
 			$this->define( 'myCRED_SHORTCODES_DIR',       myCRED_INCLUDES_DIR . 'shortcodes/', false );
@@ -216,10 +218,15 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-remote.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-protect.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-about.php' );
+				$this->file( myCRED_INCLUDES_DIR . 'mycred-nav-menu.php' );
 
 				// If myCRED has been setup and is ready to begin
 				if ( mycred_is_installed() ) {
 
+					// myCRED Subscription
+					$this->file( myCRED_MEMBERSHIP_DIR . 'subscription-functions.php' );
+					$this->file( myCRED_MEMBERSHIP_DIR . 'mycred-connect-membership.php' );
+					
 					// Modules
 					$this->file( myCRED_MODULES_DIR . 'mycred-module-addons.php' );
 					$this->file( myCRED_MODULES_DIR . 'mycred-module-settings.php' );
@@ -463,6 +470,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				$this->file( myCRED_SHORTCODES_DIR . 'mycred_send.php' );
 				$this->file( myCRED_SHORTCODES_DIR . 'mycred_show_if.php' );
 				$this->file( myCRED_SHORTCODES_DIR . 'mycred_total_balance.php' );
+				$this->file( myCRED_SHORTCODES_DIR . 'mycred_my_balance_converted.php' );
 
 				// These shortcodes will not work if logging is disabled
 				if ( MYCRED_ENABLE_LOGGING ) {
@@ -1069,6 +1077,43 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 
 			return $links;
 
+		}
+
+		/**
+		 * Handle Premium Addon License requests
+		 * @since 1.9
+		 * @version 1.0
+		 */
+		public function handle_license_request( $default, $parsed_args, $url ) {
+			
+			if( $url == 'http://mycred.me/api/plugins/' && ! empty( $parsed_args['body']['action'] ) && $parsed_args['body']['action'] == 'info' ) {
+				
+				$request = unserialize( $parsed_args['body']['request'] );
+				
+				if( get_transient( 'mycred_license_' . $request['slug'] ) ) 
+					return true;
+				else 
+					set_transient( 'mycred_license_' . $request['slug'], $parsed_args, 24 * HOUR_IN_SECONDS );
+				
+			}
+			
+			return $default;
+		}
+
+		/**
+		 * Add argument for handling license request
+		 * @since 1.9
+		 * @version 1.0
+		 */
+		public function license_request_args( $parsed_args, $url ) {
+			
+			if( $url == 'http://mycred.me/api/plugins/' && ! empty( $parsed_args['body']['action'] ) ) {
+				
+				$parsed_args['body']['optimize_license'] = true;
+				
+			}
+			
+			return $parsed_args;
 		}
 
 	}

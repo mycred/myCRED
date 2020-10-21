@@ -145,7 +145,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 
 			}
 
-			$option_id = 'mycred_pref_hooks';
+			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
 			if ( ! $this->is_main_type )
 				$option_id = $option_id . '_' . $this->mycred_type;
 
@@ -285,8 +285,13 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 				// Put all wheres together into one string
 				$wheres   = implode( " AND ", $wheres );
 
+				$query = "SELECT COUNT(*) FROM {$mycred_log_table} WHERE {$wheres};";
+
+				//Lets play for others
+				$query = apply_filters( 'mycred_hook_limit_query', $query, $instance, $reference, $user_id, $ref_id, $wheres, $this );
+
 				// Count
-				$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$mycred_log_table} WHERE {$wheres};" );
+				$count = $wpdb->get_var( $query );
 				if ( $count === NULL ) $count = 0;
 
 				// Existence check has first priority

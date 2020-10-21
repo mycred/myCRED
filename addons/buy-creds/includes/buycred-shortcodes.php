@@ -21,10 +21,12 @@ if ( ! function_exists( 'mycred_render_buy_points' ) ) :
 			'login'   => $settings['login']
 		), $atts, MYCRED_SLUG . '_buy' ) );
 
-		// If we are not logged in
-		if ( ! is_user_logged_in() ) return $content;
+		$mycred = mycred( $ctype );
 
-		global $mycred_modules, $buycred_sale;
+		// If we are not logged in
+		if ( ! is_user_logged_in() ) return $mycred->template_tags_general( $login );
+
+		global $mycred_modules, $buycred_sale, $post;
 
 		$buycred            = $mycred_modules['solo']['buycred'];
 		$installed          = mycred_get_buycred_gateways();
@@ -40,8 +42,6 @@ if ( ! function_exists( 'mycred_render_buy_points' ) ) :
 		// Make sure we are trying to sell a point type that is allowed to be purchased
 		if ( ! in_array( $ctype, $settings['types'] ) )
 			$ctype = $settings['types'][0];
-
-		$mycred             = mycred( $ctype );
 
 		$args               = array();
 		$args['mycred_buy'] = $gateway;
@@ -64,6 +64,7 @@ if ( ! function_exists( 'mycred_render_buy_points' ) ) :
 		$button_label       = $mycred->template_tags_general( $button_label );
 		$button_label       = $mycred->template_tags_user( $button_label, $recipient_id );
 
+		$args['ctype']      = $ctype;
 		$args['amount']     = $amount;
 		$args['token']      = wp_create_nonce( 'mycred-buy-creds' );
 
@@ -105,6 +106,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 			'excluded' => '',
 			'maxed'    => '',
 			'gift_to'  => '',
+			'e_rate'  => '',
 			'gift_by'  => __( 'Username', 'mycred' ),
 			'inline'   => 0
 		), $atts, MYCRED_SLUG . '_buy_form' ) );
@@ -122,7 +124,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 		$gifting      = false;
 
 		// Make sure we have a gateway we can use
-		if ( ( ! empty( $gateway ) && ! mycred_buycred_gateway_is_usable( $gateway_id ) ) || ( empty( $gateway ) && empty( $buycred_instance->active ) ) )
+		if ( ( ! empty( $gateway ) && ! mycred_buycred_gateway_is_usable( $gateway ) ) || ( empty( $gateway ) && empty( $buycred_instance->active ) ) )
 			return 'No gateway available.';
 
 		// Make sure we are trying to sell a point type that is allowed to be purchased
@@ -170,16 +172,16 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 		$button_label = $mycred->template_tags_general( $button );
 
 		if ( ! empty( $gateway ) ) {
-			$gateway_name = explode( ' ', $installed[ $gateway ]['title'] );
+			$gateway_name = explode( ' ', $buycred_instance->active[ $gateway ]['title'] );
 			$button_label = str_replace( '%gateway%', $gateway_name[0], $button_label );
 			$classes[]    = $gateway_name[0];
 		}
 
 		ob_start();
 
-		if ( ! empty( $buycred_instance->errors ) ) {
+		if ( ! empty( $buycred_instance->gateway->errors ) ) {
 
-			foreach ( $buycred_instance->errors as $error )
+			foreach ( $buycred_instance->gateway->errors as $error )
 				echo '<div class="alert alert-warnng"><p>' . $error . '</p></div>';
 
 		}
@@ -190,7 +192,11 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 		<form method="post" class="form<?php if ( $inline == 1 ) echo '-inline'; ?> <?php echo implode( ' ', $classes ); ?>" action="">
 			<input type="hidden" name="token" value="<?php echo wp_create_nonce( 'mycred-buy-creds' ); ?>" />
 			<input type="hidden" name="ctype" value="<?php echo esc_attr( $ctype ); ?>" />
-
+			<?php if( isset($e_rate) && !empty($e_rate)){ 
+				$e_rate=base64_encode($e_rate);
+				?>
+			<input type="hidden" name="er_random" value="<?php echo esc_attr($e_rate); ?>" />
+			<?php } ?>			
 			<div class="form-group">
 				<label><?php echo $mycred->plural(); ?></label>
 <?php
@@ -293,7 +299,6 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 				<div class="form-group">
 					<input type="submit" class="button btn btn-block btn-lg" value="<?php echo $button_label; ?>" />
 				</div>
-			</div>
 
 		</form>
 	</div>

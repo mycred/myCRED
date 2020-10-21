@@ -212,6 +212,8 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 				if ( $this->has_clicked( $user_id, 'link_id', $data['link_id'] ) ) wp_send_json( 700 );
 			}
 
+			$amount       = apply_filters( 'mycred_link_click_amount', $amount, $user_id, $point_type, $data, $this->prefs['log'] );
+
 			// Execute
 			$this->core->add_creds(
 				'link_click',

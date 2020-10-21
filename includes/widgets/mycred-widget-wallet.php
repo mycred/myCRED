@@ -59,7 +59,7 @@ if ( ! class_exists( 'myCRED_Widget_Wallet' ) ) :
 				// Loop through balances
 				foreach ( $account->balance as $point_type_id => $balance ) {
 
-					if ( $balance === false ) continue;
+					if ( ! in_array( $point_type_id, $instance['types'] ) || $balance === false ) continue;
 
 					$point_type = mycred( $point_type_id );
 
