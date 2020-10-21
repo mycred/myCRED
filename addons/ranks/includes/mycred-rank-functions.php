@@ -476,11 +476,11 @@ if ( ! function_exists( 'mycred_assign_ranks' ) ) :
 		if ( mycred_manual_ranks() ) return 0;
 
 		global $wpdb;
-
 		$type_object    = new myCRED_Point_Type( $point_type );
 		$rank_key       = mycred_get_meta_key( MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ) );
 
 		$balance_key    = mycred_get_meta_key( $point_type );
+		$mycred     = mycred( $point_type );
 		if ( isset( $mycred->rank['base'] ) && $mycred->rank['base'] == 'total' )
 			$balance_key = mycred_get_meta_key( $point_type, '_total' );
 
@@ -528,6 +528,7 @@ if ( ! function_exists( 'mycred_get_ranks' ) ) :
 
 		$cache_key = 'ranks-published-' . $point_type;
 		$ranks     = wp_cache_get( $cache_key, MYCRED_SLUG );
+		$results   = array();
 
 		if ( $ranks === false ) {
 
@@ -539,7 +540,6 @@ if ( ! function_exists( 'mycred_get_ranks' ) ) :
 			$posts     = mycred_get_db_column( 'posts' );
 			$postmeta  = mycred_get_db_column( 'postmeta' );
 
-			$results   = array();
 			$rank_ids  = $wpdb->get_col( $wpdb->prepare( "
 				SELECT ranks.ID
 				FROM {$posts} ranks
@@ -559,6 +559,8 @@ if ( ! function_exists( 'mycred_get_ranks' ) ) :
 
 			wp_cache_set( $cache_key, $results, MYCRED_SLUG );
 
+		} else {
+			$results = $ranks;
 		}
 
 		return apply_filters( 'mycred_get_ranks', $results, $status, $number, $order );
@@ -627,10 +629,10 @@ endif;
 if ( ! function_exists( 'mycred_manual_ranks' ) ) :
 	function mycred_manual_ranks( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$prefs  = mycred_get_addon_settings( 'ranks', $point_type );
+		$prefs  = mycred_get_addon_settings( 'rank', $point_type );
 
 		$result = false;
-		if ( $prefs['base'] == 'manual' )
+		if ( ! empty( $prefs ) && $prefs['base'] == 'manual' )
 			$result = true;
 
 		return $result;
@@ -648,10 +650,10 @@ endif;
 if ( ! function_exists( 'mycred_rank_based_on_total' ) ) :
 	function mycred_rank_based_on_total( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$prefs  = mycred_get_addon_settings( 'ranks', $point_type );
+		$prefs  = mycred_get_addon_settings( 'rank', $point_type );
 
 		$result = false;
-		if ( $prefs['base'] == 'total' )
+		if ( ! empty( $prefs ) && $prefs['base'] == 'total' )
 			$result = true;
 
 		return $result;
@@ -668,7 +670,7 @@ endif;
 if ( ! function_exists( 'mycred_show_rank_in_buddypress' ) ) :
 	function mycred_show_rank_in_buddypress( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$prefs  = mycred_get_addon_settings( 'ranks', $point_type );
+		$prefs  = mycred_get_addon_settings( 'rank', $point_type );
 
 		$result = false;
 		if ( $prefs['rank']['bb_location'] != '' )
@@ -688,7 +690,7 @@ endif;
 if ( ! function_exists( 'mycred_show_rank_in_bbpress' ) ) :
 	function mycred_show_rank_in_bbpress( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$prefs  = mycred_get_addon_settings( 'ranks', $point_type );
+		$prefs  = mycred_get_addon_settings( 'rank', $point_type );
 
 		$result = false;
 		if ( $prefs['rank']['bp_location'] != '' )

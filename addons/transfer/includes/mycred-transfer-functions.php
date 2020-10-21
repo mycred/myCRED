@@ -315,7 +315,7 @@ if ( ! function_exists( 'mycred_transfer_render_message' ) ) :
 		if ( empty( $original ) || empty( $data ) ) return $original;
 
 		// Default message
-		$message = apply_filters( 'mycred_transfer_default_message', '-', $original, $data );
+		$message = apply_filters( 'mycred_transfer_default_message', $original, $data );
 
 		// Get saved message
 		if ( ! empty( $data ) && array_key_exists( 'message', $data ) && ! empty( $data['message'] ) )

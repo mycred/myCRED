@@ -24,7 +24,8 @@ if ( ! function_exists( 'mycred_render_shortcode_video' ) ) :
 			'ctype'    => MYCRED_DEFAULT_TYPE_KEY
 		), $atts, MYCRED_SLUG . '_video' ) );
 
-		$hooks    = mycred_get_option( 'mycred_pref_hooks', false );
+		$prf_hook = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
+		$hooks    = mycred_get_option( $prf_hook, false );
 		if ( $ctype != MYCRED_DEFAULT_TYPE_KEY )
 			$hooks = mycred_get_option( 'mycred_pref_hooks_' . sanitize_key( $ctype ), false );
 

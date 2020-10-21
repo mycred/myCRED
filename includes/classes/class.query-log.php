@@ -171,6 +171,8 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			/**
 			 * Set Query Limit
 			 */
+			
+			$limits = '';
 			if ( $number !== NULL ) {
 
 				$page = 1;
@@ -403,7 +405,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 					// IN or NOT IN comparisons
 					if ( in_array( $this->args['entry_id']['compare'], array( 'IN', 'NOT IN' ) ) && is_array( $this->args['entry_id']['ids'] ) )
-						$wheres[] = $wpdb->prepare( "id IN ( %d" . str_repeat( ", %d", ( count( $this->args['entry_id']['ids'] ) - 1 ) ) . " )", $this->args['entry_id']['ids'] );
+						$wheres[] = $wpdb->prepare( "id ".$this->args['entry_id']['compare']." ( %d" . str_repeat( ", %d", ( count( $this->args['entry_id']['ids'] ) - 1 ) ) . " )", $this->args['entry_id']['ids'] );
 
 					// All other supported comparisons
 					elseif ( in_array( $this->args['entry_id']['compare'], array( '=', '!=' ) ) && ! is_array( $this->args['entry_id']['ids'] ) ) {
@@ -843,15 +845,18 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 			 */
 			if ( $this->args['s'] !== NULL && ! empty( $this->args['s'] ) ) {
-
+				
 				$search_query = sanitize_text_field( $this->args['s'] );
-
+				$plural = mycred_get_point_type_name(isset( $_REQUEST['ctype'] ),false);
+				$single = mycred_get_point_type_name(isset( $_REQUEST['ctype'] ),true);
 				// Check if we are using wildcards
+				$search_query = str_replace( strtolower($plural), '%plural%', strtolower($search_query) );
+				$search_query = str_replace( strtolower($single), '%singular%', strtolower($search_query) );
 				if ( str_replace( '%', '', $search_query ) != $search_query )
 					$wheres[] = $wpdb->prepare( "entry LIKE %s", $search_query );
 
 				else
-					$wheres[] = $wpdb->prepare( "entry = %s", $search_query );
+					$wheres[] = $wpdb->prepare( "entry LIKE %s", '%'.$search_query.'%' );
 
 			}
 
@@ -1081,14 +1086,14 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 			global $wp;
 
-			if ( isset( $wp->query_vars['page'] ) && $wp->query_vars['page'] != '' )
-				$pagenum = absint( $wp->query_vars['page'] );
+			if ( isset( $wp->query_vars['pagenum'] ) && $wp->query_vars['pagenum'] != '' )
+				$pagenum = absint( $wp->query_vars['pagenum'] );
 
 			elseif ( isset( $_REQUEST['paged'] ) )
 				$pagenum = absint( $_REQUEST['paged'] );
 
-			elseif ( isset( $_REQUEST['page'] ) )
-				$pagenum = absint( $_REQUEST['page'] );
+			elseif ( isset( $_REQUEST['pagenum'] ) )
+				$pagenum = absint( $_REQUEST['pagenum'] );
 
 			else return 1;
 
@@ -1302,7 +1307,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'first-page',
-					esc_url( remove_query_arg( 'page', $current_url ) ),
+					esc_url( remove_query_arg( 'pagenum', $current_url ) ),
 					'&laquo;'
 				);
 			}
@@ -1312,7 +1317,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'prev-page',
-					esc_url( add_query_arg( 'page', max( 1, $current-1 ), $current_url ) ),
+					esc_url( add_query_arg( 'pagenum', max( 1, $current-1 ), $current_url ) ),
 					'&lsaquo;'
 				);
 			}
@@ -1329,7 +1334,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				if ( $i != $current )
 					$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 						'mycred-nav',
-						esc_url( add_query_arg( 'page', $i, $current_url ) ),
+						esc_url( add_query_arg( 'pagenum', $i, $current_url ) ),
 						$i
 					);
 
@@ -1343,7 +1348,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'next-page' . $disable_last,
-					esc_url( add_query_arg( 'page', min( $total_pages, $current+1 ), $current_url ) ),
+					esc_url( add_query_arg( 'pagenum', min( $total_pages, $current+1 ), $current_url ) ),
 					'&rsaquo;'
 				);
 			}
@@ -1353,7 +1358,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			else {
 				$page_links[] = sprintf( '<li><a class="%s" href="%s">%s</a></li>',
 					'last-page' . $disable_last,
-					esc_url( add_query_arg( 'page', $total_pages, $current_url ) ),
+					esc_url( add_query_arg( 'pagenum', $total_pages, $current_url ) ),
 					'&raquo;'
 				);
 			}
@@ -2291,6 +2296,40 @@ if ( ! function_exists( 'mycred_query_users_total' ) ) :
 endif;
 
 /**
+ * Calculate Users Total
+ * Query to get users Total from log.
+ *
+ * @param $user_id (int), required user id
+ * @param $type (string), required point type
+ * @since 1.8.14
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_calculate_users_total' ) ) :
+	function mycred_calculate_users_total( $user_id, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+
+		if ( ! MYCRED_ENABLE_LOGGING || ! MYCRED_ENABLE_TOTAL_BALANCE ) return 0;
+
+		if ( ! mycred_point_type_exists( $point_type ) )
+			$point_type = MYCRED_DEFAULT_TYPE_KEY;
+
+		global $wpdb, $mycred_log_table;
+
+		$total = $wpdb->get_var( $wpdb->prepare( "
+			SELECT SUM( creds ) 
+			FROM {$mycred_log_table} 
+			WHERE user_id = %d
+				AND ( ( creds > 0 ) OR ( creds < 0 AND ref = 'manual' ) )
+				AND ctype = %s;", $user_id, $point_type ) );
+
+		if ( $total === NULL )
+			$total = 0;
+
+		return apply_filters( 'mycred_calculate_users_total', $total, $user_id, $point_type );
+
+	}
+endif;
+
+/**
  * Get All References
  * Returns an array of references currently existing in the log
  * for a particular point type. Will return false if empty.
@@ -2828,7 +2867,7 @@ if ( ! function_exists( 'mycred_get_users_history' ) ) :
 			if ( ! in_array( $orderby, array( 'rows', 'reference', 'total', 'ref_id' ) ) ) $orderby = 'rows';
 			if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) ) $order = 'DESC';
 
-			$query   = $wpdb->get_results( $wpdb->prepare( "SELECT COUNT(*) AS rows, ref AS reference, SUM(creds) AS total, MAX(time) AS last_entry FROM {$mycred_log_table} WHERE user_id = %d AND ctype = %s GROUP BY ref ORDER BY {$orderby} {$order};", $user_id, $point_type ) );
+			$query   = $wpdb->get_results( $wpdb->prepare( "SELECT COUNT(*) AS `rows`, ref AS reference, SUM(creds) AS total, MAX(time) AS last_entry FROM {$mycred_log_table} WHERE user_id = %d AND ctype = %s GROUP BY ref ORDER BY `{$orderby}` {$order};", $user_id, $point_type ) );
 
 			if ( ! empty( $query ) ) {
 				foreach ( $query as $result ) {

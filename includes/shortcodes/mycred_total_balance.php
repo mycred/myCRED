@@ -43,7 +43,7 @@ if ( ! function_exists( 'mycred_render_shortcode_total' ) ) :
 			foreach ( explode( ',', $types ) as $type_key ) {
 
 				$type_key = sanitize_text_field( $type_key );
-				if ( ! array_key_exists( $type_key, $this->balance ) ) continue;
+				if ( ! array_key_exists( $type_key, $account->balance ) ) continue;
 
 				if ( ! in_array( $type_key, $types_to_addup ) )
 					$types_to_addup[] = $type_key;

@@ -33,9 +33,9 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderbaord_position' ) ) :
 		$leaderboard = mycred_get_leaderboard( $args );
 
 		// Query the users position
-		$position    = $leaderboard->get_users_current_position( $user_id, $missing );
+		$position    = $leaderboard->get_users_current_position( $user_id, $args['missing'] );
 
-		if ( $position != $missing && $suffix == 1 )
+		if ( $position != $args['missing'] && $args['suffix'] == 1 )
 			$position = mycred_ordinal_suffix( $position, true );
 
 		return $position;

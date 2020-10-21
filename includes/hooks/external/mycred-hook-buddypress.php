@@ -83,7 +83,7 @@ function mycred_load_buddypress_profile_hook() {
 					),
 					'leave_friend'   => array(
 						'creds'         => '-1',
-						'log'           => '%singular% deduction for loosing a friend',
+						'log'           => '%singular% deduction for losing a friend',
 						'limit'         => '0/x'
 					),
 					'new_comment'    => array(
@@ -153,7 +153,7 @@ function mycred_load_buddypress_profile_hook() {
 				add_action( 'bp_activity_comment_posted',         array( $this, 'new_comment' ), 10, 2 );
 
 			if ( $this->prefs['delete_comment']['creds'] != 0 )
-				add_action( 'bp_activity_action_delete_activity', array( $this, 'delete_comment' ), 10, 2 );
+				add_action( 'bp_activity_before_action_delete_activity', array( $this, 'delete_comment' ), 10, 2 );
 
 			if ( $this->prefs['add_favorite']['creds'] != 0 )
 				add_action( 'bp_activity_add_user_favorite',      array( $this, 'add_to_favorites' ), 10, 2 );
@@ -465,22 +465,30 @@ function mycred_load_buddypress_profile_hook() {
 		 */
 		public function delete_comment( $activity_id, $user_id ) {
 
-			// Check if user is excluded
-			if ( $this->core->exclude_user( $user_id ) ) return;
+			global $wpdb, $bp;
+			
+			$activity_type = $wpdb->get_var( $wpdb->prepare( "SELECT type FROM {$bp->activity->table_name} WHERE id = %d", $activity_id ) );
+            
+			if( $activity_type == 'activity_comment' ) {
 
-			// Make sure this is unique event
-			if ( $this->core->has_entry( 'comment_deletion', $activity_id ) ) return;
-
-			// Execute
-			$this->core->add_creds(
-				'comment_deletion',
-				$user_id,
-				$this->prefs['delete_comment']['creds'],
-				$this->prefs['delete_comment']['log'],
-				$activity_id,
-				'bp_comment',
-				$this->mycred_type
-			);
+			    // Check if user is excluded
+    			if ( $this->core->exclude_user( $user_id ) ) return;
+                
+    			// Make sure this is unique event
+    			if ( $this->core->has_entry( 'comment_deletion', $activity_id ) ) return;
+    
+    			// Execute
+    			$this->core->add_creds(
+    				'comment_deletion',
+    				$user_id,
+    				$this->prefs['delete_comment']['creds'],
+    				$this->prefs['delete_comment']['log'],
+    				$activity_id,
+    				'bp_comment',
+    				$this->mycred_type
+    			);
+			
+			}
 
 		}
 
@@ -493,7 +501,8 @@ function mycred_load_buddypress_profile_hook() {
 
 			// Check if user is excluded
 			if ( $this->core->exclude_user( $user_id ) ) return;
-
+			//Limit
+			if ($this->over_hook_limit( 'add_favorite', 'fave_activity' ) ) return;
 			// Make sure this is unique event
 			if ( $this->core->has_entry( 'fave_activity', $activity_id ) ) return;
 
@@ -823,7 +832,7 @@ function mycred_load_buddypress_profile_hook() {
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Removing Favorit Activity', 'mycred' ); ?></h3>
+	<h3><?php _e( 'Removing Favorite Activity', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">

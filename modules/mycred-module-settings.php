@@ -811,7 +811,9 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"></div>
 				</div>
-				<p id="mycred-ctype-warning"><strong><?php _e( 'The meta key must be lowercase and only contain letters or underscores. All other characters will be deleted!', 'mycred' ); ?></strong></p>
+				<p id="mycred-ctype-warning">
+					<strong><?php _e( 'Note This meta key must be in lowercase and only contain letters or underscore. All other characters will be deleted! make sure to add some unique prefix to this meta key to avoid any conflicts in database.', 'mycred' ); ?> <a href="https://codex.mycred.me/chapter-i/points/"><?php _e( 'Read More', 'mycred' )?></a></strong>
+				</p>
 			</div>
 <?php
 

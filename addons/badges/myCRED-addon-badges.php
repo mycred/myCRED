@@ -26,6 +26,7 @@ if ( ! defined( 'MYCRED_BADGE_HEIGHT' ) )
 require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-badge-functions.php';
 require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-badge-shortcodes.php';
 require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-badge-object.php';
+require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-badge-secondary.php';
 
 /**
  * myCRED_buyCRED_Module class
@@ -407,6 +408,8 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		 * @version 1.4
 		 */
 		public function add_finished( $result, $request, $mycred ) {
+		
+			if ( is_bool( $request ) ) return $result;
 
 			extract( $request );
 
@@ -650,7 +653,7 @@ th#badge-users { width: 10%; }
 		public function level_template( $level = 0 ) {
 
 			if ( $level == 0 )
-				return '<div class="row badge-level" id="mycred-badge-level{{level}}" data-level="{{level}}"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">{{addlevelbutton}}<div class="level-image"><div class="level-image-wrapper image-wrapper {{emptylevelimage}}">{{levelimage}}</div><div class="level-image-actions"><button type="button" class="button button-secondary change-level-image" data-level="{{level}}">{{levelimagebutton}}</button></div></div><div class="label-field"><input type="text" placeholder="{{levelplaceholder}}" name="mycred_badge[levels][{{level}}][label]" value="{{levellabel}}" /></div></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="req-title">{{requirementslabel}}<div class="pull-right" id="badge-requirement-compare"><a href="javascript:void(0);" data-do="AND" class="{{adnselected}}">AND</a> / <a href="javascript:void(0);" data-do="OR" class="{{orselected}}">OR</a><input type="hidden" name="mycred_badge[levels][{{level}}][compare]" value="AND" /></div></div><div class="level-requirements">{{{requirements}}}</div></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">{{rewards}}</div></div>';
+				return '<div class="row badge-level" id="mycred-badge-level{{level}}" data-level="{{level}}"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">{{addlevelbutton}}<div class="level-image"><div class="level-image-wrapper image-wrapper {{emptylevelimage}}">{{levelimage}}</div><div class="level-image-actions"><button type="button" class="button button-secondary change-level-image" data-level="{{level}}">{{levelimagebutton}}</button></div></div><div class="label-field"><input type="text" placeholder="{{levelplaceholder}}" name="mycred_badge[levels][{{level}}][label]" value="{{levellabel}}" /></div></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="req-title">{{requirementslabel}}<div class="pull-right" id="badge-requirement-compare"><a href="javascript:void(0);" data-do="AND" class="{{adnselected}}">AND</a> / <a href="javascript:void(0);" data-do="OR" class="{{orselected}}">OR</a><input type="hidden" name="mycred_badge[levels][{{level}}][compare]" value="{{badge_compare_andor}}" /></div></div><div class="level-requirements">{{{requirements}}}</div></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">{{rewards}}</div></div>';
 
 			return '<div class="row badge-level" id="mycred-badge-level{{level}}" data-level="{{level}}"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">{{removelevelbutton}}<div class="level-image"><div class="level-image-wrapper image-wrapper {{emptylevelimage}}">{{levelimage}}</div><div class="level-image-actions"><button type="button" class="button button-secondary change-level-image" data-level="{{level}}">{{levelimagebutton}}</button></div></div><div class="label-field"><input type="text" placeholder="{{levelplaceholder}}" name="mycred_badge[levels][{{level}}][label]" value="{{levellabel}}" /></div></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div class="req-title">{{requirementslabel}}</div><div class="level-requirements">{{{requirements}}}</div></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">{{rewards}}</div></div>';
 
@@ -692,10 +695,10 @@ th#badge-users { width: 10%; }
 
 			// only first level dictates requirements
 			if ( $level == 0 )
-				return '<div class="row row-narrow" id="level{{level}}requirement{{reqlevel}}" data-row="{{reqlevel}}"><div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 form"><div class="form-group"><select name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][type]" data-row="{{reqlevel}}" class="form-control point-type">{{pointtypes}}</select></div></div><div class="col-lg-5 col-md-5 col-sm-6 col-xs-12 form"><div class="form-group"><select name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][reference]" data-row="{{reqlevel}}" class="form-control reference">{{references}}</select></div></div><div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 form-inline"><div class="form-group"><input type="text" size="5" name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][amount]" class="form-control" value="{{reqamount}}" /></div><div class="form-group"><select name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][by]" data-row="{{reqlevel}}" class="form-control req-type">{{requirementtype}}</select></div></div><div class="col-lg-1 col-md-1 col-sm-6 col-xs-2 form">{{reqbutton}}</div></div>';
+				return '<div class="row row-narrow" id="level{{level}}requirement{{reqlevel}}" data-row="{{reqlevel}}"><div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 form"><div class="form-group"><select name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][type]" data-row="{{reqlevel}}" class="form-control point-type">{{pointtypes}}</select></div></div><div class="col-lg-5 col-md-5 col-sm-6 col-xs-12 form"><div class="form-group"><select name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][reference]" data-row="{{reqlevel}}" class="form-control reference">{{references}}</select></div>{{{customrequirement}}}</div><div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 form-inline"><div class="form-group"><input type="text" size="5" name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][amount]" class="form-control" value="{{reqamount}}" /></div><div class="form-group"><select name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][by]" data-row="{{reqlevel}}" class="form-control req-type">{{requirementtype}}</select></div></div><div class="col-lg-1 col-md-1 col-sm-6 col-xs-2 form">{{reqbutton}}</div></div>';
 
 			// All other requirements reflect the level 0's setup
-			return '<div class="row row-narrow" id="level{{level}}requirement{{reqlevel}}"><div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 form"><div class="form-group level-type"><p class="form-control-static level-requirement{{reqlevel}}-type">{{selectedtype}}</p></div></div><div class="col-lg-5 col-md-5 col-sm-6 col-xs-12 form"><div class="form-group level-ref"><p class="form-control-static level-requirement{{reqlevel}}-ref">{{selectedref}}</p></div></div><div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 form-inline"><div class="form-group level-val"><input type="text" size="5" name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][amount]" class="form-control" value="{{reqamount}}" /></div><div class="form-group level-type-by"><p class="form-control-static level-requirement{{reqlevel}}-by">{{selectedby}}</p></div></div><div class="col-lg-1 col-md-1 col-sm-6 col-xs-2 level-compare form"><p class="form-control-static" data-row="{{reqlevel}}">{{comparelabel}}</p></div></div>';
+			return '<div class="row row-narrow" id="level{{level}}requirement{{reqlevel}}"><div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 form"><div class="form-group level-type"><p class="form-control-static level-requirement{{reqlevel}}-type">{{selectedtype}}</p></div></div><div class="col-lg-5 col-md-5 col-sm-6 col-xs-12 form"><div class="form-group level-ref"><p class="form-control-static level-requirement{{reqlevel}}-ref">{{selectedref}}</p><p>{{refspecific}}</p></div></div><div class="col-lg-3 col-md-3 col-sm-6 col-xs-10 form-inline"><div class="form-group level-val"><input type="text" size="5" name="mycred_badge[levels][{{level}}][requires][{{reqlevel}}][amount]" class="form-control" value="{{reqamount}}" /></div><div class="form-group level-type-by"><p class="form-control-static level-requirement{{reqlevel}}-by">{{selectedby}}</p></div></div><div class="col-lg-1 col-md-1 col-sm-6 col-xs-2 level-compare form"><p class="form-control-static" data-row="{{reqlevel}}">{{comparelabel}}</p></div></div>';
 
 		}
 
@@ -803,6 +806,7 @@ jQuery(function($) {
 			</div>
 			<div class="level-image-actions">
 				<button type="button" class="button button-secondary" id="badges-change-default-image" data-do="<?php if ( $default_image == '' ) echo 'set'; else echo 'change'; ?>"><?php if ( $default_image == '' ) _e( 'Set Image', 'mycred' ); else _e( 'Change Image', 'mycred' ); ?></button>
+				<button type="button" class="button button-secondary <?php echo ( ( ! $attachment ) ? 'hidden' : '' ); ?>" id="badges-remove-default-image"><?php _e( 'Remove Image', 'mycred' ); ?></button>
 			</div>
 		</div>
 		<span class="description"><?php _e( 'Optional image to show when a user has not earned this badge.', 'mycred' ); ?></span>
@@ -879,6 +883,8 @@ jQuery(function($) {
 				$template = str_replace( '{{adnselected}}',       ( ( $setup['compare'] === 'AND' ) ? 'selected' : '' ), $template );
 				$template = str_replace( '{{orselected}}',        ( ( $setup['compare'] === 'OR' ) ? 'selected' : '' ), $template );
 
+				$template = str_replace( '{{badge_compare_andor}}',        ( ( isset($setup['compare']) && !empty($setup['compare']) ) ? $setup['compare'] : 'AND' ), $template );
+
 				//$requirement = $this->requirements_template( 1 );
 
 				$total_requirements = count( $setup['requires'] );
@@ -916,6 +922,10 @@ jQuery(function($) {
 					}
 
 					$requirement         = str_replace( '{{references}}', $reference_options, $requirement );
+
+					$requirement_specific = apply_filters( 'mycred_badge_requirement_specific_template', '', $req_level, $reqsetup, $badge, $level );
+					$requirement         = str_replace( '{{{customrequirement}}}', $requirement_specific,  $requirement );
+
 					$requirement         = str_replace( '{{reqamount}}',  $reqsetup['amount'], $requirement );
 
 					$reference_options   = str_replace( 'selected="selected"', '', $reference_options );
@@ -942,6 +952,8 @@ jQuery(function($) {
 						$selectedtype = $point_types[ $reqsetup['type'] ];
 
 					$requirement = str_replace( '{{selectedtype}}', $selectedtype, $requirement );
+
+					$requirement = str_replace( '{{refspecific}}', '', $requirement );
 
 					$selectedreference   = '-';
 					if ( array_key_exists( $reqsetup['reference'], $references ) )
@@ -1075,6 +1087,7 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 							$requirement['reference'] = ( ( array_key_exists( 'reference', $requirement_setup ) ) ? sanitize_key( $requirement_setup['reference'] ) : '' );
 							$requirement['amount']    = ( ( array_key_exists( 'amount', $requirement_setup ) ) ? sanitize_text_field( $requirement_setup['amount'] ) : '' );
 							$requirement['by']        = ( ( array_key_exists( 'by', $requirement_setup ) ) ? sanitize_key( $requirement_setup['by'] ) : '' );
+							$requirement['specific']  = ( ( array_key_exists( 'specific', $requirement_setup ) ) ? sanitize_text_field( $requirement_setup['specific'] ) : '' );
 
 							$level_requirements[ $row ] = $requirement;
 							$row ++;
@@ -1518,7 +1531,7 @@ jQuery(function($) {
 
 			$user_id = bbp_get_displayed_user_id();
 			if ( isset( $this->badges['show_all_bb'] ) && $this->badges['show_all_bb'] == 1 )
-				mycred_render_my_badges( array(
+				echo mycred_render_my_badges( array(
 					'show'    => 'all',
 					'width'   => MYCRED_BADGE_WIDTH,
 					'height'  => MYCRED_BADGE_HEIGHT,
@@ -1538,10 +1551,11 @@ jQuery(function($) {
 		public function insert_into_bbpress_reply() {
 
 			$user_id = bbp_get_reply_author_id();
+
 			if ( $user_id > 0 ) {
 
 				if ( isset( $this->badges['show_all_bb'] ) && $this->badges['show_all_bb'] == 1 )
-					mycred_render_my_badges( array(
+					echo mycred_render_my_badges( array(
 						'show'    => 'all',
 						'width'   => MYCRED_BADGE_WIDTH,
 						'height'  => MYCRED_BADGE_HEIGHT,

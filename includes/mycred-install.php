@@ -89,6 +89,8 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		public static function activate() {
 
 			$mycred = mycred();
+			
+			set_transient( '_mycred_activation_redirect', true, 60 );
 
 			// Add general settings
 			add_option( 'mycred_version',   myCRED_VERSION );
@@ -102,7 +104,8 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 			) );
 
 			// Add hooks settings
-			add_option( 'mycred_pref_hooks', array(
+			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
+			add_option( $option_id, array(
 				'installed'  => array(),
 				'active'     => array(),
 				'hook_prefs' => array()
@@ -113,8 +116,9 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 			if ( isset( $_GET['activate-multi'] ) )
 				return;
 
-			flush_rewrite_rules();
+			set_transient( '_mycred_activation_redirect', true, 60 );
 
+			flush_rewrite_rules();
 		}
 
 		/**
@@ -123,7 +127,7 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		 * @version 1.4
 		 */
 		public static function reactivate() {
-
+		
 			$version = get_option( 'mycred_version', false );
 			do_action( 'mycred_reactivation', $version );
 
@@ -184,11 +188,12 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 
 			$mycred_types = mycred_get_types();
 
+			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
 			// Options to delete
 			$options_to_delete = array(
 				'mycred_setup_completed',
 				'mycred_pref_core',
-				'mycred_pref_hooks',
+				$option_id,
 				'mycred_pref_addons',
 				'mycred_pref_bank',
 				'mycred_pref_remote',

@@ -208,7 +208,7 @@ function mycred_load_bbpress_hook() {
 			if ( $this->over_hook_limit( 'new_forum', 'new_forum', $forum_author ) ) return;
 
 			// Make sure this is unique event
-			if ( $this->has_entry( 'new_forum', $forum_id, $forum_author ) ) return;
+			if ( $this->bbpress_has_entry( 'new_forum', $forum_id, $forum_author ) ) return;
 
 			// Execute
 			$this->core->add_creds(
@@ -234,7 +234,7 @@ function mycred_load_bbpress_hook() {
 			$forum_author = bbp_get_forum_author_id( $forum_id );
 
 			// If gained, points, deduct
-			if ( $this->has_entry( 'new_forum', $forum_id, $forum_author ) ) {
+			if ( $this->bbpress_has_entry( 'new_forum', $forum_id, $forum_author ) ) {
 
 				// Execute
 				$this->core->add_creds(
@@ -270,7 +270,7 @@ function mycred_load_bbpress_hook() {
 			if ( $this->over_hook_limit( 'new_topic', 'new_forum_topic', $topic_author ) ) return;
 
 			// Make sure this is unique event
-			if ( $this->has_entry( 'new_forum_topic', $topic_id, $topic_author ) ) return;
+			if ( $this->bbpress_has_entry( 'new_forum_topic', $topic_id, $topic_author ) ) return;
 
 			// Execute
 			$this->core->add_creds(
@@ -296,7 +296,7 @@ function mycred_load_bbpress_hook() {
 			$topic_author = bbp_get_topic_author_id( $topic_id );
 
 			// If gained, points, deduct
-			if ( $this->has_entry( 'new_forum_topic', $topic_id, $topic_author ) ) {
+			if ( $this->bbpress_has_entry( 'new_forum_topic', $topic_id, $topic_author ) ) {
 
 				// Execute
 				$this->core->add_creds(
@@ -332,7 +332,7 @@ function mycred_load_bbpress_hook() {
 
 			// Make sure this is a unique event (favorite not from same user)
 			$data = array( 'ref_user' => $user_id, 'ref_type' => 'post' );
-			if ( $this->has_entry( 'topic_favorited', $topic_id, $topic_author, $data ) ) return;
+			if ( $this->bbpress_has_entry( 'topic_favorited', $topic_id, $topic_author, $data ) ) return;
 
 			// Execute
 			$this->core->add_creds(
@@ -364,7 +364,7 @@ function mycred_load_bbpress_hook() {
 			if ( $this->over_hook_limit( 'new_reply', 'new_forum_reply', $reply_author ) ) return;
 
 			// Make sure this is unique event
-			if ( $this->has_entry( 'new_forum_reply', $reply_id, $reply_author ) ) return;
+			if ( $this->bbpress_has_entry( 'new_forum_reply', $reply_id, $reply_author ) ) return;
 
 			// Execute
 			$this->core->add_creds(
@@ -390,7 +390,7 @@ function mycred_load_bbpress_hook() {
 			$reply_author = bbp_get_reply_author_id( $reply_id );
 
 			// If gained, points, deduct
-			if ( $this->has_entry( 'new_forum_reply', $reply_id, $reply_author ) ) {
+			if ( $this->bbpress_has_entry( 'new_forum_reply', $reply_id, $reply_author ) ) {
 
 				// Execute
 				$this->core->add_creds(
@@ -547,7 +547,7 @@ function mycred_load_bbpress_hook() {
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'New Topic', 'mycred' ); ?></h3>
+	<h3><?php _e( 'Forum Reply', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
@@ -657,6 +657,48 @@ function mycred_load_bbpress_hook() {
 			$data['show_points_in_profile'] = ( isset( $data['show_points_in_profile'] ) ) ? 1 : 0;
 
 			return $data;
+		}
+
+		public function bbpress_has_entry($reference = NULL, $ref_id = NULL, $user_id = NULL, $data = NULL, $type = MYCRED_DEFAULT_TYPE_KEY){
+			$has_entry = false;
+			if ( ! MYCRED_ENABLE_LOGGING ) return $has_entry;
+	
+			if ( ! $has_entry && $user_id !== NULL) {
+	
+				global $wpdb;
+	
+				$wheres   = array();
+	
+				if ( $reference !== NULL )
+					$wheres[] = $wpdb->prepare( "ref = %s", $reference );
+	
+				if ( $ref_id !== NULL )
+					$wheres[] = $wpdb->prepare( "ref_id = %d", $ref_id );
+	
+				if ( $user_id !== NULL )
+					$wheres[] = $wpdb->prepare( "user_id = %d", $user_id );
+	
+			//	if ( $data !== NULL )
+			//		$wheres[] = $wpdb->prepare( "data = %s", maybe_serialize( $data ) );
+	
+				if ( $type === NULL ) $type = $this->get_point_type_key();
+				$wheres[] = $wpdb->prepare( "ctype = %s", $type );
+	
+				$where    = implode( ' AND ', $wheres );
+	
+				if ( ! empty( $wheres ) ) {
+
+					$check = $wpdb->get_var( "SELECT id FROM {$wpdb->prefix}myCRED_log WHERE {$where};" );
+					if ( $check !== NULL )
+						$has_entry = true;
+	
+				}
+	
+			}
+	
+			return $has_entry;
+			
+	
 		}
 
 	}

@@ -22,7 +22,8 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderboard' ) ) :
 			'nothing'      => 'Leaderboard is empty',
 			'current'      => 0,
 			'exclude_zero' => 1,
-			'timeframe'    => ''
+			'timeframe'    => '',
+			'to'    => ''
 		), $atts, MYCRED_SLUG . '_leaderboard' );
 
 		// Construct the leaderboard class

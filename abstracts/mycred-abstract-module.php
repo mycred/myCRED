@@ -388,7 +388,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 
 			// In case we are using the Master Template feautre on multisites, and this is not the main
 			// site in the network, bail.
-			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
+			if ( $this->module_id != 'myCRED_Log_Module' && mycred_override_settings() && ! mycred_is_main_site() ) return;
 
 			// Minimum requirements
 			if ( ! empty( $this->labels ) && ! empty( $this->screen_id ) ) {

@@ -55,6 +55,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			$this->ref_key = apply_filters( 'mycred_affiliate_key', 'mref', $this );
 
 			add_filter( 'mycred_parse_log_entry_signup_referral', array( $this, 'parse_log_entry' ), 10, 2 );
+			add_action( 'wp_footer', 'copy_ref_link' );
 
 		}
 
@@ -193,6 +194,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 			// Check for exclusion
 			if ( $this->core->exclude_user( $user_id ) ) return;
+			
+			$users_ref_link = '';
 
 			// If it is my profile or other members allowed to view eachothers profiles or if we are admins
 			if ( bp_is_my_profile() || mycred_is_admin() ) {
@@ -207,7 +210,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 				// Table
 				$output .= '<table class="profile-fields">';
-				$output .= sprintf( '<tr class="field_1 field_ref_link"><td class="label">%s</td><td>%s</td></tr>', __( 'Link', 'mycred' ), $users_ref_link );
+				$output .= sprintf( '<tr class="field_1 field_ref_link"><td class="label">%s</td><td><input type="text" value="%s" id="mref-link-buddypress-profile" readonly><button onclick="copy_to_clipBoard()">Copy</button></td></tr>', __( 'Link', 'mycred' ), $users_ref_link );
 
 				// Show Visitor referral count
 				if ( $this->prefs['visit']['creds'] != 0 )
@@ -794,5 +797,18 @@ if ( ! function_exists( 'mycred_detect_bp_user_activation' ) ) :
 
 		do_action( 'mycred_bp_user_activated', $user_id );
 
+	}
+endif;
+
+if ( ! function_exists( 'copy_ref_link' ) ) :
+	function copy_ref_link() {?>
+		<script>
+			function copy_to_clipBoard() {
+				var copyText = document.getElementById("mref-link-buddypress-profile");
+				copyText.select();
+				document.execCommand("copy");
+			}
+		</script>
+		<?php
 	}
 endif;

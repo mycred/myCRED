@@ -262,8 +262,8 @@ if ( ! class_exists( 'myCRED_Coupon' ) ) :
 				// Min balance requirement
 				if ( $this->requires_min_type != $this->point_type ) {
 
-					$mycred        = mycred( $this->requires_min_type );
-					$users_balance = $mycred->get_users_balance( $user_id, $this->requires_min_type );
+					$mycred_min        = mycred( $this->requires_min_type );
+					$users_balance = $mycred_min->get_users_balance( $user_id, $this->requires_min_type );
 
 				}
 
@@ -275,8 +275,8 @@ if ( ! class_exists( 'myCRED_Coupon' ) ) :
 
 					if ( $this->requires_max_type != $this->point_type ) {
 
-						$mycred        = mycred( $this->requires_max_type );
-						$users_balance = $mycred->get_users_balance( $user_id, $this->requires_max_type );
+						$mycred_max        = mycred( $this->requires_max_type );
+						$users_balance = $mycred_max->get_users_balance( $user_id, $this->requires_max_type );
 
 					}
 
@@ -292,6 +292,8 @@ if ( ! class_exists( 'myCRED_Coupon' ) ) :
 
 			// Ready to use coupon!
 			if ( $can_use === true ) {
+
+				$this->settings['log'] = str_replace( '%coupon_code%', $this->code, $this->settings['log'] );
 
 				// Apply Coupon
 				$mycred->add_creds(

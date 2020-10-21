@@ -70,6 +70,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 				'offset'       => 0,
 				'type'         => MYCRED_DEFAULT_TYPE_KEY,
 				'timeframe'    => '',
+				'to'		   => '',
 				'now'          => $this->now,
 				'order'        => 'DESC',
 				'total'        => 0,
@@ -166,6 +167,9 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			// Timeframe
 			$this->args['timeframe']    = ( MYCRED_ENABLE_LOGGING ) ? sanitize_text_field( $args['timeframe'] ) : '';
+			// To
+
+			$this->args['to']    = ( MYCRED_ENABLE_LOGGING ) ? sanitize_text_field( $args['to'] ) : '';
 			$this->args['now']          = ( $args['now'] != '' ) ? absint( $args['now'] ) : $this->now;
 
 			// Order
@@ -542,10 +546,10 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			 */
 			elseif ( MYCRED_ENABLE_LOGGING ) {
 
-				$reference_is      = 'l.ref = %s';
+				$reference_is      = 'AND l.ref = %s';
 				$reference_values  = $this->references[0];
 				if ( count( $this->references ) > 1 ) {
-					$reference_is     = 'l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
+					$reference_is     = 'AND l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
 					$reference_values = $this->references;
 				}
 
@@ -591,6 +595,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			global $wpdb, $mycred_log_table;
 
 			$time_filter       = $this->get_timefilter();
+			$exclude_filter    = $this->get_excludefilter();
 			$multisite_check   = $this->get_multisitefilter();
 
 			$point_type_is     = 'l.ctype = %s';
@@ -671,10 +676,10 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			 */
 			elseif ( MYCRED_ENABLE_LOGGING ) {
 
-				$reference_is      = 'l.ref = %s';
+				$reference_is      = 'AND l.ref = %s';
 				$reference_values  = $this->references[0];
 				if ( count( $this->references ) > 1 ) {
-					$reference_is     = 'l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
+					$reference_is     = 'AND l.ref IN ( %s' . str_repeat( ', %s', ( count( $this->references ) - 1 ) ) . ' )';
 					$reference_values = $this->references;
 				}
 
@@ -735,8 +740,14 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			else {
 
 				$start_from = strtotime( $this->args['timeframe'], $this->now );
-				if ( $start_from !== false && $start_from > 0 )
-					$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", $start_from, $this->args['now'] );
+				
+				if ( $start_from !== false && $start_from > 0 ) {
+					$end_to = $this->args['to'] != '' ? strtotime(date($this->args['to']." 23:59:59")) : 0;
+					if ($end_to === false || $end_to <= 0 ) {
+						$end_to = $this->args['now'];
+					}
+					$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", $start_from, $end_to );
+				}
 
 			}
 
@@ -807,6 +818,8 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			if ( empty( $args ) ) $args = $this->args;
 			else $args = $this->apply_defaults( $args );
+
+			unset( $args['now'] );
 
 			return 'leaderboard-' . md5( serialize( $args ) );
 
@@ -932,7 +945,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					if ( $this->user_id > 0 && $user['ID'] == $this->user_id )
 						$class[] = 'current-user';
 
-					if ( $position % 2 != 0 )
+					if ( is_numeric( $position ) && $position % 2 != 0 )
 						$class[] = 'alt';
 
 					$row_template = $template;

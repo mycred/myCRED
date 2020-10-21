@@ -835,7 +835,7 @@ if ( ! function_exists( 'mycred_get_users_history_data' ) ) :
 				$selects  = array();
 
 				foreach ( $periods as $row => $setup )
-					$selects[] = $wpdb->prepare( 'AVG( CASE WHEN time BETWEEN %d AND %d THEN creds END) AS period%d', $setup['from'], $setup['until'], $row );
+					$selects[] = $wpdb->prepare( 'SUM( CASE WHEN time BETWEEN %d AND %d THEN creds END) AS period%d', $setup['from'], $setup['until'], $row );
 
 				$select   = implode( ', ' . "\n", $selects );
 

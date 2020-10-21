@@ -90,16 +90,22 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		 */
 		public $redirect_to       = '';
 
+		public $errors         = array();
+
 		/**
 		 * Toggle ID
 		 */
 		public $toggle_id         = '';
 
+		/**
+		 * Limit Setting
+		 */
+		public $buycred_limit     = array();
+
 		protected $response;
 		protected $request;
 		protected $status;
 
-		protected $errors         = array();
 		protected $processing_log = NULL;
 
 		/**
@@ -160,6 +166,8 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			if ( $this->point_type != MYCRED_DEFAULT_TYPE_KEY )
 				$this->core = mycred( $this->point_type );
 
+			$this->buycred_limit  = mycred_get_buycred_sale_setup( $this->point_type );
+
 			$this->transaction_id = ( isset( $_REQUEST['revisit'] ) ) ? strtoupper( sanitize_text_field( $_REQUEST['revisit'] ) ) : false;
 			$this->post_id        = ( $this->transaction_id !== false ) ? buycred_get_pending_payment_id( $this->transaction_id ) : false;
 			$this->buyer_id       = $this->current_user_id;
@@ -169,24 +177,34 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			$this->currency       = ( isset( $this->prefs['currency'] ) ) ? $this->prefs['currency'] : '';
 			$this->maximum        = -1;
 
-			if ( $this->core->exclude_user( $this->buyer_id ) )
+			if ( $this->core->exclude_user( $this->buyer_id ) ){
 				$valid = false;
-
+				$this->errors[] = __( 'Buyer is excluded from this point type.', 'mycred' );
+			}
 			elseif ( $this->core->exclude_user( $this->recipient_id ) ) {
 				$valid          = false;
-				$this->errors[] = 'recipient';
+				$this->errors[] = __( 'Recipient is excluded from this point type. ', 'mycred' );
 			}
 
-			elseif ( $this->amount === false || $this->amount == 0 )
+			elseif ( $this->amount === false || $this->amount == 0 ){
 				$valid = false;
+				$this->errors[] = __( 'An amount value is required.', 'mycred' );
+			}
 
-			elseif ( $this->exceeds_limit() )
+			elseif ( ! empty( $this->buycred_limit['max'] ) && $this->amount > floatval( $this->buycred_limit['max'] ) ){
 				$valid = false;
+				$this->errors[] = sprintf( __( 'The amount must be less than %d.', 'mycred' ), $this->buycred_limit['max'] );
+			}
+
+			elseif ( $this->exceeds_limit() ){
+				$valid = false;
+				$this->errors[] = __( 'You have exceeded the limit.', 'mycred' );
+			}
 
 			if ( $valid )
 				$this->populate_transaction();
 
-			if ( ! empty( $this->errors ) )
+			if ( ! empty( $this->errors ) ) 
 				$valid = false;
 
 			return apply_filters( 'mycred_valid_buycred_request', $valid, $this );
@@ -213,7 +231,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 					$this->point_type
 				) );
 
-				$this->transaction_id = mycred_get_the_title( $this->post_id );
+				$this->transaction_id = get_the_title( $this->post_id );
 
 			}
 
@@ -277,7 +295,6 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			if ( $remaining === 0 ) {
 
 				$exceeds          = true;
-				$this->errors[] = 'maximum';
 				$this->maximum  = 0;
 
 			}
@@ -298,7 +315,6 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 
 					if ( $remaining < 0 ) {
 						$exceeds        = true;
-						$this->errors[] = 'maximum';
 						$this->maximum  = 0;
 					}
 					else {
@@ -418,7 +434,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 				$button = '<button type="button" id="checkout-action-button" data-act="toggle" data-value="' . esc_attr( $this->toggle_id ) . '" class="btn btn-default">' . esc_js( $button_label ) . '</button>';
 
 			elseif ( ! empty( $this->redirect_to ) )
-				$button = '<button type="button" id="checkout-action-button" data-act="redirect" data-value="' . $this->redirect_to . '" class="btn btn-default">' . esc_js( $button_label ) . '</button>';
+				$button = '<button type="button" id="checkout-action-button" data-act="redirect" data-value="' . $this->redirect_to . '" class="btn btn-default '. $this->id .'">' . esc_js( $button_label ) . '</button>';
 
 			$button   = apply_filters( 'mycred_buycred_checkout_button', $button, $this );
 
@@ -735,8 +751,6 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		/**
 		 * First Comment
 		 * Used to allow a gateway to adjust the first comment with pending payments. 
-		 * Used by Zombaio to remove the amount since that we do not know until the user completes
-		 * the payment.
 		 * @since 1.7.3
 		 * @version 1.0
 		 */
@@ -862,7 +876,11 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		 * @since 1.3.2
 		 * @version 1.2
 		 */
-		public function get_cost( $amount = 0, $point_type = MYCRED_DEFAULT_TYPE_KEY, $raw = false ) {
+		public function get_cost( $amount = 0, $point_type = MYCRED_DEFAULT_TYPE_KEY, $raw = false, $custom_rate = 0 ) {
+
+			if(isset($_REQUEST['er_random']) && !empty($_REQUEST['er_random'])){
+				$custom_rate=base64_decode($_REQUEST['er_random']);
+			}
 
 			$setup = mycred_get_buycred_sale_setup( $point_type );
 
@@ -877,6 +895,8 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 				$override = mycred_get_user_meta( $this->current_user_id, 'mycred_buycred_rates_' . $point_type, '', true );
 				if ( isset( $override[ $this->id ] ) && $override[ $this->id ] != '' )
 					$rate = $override[ $this->id ];
+				else if($custom_rate !=0 )
+					$rate = $custom_rate;
 				else
 					$rate = $this->prefs['exchange'][ $point_type ];
 
@@ -1197,8 +1217,8 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 
 		}
 		public function purchase_header( $title = '', $reload = false ) {
-				$this->get_page_header( $title, $reload );
-			}
+			$this->get_page_header( $title, $reload );
+		}
 
 		/**
 		 * Payment Page Footer

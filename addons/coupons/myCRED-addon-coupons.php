@@ -318,7 +318,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 					else {
 
-						if ( $coupon->expires < current_time( 'timestamp' ) ) {
+						if ( $coupon->expires_unix < current_time( 'timestamp' ) ) {
 
 							mycred_trash_post( $post_id );
 

@@ -12,7 +12,7 @@ if ( ! function_exists( 'mycred_render_shortcode_best_user' ) ) :
 	function mycred_render_shortcode_best_user( $attr, $content = '' ) {
 
 		extract( shortcode_atts( array(
-			'ref'     => '',
+			'ref'     => 'balance',
 			'from'    => '',
 			'until'   => '',
 			'types'   => MYCRED_DEFAULT_TYPE_KEY,

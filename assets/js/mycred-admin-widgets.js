@@ -384,6 +384,7 @@ wpWidgets = {
 			action: 'mycred-hook-order',
 			savewidgets: $('#_wpnonce_widgets').val(),
 			ctype: myCREDHooks.type,
+			option_id: myCREDHooks.option_id,
 			sidebars: []
 		};
 
@@ -415,8 +416,13 @@ wpWidgets = {
 			action: 'mycred-save-hook',
 			savewidgets: $('#_wpnonce_widgets').val(),
 			ctype: myCREDHooks.type,
+			option_id: myCREDHooks.option_id,
 			sidebar: sidebarId
 		};
+		
+		if (typeof setCookie === "function") { 
+			setCookie('mlc_ref_name',myCREDHooks.option_id );
+		}
 
 		if ( del ) {
 			a.delete_widget = 1;

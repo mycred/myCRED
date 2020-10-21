@@ -648,8 +648,15 @@ if ( ! function_exists( 'mycred_display_users_badges' ) ) :
 				$badge->image_width  = $width;
 				$badge->image_height = $height;
 
+				$badge_image = '';
+
 				if ( $badge->level_image !== false )
-					echo apply_filters( 'mycred_the_badge', $badge->get_image( $level ), $badge_id, $badge, $user_id );
+					$badge_image = $badge->get_image( $level );
+				else if( $badge->main_image !== false )
+					$badge_image = $badge->get_image( 'main' );
+
+				if ( !empty( $badge_image ) )
+					echo apply_filters( 'mycred_the_badge', $badge_image, $badge_id, $badge, $user_id );
 
 			}
 

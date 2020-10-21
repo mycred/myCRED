@@ -338,7 +338,7 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 				$subject = $mycred->template_tags_amount( $subject, $event['amount'] );
 				$subject = $mycred->template_tags_user( $subject, $event['user_id'] );
 
-				if ( array_key_exists( 'data', $event ) && ! empty( $event['data'] ) && array_key_exists( 'ref_type', $event['data'] ) && $event['data']['ref_type'] == 'post' )
+				if ( array_key_exists( 'data', $event ) && is_array($event['data']) && ! empty( $event['data'] ) && array_key_exists( 'ref_type', $event['data'] ) && $event['data']['ref_type'] == 'post' )
 					$subject = $mycred->template_tags_post( $subject, $event['ref_id'] );
 
 				$subject = str_replace( '%amount%', $event['amount'], $subject );
@@ -374,17 +374,26 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 				}
 
 				// Template tags can only be used if the email triggers for one point type only.
+				$content = str_replace( '%entry%',         $event['entry'], $content );
 				$content = $mycred->template_tags_amount( $content, $event['amount'] );
-				$content = $mycred->template_tags_user( $content, $event['user_id'] );
+				// to display correct user names in transfer email
+				if( $event['ref']==='transfer' ){
+					$content = $mycred->template_tags_user( $content, $event['ref_id'] );
+					$content = mycred_transfer_render_message( $content, $event['data'] );
+				}elseif( $event['ref']==='woocommerce_payment' ){
+					$content = str_replace( '%order_id%', $event['ref_id'], $content );
+				}else{
+					$content = $mycred->template_tags_user( $content, $event['user_id'] );
+				}
 
-				if ( array_key_exists( 'data', $event ) && ! empty( $event['data'] ) && array_key_exists( 'ref_type', $event['data'] ) && $event['data']['ref_type'] == 'post' )
+				if ( array_key_exists( 'data', $event ) && is_array($event['data']) && ! empty( $event['data'] ) && array_key_exists( 'ref_type', $event['data'] ) && $event['data']['ref_type'] == 'post' )
 					$content = $mycred->template_tags_post( $content, $event['ref_id'] );
 
 				$content = str_replace( '%amount%',        $mycred->format_creds( $event['amount'] ), $content );
 				$content = str_replace( '%new_balance%',   $mycred->format_creds( $event['new'] ), $content );
 				$content = str_replace( '%old_balance%',   $mycred->format_creds( $event['old'] ), $content );
 
-				$content = str_replace( '%entry%',         $event['entry'], $content );
+				
 
 				$content = str_replace( '%blog_name%',     get_option( 'blogname' ), $content );
 				$content = str_replace( '%blog_url%',      get_option( 'home' ), $content );

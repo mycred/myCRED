@@ -30,7 +30,10 @@ if ( ! function_exists( 'mycred_render_my_rank' ) ) :
 		if ( $user_id === false ) return;
 
 		$account_object = mycred_get_account( $user_id );
-		$rank_object    = $account_object->balance[ $point_type ]->rank;
+		
+		if( empty( $account_object->balance[ $ctype ]->rank ) ) return;
+		
+		$rank_object    = $account_object->balance[ $ctype ]->rank;
 
 		if ( $rank_object !== false ) {
 
@@ -48,7 +51,7 @@ if ( ! function_exists( 'mycred_render_my_rank' ) ) :
 		if ( ! empty( $show ) )
 			$content = '<div class="mycred-my-rank">' . implode( ' ', $show ) . '</div>';
 
-		return apply_filters( 'mycred_my_rank', $content, $user_id, $rank );
+		return apply_filters( 'mycred_my_rank', $content, $user_id, $rank_object );
 
 	}
 endif;
@@ -76,7 +79,7 @@ if ( ! function_exists( 'mycred_render_my_ranks' ) ) :
 		if ( $user_id == '' && ! is_user_logged_in() ) return;
 
 		$user_id        = mycred_get_user_id( $user_id );
-		if ( $user_id === false ) return;
+		if ( $user_id == false ) return;
 
 		$account_object = mycred_get_account( $user_id );
 		$show           = array();
@@ -211,7 +214,7 @@ if ( ! function_exists( 'mycred_render_users_of_all_ranks' ) ) :
 		extract( shortcode_atts( array(
 			'login'     => '',
 			'number'    => 10,
-			'ctype'     => NULL,
+			'ctype'     => MYCRED_DEFAULT_TYPE_KEY,
 			'show_logo' => 1,
 			'logo_size' => 'post-thumbnail',
 			'wrap'      => 'div',
