@@ -6,7 +6,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Allows content to be hidden if a user does not fulfil the set points
  * requirements set for this shortcode.
  * @since 1.7
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 	function mycred_render_shortcode_show_if( $atts, $content = '' ) {
@@ -20,7 +20,7 @@ if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 			'visitors' => '',
 			'comp'     => 'AND',
 			'user_id'  => 'current'
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_show_if' ) );
 
 		// Visitors
 		if ( ! is_user_logged_in() ) {
@@ -67,7 +67,7 @@ if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 		}
 
 		// Reference related requirement
-		if ( strlen( $ref ) > 0 ) {
+		if ( MYCRED_ENABLE_LOGGING && strlen( $ref ) > 0 ) {
 
 			$ref_count = mycred_count_ref_instances( $ref, $user_id, $ctype );
 
@@ -119,4 +119,4 @@ if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 
 	}
 endif;
-add_shortcode( 'mycred_show_if', 'mycred_render_shortcode_show_if' );
+add_shortcode( MYCRED_SLUG . '_show_if', 'mycred_render_shortcode_show_if' );

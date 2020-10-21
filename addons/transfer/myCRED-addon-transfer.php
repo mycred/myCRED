@@ -1,16 +1,17 @@
 <?php
 /**
  * Addon: Transfer
- * Addon URI: http://mycred.me/add-ons/transfer/
- * Version: 1.5
+ * Addon URI: http://codex.mycred.me/chapter-iii/transfers/
+ * Version: 1.6
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
+define( 'myCRED_TRANSFER_VERSION', '1.6' );
 define( 'myCRED_TRANSFER',         __FILE__ );
 define( 'myCRED_TRANSFER_DIR',     myCRED_ADDONS_DIR . 'transfer/' );
-define( 'myCRED_TRANSFER_VERSION', '1.5' );
 
 require_once myCRED_TRANSFER_DIR . 'includes/mycred-transfer-functions.php';
+require_once myCRED_TRANSFER_DIR . 'includes/mycred-transfer-object.php';
 require_once myCRED_TRANSFER_DIR . 'includes/mycred-transfer-shortcodes.php';
 require_once myCRED_TRANSFER_DIR . 'includes/mycred-transfer-widgets.php';
 
@@ -38,14 +39,14 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 						'receiving' => 'Transfer of %plural% from %display_name%'
 					),
 					'errors'     => array(
-						'low'       => __( 'You do not have enough %plural% to send.', 'mycred' ),
-						'over'      => __( 'You have exceeded your %limit% transfer limit.', 'mycred' )
+						'low'       => 'You do not have enough %plural% to send.',
+						'over'      => 'You have exceeded your %limit% transfer limit.'
 					),
 					'templates'  => array(
 						'login'     => '',
 						'balance'   => 'Your current balance is %balance%',
 						'limit'     => 'Your current %limit% transfer limit is %left%',
-						'button'    => __( 'Transfer', 'mycred' )
+						'button'    => 'Transfer'
 					),
 					'autofill'   => 'user_login',
 					'reload'     => 1,
@@ -76,7 +77,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 			add_action( 'mycred_front_enqueue',        array( $this, 'register_script' ), 30 );
 
 			// Register Shortcode
-			add_shortcode( 'mycred_transfer',          'mycred_transfer_render' );
+			add_shortcode( MYCRED_SLUG . '_transfer',  'mycred_transfer_render' );
 
 			// Potentially load script
 			add_action( 'wp_footer',                   array( $this, 'maybe_load_script' ) );
@@ -153,7 +154,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 			echo '<style type="text/css">' . apply_filters( 'mycred_transfer_autofill_css', '.ui-autocomplete { position: absolute; z-index: 1000; cursor: default; padding: 0; margin-top: 2px; list-style: none; background-color: #ffffff; border: 1px solid #ccc; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); } .ui-autocomplete > li { padding: 3px 20px; } .ui-autocomplete > li:hover { background-color: #DDD; cursor: pointer; } .ui-autocomplete > li.ui-state-focus { background-color: #DDD; } .ui-helper-hidden-accessible { display: none; }', $this ) . '</style>';
 
 			// Prep Script
-			$base = array(
+			$base     = array(
 				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
 				'user_id'   => get_current_user_id(),
 				'working'   => esc_attr__( 'Processing...', 'mycred' ),
@@ -230,7 +231,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		/**
 		 * AJAX Transfer Creds
 		 * @since 0.1
-		 * @version 1.7
+		 * @version 1.8
 		 */
 		public function ajax_call_transfer() {
 
@@ -242,116 +243,37 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 			if ( mycred_force_singular_session( $user_id, 'mycred-last-transfer' ) )
 				wp_send_json_error( 'error_9' );
 
-			$request        = shortcode_atts( apply_filters( 'mycred_new_transfer_request', array(
-				'token'        => NULL,
-				'recipient_id' => NULL,
-				'user_id'      => 'current',
-				'ctype'        => MYCRED_DEFAULT_TYPE_KEY,
-				'amount'       => NULL,
-				'reference'    => 'transfer',
-				'message'      => ''
-			), $post ), $post['mycred_new_transfer'] );
+			$request = mycred_new_transfer( $post['mycred_new_transfer'], $post );
+			if ( ! is_array( $request ) )
+				wp_send_json_error( $request );
 
-			// Security
-			if ( ! wp_verify_nonce( $request['token'], 'mycred-new-transfer-' . $request['reference'] ) )
-				wp_send_json_error( 'error_1' );
-
-			// Make sure add-on has been setup
-			if ( ! isset( $this->transfers ) )
-				wp_send_json_error( 'error_6' );
-
-			// Make sure we are transfering an existing point type
-			if ( ! mycred_point_type_exists( $request['ctype'] ) || ! in_array( $request['ctype'], $this->transfers['types'] ) )
-				wp_send_json_error( 'error_10' );
-
-			// If messages are allowed, enforce a max length
-			$message = '';
-			if ( $this->transfers['message'] > 0 ) {
-				$message = sanitize_text_field( $request['message'] );
-				$message = substr( $message, 0, $this->transfers['message'] );
-			}
-
-			// Make sure we have a reference
-			if ( $request['reference'] == '' )
-				$request['reference'] = 'transfer';
-
-			// Honour the user ID in the request if it's not the current user
-			if ( $request['user_id'] != 'current' && absint( $request['user_id'] ) > 0 && absint( $request['user_id'] ) != $user_id )
-				$user_id = absint( $request['user_id'] );
-
-			// Prep
-			$point_type     = sanitize_key( $request['ctype'] );
-			$reference      = sanitize_key( $request['reference'] );
-			$transaction_id = 'TXID' . current_time( 'timestamp' ) . $user_id;
-
-			$mycred         = mycred( $point_type );
-			$recipient_id   = $this->get_recipient( sanitize_text_field( $request['recipient_id'] ) );
-
-			// Ok, lets start validating the request
-			// Recipient not found
-			if ( $recipient_id === false )
-				wp_send_json_error( 'error_3' );
-
-			// We are trying to transfer to ourselves
-			if ( $recipient_id == $user_id )
-				wp_send_json_error( 'error_4' );
-
-			// Amount can not be zero
-			$amount         = $mycred->number( abs( $request['amount'] ) );
-			if ( $amount == $mycred->zero() )
-				wp_send_json_error( 'error_5' );
-
-			$data           = apply_filters( 'mycred_transfer_data', array( 'ref_type' => 'user', 'tid' => $transaction_id, 'message' => $message ), $transaction_id, $request, $this->transfers );
-
-			$result         = mycred_new_transfer( array(
-				'transaction_id' => $transaction_id,
-				'sender_id'      => $user_id,
-				'recipient_id'   => $recipient_id,
-				'reference'      => $reference,
-				'charge'         => $amount,
-				'payout'         => $amount,
-				'point_type'     => $point_type,
-				'data'           => $data
-			) );
-
-			if ( ! is_array( $result ) )
-				wp_send_json_error( $result );
-
-			wp_send_json_success( $result );
+			// Transfer was successfull!
+			wp_send_json_success( $request );
 
 		}
 
 		/**
 		 * Settings Page
 		 * @since 0.1
-		 * @version 1.4
+		 * @version 1.5
 		 */
 		public function after_general_settings( $mycred = NULL ) {
 
 			// Settings
-			$settings           = $this->transfers;
+			$settings  = $this->transfers;
 
 			if ( ! array_key_exists( 'message', $settings ) )
 				$settings['message'] = 0;
 
 			// Limits
-			$limit              = $settings['limit']['limit'];
-			$limits             = array(
-				'none'             => __( 'No limits.', 'mycred' ),
-				'daily'            => __( 'Impose daily limit.', 'mycred' ),
-				'weekly'           => __( 'Impose weekly limit.', 'mycred' )
-			);
-			$available_limits   = apply_filters( 'mycred_transfer_limits', $limits, $settings );
+			$limit     = $settings['limit']['limit'];
+			$limits    = mycred_get_transfer_limits( $settings );
 
 			// Autofill by
-			$autofill           = $settings['autofill'];
-			$autofills          = array(
-				'user_login'       => __( 'User Login (user_login)', 'mycred' ),
-				'user_email'       => __( 'User Email (user_email)', 'mycred' )
-			);
-			$available_autofill = apply_filters( 'mycred_transfer_autofill_by', $autofills, $settings );
+			$autofill  = $settings['autofill'];
+			$autofills = mycred_get_transfer_autofill_by( $settings );
 
-			$yes_no             = array(
+			$yes_no    = array(
 				1 => __( 'Yes', 'mycred' ),
 				0 => __( 'No', 'mycred' )
 			);
@@ -368,12 +290,18 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="mycred-transfer-type"><?php _e( 'Point Types', 'mycred' ); ?></label>
+
 				<?php if ( count( $this->point_types ) > 1 ) : ?>
+
 				<?php mycred_types_select_from_checkboxes( 'mycred_pref_core[transfers][types][]', 'mycred-transfer-type', $settings['types'] ); ?>
+
 				<?php else : ?>
+
 				<p class="form-control-static"><?php echo $this->core->plural(); ?></p>
 				<input type="hidden" name="mycred_pref_core[transfers][types][]" value="<?php echo MYCRED_DEFAULT_TYPE_KEY; ?>" />
+
 				<?php endif; ?>
+
 			</div>
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -406,9 +334,9 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				<select name="<?php echo $this->field_name( 'autofill' ); ?>" id="<?php echo $this->field_id( 'autofill' ); ?>" class="form-control">
 <?php
 
-			foreach ( $available_autofill as $key => $label ) {
+			foreach ( $autofills as $key => $label ) {
 				echo '<option value="' . $key . '"';
-				if ( $settings['autofill'] == $key ) echo ' selected="selected"';
+				if ( $autofill == $key ) echo ' selected="selected"';
 				echo '>' . $label . '</option>';
 			}
 
@@ -534,6 +462,14 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 ?>
 		</div>
 	</div>
+	<?php if ( MYCRED_SHOW_PREMIUM_ADDONS ) : ?>
+	<hr />
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<p><strong>Tip:</strong> <?php printf( 'The %s add-on allows you charge a fee for creating transfers or put transfers on hold.', sprintf( '<a href="http://mycred.me/store/transfer-plus/" target="_blank">%s</a>', 'Transfer Plus' ) ); ?></p>
+		</div>
+	</div>
+	<?php endif; ?>
 
 </div>
 <?php

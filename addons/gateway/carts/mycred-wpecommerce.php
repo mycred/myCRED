@@ -272,7 +272,7 @@ if ( ! function_exists( 'mycred_init_wpecom_construct_gateway' ) ) :
 						foreach ( (array) $this->cart_items as $item ) {
 
 							// Get product
-							$product  = get_post( (int) $item['product_id'] );
+							$product  = mycred_get_post( (int) $item['product_id'] );
 
 							// Continue if product has just been deleted or owner is buyer
 							if ( $product === NULL || $product->post_author == $this->user_id ) continue;

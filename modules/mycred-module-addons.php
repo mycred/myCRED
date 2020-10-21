@@ -12,7 +12,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		/**
 		 * Construct
 		 */
-		function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( 'myCRED_Addons_Module', array(
 				'module_name' => 'addons',
@@ -36,12 +36,12 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		 * Admin Init
 		 * Catch activation and deactivations
 		 * @since 0.1
-		 * @version 1.2.1
+		 * @version 1.2.2
 		 */
 		public function module_admin_init() {
 
 			// Handle actions
-			if ( isset( $_GET['addon_action'] ) && isset( $_GET['addon_id'] ) && isset( $_GET['_token'] ) && wp_verify_nonce( $_GET['_token'], 'mycred-activate-deactivate-addon' ) && $this->core->can_edit_plugin() ) {
+			if ( isset( $_GET['addon_action'] ) && isset( $_GET['addon_id'] ) && isset( $_GET['_token'] ) && wp_verify_nonce( $_GET['_token'], 'mycred-activate-deactivate-addon' ) && $this->core->user_is_point_admin() ) {
 
 				$addon_id = sanitize_text_field( $_GET['addon_id'] );
 				$action   = sanitize_text_field( $_GET['addon_action'] );
@@ -91,7 +91,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		 * Run Addons
 		 * Catches all add-on activations and deactivations and loads addons
 		 * @since 0.1
-		 * @version 1.1.1
+		 * @version 1.2
 		 */
 		public function run_addons() {
 
@@ -110,6 +110,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			// Load addons
 			foreach ( $this->installed as $key => $data ) {
 				if ( $this->is_active( $key ) ) {
+
+					if ( apply_filters( 'mycred_run_addon', true, $key, $data, $this ) === false || apply_filters( 'mycred_run_addon_' . $key, true, $data, $this ) === false ) continue;
 
 					// Core add-ons we know where they are
 					if ( file_exists( myCRED_ADDONS_DIR . $key . '/myCRED-addon-' . $key . '.php' ) )
@@ -174,10 +176,11 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'name'        => 'Badges',
 				'description' => __( 'Give your users badges based on their interaction with your website.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/badges/',
-				'version'     => '1.2',
+				'version'     => '1.3',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
-				'screenshot'  => plugins_url( 'assets/images/badges-addon.png', myCRED_THIS )
+				'screenshot'  => plugins_url( 'assets/images/badges-addon.png', myCRED_THIS ),
+				'requires'    => array()
 			);
 
 			// Banking Add-on
@@ -188,7 +191,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'version'     => '2.0',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
-				'screenshot'  => plugins_url( 'assets/images/banking-addon.png', myCRED_THIS )
+				'screenshot'  => plugins_url( 'assets/images/banking-addon.png', myCRED_THIS ),
+				'requires'    => array()
 			);
 
 			// buyCRED Add-on
@@ -199,7 +203,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'version'     => '1.5',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
-				'screenshot'  => plugins_url( 'assets/images/buy-creds-addon.png', myCRED_THIS )
+				'screenshot'  => plugins_url( 'assets/images/buy-creds-addon.png', myCRED_THIS ),
+				'requires'    => array()
 			);
 
 			// Coupons Add-on
@@ -207,10 +212,11 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'name'        => 'Coupons',
 				'description' => __( 'The coupons add-on allows you to create coupons that users can use to add points to their accounts.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/coupons/',
-				'version'     => '1.3.1',
+				'version'     => '1.4',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
-				'screenshot'  => plugins_url( 'assets/images/coupons-addon.png', myCRED_THIS )
+				'screenshot'  => plugins_url( 'assets/images/coupons-addon.png', myCRED_THIS ),
+				'requires'    => array()
 			);
 
 			// Email Notices Add-on
@@ -218,10 +224,11 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'name'        => 'Email Notifications',
 				'description' => __( 'Create email notices for any type of myCRED instance.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/email-notice/',
-				'version'     => '1.3.1',
+				'version'     => '1.4',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
-				'screenshot'  => plugins_url( 'assets/images/email-notifications-addon.png', myCRED_THIS )
+				'screenshot'  => plugins_url( 'assets/images/email-notifications-addon.png', myCRED_THIS ),
+				'requires'    => array()
 			);
 
 			// Gateway Add-on
@@ -232,7 +239,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'version'     => '1.4',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
-				'screenshot'  => plugins_url( 'assets/images/gateway-addon.png', myCRED_THIS )
+				'screenshot'  => plugins_url( 'assets/images/gateway-addon.png', myCRED_THIS ),
+				'requires'    => array()
 			);
 
 			// Notifications Add-on
@@ -244,7 +252,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
 				'pro_url'     => 'https://mycred.me/store/notifications-plus-add-on/',
-				'screenshot'  =>  plugins_url( 'assets/images/notifications-addon.png', myCRED_THIS )
+				'screenshot'  =>  plugins_url( 'assets/images/notifications-addon.png', myCRED_THIS ),
+				'requires'    => array()
 			);
 
 			// Ranks Add-on
@@ -252,10 +261,11 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'name'        => 'Ranks',
 				'description' => __( 'Create ranks for users reaching a certain number of %_plural% with the option to add logos for each rank.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/ranks/',
-				'version'     => '1.5',
+				'version'     => '1.6',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
-				'screenshot'  => plugins_url( 'assets/images/ranks-addon.png', myCRED_THIS )
+				'screenshot'  => plugins_url( 'assets/images/ranks-addon.png', myCRED_THIS ),
+				'requires'    => array()
 			);
 
 			// Sell Content Add-on
@@ -266,7 +276,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'version'     => '2.0.1',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
-				'screenshot'  => plugins_url( 'assets/images/sell-content-addon.png', myCRED_THIS )
+				'screenshot'  => plugins_url( 'assets/images/sell-content-addon.png', myCRED_THIS ),
+				'requires'    => array( 'log' )
 			);
 
 			// Statistics Add-on
@@ -274,7 +285,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'name'        => 'Statistics',
 				'description' => __( 'Gives you access to your myCRED Statistics based on your users gains and loses.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/statistics/',
-				'version'     => '1.2.1',
+				'version'     => '2.0',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
 				'screenshot'  => plugins_url( 'assets/images/statistics-addon.png', myCRED_THIS )
@@ -285,16 +296,17 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'name'        => 'Transfers',
 				'description' => __( 'Allow your users to send or "donate" points to other members by either using the mycred_transfer shortcode or the myCRED Transfer widget.', 'mycred' ),
 				'addon_url'   => 'http://codex.mycred.me/chapter-iii/transfers/',
-				'version'     => '1.5',
+				'version'     => '1.6',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
 				'pro_url'     => 'https://mycred.me/store/transfer-plus/',
-				'screenshot'  => plugins_url( 'assets/images/transfer-addon.png', myCRED_THIS )
+				'screenshot'  => plugins_url( 'assets/images/transfer-addon.png', myCRED_THIS ),
+				'requires'    => array()
 			);
 
 			$installed = apply_filters( 'mycred_setup_addons', $installed );
 
-			if ( $save === true && $this->core->can_edit_plugin() ) {
+			if ( $save === true && $this->core->user_is_point_admin() ) {
 				$new_data = array(
 					'active'    => $this->active,
 					'installed' => $installed
@@ -310,12 +322,12 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		/**
 		 * Admin Page
 		 * @since 0.1
-		 * @version 1.2.3
+		 * @version 1.2.2
 		 */
 		public function admin_page() {
 
 			// Security
-			if ( ! $this->core->can_edit_creds() ) wp_die( 'Access Denied' );
+			if ( ! $this->core->user_is_point_admin() ) wp_die( 'Access Denied' );
 
 			$installed = $this->get( true );
 
@@ -327,7 +339,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 .theme-browser .theme:hover a.more-details, .theme-browser .theme:hover a.more-details:hover { text-decoration: none; }
 </style>
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php echo sprintf( __( '%s Add-ons', 'mycred' ), mycred_label() ); ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a></h1>
+	<h1><?php _e( 'Add-ons', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 <?php
 
 			// Messages
@@ -358,11 +370,15 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			<div class="theme<?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' inactive'; ?>" tabindex="0" aria-describedby="<?php echo $aria_action . ' ' . $aria_name; ?>">
 
 				<?php if ( $data['screenshot'] != '' ) : ?>
+
 				<div class="theme-screenshot">
 					<img src="<?php echo $data['screenshot']; ?>" alt="" />
 				</div>
+
 				<?php else : ?>
+
 				<div class="theme-screenshot blank"></div>
+
 				<?php endif; ?>
 
 				<a class="more-details" id="<?php echo $aria_action; ?>" href="<?php echo $data['addon_url']; ?>" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a>
@@ -370,13 +386,19 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				<div class="theme-id-container">
 
 					<?php if ( $this->is_active( $key ) ) : ?>
+
 					<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
+
 					<?php else : ?>
+
 					<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
+
 					<?php endif; ?>
 
 					<div class="theme-actions">
-						<?php echo $this->activate_deactivate( $key ); ?>
+
+					<?php echo $this->activate_deactivate( $key ); ?>
+
 					</div>
 
 				</div>
@@ -386,7 +408,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 
 				}
 
-				echo '<div class="theme add-new-theme"><a href="http://mycred.me/store/" target="_blank"><div class="theme-screenshot"><span></span></div><h2 class="theme-name">Add More Add-ons</h2></a></div><br class="clear" />';
+				if ( MYCRED_SHOW_PREMIUM_ADDONS ) echo '<div class="theme add-new-theme"><a href="https://mycred.me/store/" target="_blank"><div class="theme-screenshot"><span></span></div><h2 class="theme-name">Add More Add-ons</h2></a></div><br class="clear" />';
 
 			}
 
@@ -401,24 +423,22 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		/**
 		 * Activate / Deactivate Button
 		 * @since 0.1
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		public function activate_deactivate( $addon_id = NULL ) {
 
-			$link_url   = get_mycred_addon_activation_url( $addon_id );
-			$link_title = __( 'Activate Add-on', 'mycred' );
-			$link_text  = __( 'Activate', 'mycred' );
+			$link_url  = get_mycred_addon_activation_url( $addon_id );
+			$link_text = __( 'Activate', 'mycred' );
 
 			// Deactivate
 			if ( $this->is_active( $addon_id ) ) {
 
-				$link_url   = get_mycred_addon_deactivation_url( $addon_id );
-				$link_title = __( 'Deactivate Add-on', 'mycred' );
-				$link_text  = __( 'Deactivate', 'mycred' );
+				$link_url  = get_mycred_addon_deactivation_url( $addon_id );
+				$link_text = __( 'Deactivate', 'mycred' );
 
 			}
 
-			return '<a href="' . $link_url . '" title="' . $link_title . '" class="button button-large button-primary mycred-action ' . esc_attr( $addon_id ) . '">' . $link_text . '</a>';
+			return '<a href="' . esc_url_raw( $link_url ) . '" title="' . esc_attr( $link_text ) . '" class="button button-primary mycred-action ' . esc_attr( $addon_id ) . '">' . esc_html( $link_text ) . '</a>';
 
 		}
 

@@ -8,54 +8,24 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_get_coupon' ) ) :
-	function mycred_get_coupon( $coupon_post_id = NULL ) {
+	function mycred_get_coupon( $coupon_id = NULL ) {
 
-		if ( $coupon_post_id === NULL || get_post_type( $coupon_post_id ) != 'mycred_coupon' ) return false;
+		if ( $coupon_id === NULL ) return false;
 
-		$coupon                    = new StdClass();
-		$coupon->post_id           = absint( $coupon_post_id );
-		$coupon->code              = get_the_title( $coupon_post_id );
-		$coupon->value             = mycred_get_coupon_value( $coupon_post_id );
-		$coupon->point_type        = get_post_meta( $coupon_post_id, 'type', true );
-		$coupon->max_global        = mycred_get_coupon_global_max( $coupon_post_id );
-		$coupon->max_user          = mycred_get_coupon_user_max( $coupon_post_id );
-		$coupon->requires_min      = mycred_get_coupon_min_balance( $coupon_post_id );
-		$coupon->requires_min_type = $coupon->requires_min['type'];
-		$coupon->requires_max      = mycred_get_coupon_max_balance( $coupon_post_id );
-		$coupon->requires_max_type = $coupon->requires_max['type'];
-		$coupon->used              = mycred_get_global_coupon_count( $coupon_post_id );
+		global $mycred_coupon;
 
-		if ( ! mycred_point_type_exists( $coupon->point_type ) )
-			$coupon->point_type = MYCRED_DEFAULT_TYPE_KEY;
-
-		if ( ! mycred_point_type_exists( $coupon->requires_min_type ) )
-			$coupon->requires_min_type = MYCRED_DEFAULT_TYPE_KEY;
-
-		if ( ! mycred_point_type_exists( $coupon->requires_max_type ) )
-			$coupon->requires_max_type = MYCRED_DEFAULT_TYPE_KEY;
-
-		$coupon->expires           = mycred_get_coupon_expire_date( $coupon_post_id );
-		$coupon->expires_unix      = false;
-
-		// If there is an expiration date
-		if ( $coupon->expires !== false ) {
-
-			$coupon->expires_unix     = ( strtotime( $coupon->expires . ' midnight' ) + ( DAY_IN_SECONDS - 1 ) );
-
-			// Ill formatted expiration date. Not using a format strtotime() understands
-			// Prevent expiration and warn user when editing the coupon
-			if ( $coupon->expires_unix <= 0 || $coupon->expires_unix === false ) {
-
-				$coupon->expires = false;
-
-				update_post_meta( $coupon_post_id, '_warning_bad_expiration', $coupon->expires );
-				delete_post_meta( $coupon_post_id, 'expires' );
-
-			}
-
+		if ( isset( $mycred_coupon )
+			&& ( $mycred_coupon instanceof myCRED_Coupon )
+			&& ( $coupon_id === $mycred_coupon->post_id || $coupon_id === $mycred_coupon->code )
+		) {
+			return $mycred_coupon;
 		}
 
-		return apply_filters( 'mycred_get_coupon', $coupon, $coupon_post_id );
+		$mycred_coupon = new myCRED_Coupon( $coupon_id );
+
+		do_action( 'mycred_get_coupon' );
+
+		return $mycred_coupon;
 
 	}
 endif;
@@ -69,7 +39,7 @@ endif;
 if ( ! function_exists( 'mycred_get_coupon_value' ) ) :
 	function mycred_get_coupon_value( $post_id = 0 ) {
 
-		return apply_filters( 'mycred_coupon_value', get_post_meta( $post_id, 'value', true ), $post_id );
+		return apply_filters( 'mycred_coupon_value', mycred_get_post_meta( $post_id, 'value', true ), $post_id );
 
 	}
 endif;
@@ -83,7 +53,7 @@ endif;
 if ( ! function_exists( 'mycred_get_coupon_expire_date' ) ) :
 	function mycred_get_coupon_expire_date( $post_id = 0, $unix = false ) {
 
-		$expires = get_post_meta( $post_id, 'expires', true );
+		$expires = mycred_get_post_meta( $post_id, 'expires', true );
 
 		if ( ! empty( $expires ) && $unix )
 			$expires = ( strtotime( $expires . ' midnight' ) + ( DAY_IN_SECONDS - 1 ) );
@@ -105,7 +75,7 @@ endif;
 if ( ! function_exists( 'mycred_get_coupon_user_max' ) ) :
 	function mycred_get_coupon_user_max( $post_id = 0 ) {
 
-		return (int) apply_filters( 'mycred_coupon_user_max', get_post_meta( $post_id, 'user', true ), $post_id );
+		return (int) apply_filters( 'mycred_coupon_user_max', mycred_get_post_meta( $post_id, 'user', true ), $post_id );
 
 	}
 endif;
@@ -119,7 +89,7 @@ endif;
 if ( ! function_exists( 'mycred_get_coupon_global_max' ) ) :
 	function mycred_get_coupon_global_max( $post_id = 0 ) {
 
-		return (int) apply_filters( 'mycred_coupon_global_max', get_post_meta( $post_id, 'global', true ), $post_id );
+		return (int) apply_filters( 'mycred_coupon_global_max', mycred_get_post_meta( $post_id, 'global', true ), $post_id );
 
 	}
 endif;
@@ -156,7 +126,7 @@ if ( ! function_exists( 'mycred_create_new_coupon' ) ) :
 
 		// Create Coupon Post
 		$post_id = wp_insert_post( apply_filters( 'mycred_create_new_coupon_post', array(
-			'post_type'      => 'mycred_coupon',
+			'post_type'      => MYCRED_COUPON_KEY,
 			'post_title'     => $code,
 			'post_status'    => 'publish',
 			'comment_status' => 'closed',
@@ -167,17 +137,17 @@ if ( ! function_exists( 'mycred_create_new_coupon' ) ) :
 		if ( $post_id !== 0 && ! is_wp_error( $post_id ) ) {
 
 			// Save Coupon Details
-			add_post_meta( $post_id, 'type',             $type, true );
-			add_post_meta( $post_id, 'value',            $value, true );
-			add_post_meta( $post_id, 'global',           $global_max, true );
-			add_post_meta( $post_id, 'user',             $user_max, true );
-			add_post_meta( $post_id, 'min_balance',      $min_balance, true );
-			add_post_meta( $post_id, 'min_balance_type', $min_balance_type, true );
-			add_post_meta( $post_id, 'max_balance',      $max_balance, true );
-			add_post_meta( $post_id, 'max_balance_type', $max_balance_type, true );
+			mycred_add_post_meta( $post_id, 'type',             $type, true );
+			mycred_add_post_meta( $post_id, 'value',            $value, true );
+			mycred_add_post_meta( $post_id, 'global',           $global_max, true );
+			mycred_add_post_meta( $post_id, 'user',             $user_max, true );
+			mycred_add_post_meta( $post_id, 'min_balance',      $min_balance, true );
+			mycred_add_post_meta( $post_id, 'min_balance_type', $min_balance_type, true );
+			mycred_add_post_meta( $post_id, 'max_balance',      $max_balance, true );
+			mycred_add_post_meta( $post_id, 'max_balance_type', $max_balance_type, true );
 
 			if ( ! empty( $expires ) )
-				add_post_meta( $post_id, 'expires', $expires );
+				mycred_add_post_meta( $post_id, 'expires', $expires );
 
 		}
 
@@ -191,17 +161,19 @@ endif;
  * Generates a unique 12 character alphanumeric coupon code.
  * @filter mycred_get_unique_coupon_code
  * @since 1.4
- * @version 1.0
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_get_unique_coupon_code' ) ) :
 	function mycred_get_unique_coupon_code() {
 
 		global $wpdb;
 
+		$table = mycred_get_db_column( 'posts' );
+
 		do {
 
 			$id    = strtoupper( wp_generate_password( 12, false, false ) );
-			$query = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->posts} WHERE post_title = %s AND post_type = %s;", $id, 'mycred_coupon' ) );
+			$query = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE post_title = %s AND post_type = %s;", $id, MYCRED_COUPON_KEY ) );
 
 		} while ( ! empty( $query ) );
 
@@ -214,12 +186,14 @@ endif;
  * Get Coupon Post
  * @filter mycred_get_coupon_by_code
  * @since 1.4
- * @version 1.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_get_coupon_post' ) ) :
 	function mycred_get_coupon_post( $code = '' ) {
 
-		return apply_filters( 'mycred_get_coupon_by_code', get_page_by_title( strtoupper( $code ), 'OBJECT', 'mycred_coupon' ), $code );
+		if ( $code == '' ) return false;
+
+		return apply_filters( 'mycred_get_coupon_by_code', mycred_get_page_by_title( strtoupper( $code ), 'OBJECT', MYCRED_COUPON_KEY ), $code );
 
 	}
 endif;
@@ -238,123 +212,12 @@ if ( ! function_exists( 'mycred_use_coupon' ) ) :
 		// Missing required information
 		if ( empty( $code ) || $user_id === 0 ) return 'invalid';
 
-		$can_use       = true;
-
-		// Get coupon by code (post title)
-		if ( ! is_object( $code ) ) {
-			$coupon  = mycred_get_coupon_post( $code );
-			if ( $coupon === false ) return 'invalid';
-			$coupon  = mycred_get_coupon( $coupon->ID );
-		}
+		$coupon  = mycred_get_coupon( $code );
 
 		// Coupon does not exist
 		if ( $coupon === false ) return 'invalid';
 
-		$now           = current_time( 'timestamp' );
-
-		// Check Expiration
-		if ( $coupon->expires !== false && $coupon->expires_unix <= $now )
-			$can_use = 'expired';
-
-		// Get Global Count
-		if ( $can_use === true ) {
-
-			if ( $coupon->used >= $coupon->max_global )
-				$can_use = 'expired';
-
-		}
-
-		// Get User max
-		if ( $can_use === true ) {
-
-			$user_count = mycred_get_users_coupon_count( $coupon->code, $user_id );
-			if ( $user_count >= $coupon->max_user )
-				$can_use = 'user_limit';
-
-		}
-
-		$mycred        = mycred( $coupon->point_type );
-		if ( $mycred->exclude_user( $user_id ) ) return 'excluded';
-
-		$users_balance = $mycred->get_users_balance( $user_id, $coupon->point_type );
-
-		if ( $can_use === true ) {
-
-			// Min balance requirement
-			if ( $coupon->requires_min_type != $coupon->point_type ) {
-
-				$mycred        = mycred( $coupon->requires_min_type );
-				$users_balance = $mycred->get_users_balance( $user_id, $coupon->requires_min_type );
-
-			}
-
-			if ( $mycred->number( $coupon->requires_min['value'] ) > $mycred->zero() && $users_balance < $mycred->number( $coupon->requires_min['value'] ) )
-				$can_use = 'min';
-
-			// Max balance requirement
-			if ( $can_use === true ) {
-
-				if ( $coupon->requires_max_type != $coupon->point_type ) {
-
-					$mycred        = mycred( $coupon->requires_max_type );
-					$users_balance = $mycred->get_users_balance( $user_id, $coupon->requires_max_type );
-
-				}
-
-				if ( $mycred->number( $coupon->requires_max['value'] ) > $mycred->zero() && $users_balance >= $mycred->number( $coupon->requires_max['value'] ) )
-					$can_use = 'max';
-
-			}
-
-		}
-
-		// Let other play and change the value of $can_use
-		$can_use       = apply_filters( 'mycred_can_use_coupon', $can_use, $coupon->code, $user_id, $coupon );
-
-		// Ready to use coupon!
-		if ( $can_use === true ) {
-
-			// Get Coupon log template
-			if ( ! isset( $mycred->core['coupons']['log'] ) )
-				$mycred->core['coupons']['log'] = 'Coupon deposit';
-
-			// Apply Coupon
-			$mycred->add_creds(
-				'coupon',
-				$user_id,
-				$coupon->value,
-				$mycred->core['coupons']['log'],
-				$coupon->post_id,
-				$coupon->code,
-				$coupon->point_type
-			);
-
-			do_action( 'mycred_use_coupon', $user_id, $coupon );
-
-			// Increment global counter
-			$coupon->used ++;
-
-			// If the updated counter reaches the max, trash the coupon now
-			if ( $coupon->used >= $coupon->max_global )
-				wp_trash_post( $coupon->post_id );
-
-			// This should resolves issues where caching prevents the new global count from being loaded.
-			else {
-				clean_post_cache( $coupon->post_id );
-			}
-
-			return $mycred->number( $users_balance + $coupon->value );
-
-		}
-
-		// Trash expired coupons to preent further usage
-		elseif ( $can_use == 'expired' ) {
-
-			wp_trash_post( $coupon->post_id );
-
-		}
-
-		return $can_use;
+		return $coupon->use_coupon( $user_id );
 
 	}
 endif;
@@ -385,28 +248,25 @@ endif;
  * Translates a coupon error code into a readable message.
  * we ran into issues.
  * @since 1.7.5
- * @version 1.0.1
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_get_coupon_error_message' ) ) :
 	function mycred_get_coupon_error_message( $code = '', $coupon = NULL ) {
 
 		$message  = __( 'An unknown error occurred. Coupon not used.', 'mycred' );
-
-		if ( ! is_object( $coupon ) ) return $message;
-
 		$settings = mycred_get_addon_settings( 'coupons' );
 
 		if ( array_key_exists( $code, $settings ) )
 			$message = $settings[ $code ];
 
-		if ( $code == 'min' ) {
+		if ( $code == 'min' && is_object( $coupon ) ) {
 
 			$mycred  = mycred( $coupon->requires_min_type );
 			$message = str_replace( array( '%min%', '%amount%' ), $mycred->format_creds( $coupon->requires_min['value'] ), $message );
 
 		}
 
-		elseif ( $code == 'max' ) {
+		elseif ( $code == 'max' && is_object( $coupon ) ) {
 
 			$mycred  = mycred( $coupon->requires_max_type );
 			$message = str_replace( array( '%max%', '%amount%' ), $mycred->format_creds( $coupon->requires_max['value'] ), $message );
@@ -428,12 +288,12 @@ endif;
 if ( ! function_exists( 'mycred_get_users_coupon_count' ) ) :
 	function mycred_get_users_coupon_count( $code = '', $user_id = '' ) {
 
-		global $wpdb, $mycred;
+		global $wpdb, $mycred_log_table;
 
 		// Count how many times a given user has used a given coupon
 		$result = $wpdb->get_var( $wpdb->prepare( "
 			SELECT COUNT( * ) 
-			FROM {$mycred->log_table} 
+			FROM {$mycred_log_table} 
 			WHERE ref = %s 
 				AND user_id = %d
 				AND data = %s;", 'coupon', $user_id, $code ) );
@@ -447,25 +307,15 @@ endif;
  * Get Coupons Global Count
  * @filter mycred_get_global_coupon_count
  * @since 1.4
- * @version 1.1.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_get_global_coupon_count' ) ) :
-	function mycred_get_global_coupon_count( $post_id = 0 ) {
+	function mycred_get_global_coupon_count( $coupon_id = 0 ) {
 
-		global $wpdb, $mycred;
+		$coupon = mycred_get_coupon( $coupon_id );
+		if ( $coupon === false ) return 0;
 
-		$point_type = get_post_meta( $post_id, 'type', true );
-		if ( ! mycred_point_type_exists( $point_type ) )
-			$point_type = MYCRED_DEFAULT_TYPE_KEY;
-
-		$count = $wpdb->get_var( $wpdb->prepare( "
-			SELECT COUNT(*) 
-			FROM {$mycred->log_table} 
-			WHERE ref = 'coupon' AND ref_id = %d AND ctype = %s;", $post_id, $point_type ) );
-
-		if ( $count === NULL ) $count = 0;
-
-		return apply_filters( 'mycred_get_global_coupon_count', $count, $post_id );
+		return $coupon->get_usage_count();
 
 	}
 endif;
@@ -479,10 +329,10 @@ endif;
 if ( ! function_exists( 'mycred_get_coupon_min_balance' ) ) :
 	function mycred_get_coupon_min_balance( $post_id = 0 ) {
 
-		$type = get_post_meta( $post_id, 'min_balance_type', true );
+		$type = mycred_get_post_meta( $post_id, 'min_balance_type', true );
 		if ( ! mycred_point_type_exists( $type ) ) $type = MYCRED_DEFAULT_TYPE_KEY;
 
-		$min  = get_post_meta( $post_id, 'min_balance', true );
+		$min  = mycred_get_post_meta( $post_id, 'min_balance', true );
 		if ( $min == '' ) $min = 0;
 
 		return apply_filters( 'mycred_coupon_min_balance', array(
@@ -502,10 +352,10 @@ endif;
 if ( ! function_exists( 'mycred_get_coupon_max_balance' ) ) :
 	function mycred_get_coupon_max_balance( $post_id = 0 ) {
 
-		$type = get_post_meta( $post_id, 'max_balance_type', true );
+		$type = mycred_get_post_meta( $post_id, 'max_balance_type', true );
 		if ( ! mycred_point_type_exists( $type ) ) $type = MYCRED_DEFAULT_TYPE_KEY;
 
-		$max  = get_post_meta( $post_id, 'max_balance', true );
+		$max  = mycred_get_post_meta( $post_id, 'max_balance', true );
 		if ( $max == '' ) $max = 0;
 
 		return apply_filters( 'mycred_coupon_max_balance', array(

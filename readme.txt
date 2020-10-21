@@ -1,10 +1,9 @@
-=== myCred - Points, Rewards & Badges | Loyalty Plugin ===
-Contributors: mycred ,wpexpertsio
+=== myCRED ===
+Contributors: mycred,wpexpertsio
 Tags: point, credit, loyalty program, engagement, reward
-Requires at least: 4.5
-Tested up to: 5.0.1
-Requires PHP: 7.0
-Stable tag: 1.7.9.8
+Requires at least: 4.8
+Tested up to: 5.1
+Stable tag: 1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,8 +13,6 @@ An adaptive and powerful points management system for WordPress powered websites
 
 myCRED is an adaptive points management system that lets you build a broad range of point related applications for your WordPress powered website.
 Store reward systems, community leaderboards, online banking or monetizing your websites content, are a few examples of the ways myCRED is used.
-
-**[List your self as beta tester for 1.8 (upcoming version)](https://goo.gl/forms/CMjGFpOEByfse9j52)**
 
 = Points =
 
@@ -118,17 +115,42 @@ Bug fixes.
 * Japanese - Mochizuki Hiroshi
 
 
+
 == Changelog ==
 
-= 1.7.9.8 =
-Tested with WordPress 5.0
-FIX – Refund points on WooCommerce order refund
-FIX - Reward points on WooCommerce order completed
+= 1.8 =
+NEW - Added new mycred_over_hook_limit filter for adjusting hook limit checks.
+NEW - Added new MYCRED_RANK_KEY constant which can be used to whitelabel ranks.
+NEW - Added new MYCRED_COUPON_KEY constant which can be used to whitelabel coupons.
+NEW - Added new MYCRED_BADGE_KEY constant which can be used to whitelabel badges.
+NEW - Added new MYCRED_EMAIL_KEY constant with can be used to whitelabel email notifications.
+NEW - Added new MYCRED_BUY_KEY constant with can be used to whitelabel pending buyCRED payments.
+NEW - Added new MYCRED_ENABLE_SHORTCODES constant in cases where myCRED shortcodes needs to be disabled.
+NEW - Updated the Email Notifications add-on to version 1.4 with support for custom instances, multiple point types / notice and introduced the new myCRED_Email object.
+NEW - Updated the buyCRED add-on which now has improved checkout process. 
+NEW - Added the option to set a custom gateway logo for all built-in payment gateways.
+NEW - Updated the mycred_load_coupon shortcode to show an error message when an invalid coupon is used.
+NEW - Added new Anniversary hook allowing you to reward users for each year they are a member on your website.
+NEW - Added new MYCRED_ENABLE_HOOKS constant to disable hooks completely.
+NEW - Added support for Multi Network setups.
+NEW - Added new mycred_add_post_meta(), mycred_get_post_meta(), mycred_update_post_meta() and mycred_delete_post_meta() functions in order to add support for the Master Template feature on multisites.
+NEW - Added support for multiple point types in leaderboards.
+NEW - The leaderboard shortcode can now be setup to render results based on multiple point types.
+NEW - Added caching of log and leaderboard queries.
+NEW - Added new filter to allow adjustments to the reference used for publishing and deleting content hooks.
+NEW - Added new mycred_give_run filter to control if the mycred_give shortcode should run or not.
+TWEAK - Moved hooks to /includes/hooks/ and third-party hooks to /includes/hooks/external/.
+TWEAK - Implemented the use of $mycred_log_table global throughout the plugin.
+TWEAK - Improved Multisite support.
+TWEAK - When a user jumps more than one badge level in a single instance, we want to make sure he gets rewarded for each level (if rewards is set).
+TWEAK - Corrected codex urls for functions and shortcodes throughout the plugin.
+TWEAK - Added support to whitelabel shortcodes.
+TWEAK - Added new MYCRED_SHOW_PREMIUM_ADDONS constant to hide all mentions of premium add-ons in myCRED.
+TWEAK - BuddyPress fixed issue related to points ignoring limit on adding to favorites
+TWEAK - Optimized search the search for log entries
+TWEAK - issue related to email not getting send on transfer in and out triggers in transfer addon
+TWEAK - Rank excerpt fix
 
-= 1.7.9.7 =
-FIX – Points for clicking on links
-FIX – Point for viewing videos
-FIX – Exchange points from one point type to another point type
 
 = Previous Versions =
 https://mycred.me/support/changelog/

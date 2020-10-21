@@ -329,4 +329,51 @@ jQuery(function($) {
 
 	});
 
+	var clearing_cache = false;
+
+	/**
+	 * Cache Clearing
+	 */
+	var mycred_clear_the_cache = function( button, label ) {
+
+		if ( clearing_cache ) return false;
+
+		clearing_cache = true;
+
+		$.ajax({
+			type     : "POST",
+			data     : {
+				action   : 'mycred-action-clear-cache',
+				token    : myCREDmanage.cache,
+				ctype    : button.attr( 'data-type' ),
+				cache    : button.attr( 'data-cache' )
+			},
+			dataType : "JSON",
+			url      : myCREDmanage.ajaxurl,
+			beforeSend : function() {
+				button.html( myCREDmanage.working );
+				button.attr( 'disabled', 'disabled' );
+			},
+			success  : function( response ) {
+
+				alert( response.data );
+				button.html( label );
+
+			},
+			complete : function() {
+				clearing_cache = false;
+			}
+		});
+
+	};
+
+	/**
+	 * Clear Cache Trigger
+	 */
+	$( 'button.clear-type-cache-button' ).click(function(){
+
+		mycred_clear_the_cache( $(this), $(this).html() );
+
+	});
+
 });

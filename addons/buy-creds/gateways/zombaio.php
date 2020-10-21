@@ -5,7 +5,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * myCRED_Zombaio class
  * Zombaio Payment Gateway
  * @since 1.1
- * @version 1.1.3
+ * @version 1.2
  */
 if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 	class myCRED_Zombaio extends myCRED_Payment_Gateway {
@@ -13,7 +13,12 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 		/**
 		 * Construct
 		 */
-		function __construct( $gateway_prefs ) {
+		public function __construct( $gateway_prefs ) {
+
+			$types            = mycred_get_types();
+			$default_exchange = array();
+			foreach ( $types as $type => $label )
+				$default_exchange[ $type ] = 1;
 
 			parent::__construct( array(
 				'id'               => 'zombaio',
@@ -23,12 +28,35 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 					'sandbox'          => 0,
 					'site_id'          => '',
 					'pricing_id'       => '',
+					'dynamic'          => 0,
+					'currency'         => 'USD',
 					'gwpass'           => '',
 					'logo_url'         => '',
 					'lang'             => 'ZOM',
+					'exchange'         => $default_exchange,
 					'bypass_ipn'       => 0
 				)
 			), $gateway_prefs );
+
+		}
+
+		/**
+		 * Verify Z-script
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function returning() {
+
+			// ZOA Validation
+			if ( isset( $_REQUEST['wp_zombaio_ips'] ) || isset( $_REQUEST['ZombaioGWPass'] ) && isset( $_GET['username'] ) && substr( $_GET['username'], 0, 4 ) == 'Test' ) {
+
+				if ( ! headers_sent() )
+					header( 'HTTP/1.1 200 OK' );
+
+				echo 'OK';
+				die;
+
+			}
 
 		}
 
@@ -61,17 +89,6 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 		}
 
 		/**
-		 * First Comment
-		 * @since 1.7.3
-		 * @version 1.0.1
-		 */
-		public function first_comment( $comment ) {
-
-			return 'New Zombaio purchase confirmation.';
-
-		}
-
-		/**
 		 * Verify IPN IP
 		 * @since 1.1
 		 * @version 1.1
@@ -93,29 +110,6 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 			}
 
 			return false;
-
-		}
-
-		/**
-		 * Load IPN IP List
-		 * @since 1.1
-		 * @version 1.1
-		 */
-		public function get_zombaio_ips() {
-
-			$request = new WP_Http();
-			$data    = $request->request( 'http://www.zombaio.com/ip_list.txt' );
-			$data    = explode( '|', $data['body'] );
-
-			$zombaio_ips = array();
-			if ( ! empty( $data ) ) {
-				foreach ( $data as $ip_range ) {
-					if ( $ip_range != '' )
-						$zombaio_ips[] = $ip_range;
-				}
-			}
-
-			return $zombaio_ips;
 
 		}
 
@@ -214,19 +208,24 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 						// Credit payment
 						if ( $errors === false ) {
 
-							$amount = sanitize_text_field( $_GET['Credits'] );
+							if ( $this->prefs['dynamic'] == 1 ) {
+								$amount = $pending_payment->amount;
+								$cost   = $pending_payment->cost;
+							}
+
+							else {
+								$amount = sanitize_text_field( $_GET['Credits'] );
+								$cost   = 0;
+							}
+
 							if ( is_numeric( $amount ) && $amount > 0 ) {
 
 								// Type
-								$type   = $pending_payment->point_type;
-								$mycred = mycred( $type );
+								$point_type                = $pending_payment->point_type;
+								$mycred                    = mycred( $point_type );
 
-								// Amount
-								$amount                    = $mycred->number( $amount );
-								$pending_payment->amount   = $amount;
-
-								// Get Cost
-								$pending_payment->cost     = 0;
+								$pending_payment->amount   = $mycred->number( $amount );
+								$pending_payment->cost     = $cost;
 
 								// If account is credited, delete the post and it's comments.
 								if ( $this->complete_payment( $pending_payment, $transaction_id ) ) {
@@ -258,47 +257,69 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 		}
 
 		/**
-		 * Buy Handler
-		 * @since 1.1
-		 * @version 1.3
+		 * Prep Sale
+		 * @since 1.8
+		 * @version 1.0
 		 */
-		public function buy() {
+		public function prep_sale( $new_transaction = false ) {
 
-			if ( ! isset( $this->prefs['site_id'] ) || empty( $this->prefs['site_id'] ) ) wp_die( __( 'Please setup this gateway before attempting to make a purchase!', 'mycred' ) );
+			// Set currency
+			$this->currency    = ( $this->currency == '' ) ? $this->prefs['currency'] : $this->currency;
 
-			// Construct location
-			$location = 'https://secure.zombaio.com/?' . $this->prefs['site_id'] . '.' . $this->prefs['pricing_id'] . '.' . $this->prefs['lang'];
+			// Item Name
+			$item_name         = str_replace( '%number%', $this->amount, $this->prefs['item_name'] );
+			$item_name         = $this->core->template_tags_general( $item_name );
 
-			// Prep
-			$type         = $this->get_point_type();
-			$to           = $this->get_to();
-			$from         = get_current_user_id();
-			$thankyou_url = $this->get_thankyou();
+			$this->redirect_to = 'https://secure.zombaio.com/?' . $this->prefs['site_id'] . '.' . $this->prefs['pricing_id'] . '.' . $this->prefs['lang'];
 
-			// Revisiting pending payment
-			if ( isset( $_REQUEST['revisit'] ) )
-				$this->transaction_id = strtoupper( sanitize_text_field( $_REQUEST['revisit'] ) );
+			$redirect_fields                = array();
+			$redirect_fields['identifier']  = $this->post_id;
+			$redirect_fields['approve_url'] = $this->get_thankyou();
+			$redirect_fields['decline_url'] = $this->callback_url();
 
-			// New pending payment
-			else {
-				$post_id              = $this->add_pending_payment( array( $to, $from, '-', '-', 'USD', $type ) );
-				$this->transaction_id = get_the_title( $post_id );
+			if ( $this->prefs['dynamic'] ) {
+				$redirect_fields['DynAmount_Value'] = $this->cost;
+				$redirect_fields['DynAmount_Hash']  = md5( $this->prefs['gwpass'] . $this->cost );
 			}
 
-			$cancel_url = $this->get_cancelled( $this->transaction_id );
+			$this->redirect_fields = $redirect_fields;
 
-			$hidden_fields = array(
-				'identifier'    => $post_id,
-				'approve_url'   => $thankyou_url,
-				'decline_url'   => $cancel_url
-			);
+		}
 
-			// Generate processing page
-			$this->get_page_header( __( 'Processing payment &hellip;', 'mycred' ) );
-			$this->get_page_redirect( $hidden_fields, $location );
-			$this->get_page_footer();
+		/**
+		 * AJAX Buy Handler
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function ajax_buy() {
 
-			exit;
+			// Construct the checkout box content
+			$content  = $this->checkout_header();
+			$content .= $this->checkout_logo();
+			$content .= $this->checkout_order();
+			$content .= $this->checkout_cancel();
+			$content .= $this->checkout_footer();
+
+			// Return a JSON response
+			$this->send_json( $content );
+
+		}
+
+		/**
+		 * Checkout Page Body
+		 * This gateway only uses the checkout body.
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function checkout_page_body() {
+
+			echo $this->checkout_header();
+			echo $this->checkout_logo( false );
+
+			echo $this->checkout_order();
+			echo $this->checkout_cancel();
+
+			echo $this->checkout_footer();
 
 		}
 
@@ -312,50 +333,100 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 			$prefs = $this->prefs;
 
 ?>
-<label class="subheader" for="<?php echo $this->field_id( 'site_id' ); ?>"><?php _e( 'Site ID', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'site_id' ); ?>" id="<?php echo $this->field_id( 'site_id' ); ?>" value="<?php echo $prefs['site_id']; ?>" class="long" /></div>
-	</li>
-</ol>
-<label class="subheader" for="<?php echo $this->field_id( 'gwpass' ); ?>"><?php _e( 'GW Password', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'gwpass' ); ?>" id="<?php echo $this->field_id( 'gwpass' ); ?>" value="<?php echo $prefs['gwpass']; ?>" class="long" /></div>
-	</li>
-</ol>
-<label class="subheader" for="<?php echo $this->field_id( 'site_id' ); ?>"><?php _e( 'Pricing ID', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'pricing_id' ); ?>" id="<?php echo $this->field_id( 'pricing_id' ); ?>" value="<?php echo $prefs['pricing_id']; ?>" class="long" /></div>
-	</li>
-</ol>
-<label class="subheader" for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<div class="h2"><input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo $prefs['logo_url']; ?>" class="long" /></div>
-	</li>
-</ol>
-<label class="subheader" for="<?php echo $this->field_id( 'bypass_ipn' ); ?>"><?php _e( 'IP Verification', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<label for="<?php echo $this->field_id( 'bypass_ipn' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'bypass_ipn' ); ?>" id="<?php echo $this->field_id( 'bypass_ipn' ); ?>" value="1"<?php checked( $prefs['bypass_ipn'], 1 ); ?> /> <?php _e( 'Do not verify that callbacks are coming from Zombaio.', 'mycred' ); ?></label>
-	</li>
-</ol>
-<label class="subheader" for="<?php echo $this->field_id( 'lang' ); ?>"><?php _e( 'Language', 'mycred' ); ?></label>
-<ol>
-	<li>
-		<?php $this->lang_dropdown( 'lang' ); ?>
+<div class="row">
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
+		<div class="form-group">
+			<label for="<?php echo $this->field_id( 'site_id' ); ?>"><?php _e( 'Site ID', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo $this->field_name( 'site_id' ); ?>" id="<?php echo $this->field_id( 'site_id' ); ?>" value="<?php echo esc_attr( $prefs['site_id'] ); ?>" class="form-control" />
+		</div>
+		<div class="form-group">
+			<label for="<?php echo $this->field_id( 'gwpass' ); ?>"><?php _e( 'GW Password', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo $this->field_name( 'gwpass' ); ?>" id="<?php echo $this->field_id( 'gwpass' ); ?>" value="<?php echo esc_attr( $prefs['gwpass'] ); ?>" class="form-control" />
+		</div>
+		<div class="form-group">
+			<label for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
+		</div>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo $this->field_id( 'bypass_ipn' ); ?>"><?php _e( 'IP Verification', 'mycred' ); ?></label>
+					<select name="<?php echo $this->field_name( 'bypass_ipn' ); ?>" id="<?php echo $this->field_id( 'bypass_ipn' ); ?>" class="form-control">
+<?php
 
-	</li>
-</ol>
-<label class="subheader"><?php _e( 'Postback URL (ZScript)', 'mycred' ); ?></label>
-<ol>
-	<li>
+			$options = array(
+				0 => __( 'No', 'mycred' ),
+				1 => __( 'Yes', 'mycred' )
+			);
+			foreach ( $options as $value => $label ) {
+				echo '<option value="' . $value . '"';
+				if ( $prefs['bypass_ipn'] == $value ) echo ' selected="selected"';
+				echo '>' . $label . '</option>';
+			}
+
+?>
+					</select>
+				</div>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo $this->field_id( 'lang' ); ?>"><?php _e( 'Language', 'mycred' ); ?></label>
+
+					<?php $this->lang_dropdown( 'lang' ); ?>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+		<div class="form-group">
+			<label for="<?php echo $this->field_id( 'pricing_id' ); ?>"><?php _e( 'Pricing ID', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo $this->field_name( 'pricing_id' ); ?>" id="<?php echo $this->field_id( 'pricing_id' ); ?>" value="<?php echo esc_attr( $prefs['pricing_id'] ); ?>" class="form-control" />
+		</div>
+		<div class="form-group">
+			<div class="checkbox">
+				<label for="<?php echo $this->field_id( 'dynamic' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'dynamic' ); ?>" id="<?php echo $this->field_id( 'dynamic' ); ?>"<?php checked( $prefs['dynamic'], 1 ); ?> value="1" /> <?php _e( 'This pricing ID is a "Dynamic Credits Purchase" in Zombaio.', 'mycred' ); ?></label>
+			</div>
+		</div>
+		<div id="zombaio-dynamic-wrapper" style="display: <?php if ( $prefs['dynamic'] == 1 ) echo 'block'; else echo 'none'; ?>;">
+			<div class="form-group">
+				<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
+
+				<?php $this->currencies_dropdown( 'currency', 'mycred-gateway-zombaio-currency' ); ?>
+
+			</div>
+			<div class="form-group">
+				<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
+
+				<?php $this->exchange_rate_setup(); ?>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<h3><?php _e( 'Postback URL (ZScript)', 'mycred' ); ?></h3>
 		<code style="padding: 12px;display:block;"><?php echo get_bloginfo( 'url' ); ?></code>
 		<p><?php _e( 'For this gateway to work, login to ZOA and set the Postback URL to the above address and click validate.', 'mycred' ); ?></p>
-	</li>
-</ol>
+	</div>
+</div>
+<script type="text/javascript">
+jQuery(function($){
+
+	$( '#<?php echo $this->field_id( 'dynamic' ); ?>' ).click(function(){
+
+		if ( $(this).is( ':checked' ) )
+			$( '#zombaio-dynamic-wrapper' ).show();
+		else
+			$( '#zombaio-dynamic-wrapper' ).hide();
+
+	});
+
+});
+</script>
 <?php
 
 		}
@@ -363,7 +434,7 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 		/**
 		 * Sanatize Prefs
 		 * @since 1.1
-		 * @version 1.0
+		 * @version 1.2
 		 */
 		public function sanitise_preferences( $data ) {
 
@@ -373,11 +444,48 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 			$new_data['site_id']    = sanitize_text_field( $data['site_id'] );
 			$new_data['gwpass']     = sanitize_text_field( $data['gwpass'] );
 			$new_data['pricing_id'] = sanitize_text_field( $data['pricing_id'] );
+			$new_data['dynamic']    = ( array_key_exists( 'dynamic', $data ) ) ? 1 : 0;
+			$new_data['currency']   = sanitize_text_field( $data['currency'] );
 			$new_data['logo_url']   = sanitize_text_field( $data['logo_url'] );
 			$new_data['bypass_ipn'] = ( array_key_exists( 'bypass_ipn', $data ) ) ? 1 : 0;
 			$new_data['lang']       = sanitize_text_field( $data['lang'] );
 
+			// If exchange is less then 1 we must start with a zero
+			if ( isset( $data['exchange'] ) ) {
+				foreach ( (array) $data['exchange'] as $type => $rate ) {
+					if ( $rate != 1 && in_array( substr( $rate, 0, 1 ), array( '.', ',' ) ) )
+						$data['exchange'][ $type ] = (float) '0' . $rate;
+				}
+			}
+			$new_data['exchange']  = $data['exchange'];
+
 			return $new_data;
+
+		}
+
+		/**
+		 * Currency Dropdown
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function currencies_dropdown( $name = '', $js = '' ) {
+
+			$currencies = array(
+				'USD' => 'US Dollars'
+			);
+			$currencies = apply_filters( 'mycred_dropdown_currencies_' . $this->id, $currencies );
+
+			if ( $js != '' )
+				$js = ' data-update="' . $js . '"';
+
+			echo '<select name="' . $this->field_name( $name ) . '" id="' . $this->field_id( $name ) . '" class="currency form-control"' . $js . '>';
+			echo '<option value="">' . __( 'Select', 'mycred' ) . '</option>';
+			foreach ( $currencies as $code => $cname ) {
+				echo '<option value="' . $code . '"';
+				if ( isset( $this->prefs[ $name ] ) && $this->prefs[ $name ] == $code ) echo ' selected="selected"';
+				echo '>' . $cname . '</option>';
+			}
+			echo '</select>';
 
 		}
 
@@ -402,7 +510,7 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 				'HK'  => 'Simplified Chinese'
 			);
 
-			echo '<select name="' . $this->field_name( $name ) . '" id="' . $this->field_id( $name ) . '">';
+			echo '<select name="' . $this->field_name( $name ) . '" id="' . $this->field_id( $name ) . '" class="form-control">';
 			echo '<option value="">' . __( 'Select', 'mycred' ) . '</option>';
 			foreach ( $languages as $code => $cname ) {
 				echo '<option value="' . $code . '"';
@@ -410,6 +518,40 @@ if ( ! class_exists( 'myCRED_Zombaio' ) ) :
 				echo '>' . $cname . '</option>';
 			}
 			echo '</select>';
+
+		}
+
+		/**
+		 * First Comment
+		 * @since 1.7.3
+		 * @version 1.0.1
+		 */
+		public function first_comment( $comment ) {
+
+			return 'New Zombaio purchase confirmation.';
+
+		}
+
+		/**
+		 * Load IPN IP List
+		 * @since 1.1
+		 * @version 1.1
+		 */
+		public function get_zombaio_ips() {
+
+			$request = new WP_Http();
+			$data    = $request->request( 'http://www.zombaio.com/ip_list.txt' );
+			$data    = explode( '|', $data['body'] );
+
+			$zombaio_ips = array();
+			if ( ! empty( $data ) ) {
+				foreach ( $data as $ip_range ) {
+					if ( $ip_range != '' )
+						$zombaio_ips[] = $ip_range;
+				}
+			}
+
+			return $zombaio_ips;
 
 		}
 

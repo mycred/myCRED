@@ -17,7 +17,7 @@ if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 			'ref_id'    => '',
 			'user_id'   => 'current',
 			'formatted' => 1
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_total_points' ) );
 
 		if ( ! mycred_point_type_exists( $type ) )
 			$type = MYCRED_DEFAULT_TYPE_KEY;
@@ -25,7 +25,7 @@ if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 		$user_id = mycred_get_user_id( $user_id );
 		$mycred  = mycred( $type );
 
-		global $wpdb;
+		global $wpdb, $mycred_log_table;
 
 		// Simple
 		if ( $ref == '' && $ref_id == '' && $user_id == '' ) {
@@ -74,7 +74,7 @@ if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 				$wheres[] = $wpdb->prepare( "user_id = %d", $user_id );
 
 			$wheres  = implode( " AND ", $wheres );
-			$total   = $wpdb->get_var( "SELECT SUM( creds ) FROM {$mycred->log_table} WHERE {$wheres};" );
+			$total   = $wpdb->get_var( "SELECT SUM( creds ) FROM {$mycred_log_table} WHERE {$wheres};" );
 
 		}
 
@@ -88,4 +88,4 @@ if ( ! function_exists( 'mycred_render_shortcode_total_points' ) ) :
 
 	}
 endif;
-add_shortcode( 'mycred_total_points', 'mycred_render_shortcode_total_points' );
+add_shortcode( MYCRED_SLUG . '_total_points', 'mycred_render_shortcode_total_points' );

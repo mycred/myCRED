@@ -4,16 +4,29 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * Get Badge
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_get_badge' ) ) :
 	function mycred_get_badge( $badge_id = NULL, $level = NULL ) {
 
-		if ( absint( $badge_id ) === 0 || get_post_type( $badge_id ) != 'mycred_badge' ) return false;
+		if ( absint( $badge_id ) === 0 || mycred_get_post_type( $badge_id ) != MYCRED_BADGE_KEY ) return false;
 
-		$badge = new myCRED_Badge( $badge_id, $level );
+		global $mycred_badge;
 
-		return apply_filters( 'mycred_get_badge', $badge, $badge_id, $level );
+		$badge_id     = absint( $badge_id );
+
+		if ( isset( $mycred_badge )
+			&& ( $mycred_badge instanceof myCRED_Badge )
+			&& ( $badge_id === $mycred_badge->post_id )
+		) {
+			return $mycred_badge;
+		}
+
+		$mycred_badge = new myCRED_Badge( $badge_id, $level );
+
+		do_action( 'mycred_get_badge' );
+
+		return $mycred_badge;
 
 	}
 endif;
@@ -53,13 +66,15 @@ if ( ! function_exists( 'mycred_get_badge_references' ) ) :
 				}
 			}
 
+
 			// New version (post 1.7)
-			$references = $wpdb->get_results( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = 'badge_prefs';" );
+			$table      = mycred_get_db_column( 'postmeta' );
+			$references = $wpdb->get_results( "SELECT post_id, meta_value FROM {$table} WHERE meta_key = 'badge_prefs';" );
 			if ( ! empty( $references ) ) {
 				foreach ( $references as $entry ) {
 
 					// Manual badges should be ignored
-					if ( absint( get_post_meta( $entry->post_id, 'manual_badge', true ) ) === 1 ) continue;
+					if ( absint( mycred_get_post_meta( $entry->post_id, 'manual_badge', true ) ) === 1 ) continue;
 
 					$levels = maybe_unserialize( $entry->meta_value );
 					if ( ! is_array( $levels ) || empty( $levels ) ) continue;
@@ -120,11 +135,11 @@ endif;
 if ( ! function_exists( 'mycred_get_badge_levels' ) ) :
 	function mycred_get_badge_levels( $badge_id ) {
 
-		$setup = get_post_meta( $badge_id, 'badge_prefs', true );
+		$setup = mycred_get_post_meta( $badge_id, 'badge_prefs', true );
 		if ( ! is_array( $setup ) || empty( $setup ) ) {
 
 			// Backwards comp.
-			$old_setup = get_post_meta( $badge_id, 'badge_requirements', true );
+			$old_setup = mycred_get_post_meta( $badge_id, 'badge_requirements', true );
 
 			// Convert old setup to new
 			if ( is_array( $old_setup ) && ! empty( $old_setup ) ) {
@@ -132,9 +147,9 @@ if ( ! function_exists( 'mycred_get_badge_levels' ) ) :
 				$new_setup = array();
 				foreach ( $old_setup as $level => $requirements ) {
 
-					$level_image = get_post_meta( $badge_id, 'level_image' . $level, true );
+					$level_image = mycred_get_post_meta( $badge_id, 'level_image' . $level, true );
 					if ( $level_image == '' || $level == 0 )
-						$level_image = get_post_meta( $badge_id, 'main_image', true );
+						$level_image = mycred_get_post_meta( $badge_id, 'main_image', true );
 
 					$row = array(
 						'image_url'     => $level_image,
@@ -157,8 +172,8 @@ if ( ! function_exists( 'mycred_get_badge_levels' ) ) :
 
 				if ( ! empty( $new_setup ) ) {
 
-					update_post_meta( $badge_id, 'badge_prefs', $new_setup );
-					delete_post_meta( $badge_id, 'badge_requirements' );
+					mycred_update_post_meta( $badge_id, 'badge_prefs', $new_setup );
+					mycred_delete_post_meta( $badge_id, 'badge_requirements' );
 
 					$setup = $new_setup;
 
@@ -248,7 +263,7 @@ if ( ! function_exists( 'mycred_display_badge_requirement' ) ) :
 
 				$level_label = '<strong>' . sprintf( __( 'Level %s', 'mycred' ), ( $level + 1 ) ) . ':</strong>';
 				if ( $levels[ $level ]['label'] != '' )
-					$level_label = '<strong>' . $levels[0]['label'] . ':</strong>';
+					$level_label = '<strong>' . $levels[ $level ]['label'] . ':</strong>';
 
 				// Construct requirements to be used in an unorganized list.
 				$level_req = array();
@@ -284,7 +299,7 @@ if ( ! function_exists( 'mycred_display_badge_requirement' ) ) :
 
 			}
 
-			if ( (int) get_post_meta( $badge_id, 'manual_badge', true ) === 1 )
+			if ( (int) mycred_get_post_meta( $badge_id, 'manual_badge', true ) === 1 )
 				$output[] = '<strong><small><em>' . __( 'This badge is manually awarded.', 'mycred' ) . '</em></small></strong>';
 
 			$reply = implode( '', $output );
@@ -306,31 +321,17 @@ endif;
 if ( ! function_exists( 'mycred_count_users_with_badge' ) ) :
 	function mycred_count_users_with_badge( $badge_id = NULL, $level = NULL ) {
 
-		if ( $badge_id === NULL ) return 0;
+		$badge_id = absint( $badge_id );
 
-		$count = get_post_meta( $badge_id, 'total-users-with-badge', true );
+		if ( $badge_id === 0 ) return false;
 
-		if ( $count == '' || $level !== NULL ) {
+		// Get the badge object
+		$badge    = mycred_get_badge( $badge_id );
 
-			global $wpdb;
+		// Most likely not a badge post ID
+		if ( $badge === false ) return false;
 
-			$level_filter = '';
-			if ( $level !== NULL && is_numeric( $level ) )
-				$level_filter = $wpdb->prepare( "AND meta_value = %s", $level );
-
-			$count = $wpdb->get_var( $wpdb->prepare( "
-				SELECT COUNT( DISTINCT user_id ) 
-				FROM {$wpdb->usermeta} 
-				WHERE meta_key = %s {$level_filter};", mycred_get_meta_key( 'mycred_badge' . $badge_id ) ) );
-
-			if ( $count === NULL ) $count = 0;
-
-			if ( $count > 0 && $level === NULL )
-				add_post_meta( $badge_id, 'total-users-with-badge', $count, true );
-
-		}
-
-		return apply_filters( 'mycred_count_users_with_badge', absint( $count ), $badge_id );
+		return $badge->get_user_count( $level );
 
 	}
 endif;
@@ -339,13 +340,14 @@ endif;
  * Count Users without Badge
  * Counts the number of users that does not have a given badge.
  * @since 1.5
- * @version 1.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_count_users_without_badge' ) ) :
 	function mycred_count_users_without_badge( $badge_id = NULL ) {
 
 		$total      = count_users();
 		$with_badge = mycred_count_users_with_badge( $badge_id );
+		if ( $with_badge === false ) $with_badge = 0;
 
 		$without_badge = $total['total_users'] - $with_badge;
 
@@ -363,10 +365,12 @@ endif;
 if ( ! function_exists( 'mycred_ref_has_badge' ) ) :
 	function mycred_ref_has_badge( $reference = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
+		$badge_ids        = array();
+		if ( $reference === NULL || strlen( $reference ) == 0 || ! mycred_point_type_exists( $point_type ) ) return $badge_ids;
+
 		$badge_references = mycred_get_badge_references( $point_type );
 		$badge_references = maybe_unserialize( $badge_references );
 
-		$badge_ids = array();
 		if ( ! empty( $badge_references ) && array_key_exists( $reference, $badge_references ) )
 			$badge_ids = $badge_references[ $reference ];
 
@@ -382,72 +386,23 @@ endif;
  * Badge Level Reached
  * Checks what level a user has earned for a badge. Returns false if badge was not earned.
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_badge_level_reached' ) ) :
 	function mycred_badge_level_reached( $user_id = NULL, $badge_id = NULL ) {
 
-		$user_id = absint( $user_id );
-		if ( $user_id === 0 ) return false;
-
+		$user_id  = absint( $user_id );
 		$badge_id = absint( $badge_id );
-		if ( $badge_id === 0 ) return false;
 
-		global $wpdb;
+		if ( $user_id === 0 || $badge_id === 0 ) return false;
 
-		$levels            = mycred_get_badge_levels( $badge_id );
-		if ( empty( $levels ) ) return false;
+		// Get the badge object
+		$badge    = mycred_get_badge( $badge_id );
 
-		$base_requirements = $levels[0]['requires'];
-		$compare           = $levels[0]['compare'];
-		$requirements      = count( $base_requirements );
-		$level_reached     = false;
-		$results           = array();
+		// Most likely not a badge post ID
+		if ( $badge === false ) return false;
 
-		// Based on the base requirements, we first get the users log entry results
-		if ( ! empty( $base_requirements ) ) {
-			foreach ( $base_requirements as $requirement_id => $requirement ) {
-
-				if ( $requirement['type'] == '' )
-					$requirement['type'] = MYCRED_DEFAULT_TYPE_KEY;
-
-				$mycred = mycred( $requirement['type'] );
-				if ( $mycred->exclude_user( $user_id ) ) continue;
-
-				$having = 'COUNT(*)';
-				if ( $requirement['by'] != 'count' )
-					$having = 'SUM(creds)';
-
-				$query = $wpdb->get_var( $wpdb->prepare( "SELECT {$having} FROM {$mycred->log_table} WHERE ctype = %s AND ref = %s AND user_id = %d;", $requirement['type'], $requirement['reference'], $user_id ) );
-				if ( $query === NULL ) $query = 0;
-
-				$results[ $requirement['reference'] ] = $query;
-
-			}
-		}
-
-		// Next we loop through the levels and see compare the previous results to the requirements to determan our level
-		foreach ( $levels as $level_id => $level_setup ) {
-
-			$reqs_met = 0;
-			foreach ( $level_setup['requires'] as $requirement_id => $requirement ) {
-
-				if ( $results[ $requirement['reference'] ] >= $requirement['amount'] )
-					$reqs_met++;
-
-			}
-
-			if ( $compare === 'AND' && $reqs_met >= $requirements )
-				$level_reached = $level_id;
-
-			elseif ( $compare === 'OR' && $reqs_met > 0 )
-				$level_reached = $level_id;
-
-		}
-
-		do_action( 'mycred_badge_level_reached', $user_id, $badge_id, $level_reached );
-
-		return $level_reached;
+		return $badge->query_users_level( $user_id );
 
 	}
 endif;
@@ -456,26 +411,29 @@ endif;
  * Check if User Gets Badge
  * Checks if a given user has earned one or multiple badges.
  * @since 1.5
- * @version 1.3
+ * @version 1.4
  */
 if ( ! function_exists( 'mycred_check_if_user_gets_badge' ) ) :
 	function mycred_check_if_user_gets_badge( $user_id = NULL, $badge_ids = array(), $depreciated = array(), $save = true ) {
 
-		$user_id = absint( $user_id );
+		$user_id          = absint( $user_id );
 		if ( $user_id === 0 ) return false;
 
-		$earned_badge_ids       = array();
+		$earned_badge_ids = array();
 		if ( ! empty( $badge_ids ) ) {
 			foreach ( $badge_ids as $badge_id ) {
 
-				$level_reached = mycred_badge_level_reached( $user_id, $badge_id );
+				$badge         = mycred_get_badge( $badge_id );
+				if ( $badge === false ) continue;
+
+				$level_reached = $badge->get_level_reached( $user_id );
 				if ( $level_reached !== false ) {
 
-					$earned_badge_ids[] = $badge_id;
-					delete_post_meta( $badge_id, 'total-users-with-badge' );
-
 					if ( $save )
-						mycred_assign_badge_to_user( $user_id, $badge_id, $level_reached );
+						$badge->assign( $user_id, $level_reached );
+
+					$earned_badge_ids[] = $badge_id;
+
 				}
 
 			}
@@ -488,136 +446,25 @@ endif;
 
 /**
  * Assign Badge
- * Assigns a given badge to all users that fulfill the
- * badges requirements.
+ * Assigns a given badge to all users that fulfill the badges requirements.
  * @since 1.7
- * @version 1.0.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_assign_badge' ) ) :
 	function mycred_assign_badge( $badge_id = NULL ) {
 
-		$badge_id     = absint( $badge_id );
-		if ( $badge_id === 0 ) return false;
+		$user_id  = absint( $user_id );
+		$badge_id = absint( $badge_id );
 
-		global $wpdb;
+		if ( $user_id === 0 || $badge_id === 0 ) return false;
 
-		$user_ids     = array();
-		$levels       = mycred_get_badge_levels( $badge_id );
-		if ( empty( $levels ) ) return false;
+		// Get the badge object
+		$badge    = mycred_get_badge( $badge_id );
 
-		$requirements = count( $levels[0]['requires'] );
-		$compare      = $levels[0]['compare'];
+		// Most likely not a badge post ID
+		if ( $badge === false ) return false;
 
-		if ( ! empty( $levels ) ) {
-			foreach ( $levels as $level_id => $level_setup ) {
-
-				$level_user_ids = array();
-
-				// Get all user IDs that fulfill each requirements set
-				if ( ! empty( $level_setup['requires'] ) ) {
-					foreach ( $level_setup['requires'] as $requirement_id => $requirement ) {
-
-						if ( $requirement['type'] == '' )
-							$requirement['type'] = MYCRED_DEFAULT_TYPE_KEY;
-
-						$mycred = mycred( $requirement['type'] );
-						$having = "COUNT(id)";
-						$format = '%d';
-
-						if ( $requirement['by'] != 'count' )
-							$having = "SUM(creds)";
-
-						if ( $requirement['by'] != 'count' && $mycred->format['decimals'] > 0 )
-							$format = '%f';
-
-						$level_user_ids[ $requirement_id ] = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT user_id FROM {$mycred->log_table} WHERE ctype = %s AND ref = %s GROUP BY user_id HAVING {$having} >= {$format};", $requirement['type'], $requirement['reference'], $requirement['amount'] ) );
-
-					}
-				}
-
-				// OR = get all unique IDs
-				if ( $compare == 'OR' ) {
-
-					$list = array();
-					foreach ( $level_user_ids as $requirement_id => $list_of_ids ) {
-						if ( ! empty( $list_of_ids ) ) {
-							foreach ( $list_of_ids as $uid ) {
-								if ( ! in_array( $uid, $list ) )
-									$list[] = $uid;
-							}
-						}
-					}
-
-				}
-
-				// AND = get IDs that are in all requirements
-				else {
-
-					$list = $_list = array();
-
-					foreach ( $level_user_ids as $requirement_id => $list_of_ids ) {
-						if ( ! empty( $list_of_ids ) ) {
-							foreach ( $list_of_ids as $uid ) {
-								if ( ! array_key_exists( $uid, $_list ) )
-									$_list[ $uid ] = 1;
-								else
-									$_list[ $uid ]++;
-							}
-						}
-					}
-
-					foreach ( $_list as $uid => $count ) {
-						if ( $count >= $requirements )
-							$list[] = $uid;
-					}
-
-				}
-
-				// If no user has reached the first level, no one will have reached higher levels and there is no need to continue
-				if ( $level_id == 0 && empty( $list ) ) break;
-
-				// Create a list where the array key represents the user ID and the array value represents the badge level reached by the user
-				foreach ( $list as $user_id ) {
-					$user_ids[ $user_id ] = $level_id;
-				}
-
-			}
-		}
-
-		// If we have results, save
-		if ( ! empty( $user_ids ) ) {
-			foreach ( $user_ids as $user_id => $level_reached ) {
-
-				// Assign the badge
-				$assigned = mycred_assign_badge_to_user( $user_id, $badge_id, $level_reached );
-
-				// Payout reward
-				if ( $assigned && $levels[ $level_reached ]['reward']['log'] != '' && $levels[ $level_reached ]['reward']['amount'] != 0 ) {
-
-					$reward_type = $levels[ $level_reached ]['reward']['type'];
-					if ( $reward_type == '' )
-						$reward_type = MYCRED_DEFAULT_TYPE_KEY;
-
-					$mycred = mycred( $reward_type );
-
-					// Make sure we only get points once for each level we reach for each badge
-					if ( ! $mycred->has_entry( 'badge_reward', $badge_id, $user_id, $level_reached, $reward_type ) )
-						$mycred->add_creds(
-							'badge_reward',
-							$user_id,
-							$levels[ $level_reached ]['reward']['amount'],
-							$levels[ $level_reached ]['reward']['log'],
-							$badge_id,
-							$level_reached,
-							$reward_type
-						);
-
-				}
-
-			}
-		}
-
-		return $user_ids;
+		return $badge->assign_all();
 
 	}
 endif;
@@ -625,35 +472,91 @@ endif;
 /**
  * Assign Badge to User
  * @since 1.7
- * @version 1.0.2
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_assign_badge_to_user' ) ) :
 	function mycred_assign_badge_to_user( $user_id = NULL, $badge_id = NULL, $level = 0 ) {
 
-		$user_id       = absint( $user_id );
-		if ( $user_id === 0 ) return false;
+		$user_id  = absint( $user_id );
+		$badge_id = absint( $badge_id );
+		$level    = absint( $level );
 
-		$badge_id      = absint( $badge_id );
-		if ( $badge_id === 0 ) return false;
+		if ( $user_id === 0 || $badge_id === 0 ) return false;
 
-		// Prep
-		$level         = absint( $level );
-		$meta_key      = 'mycred_badge' . $badge_id;
+		// Get the badge object
+		$badge    = mycred_get_badge( $badge_id );
 
-		// No assignment should occur if we already have this badge + level
-		$current_level = mycred_get_user_meta( $user_id, $meta_key );
-		if ( $current_level != '' && absint( $current_level ) === $level ) return false;
+		// Most likely not a badge post ID
+		if ( $badge === false ) return false;
 
-		// By default the level ID is saved as the meta value but some might prefer to do stuff differently
-		$value         = apply_filters( 'mycred_badge_user_value', $level, $user_id, $badge_id );
+		return $badge->assign( $user_id, $level );
 
-		// Save the badge connection
-		mycred_update_user_meta( $user_id, $meta_key, '', $value );
+	}
+endif;
 
-		// Reset badge id cache
-		mycred_get_users_badges( $user_id, true );
+/**
+ * User Has Badge
+ * Checks if a user has a particular badge by badge ID.
+ * @since 1.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_user_has_badge' ) ) :
+	function mycred_user_has_badge( $user_id = 0, $badge_id = NULL, $level_id = 0 ) {
 
-		return true;
+		$user_id  = absint( $user_id );
+		$badge_id = absint( $badge_id );
+		$level_id = absint( $level_id );
+
+		if ( $user_id === 0 || $badge_id === 0 ) return false;
+
+		global $mycred_current_account;
+
+		if ( mycred_is_current_account( $user_id ) && isset( $mycred_current_account->badge_ids ) && ! empty( $mycred_current_account->badge_ids ) ) {
+
+			$has_badge = array_key_exists( $badge_id, $mycred_current_account->badge_ids );
+
+		}
+		else {
+
+			// Get the badge object
+			$badge    = mycred_get_badge( $badge_id );
+
+			// Most likely not a badge post ID
+			if ( $badge !== false )
+				$has_badge = $badge->user_has_badge( $user_id, $level_id );
+
+		}
+
+		return $has_badge;
+
+	}
+endif;
+
+/**
+ * Get Users Badge Level
+ * @since 1.8
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_users_badge_level' ) ) :
+	function mycred_get_users_badge_level( $user_id = 0, $badge_id = NULL ) {
+
+		$user_id  = absint( $user_id );
+		$badge_id = absint( $badge_id );
+
+		if ( $user_id === 0 || $badge_id === 0 ) return false;
+
+		global $mycred_current_account;
+
+		if ( mycred_is_current_account( $user_id ) && isset( $mycred_current_account->badges ) && ! empty( $mycred_current_account->badges ) && array_key_exists( $badge_id, $mycred_current_account->badges ) )
+			return $mycred_current_account->badges[ $badge_id ]->level_id;
+
+		// Get the badge object
+		$badge    = mycred_get_badge( $badge_id );
+
+		// Most likely not a badge post ID
+		if ( $badge === false ) return false;
+
+		return $badge->get_users_current_level( $user_id );
 
 	}
 endif;
@@ -667,49 +570,52 @@ endif;
 if ( ! function_exists( 'mycred_get_users_badges' ) ) :
 	function mycred_get_users_badges( $user_id = NULL, $force = false ) {
 
-		if ( $user_id === NULL ) return '';
+		if ( $user_id === NULL ) return array();
 
-		$badge_ids = array();
-		if ( ! $force ) {
+		global $mycred_current_account;
 
-			$query = mycred_get_user_meta( $user_id, 'mycred_badge_ids' );
+		if ( mycred_is_current_account( $user_id ) && isset( $mycred_current_account->badge_ids ) && $force == false )
+			return $mycred_current_account->badge_ids;
 
-			if ( is_array( $query ) && ! empty( $query ) )
-				$badge_ids = $query;
-
-		}
-
-		if ( empty( $badge_ids ) ) {
+		$badge_ids = mycred_get_user_meta( $user_id, MYCRED_BADGE_KEY . '_ids', '', true );
+		if ( !isset($badge_ids) || $badge_ids == '' || $force ) {
 
 			global $wpdb;
 
-			$query = $wpdb->get_results( $wpdb->prepare( "
-				SELECT * 
-				FROM {$wpdb->usermeta} 
-				WHERE user_id = %d 
-				AND meta_key LIKE %s", $user_id, 'mycred_badge%' ) );
+			$badge_ids = array();
+			$query     = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key LIKE %s", $user_id, mycred_get_meta_key( MYCRED_BADGE_KEY ) . '%' ) );
 
 			if ( ! empty( $query ) ) {
 
 				foreach ( $query as $badge ) {
 
-					$badge_id = substr( $badge->meta_key, 12 );
+					$badge_id = str_replace( MYCRED_BADGE_KEY, '', $badge->meta_key );
 					if ( $badge_id == '' ) continue;
 				
-					$badge_id = (int) $badge_id;
-					if ( array_key_exists( $badge_id, $badge_ids ) ) continue;
-
-					$badge_ids[ $badge_id ] = $badge->meta_value;
+					$badge_id = absint( $badge_id );
+					if ( ! array_key_exists( $badge_id, $badge_ids ) )
+						$badge_ids[ $badge_id ] = absint( $badge->meta_value );
 
 				}
 
-				mycred_update_user_meta( $user_id, 'mycred_badge_ids', '', $badge_ids );
+				mycred_update_user_meta( $user_id, MYCRED_BADGE_KEY . '_ids', '', $badge_ids );
 
 			}
 
 		}
 
-		return apply_filters( 'mycred_get_users_badges', $badge_ids, $user_id );
+		$clean_ids = array();
+		if ( ! empty( $badge_ids ) ) {
+			foreach ( $badge_ids as $id => $level ) {
+
+				$id = absint( $id );
+				if ( $id === 0 || strlen( $level ) < 1 ) continue;
+				$clean_ids[ $id ] = absint( $level );
+
+			}
+		}
+
+		return apply_filters( 'mycred_get_users_badges', $clean_ids, $user_id );
 
 	}
 endif;
@@ -760,19 +666,25 @@ endif;
  * Get Badge IDs
  * Returns all published badge post IDs.
  * @since 1.5
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_get_badge_ids' ) ) :
 	function mycred_get_badge_ids() {
 
+		$badge_ids = wp_cache_get( 'badge_ids', MYCRED_SLUG );
+		if ( $badge_ids !== false && is_array( $badge_ids ) ) return $badge_ids;
+
 		global $wpdb;
 
-		$badge_ids = $wpdb->get_col( "
+		$table     = mycred_get_db_column( 'posts' );
+		$badge_ids = $wpdb->get_col( $wpdb->prepare( "
 			SELECT ID 
-			FROM {$wpdb->posts} 
-			WHERE post_type = 'mycred_badge' 
+			FROM {$table} 
+			WHERE post_type = %s 
 			AND post_status = 'publish' 
-			ORDER BY post_date ASC;" );
+			ORDER BY post_date ASC;", MYCRED_BADGE_KEY ) );
+
+		wp_cache_set( 'badge_ids', $badge_ids, MYCRED_SLUG );
 
 		return apply_filters( 'mycred_get_badge_ids', $badge_ids );
 

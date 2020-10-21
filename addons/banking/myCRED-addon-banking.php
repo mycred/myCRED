@@ -3,7 +3,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 /**
  * Addon: Banking
- * Addon URI: http://mycred.me/add-ons/banking/
+ * Addon URI: http://codex.mycred.me/chapter-iii/banking/
  * Version: 2.0
  */
 define( 'myCRED_BANK',              __FILE__ );
@@ -165,7 +165,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 			$services = apply_filters( 'mycred_setup_banking', $services );
 
-			if ( $save === true && $this->core->can_edit_plugin() ) {
+			if ( $save === true && $this->core->user_is_point_admin() ) {
 				$new_data = array(
 					'active'        => $this->active,
 					'services'      => $services,
@@ -240,7 +240,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 		public function admin_page() {
 
 			// Security
-			if ( ! $this->core->can_edit_creds() ) wp_die( 'Access Denied' );
+			if ( ! $this->core->user_is_point_admin() ) wp_die( 'Access Denied' );
 
 			// Get installed
 			$installed = $this->get();
@@ -250,7 +250,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 	<?php $this->update_notice(); ?>
 
-	<h1><?php echo sprintf( __( '%s Banking', 'mycred' ), mycred_label() ); ?></h1>
+	<h1><?php _e( 'Banking Services', 'mycred' ); ?></h1>
 	<form method="post" class="form" action="options.php">
 
 		<?php settings_fields( $this->settings_name ); ?>
@@ -394,7 +394,7 @@ body .ui-dialog.ui.widget { height: auto !important; }
 			if ( isset( $_REQUEST['_token'] ) && wp_verify_nonce( $_REQUEST['_token'], 'run-mycred-bank-task' . $this->mycred_type ) ) {
 
 				// Make sure ajax call is made by an admin
-				if ( $this->core->can_edit_creds() || $this->core->can_edit_plugin() ) {
+				if ( $this->core->user_is_point_admin() ) {
 
 					// Get the service requesting to use this
 					$service   = sanitize_key( $_POST['service'] );

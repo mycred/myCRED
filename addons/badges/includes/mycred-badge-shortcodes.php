@@ -15,7 +15,7 @@ if ( ! function_exists( 'mycred_render_my_badges' ) ) :
 			'width'    => MYCRED_BADGE_WIDTH,
 			'height'   => MYCRED_BADGE_HEIGHT,
 			'user_id'  => 'current'
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_my_badges' ) );
 
 		if ( ! is_user_logged_in() && $user_id == 'current' )
 			return $content;
@@ -95,7 +95,7 @@ if ( ! function_exists( 'mycred_render_badges' ) ) :
 		extract( shortcode_atts( array(
 			'width'  => MYCRED_BADGE_WIDTH,
 			'height' => MYCRED_BADGE_HEIGHT
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_badges' ) );
 
 		$all_badges = mycred_get_badge_ids();
 
@@ -117,7 +117,13 @@ if ( ! function_exists( 'mycred_render_badges' ) ) :
 				$row = str_replace( '%requirements%',  mycred_display_badge_requirements( $badge_id ), $row );
 				$row = str_replace( '%count%',         $badge->earnedby,                               $row );
 				$row = str_replace( '%default_image%', $badge->main_image,                             $row );
-				$row = str_replace( '%main_image%',    $badge->level_image,                            $row );
+				
+				if( mycred_user_has_badge( get_current_user_id(), $badge_id) ) {
+					$row = str_replace( '%main_image%',    $badge->level_image, $row );
+				}
+				else {
+					$row = str_replace( '%main_image%',    '', $row );
+				}
 
 				$output .= apply_filters( 'mycred_badges_badge', $row, $badge );
 
@@ -131,5 +137,3 @@ if ( ! function_exists( 'mycred_render_badges' ) ) :
 
 	}
 endif;
-
-?>

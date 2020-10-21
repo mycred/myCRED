@@ -158,7 +158,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Payouts' ) ) :
 
 			// Default number of balances we will be running through for now
 			$number          = absint( apply_filters( 'mycred_recurring_max_limit', 1500, $this ) );
-			$original_start  = get_option( 'mycred-recurring-next-run-' . $schedule_id, false );
+			$original_start  = mycred_get_option( 'mycred-recurring-next-run-' . $schedule_id, false );
 
 			$single_instance = true;
 			$transient_key   = 'mycred-recurring-' . $schedule_id;
@@ -501,7 +501,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Payouts' ) ) :
 		/**
 		 * View Schedule Form
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function view_schedule_form( $schedule_id, $setup ) {
 
@@ -511,9 +511,9 @@ if ( ! class_exists( 'myCRED_Banking_Service_Payouts' ) ) :
 			$timeframes     = mycred_banking_get_timeframes();
 			$settings       = mycred_get_banking_addon_settings( NULL, $this->mycred_type );
 
-			global $wpdb;
+			global $wpdb, $mycred_log_table;
 
-			$total_payout   = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(creds) FROM {$this->core->log_table} WHERE ref = %s AND data = %s;", $this->log_reference, $schedule_id ) );
+			$total_payout   = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(creds) FROM {$mycred_log_table} WHERE ref = %s AND data = %s;", $this->log_reference, $schedule_id ) );
 			if ( $total_payout === NULL ) $total_payout = 0;
 
 			$last_run       = mycred_gmt_timestamp_to_local( $setup['last_run'] );

@@ -207,10 +207,10 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			if ( ! is_user_logged_in() && ! $this->buddypress['visibility']['history'] ) return;
 
 			// Admins always see the token history
-			if ( ! $this->core->can_edit_plugin() && $this->buddypress['history_location'] != 'top' ) return;
+			if ( ! $this->core->user_is_point_editor() && $this->buddypress['history_location'] != 'top' ) return;
 
 			// Show admins
-			if ( $this->core->can_edit_plugin() )
+			if ( $this->core->user_is_point_editor() )
 				$show = true;
 
 			else

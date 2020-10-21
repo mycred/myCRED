@@ -33,7 +33,7 @@ if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 			'media'    => '',
 			'type'     => '',
 			'onclick'  => ''
-		), $atts );
+		), $atts, MYCRED_SLUG . '_link' );
 
 		// Make sure point type exists
 		if ( ! mycred_point_type_exists( $atts['ctype'] ) )
@@ -99,4 +99,4 @@ if ( ! function_exists( 'mycred_render_shortcode_link' ) ) :
 
 	}
 endif;
-add_shortcode( 'mycred_link', 'mycred_render_shortcode_link' );
+add_shortcode( MYCRED_SLUG . '_link', 'mycred_render_shortcode_link' );

@@ -3,13 +3,13 @@
  * Plugin Name: myCRED
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 1.7.9.8
- * Tags: points, credit, balance, finance, rewards, engagement, woocommerce, bbpress, buddypress
- * Author: myCred
+ * Version: 1.8
+ * Tags: point, credit, loyalty program, engagement, reward, woocommerce rewards
+ * Author: myCRED
  * Author URI: https://mycred.me
  * Author Email: support@mycred.me
- * Requires at least: WP 4.5
- * Tested up to: WP 4.9.6
+ * Requires at least: WP 4.8
+ * Tested up to: WP 5.1
  * Text Domain: mycred
  * Domain Path: /lang
  * License: GPLv2 or later
@@ -19,7 +19,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '1.7.9.8';
+		public $version             = '1.8';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -141,9 +141,8 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			}
 
 			// Plugin Related
-			add_filter( 'plugin_action_links_mycred/mycred.php',      array( $this, 'plugin_links' ), 10, 4 );
-			add_filter( 'plugin_row_meta',                            array( $this, 'plugin_description_links' ), 10, 2 );
-			add_action( 'in_plugin_update_message-mycred/mycred.php', array( $this, 'plugin_update_warning' ) );
+			add_filter( 'plugin_action_links_mycred/mycred.php', array( $this, 'plugin_links' ), 10, 4 );
+			add_filter( 'plugin_row_meta',                       array( $this, 'plugin_description_links' ), 10, 2 );
 
 		}
 
@@ -151,44 +150,51 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * Define Constants
 		 * First, we start with defining all requires constants if they are not defined already.
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		private function define_constants() {
 
 			// Ok to override
-			$this->define( 'myCRED_VERSION',                   $this->version );
-			$this->define( 'myCRED_DB_VERSION',                '1.0' );
-			$this->define( 'MYCRED_SLUG',                      'mycred' );
-			$this->define( 'MYCRED_DEFAULT_LABEL',             'myCRED' );
-			$this->define( 'MYCRED_DEFAULT_TYPE_KEY',          'mycred_default' );
-			$this->define( 'MYCRED_FOR_OLDER_WP',              false );
-			$this->define( 'MYCRED_MIN_TIME_LIMIT',            3 );
-			$this->define( 'MYCRED_ENABLE_LOGGING',            true );
-			$this->define( 'MYCRED_UNINSTALL_LOG',             true );
-			$this->define( 'MYCRED_UNINSTALL_CREDS',           true );
-			$this->define( 'MYCRED_DISABLE_PROTECTION',        false );
-			$this->define( 'MYCRED_DISABLE_LEADERBOARD_CACHE', true );
+			$this->define( 'myCRED_VERSION',              $this->version );
+			$this->define( 'myCRED_DB_VERSION',           '1.0' );
+			$this->define( 'MYCRED_SLUG',                 'mycred' );
+			$this->define( 'MYCRED_DEFAULT_LABEL',        'myCRED' );
+			$this->define( 'MYCRED_DEFAULT_TYPE_KEY',     'mycred_default' );
+			$this->define( 'MYCRED_SHOW_PREMIUM_ADDONS',  true );
+			$this->define( 'MYCRED_FOR_OLDER_WP',         false );
+			$this->define( 'MYCRED_MIN_TIME_LIMIT',       3 );
+			$this->define( 'MYCRED_ENABLE_TOTAL_BALANCE', true );
+			$this->define( 'MYCRED_ENABLE_LOGGING',       true );
+			$this->define( 'MYCRED_ENABLE_SHORTCODES',    true );
+			$this->define( 'MYCRED_ENABLE_HOOKS',         true );
+			$this->define( 'MYCRED_UNINSTALL_LOG',        true );
+			$this->define( 'MYCRED_UNINSTALL_CREDS',      true );
+			$this->define( 'MYCRED_DISABLE_PROTECTION',   false );
+			$this->define( 'MYCRED_CACHE_LEADERBOARDS',   false );
+			$this->define( 'MYCRED_MAX_HISTORY_SIZE',     100 );
 
 			// Not ok to override
-			$this->define( 'myCRED_THIS',               __FILE__, false );
-			$this->define( 'myCRED_ROOT_DIR',           plugin_dir_path( myCRED_THIS ), false );
-			$this->define( 'myCRED_ABSTRACTS_DIR',      myCRED_ROOT_DIR . 'abstracts/', false );
-			$this->define( 'myCRED_ADDONS_DIR',         myCRED_ROOT_DIR . 'addons/', false );
-			$this->define( 'myCRED_ASSETS_DIR',         myCRED_ROOT_DIR . 'assets/', false );
-			$this->define( 'myCRED_INCLUDES_DIR',       myCRED_ROOT_DIR . 'includes/', false );
-			$this->define( 'myCRED_LANG_DIR',           myCRED_ROOT_DIR . 'lang/', false );
-			$this->define( 'myCRED_MODULES_DIR',        myCRED_ROOT_DIR . 'modules/', false );
-			$this->define( 'myCRED_PLUGINS_DIR',        myCRED_ROOT_DIR . 'plugins/', false );
-			$this->define( 'myCRED_CLASSES_DIR',        myCRED_INCLUDES_DIR . 'classes/', false );
-			$this->define( 'myCRED_IMPORTERS_DIR',      myCRED_INCLUDES_DIR . 'importers/', false );
-			$this->define( 'myCRED_SHORTCODES_DIR',     myCRED_INCLUDES_DIR . 'shortcodes/', false );
+			$this->define( 'myCRED_THIS',                 __FILE__, false );
+			$this->define( 'myCRED_ROOT_DIR',             plugin_dir_path( myCRED_THIS ), false );
+			$this->define( 'myCRED_ABSTRACTS_DIR',        myCRED_ROOT_DIR . 'abstracts/', false );
+			$this->define( 'myCRED_ADDONS_DIR',           myCRED_ROOT_DIR . 'addons/', false );
+			$this->define( 'myCRED_ASSETS_DIR',           myCRED_ROOT_DIR . 'assets/', false );
+			$this->define( 'myCRED_INCLUDES_DIR',         myCRED_ROOT_DIR . 'includes/', false );
+			$this->define( 'myCRED_LANG_DIR',             myCRED_ROOT_DIR . 'lang/', false );
+			$this->define( 'myCRED_MODULES_DIR',          myCRED_ROOT_DIR . 'modules/', false );
+			$this->define( 'myCRED_CLASSES_DIR',          myCRED_INCLUDES_DIR . 'classes/', false );
+			$this->define( 'myCRED_IMPORTERS_DIR',        myCRED_INCLUDES_DIR . 'importers/', false );
+			$this->define( 'myCRED_SHORTCODES_DIR',       myCRED_INCLUDES_DIR . 'shortcodes/', false );
+			$this->define( 'myCRED_WIDGETS_DIR',          myCRED_INCLUDES_DIR . 'widgets/', false );
+			$this->define( 'myCRED_HOOKS_DIR',            myCRED_INCLUDES_DIR . 'hooks/', false );
+			$this->define( 'myCRED_PLUGINS_DIR',          myCRED_HOOKS_DIR . 'external/', false );
 
 		}
 
 		/**
 		 * Include Plugin Files
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function includes() {
 
@@ -208,33 +214,11 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				// Core
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-object.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-remote.php' );
-				// $this->file( myCRED_INCLUDES_DIR . 'mycred-update.php' );
-				$this->file( myCRED_INCLUDES_DIR . 'mycred-about.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-protect.php' );
+				$this->file( myCRED_INCLUDES_DIR . 'mycred-about.php' );
 
 				// If myCRED has been setup and is ready to begin
 				if ( mycred_is_installed() ) {
-
-					$this->file( myCRED_INCLUDES_DIR . 'mycred-widgets.php' );
-					$this->file( myCRED_INCLUDES_DIR . 'mycred-referrals.php' );
-
-					// Supported plugins
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-affiliatewp.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-badgeOS.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-bbPress.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-buddypress-media.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-buddypress.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-contact-form7.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-events-manager-light.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-gravityforms.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-invite-anyone.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-jetpack.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-sharethis.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-simplepress.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-woocommerce.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-wp-favorite-posts.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-wp-polls.php' );
-					$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-wp-postratings.php' );
 
 					// Modules
 					$this->file( myCRED_MODULES_DIR . 'mycred-module-addons.php' );
@@ -243,6 +227,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 					$this->file( myCRED_MODULES_DIR . 'mycred-module-log.php' );
 					$this->file( myCRED_MODULES_DIR . 'mycred-module-export.php' );
 					$this->file( myCRED_MODULES_DIR . 'mycred-module-management.php' );
+					$this->file( myCRED_MODULES_DIR . 'mycred-module-caching.php' );
 
 					if ( is_multisite() ) {
 
@@ -253,6 +238,47 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				}
 
 			}
+
+		}
+
+		/**
+		 * Internal Setup
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		private function include_hooks() {
+
+			if ( MYCRED_ENABLE_HOOKS === false ) return;
+
+			// Built-in Hooks
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-anniversary.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-comments.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-delete-content.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-link-clicks.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-logins.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-publishing-content.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-referrals.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-registrations.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-site-visits.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-view-content.php' );
+			$this->file( myCRED_HOOKS_DIR . 'mycred-hook-watching-video.php' );
+
+			// Supported plugins
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-affiliatewp.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-badgeOS.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-bbPress.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-buddypress-media.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-buddypress.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-contact-form7.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-events-manager-light.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-gravityforms.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-invite-anyone.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-jetpack.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-simplepress.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-woocommerce.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-wp-favorite-posts.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-wp-polls.php' );
+			$this->file( myCRED_PLUGINS_DIR . 'mycred-hook-wp-postratings.php' );
 
 		}
 
@@ -270,6 +296,25 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			);
 
 			$this->pre_init_globals();
+
+		}
+
+		/**
+		 * Pre Init Globals
+		 * Globals that does not reply on external sources and can be loaded before init.
+		 * @since 1.7
+		 * @version 1.1
+		 */
+		private function pre_init_globals() {
+
+			global $mycred, $mycred_log_table, $mycred_types, $mycred_modules, $mycred_label, $mycred_network;
+
+			$mycred             = new myCRED_Settings();
+			$mycred_log_table   = $mycred->log_table;
+			$mycred_types       = $this->point_types;
+			$mycred_label       = apply_filters( 'mycred_label', MYCRED_DEFAULT_LABEL );
+			$mycred_modules     = $this->modules;
+			$mycred_network     = mycred_get_settings_network();
 
 		}
 
@@ -311,7 +356,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * After Themes Loaded
 		 * Used to load internal features via modules.
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function after_theme() {
 
@@ -343,19 +388,35 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 
 			}
 
-			do_action( 'mycred_load_hooks' );
+			// Option to disable hooks
+			if ( MYCRED_ENABLE_HOOKS ) {
 
-			// Attach hooks module to each point type we use
-			foreach ( $this->point_types as $type => $title ) {
-				$this->modules['type'][ $type ]['hooks'] = new myCRED_Hooks_Module( $type );
-				$this->modules['type'][ $type ]['hooks']->load();
+				$this->include_hooks();
+
+				do_action( 'mycred_load_hooks' );
+
+				// Attach hooks module to each point type we use
+				foreach ( $this->point_types as $type => $title ) {
+					$this->modules['type'][ $type ]['hooks'] = new myCRED_Hooks_Module( $type );
+					$this->modules['type'][ $type ]['hooks']->load();
+				}
+
 			}
 
 			// Attach each module to each point type we use
 			foreach ( $this->point_types as $type => $title ) {
+
 				$this->modules['type'][ $type ]['settings'] = new myCRED_Settings_Module( $type );
 				$this->modules['type'][ $type ]['settings']->load();
+
+				$this->modules['solo'][ $type ] = new myCRED_Caching_Module( $type );
+				$this->modules['solo'][ $type ]->load();
+
 			}
+
+			// Attach the Management module to the main point type
+			$this->modules['type'][ MYCRED_DEFAULT_TYPE_KEY ]['management'] = new myCRED_Management_Module();
+			$this->modules['type'][ MYCRED_DEFAULT_TYPE_KEY ]['management']->load();
 
 			// Attach BuddyPress module to the main point type only
 			if ( class_exists( 'BuddyPress' ) ) {
@@ -365,10 +426,6 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				$this->modules['type'][ MYCRED_DEFAULT_TYPE_KEY ]['buddypress']->load();
 
 			}
-
-			// Attach the Management module to the main point type
-			$this->modules['type'][ MYCRED_DEFAULT_TYPE_KEY ]['management'] = new myCRED_Management_Module();
-			$this->modules['type'][ MYCRED_DEFAULT_TYPE_KEY ]['management']->load();
 
 			$mycred_modules = $this->modules['type'];
 
@@ -392,30 +449,46 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		/**
 		 * Load Shortcodes
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function load_shortcodes() {
 
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_affiliate_id.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_affiliate_link.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_best_user.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_exchange.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_give.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_hide_if.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_history.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_hook_table.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_leaderboard_position.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_leaderboard.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_link.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_my_balance.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_send.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_show_if.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_total_balance.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_total_points.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_total_since.php' );
-			$this->file( myCRED_SHORTCODES_DIR . 'mycred_video.php' );
+			if ( MYCRED_ENABLE_SHORTCODES ) {
 
-			do_action( 'mycred_load_shortcode' );
+				$this->file( myCRED_SHORTCODES_DIR . 'mycred_exchange.php' );
+				$this->file( myCRED_SHORTCODES_DIR . 'mycred_hide_if.php' );
+				$this->file( myCRED_SHORTCODES_DIR . 'mycred_leaderboard_position.php' );
+				$this->file( myCRED_SHORTCODES_DIR . 'mycred_leaderboard.php' );
+				$this->file( myCRED_SHORTCODES_DIR . 'mycred_my_balance.php' );
+				$this->file( myCRED_SHORTCODES_DIR . 'mycred_send.php' );
+				$this->file( myCRED_SHORTCODES_DIR . 'mycred_show_if.php' );
+				$this->file( myCRED_SHORTCODES_DIR . 'mycred_total_balance.php' );
+
+				// These shortcodes will not work if logging is disabled
+				if ( MYCRED_ENABLE_LOGGING ) {
+
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_best_user.php' );
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_give.php' );
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_history.php' );
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_total_points.php' );
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_total_since.php' );
+
+				}
+
+				// These shortcodes will not work if hooks are disabled
+				if ( MYCRED_ENABLE_HOOKS ) {
+
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_affiliate_id.php' );
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_affiliate_link.php' );
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_link.php' );
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_video.php' );
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_hook_table.php' );
+
+				}
+
+				do_action( 'mycred_load_shortcode' );
+
+			}
 
 		}
 
@@ -452,44 +525,21 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			add_action( 'admin_menu',            array( $this, 'adjust_admin_menu' ), 9 );
 			add_action( 'admin_bar_menu',        array( $this, 'adjust_toolbar' ) );
 
-			// Page fix - remove the about page from the menu
-			add_action( 'admin_head',            array( $this, 'fix_remove_about_page' ), 999 );
-
-		}
-
-		/**
-		 * Pre Init Globals
-		 * Globals that does not reply on external sources and can be loaded before init.
-		 * @since 1.7
-		 * @version 1.0
-		 */
-		private function pre_init_globals() {
-
-			global $mycred, $mycred_log_table, $mycred_types, $mycred_modules, $mycred_label;
-
-			$mycred             = new myCRED_Settings();
-			$mycred_log_table   = $mycred->log_table;
-			$mycred_types       = $this->point_types;
-			$mycred_label       = apply_filters( 'mycred_label', MYCRED_DEFAULT_LABEL );
-			$mycred_modules     = $this->modules;
-
 		}
 
 		/**
 		 * Post Init Globals
 		 * Globals that needs to be defined after init. Mainly used for user related globals.
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		private function post_init_globals() {
 
 			// Just in case, this should never happen
-			if ( ! did_action( 'init' ) ) return;
+			if ( ! did_action( 'init' ) || did_action( 'mycred_set_globals' ) ) return;
 
-			global $mycred_account;
-
-			$this->account  = mycred_get_account();
-			$mycred_account = $this->account;
+			if ( is_user_logged_in() )
+				mycred_set_current_account();
 
 			do_action( 'mycred_set_globals' );
 
@@ -669,12 +719,21 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 */
 		public function widgets_init() {
 
-			// Register Widgets
+			// Balance widget
+			$this->file( myCRED_WIDGETS_DIR . 'mycred-widget-balance.php' );
 			register_widget( 'myCRED_Widget_Balance' );
+
+			// Leaderboard widget
+			$this->file( myCRED_WIDGETS_DIR . 'mycred-widget-leaderboard.php' );
 			register_widget( 'myCRED_Widget_Leaderboard' );
 
-			if ( count( $this->point_types ) > 1 )
+			// If we have more than one point type, the wallet widget
+			if ( count( $this->point_types ) > 1 ) {
+
+				$this->file( myCRED_WIDGETS_DIR . 'mycred-widget-wallet.php' );
 				register_widget( 'myCRED_Widget_Wallet' );
+
+			}
 
 			// Let others play
 			do_action( 'mycred_widgets_init' );
@@ -712,7 +771,6 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 
 			wp_safe_redirect( add_query_arg( array( 'page' => MYCRED_SLUG . '-about' ), admin_url( 'index.php' ) ) );
 			die;
-
 		}
 
 		/**
@@ -799,7 +857,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				$pages[] = add_menu_page(
 					$title,
 					$title,
-					$mycred->edit_creds_cap(),
+					$mycred->get_point_editor_capability(),
 					$type_slug,
 					'',
 					$menu_icon
@@ -817,7 +875,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			);
 
 			// Add styling to our admin screens
-			$pages     = apply_filters( 'mycred_admin_pages', $pages, $mycred );
+			$pages = apply_filters( 'mycred_admin_pages', $pages, $mycred );
 			foreach ( $pages as $page )
 				add_action( 'admin_print_styles-' . $page, array( $this, 'fix_admin_page_styles' ) );
 
@@ -894,7 +952,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 					$point_type = mycred( $type_id );
 
 				$history_url = add_query_arg( array( 'page' => $type_id . '-history' ), admin_url( 'users.php' ) );
-				if ( $using_buddypress  && isset( $mycred->buddypress['history_url'] ) )
+				if ( $using_buddypress && isset( $mycred->buddypress['history_url'] )  )
 					$history_url = add_query_arg( array( 'show-ctype' => $type_id ), bp_loggedin_user_domain() . $mycred->buddypress['history_url'] . '/' );
 
 				$balance          = $point_type->get_users_balance( $user_id, $type_id );
@@ -941,26 +999,21 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		/**
 		 * Cron: Delete Leaderboard Cache
 		 * @since 1.7.9.1
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function cron_delete_leaderboard_cache() {
 
-			if ( MYCRED_DISABLE_LEADERBOARD_CACHE ) return;
+			// If leaderboards are cached daily, time to reset. This is the only option currently supported
+			if ( defined( 'MYCRED_CACHE_LEADERBOARDS' ) && MYCRED_CACHE_LEADERBOARDS === 'daily' ) {
 
-			global $wpdb;
+				global $wpdb;
 
-			$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'mycred-leaderboard-%';" );
+				$table = mycred_get_db_column( 'options' );
+				$wpdb->query( "DELETE FROM {$table} WHERE option_name LIKE 'leaderboard-%';" );
 
-		}
+			}
 
-		/**
-		 * FIX: Remove About and Credit Page
-		 * @since 1.7
-		 * @version 1.0.1
-		 */
-		public function fix_remove_about_page() {
-
-			remove_submenu_page( 'index.php', MYCRED_SLUG . '-about' );
+			do_action( 'mycred_cron_leaderboard_cache' );
 
 		}
 
@@ -1011,22 +1064,10 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			}
 
 			// Usefull links
-			$links[] = '<a href="' . admin_url( 'index.php?page=' . MYCRED_SLUG . '-about' ) . '">About</a>';
 			$links[] = '<a href="http://codex.mycred.me/" target="_blank">Documentation</a>';
 			$links[] = '<a href="https://mycred.me/store/" target="_blank">Store</a>';
 
 			return $links;
-
-		}
-
-		/**
-		 * Plugin Update Warning
-		 * @since 1.7
-		 * @version 1.0
-		 */
-		public function plugin_update_warning() {
-
-			echo '<div style="color:#cc0000;">' . __( 'Make sure to backup your database and files before updating, in case anything goes wrong!', 'mycred' ) . '</div>';
 
 		}
 

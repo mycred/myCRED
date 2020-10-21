@@ -23,7 +23,7 @@ if ( ! function_exists( 'mycred_render_shortcode_history' ) ) :
 			'type'       => MYCRED_DEFAULT_TYPE_KEY,
 			'pagination' => 10,
 			'inlinenav'  => 0
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_history' ) );
 
 		// If we are not logged in
 		if ( ! is_user_logged_in() && $login != '' )
@@ -84,4 +84,4 @@ if ( ! function_exists( 'mycred_render_shortcode_history' ) ) :
 
 	}
 endif;
-add_shortcode( 'mycred_history', 'mycred_render_shortcode_history' );
+add_shortcode( MYCRED_SLUG . '_history', 'mycred_render_shortcode_history' );

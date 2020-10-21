@@ -1,8 +1,8 @@
 <?php
 /**
  * Addon: Badges
- * Addon URI: http://mycred.me/add-ons/badges/
- * Version: 1.2.1
+ * Addon URI: http://codex.mycred.me/chapter-iii/badges/
+ * Version: 1.3
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
@@ -10,6 +10,10 @@ define( 'myCRED_BADGE',              __FILE__ );
 define( 'myCRED_BADGE_VERSION',      '1.2' );
 define( 'MYCRED_BADGE_DIR',          myCRED_ADDONS_DIR . 'badges/' );
 define( 'MYCRED_BADGE_INCLUDES_DIR', MYCRED_BADGE_DIR . 'includes/' );
+
+// Badge Key
+if ( ! defined( 'MYCRED_BADGE_KEY' ) )
+	define( 'MYCRED_BADGE_KEY', 'mycred_badge' );
 
 // Default badge width
 if ( ! defined( 'MYCRED_BADGE_WIDTH' ) )
@@ -59,7 +63,6 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		public function module_pre_init() {
 
 			add_filter( 'mycred_add_finished', array( $this, 'add_finished' ), 30, 3 );
-			//add_filter( 'mycred_get_account',  array( $this, 'set_globals' ), 30, 3 );
 
 		}
 
@@ -72,8 +75,11 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
 			$this->register_badges();
 
-			add_shortcode( 'mycred_my_badges', 'mycred_render_my_badges' );
-			add_shortcode( 'mycred_badges',    'mycred_render_badges' );
+			add_action( 'mycred_set_current_account', array( $this, 'populate_current_account' ) );
+			add_action( 'mycred_get_account',         array( $this, 'populate_account' ) );
+
+			add_shortcode( MYCRED_SLUG . '_my_badges', 'mycred_render_my_badges' );
+			add_shortcode( MYCRED_SLUG . '_badges',    'mycred_render_badges' );
 
 			// Insert into bbPress
 			if ( class_exists( 'bbPress' ) ) {
@@ -106,34 +112,34 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Module Admin Init
 		 * @since 1.0
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function module_admin_init() {
 
-			add_filter( 'parent_file',                             array( $this, 'parent_file' ) );
-			add_filter( 'submenu_file',                            array( $this, 'subparent_file' ), 10, 2 );
-			add_action( 'mycred_admin_enqueue',                    array( $this, 'enqueue_scripts' ), $this->menu_pos );
+			add_filter( 'parent_file',                       array( $this, 'parent_file' ) );
+			add_filter( 'submenu_file',                      array( $this, 'subparent_file' ), 10, 2 );
+			add_action( 'mycred_admin_enqueue',              array( $this, 'enqueue_scripts' ), $this->menu_pos );
 
-			add_filter( 'manage_mycred_badge_posts_columns',       array( $this, 'adjust_column_headers' ) );
-			add_action( 'manage_mycred_badge_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
+			add_filter( 'post_row_actions',                  array( $this, 'adjust_row_actions' ), 10, 2 );
 
-			add_filter( 'post_row_actions',                        array( $this, 'adjust_row_actions' ), 10, 2 );
+			add_filter( 'post_updated_messages',             array( $this, 'post_updated_messages' ) );
+			add_filter( 'enter_title_here',                  array( $this, 'enter_title_here' ) );
+			add_action( 'post_submitbox_start',              array( $this, 'publishing_actions' ) );
 
-			add_filter( 'post_updated_messages',                   array( $this, 'post_updated_messages' ) );
-			add_filter( 'enter_title_here',                        array( $this, 'enter_title_here' ) );
-			add_action( 'post_submitbox_start',                    array( $this, 'publishing_actions' ) );
-			add_action( 'save_post_mycred_badge',                  array( $this, 'save_badge' ), 10, 2 );
+			add_action( 'wp_ajax_mycred-assign-badge',       array( $this, 'action_assign_badge' ) );
+			add_action( 'wp_ajax_mycred-remove-connections', array( $this, 'action_remove_connections' ) );
 
-			add_action( 'wp_ajax_mycred-assign-badge',             array( $this, 'action_assign_badge' ) );
-			add_action( 'wp_ajax_mycred-remove-connections',       array( $this, 'action_remove_connections' ) );
+			add_action( 'mycred_user_edit_after_balances',   array( $this, 'badge_user_screen' ), 10 );
 
-			add_action( 'mycred_user_edit_after_balances',         array( $this, 'badge_user_screen' ), 10 );
+			add_action( 'personal_options_update',           array( $this, 'save_manual_badges' ), 10 );
+			add_action( 'edit_user_profile_update',          array( $this, 'save_manual_badges' ), 10 );
 
-			add_action( 'personal_options_update',                 array( $this, 'save_manual_badges' ), 10 );
-			add_action( 'edit_user_profile_update',                array( $this, 'save_manual_badges' ), 10 );
+			add_action( 'mycred_delete_point_type',          array( $this, 'delete_point_type' ) );
+			add_action( 'before_delete_post',                array( $this, 'delete_badge' ) );
 
-			add_action( 'mycred_delete_point_type',                array( $this, 'delete_point_type' ) );
-			add_action( 'before_delete_post',                      array( $this, 'delete_badge' ) );
+			add_filter( 'manage_' . MYCRED_BADGE_KEY . '_posts_columns',       array( $this, 'adjust_column_headers' ) );
+			add_action( 'manage_' . MYCRED_BADGE_KEY . '_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
+			add_action( 'save_post_' . MYCRED_BADGE_KEY,                       array( $this, 'save_badge' ), 10, 2 );
 
 		}
 
@@ -176,21 +182,26 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 				'register_meta_box_cb' => array( $this, 'add_metaboxes' )
 			);
 
-			register_post_type( 'mycred_badge', apply_filters( 'mycred_register_badge', $args ) );
+			register_post_type( MYCRED_BADGE_KEY, apply_filters( 'mycred_register_badge', $args ) );
 
 		}
 
 		/**
-		 * Set Globals
-		 * @since 1.7
+		 * Populate Current Account
+		 * @since 1.8
 		 * @version 1.0
 		 */
-		public function set_globals( $account, $user_id = NULL, $type = '' ) {
+		public function populate_current_account() {
 
-			if ( ! isset( $account->user_id ) || $account->user_id === false ) return;
+			global $mycred_current_account;
+
+			if ( isset( $mycred_current_account )
+				&& ( $mycred_current_account instanceof myCRED_Account )
+				&& ( isset( $mycred_current_account->badges ) )
+			) return;
 
 			$earned       = array();
-			$users_badges = mycred_get_users_badges( $account->user_id );
+			$users_badges = mycred_get_users_badges( $mycred_current_account->user_id, true );
 
 			if ( ! empty( $users_badges ) ) {
 				foreach ( $users_badges as $badge_id => $level ) {
@@ -207,9 +218,45 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 				}
 			}
 
-			$account->badge = $earned;
+			$mycred_current_account->badges    = $earned;
+			$mycred_current_account->badge_ids = $users_badges;
 
-			return $account;
+		}
+
+		/**
+		 * Populate Account
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function populate_account() {
+
+			global $mycred_account;
+
+			if ( isset( $mycred_account )
+				&& ( $mycred_account instanceof myCRED_Account )
+				&& ( isset( $mycred_account->badges ) )
+			) return;
+
+			$earned       = array();
+			$users_badges = mycred_get_users_badges( $mycred_account->user_id );
+
+			if ( ! empty( $users_badges ) ) {
+				foreach ( $users_badges as $badge_id => $level ) {
+
+					if ( ! is_numeric( $level ) )
+						$level = 0;
+
+					$badge_id = absint( $badge_id );
+					$level    = absint( $level );
+					$badge    = mycred_get_badge( $badge_id, $level );
+
+					$earned[ $badge_id ] = $badge;
+
+				}
+			}
+
+			$mycred_account->badges    = $earned;
+			$mycred_account->badge_ids = $users_badges;
 
 		}
 
@@ -225,7 +272,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
 			$mycred = mycred( $point_type );
 
-			if ( ! current_user_can( $mycred->edit_plugin_cap() ) ) return;
+			if ( ! $mycred->user_is_point_editor() ) return;
 
 			mycred_delete_option( 'mycred-badge-refs-' . $point_type );
 
@@ -239,7 +286,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		 */
 		public function delete_badge( $post_id ) {
 
-			if ( get_post_status( $post_id ) != 'mycred_badge' ) return $post_id;
+			if ( get_post_status( $post_id ) != MYCRED_BADGE_KEY ) return $post_id;
 
 			// Delete reference list to force a new query
 			foreach ( $this->point_types as $type_id => $label )
@@ -250,7 +297,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 			// Delete connections to keep usermeta table clean
 			$wpdb->delete(
 				$wpdb->usermeta,
-				array( 'meta_key' => 'mycred_badge' . $post_id ),
+				array( 'meta_key' => MYCRED_BADGE_KEY . $post_id ),
 				array( '%s' )
 			);
 
@@ -265,7 +312,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
 			global $post;
 
-			$messages['mycred_badge'] = array(
+			$messages[ MYCRED_BADGE_KEY ] = array(
 				0  => '',
 				1  => __( 'Badge Updated.', 'mycred' ),
 				2  => __( 'Badge Updated.', 'mycred' ),
@@ -286,16 +333,20 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Add Admin Menu Item
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function add_to_menu() {
+
+			// In case we are using the Master Template feautre on multisites, and this is not the main
+			// site in the network, bail.
+			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
 
 			add_submenu_page(
 				MYCRED_SLUG,
 				__( 'Badges', 'mycred' ),
 				__( 'Badges', 'mycred' ),
-				$this->core->edit_creds_cap(),
-				'edit.php?post_type=mycred_badge'
+				$this->core->get_point_editor_capability(),
+				'edit.php?post_type=' . MYCRED_BADGE_KEY
 			);
 
 		}
@@ -309,13 +360,13 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
 			global $pagenow;
 
-			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_badge' ) {
+			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_BADGE_KEY ) {
 			
 				return MYCRED_SLUG;
 			
 			}
 
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_badge' ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BADGE_KEY ) {
 
 				return MYCRED_SLUG;
 
@@ -334,15 +385,15 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
 			global $pagenow;
 
-			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_badge' ) {
+			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_BADGE_KEY ) {
 
-				return 'edit.php?post_type=mycred_badge';
+				return 'edit.php?post_type=' . MYCRED_BADGE_KEY;
 			
 			}
 
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_badge' ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BADGE_KEY ) {
 
-				return 'edit.php?post_type=mycred_badge';
+				return 'edit.php?post_type=' . MYCRED_BADGE_KEY;
 
 			}
 
@@ -353,7 +404,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Add Finished
 		 * @since 1.0
-		 * @version 1.3
+		 * @version 1.4
 		 */
 		public function add_finished( $result, $request, $mycred ) {
 
@@ -368,34 +419,13 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 					// Check if user gets any of the badges
 					foreach ( $badge_ids as $badge_id ) {
 
-						$level_reached = mycred_badge_level_reached( $user_id, $badge_id );
-						if ( $level_reached !== false ) {
+						$badge = mycred_get_badge( $badge_id );
+						if ( $badge === false ) continue;
 
-							$levels   = mycred_get_badge_levels( $badge_id );
-							$assigned = mycred_assign_badge_to_user( $user_id, $badge_id, $level_reached );
-
-							// Payout reward
-							if ( $assigned && $levels[ $level_reached ]['reward']['log'] != '' && $levels[ $level_reached ]['reward']['amount'] != 0 ) {
-
-								$reward_type = $levels[ $level_reached ]['reward']['type'];
-								if ( $reward_type != $mycred->cred_id )
-									$mycred = mycred( $reward_type );
-
-								// Make sure we only get points once for each level we reach for each badge
-								if ( ! $mycred->has_entry( 'badge_reward', $badge_id, $user_id, $level_reached, $reward_type ) )
-									$mycred->add_creds(
-										'badge_reward',
-										$user_id,
-										$levels[ $level_reached ]['reward']['amount'],
-										$levels[ $level_reached ]['reward']['log'],
-										$badge_id,
-										$level_reached,
-										$reward_type
-									);
-
-							}
-
-						}
+						// Check what level we reached (if we reached any)
+						$level_reached = $badge->query_users_level( $user_id );
+						if ( $level_reached !== false )
+							$badge->assign( $user_id, $level_reached );
 
 					}
 
@@ -432,7 +462,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		/**
 		 * Adjust Badge Column Content
 		 * @since 1.0
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		public function adjust_column_content( $column_name, $badge_id ) {
 
@@ -440,7 +470,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 			if ( $column_name == 'badge-default-image' ) {
 
 				$badge = mycred_get_badge( $badge_id );
-				if ( $badge->post_id === false )
+				if ( $badge === false || $badge->main_image === false )
 					echo '-';
 
 				elseif ( $badge->main_image !== false )
@@ -451,12 +481,12 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 			// First Level Image
 			if ( $column_name == 'badge-earned-image' ) {
 
-				$badge = mycred_get_badge( $badge_id, 0 );
-				if ( $badge->post_id === false )
+				$badge = mycred_get_badge( $badge_id );
+				$image = $badge->get_image( 0 );
+				if ( $image === false)
 					echo '-';
-
-				elseif ( $badge->level_image !== false )
-					echo $badge->level_image;
+				else
+					echo $image;
 
 			}
 
@@ -470,7 +500,12 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 			// Badge Users
 			elseif ( $column_name == 'badge-users' ) {
 
-				echo mycred_count_users_with_badge( $badge_id );
+				$badge = mycred_get_badge( $badge_id );
+				if ( $badge === false )
+					echo 0;
+
+				else
+					echo $badge->earnedby;
 
 			}
 
@@ -483,7 +518,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		 */
 		public function adjust_row_actions( $actions, $post ) {
 
-			if ( $post->post_type == 'mycred_badge' ) {
+			if ( $post->post_type == MYCRED_BADGE_KEY ) {
 				unset( $actions['inline hide-if-no-js'] );
 				unset( $actions['view'] );
 			}
@@ -501,7 +536,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
 			global $post_type;
 
-			if ( $post_type == 'mycred_badge' )
+			if ( $post_type == MYCRED_BADGE_KEY )
 				return __( 'Badge Name', 'mycred' );
 
 			return $title;
@@ -516,7 +551,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 		public function enqueue_scripts() {
 
 			$screen = get_current_screen();
-			if ( $screen->id == 'mycred_badge' ) {
+			if ( $screen->id == MYCRED_BADGE_KEY ) {
 
 				wp_enqueue_media();
 
@@ -550,23 +585,20 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 				wp_enqueue_style( 'mycred-bootstrap-grid' );
 				wp_enqueue_style( 'mycred-forms' );
 
-				add_filter( 'postbox_classes_mycred_badge_mycred-badge-setup',   array( $this, 'metabox_classes' ) );
-				add_filter( 'postbox_classes_mycred_badge_mycred-badge-default', array( $this, 'metabox_classes' ) );
-				add_filter( 'postbox_classes_mycred_badge_mycred-badge-rewards', array( $this, 'metabox_classes' ) );
+				add_filter( 'postbox_classes_' . MYCRED_BADGE_KEY . '_mycred-badge-setup',   array( $this, 'metabox_classes' ) );
+				add_filter( 'postbox_classes_' . MYCRED_BADGE_KEY . '_mycred-badge-default', array( $this, 'metabox_classes' ) );
+				add_filter( 'postbox_classes_' . MYCRED_BADGE_KEY . '_mycred-badge-rewards', array( $this, 'metabox_classes' ) );
 
-?>
-<style type="text/css">
+				echo '<style type="text/css">
 #misc-publishing-actions #visibility, #misc-publishing-actions .misc-pub-post-status { display: none; }
 #save-action #save-post { margin-bottom: 12px; }
-</style>
-<?php
+</style>';
 
 			}
 
-			elseif ( $screen->id == 'edit-mycred_badge' ) {
+			elseif ( $screen->id == 'edit-' . MYCRED_BADGE_KEY ) {
 
-?>
-<style type="text/css">
+				echo '<style type="text/css">
 th#badge-default-image { width: 120px; }
 th#badge-earned-image { width: 120px; }
 th#badge-reqs { width: 35%; }
@@ -577,8 +609,7 @@ th#badge-users { width: 10%; }
 .mycred-badge-requirement-list li span { float: right; }
 .column-badge-reqs strong { display: block; }
 .column-badge-reqs span { color: #aeaeae; }
-</style>
-<?php
+</style>';
 
 			}
 
@@ -595,7 +626,7 @@ th#badge-users { width: 10%; }
 				'mycred-badge-setup',
 				__( 'Badge Setup', 'mycred' ),
 				array( $this, 'metabox_badge_setup' ),
-				'mycred_badge',
+				MYCRED_BADGE_KEY,
 				'normal',
 				'high'
 			);
@@ -604,7 +635,7 @@ th#badge-users { width: 10%; }
 				'mycred-badge-default',
 				__( 'Default Badge Image', 'mycred' ),
 				array( $this, 'metabox_badge_default' ),
-				'mycred_badge',
+				MYCRED_BADGE_KEY,
 				'side',
 				'low'
 			);
@@ -682,17 +713,15 @@ th#badge-users { width: 10%; }
 		/**
 		 * Badge Publishing Actions
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function publishing_actions() {
 
 			global $post;
 
-			if ( ! isset( $post->post_type ) || $post->post_type != 'mycred_badge' ) return;
+			if ( ! isset( $post->post_type ) || $post->post_type != MYCRED_BADGE_KEY ) return;
 
-			$lock = '';
-			if ( $post->post_status != 'publish' )
-				$lock = ' disabled="disabled"';
+			$manual_badge = ( (int) mycred_get_post_meta( $post->ID, 'manual_badge', true ) == 1 ) ? true : false;
 
 ?>
 <div id="mycred-badge-actions" class="seperate-bottom">
@@ -700,12 +729,10 @@ th#badge-users { width: 10%; }
 	<?php do_action( 'mycred_edit_badge_before_actions', $post ); ?>
 
 	<input type="hidden" name="mycred-badge-edit" value="<?php echo wp_create_nonce( 'edit-mycred-badge' ); ?>" />
-	<input type="button" id="mycred-assign-badge-connections"<?php echo $lock; ?> value="<?php _e( 'Assign Badge', 'mycred' ); ?>" class="button button-secondary mycred-badge-action-button" data-action="mycred-assign-badge" data-token="<?php echo wp_create_nonce( 'mycred-assign-badge' ); ?>" /> 
-	<input type="button" id="mycred-remove-badge-connections"<?php echo $lock; ?> value="<?php _e( 'Remove Connections', 'mycred' ); ?>" class="button button-secondary mycred-badge-action-button" data-action="mycred-remove-connections" data-token="<?php echo wp_create_nonce( 'mycred-remove-badge-connection' ); ?>" />
+	<input type="button" id="mycred-assign-badge-connections"<?php if ( $manual_badge || $post->post_status != 'publish' ) echo ' disabled="disabled"'; ?> value="<?php _e( 'Assign Badge', 'mycred' ); ?>" class="button button-secondary mycred-badge-action-button" data-action="mycred-assign-badge" data-token="<?php echo wp_create_nonce( 'mycred-assign-badge' ); ?>" /> 
+	<input type="button" id="mycred-remove-badge-connections"<?php if ( $post->post_status != 'publish' ) echo ' disabled="disabled"'; ?> value="<?php _e( 'Remove Connections', 'mycred' ); ?>" class="button button-secondary mycred-badge-action-button" data-action="mycred-remove-connections" data-token="<?php echo wp_create_nonce( 'mycred-remove-badge-connection' ); ?>" />
 
 	<?php do_action( 'mycred_edit_badge_after_actions', $post ); ?>
-
-	<?php if ( $lock == '' ) : ?>
 
 <script type="text/javascript">
 jQuery(function($) {
@@ -740,11 +767,9 @@ jQuery(function($) {
 });
 </script>
 
-	<?php endif; ?>
-
 </div>
 <div id="mycred-manual-badge" class="seperate-bottom">
-	<label for="mycred-badge-is-manual"><input type="checkbox" name="mycred_badge[manual]" id="mycred-badge-is-manual"<?php checked( (int) get_post_meta( $post->ID, 'manual_badge', true ), 1 ); ?> value="1" /> <?php _e( 'This badge is manually awarded.', 'mycred' ); ?></label>
+	<label for="mycred-badge-is-manual"><input type="checkbox" name="mycred_badge[manual]" id="mycred-badge-is-manual"<?php if ( $manual_badge ) echo ' checked="checked"'; ?> value="1" /> <?php _e( 'This badge is manually awarded.', 'mycred' ); ?></label>
 </div>
 <?php
 
@@ -757,7 +782,7 @@ jQuery(function($) {
 		 */
 		public function metabox_badge_default( $post ) {
 
-			$default_image = $di = get_post_meta( $post->ID, 'main_image', true );
+			$default_image = $di = mycred_get_post_meta( $post->ID, 'main_image', true );
 			if ( $default_image != '' )
 				$default_image = '<img src="' . $default_image . '" alt="" />';
 
@@ -806,8 +831,6 @@ jQuery(function($) {
 			// Badge rewards can no be used as a requirement
 			if ( array_key_exists( 'badge_reward', $references ) )
 				unset( $references['badge_reward'] );
-
-			global $mycred_account;
 
 			$js_level             = $this->level_template( 1 );
 			$js_requirement       = $this->requirements_template( 0 );
@@ -976,6 +999,9 @@ jQuery(function($) {
 				$rewards            = str_replace( '{{rewardamount}}',   $setup['reward']['amount'], $rewards );
 
 				$template           = str_replace( '{{rewards}}',       $rewards, $template );
+
+				$rewards            = str_replace( $level,         '{{level}}', $rewards );
+
 				$js_level           = str_replace( '{{rewards}}',       $rewards, $js_level );
 
 				echo $template;
@@ -1002,7 +1028,7 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 		 */
 		public function save_badge( $post_id, $post = NULL ) {
 
-			if ( $post === NULL || ! current_user_can( $this->core->edit_creds_cap() ) || ! isset( $_POST['mycred_badge'] ) ) return $post_id;
+			if ( $post === NULL || ! $this->core->user_is_point_editor() || ! isset( $_POST['mycred_badge'] ) ) return $post_id;
 
 			$manual = 0;
 			if ( isset( $_POST['mycred_badge']['manual'] ) )
@@ -1101,10 +1127,10 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 			}
 
 			// Save Badge Setup
-			update_post_meta( $post_id, 'badge_prefs', $badge_levels );
+			mycred_update_post_meta( $post_id, 'badge_prefs', $badge_levels );
 
 			// If we just set the badge to be manual we need to re-parse all references.
-			$old_manual = get_post_meta( $post_id, 'manual_badge', true );
+			$old_manual = mycred_get_post_meta( $post_id, 'manual_badge', true );
 			if ( absint( $old_manual ) === 0 && $manual === 1 ) {
 				foreach ( $this->point_types as $type_id => $label ) {
 					mycred_get_badge_references( $type_id, true );
@@ -1116,7 +1142,7 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 				mycred_delete_option( 'mycred-badge-refs-' . $type_id );
 
 			// Save if badge is manuall
-			update_post_meta( $post_id, 'manual_badge', $manual );
+			mycred_update_post_meta( $post_id, 'manual_badge', $manual );
 
 			// Main image (used when a user has not earned a badge
 			$main_image = $_POST['mycred_badge']['main_image'];
@@ -1129,7 +1155,7 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 			else
 				$image = sanitize_text_field( $_POST['mycred_badge']['main_image_url'] );
 
-			update_post_meta( $post_id, 'main_image', $image );
+			mycred_update_post_meta( $post_id, 'main_image', $image );
 
 			// Let others play
 			do_action( 'mycred_save_badge', $post_id );
@@ -1256,7 +1282,7 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 		/**
 		 * User Badges Admin Screen
 		 * @since 1.0
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function badge_user_screen( $user ) {
 
@@ -1302,7 +1328,7 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 					$level_select = '<input type="hidden" name="mycred_badge_manual[badges][' . $badge_id . '][level]" value="0" /><select disabled="disabled"><option>Level 1</option></select>';
 					if ( count( $badge->levels ) > 1 ) {
 
-						$level_select = '<select name="mycred_badge_manual[badges][' . $badge_id . '][level]">';
+						$level_select  = '<select name="mycred_badge_manual[badges][' . $badge_id . '][level]">';
 						$level_select .= '<option value=""';
 						if ( ! $earned ) $level_select .= ' selected="selected"';
 						$level_select .= '>' . __( 'Select a level', 'mycred' ) . '</option>';
@@ -1310,7 +1336,7 @@ var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
 						foreach ( $badge->levels as $level_id => $level ) {
 							$level_select .= '<option value="' . $level_id . '"';
 							if ( $earned && $earned_level == $level_id ) $level_select .= ' selected="selected"';
-							$level_select .= '>' . __( 'Level', 'mycred' ) . ' ' . ( $level_id + 1 ) . '</option>';
+							$level_select .= '>' . ( ( $level['label'] != '' ) ? $level['label'] : sprintf( '%s %d', __( 'Level', 'mycred' ), ( $level_id + 1 ) ) ) . '</option>';
 						}
 
 						$level_select .= '</select>';
@@ -1365,7 +1391,7 @@ jQuery(function($) {
 		/**
 		 * Save Manual Badges
 		 * @since 1.0
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function save_manual_badges( $user_id ) {
 
@@ -1375,31 +1401,46 @@ jQuery(function($) {
 
 				if ( wp_verify_nonce( $_POST['mycred_badge_manual']['token'], 'mycred-manual-badges' . $user_id ) ) {
 
-					$added = $removed = $updated = 0;
+					$added        = $removed = $updated = 0;
 					$users_badges = mycred_get_users_badges( $user_id );
+
 					if ( ! empty( $_POST['mycred_badge_manual']['badges'] ) ) {
-						foreach ( $_POST['mycred_badge_manual']['badges'] as $badge_id => $badge ) {
+						foreach ( $_POST['mycred_badge_manual']['badges'] as $badge_id => $data ) {
+
+							$badge = mycred_get_badge( $badge_id );
+
+							// Most likely not a badge post ID
+							if ( $badge === false ) continue;
 
 							// Give badge
-							if ( ! array_key_exists( $badge_id, $users_badges ) && isset( $badge['has'] ) && $badge['has'] == 1 ) {
-								$level = 0;
-								if ( isset( $badge['level'] ) && $badge['level'] != '' )
-									$level = absint( $badge['level'] );
+							if ( ! array_key_exists( $badge_id, $users_badges ) && isset( $data['has'] ) && $data['has'] == 1 ) {
 
-								mycred_assign_badge_to_user( $user_id, $badge_id, $level );
+								$level = 0;
+								if ( isset( $data['level'] ) && $data['level'] != '' )
+									$level = absint( $data['level'] );
+
+								$badge->assign( $user_id, $level );
+
 								$added ++;
+
 							}
 
 							// Remove badge
-							elseif ( array_key_exists( $badge_id, $users_badges ) && ! isset( $badge['has'] ) ) {
-								delete_user_meta( $user_id, 'mycred_badge' . $badge_id );
+							elseif ( array_key_exists( $badge_id, $users_badges ) && ! isset( $data['has'] ) ) {
+
+								$badge->divest( $user_id );
+
 								$removed ++;
+
 							}
 
 							// Level change
-							elseif ( array_key_exists( $badge_id, $users_badges ) && isset( $badge['level'] ) && $badge['level'] != $users_badges[ $badge_id ] ) {
-								mycred_assign_badge_to_user( $user_id, $badge_id, $badge['level'] );
+							elseif ( array_key_exists( $badge_id, $users_badges ) && isset( $data['level'] ) && $data['level'] != $users_badges[ $badge_id ] ) {
+
+								$badge->assign( $user_id, $data['level'] );
+
 								$updated ++;
+
 							}
 
 						}
@@ -1417,21 +1458,25 @@ jQuery(function($) {
 		/**
 		 * AJAX: Assign Badge
 		 * @since 1.0
-		 * @version 1.2
+		 * @version 1.3
 		 */
 		public function action_assign_badge() {
 
 			check_ajax_referer( 'mycred-assign-badge', 'token' );
 
-			global $wpdb;
-
-			$badge_id    = absint( $_POST['badge_id'] );
+			$badge_id = absint( $_POST['badge_id'] );
 			if ( $badge_id === 0 ) wp_send_json_error();
 
-			$results = mycred_assign_badge( $badge_id );
+			// Get the badge object
+			$badge    = mycred_get_badge( $badge_id );
 
-			if ( $results !== false && ! empty( $results ) )
-				wp_send_json_success( sprintf( __( 'A total of %d users have received this badge.', 'mycred' ), count( $results ) ) );
+			// Most likely not a badge post ID
+			if ( $badge === false ) wp_send_json_error();
+
+			$results = $badge->assign_all();
+
+			if ( $results > 0 )
+				wp_send_json_success( sprintf( __( 'A total of %d users have received this badge.', 'mycred' ), $results ) );
 
 			wp_send_json_error( __( 'No users has yet earned this badge.', 'mycred' ) );
 
@@ -1440,27 +1485,27 @@ jQuery(function($) {
 		/**
 		 * AJAX: Remove Badge Connections
 		 * @since 1.0
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function action_remove_connections() {
 
 			check_ajax_referer( 'mycred-remove-badge-connection', 'token' );
 
 			$badge_id = absint( $_POST['badge_id'] );
+			if ( $badge_id === 0 ) wp_send_json_error();
 
-			global $wpdb;
+			// Get the badge object
+			$badge    = mycred_get_badge( $badge_id );
 
-			// Delete connections
-			$count = $wpdb->delete(
-				$wpdb->usermeta,
-				array( 'meta_key' => 'mycred_badge' . $badge_id ),
-				array( '%s' )
-			);
+			// Most likely not a badge post ID
+			if ( $badge === false ) wp_send_json_error();
 
-			if ( $count == 0 )
+			$results = $badge->divest_all();
+
+			if ( $results == 0 )
 				wp_send_json_success( __( 'No connections where removed.', 'mycred' ) );
 
-			wp_send_json_success( sprintf( __( '%s connections where removed.', 'mycred' ), $count ) );
+			wp_send_json_success( sprintf( __( '%s connections where removed.', 'mycred' ), $results ) );
 
 		}
 

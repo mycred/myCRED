@@ -16,7 +16,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 		/**
 		 * Construct
 		 */
-		function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
+		public function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			parent::__construct( 'myCRED_Management_Module', array(
 				'module_name' => 'management',
@@ -68,7 +68,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 			check_ajax_referer( 'mycred-editor-token', 'token' );
 
 			// Check current user
-			$current_user = get_current_user_id();
+			$current_user    = get_current_user_id();
 			if ( ! mycred_is_admin( $current_user ) )
 				wp_send_json_error( 'ERROR_1' );
 
@@ -76,15 +76,15 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 			parse_str( $_POST['form'], $post );
 			unset( $_POST );
 
-			$submitted = $post['mycred_manage_balance'];
+			$submitted       = $post['mycred_manage_balance'];
 
 			// Prep submission
-			$type       = sanitize_text_field( $submitted['type'] );
-			$user_id    = absint( $submitted['user_id'] );
-			$amount     = sanitize_text_field( $submitted['amount'] );
-			$reference  = sanitize_key( $submitted['ref'] );
-			$custom_ref = sanitize_key( $submitted['custom'] );
-			$entry      = wp_kses_post( $submitted['entry'] );
+			$type            = sanitize_text_field( $submitted['type'] );
+			$user_id         = absint( $submitted['user_id'] );
+			$amount          = sanitize_text_field( $submitted['amount'] );
+			$reference       = sanitize_key( $submitted['ref'] );
+			$custom_ref      = sanitize_key( $submitted['custom'] );
+			$entry           = wp_kses_post( $submitted['entry'] );
 
 			if ( ! mycred_point_type_exists( $type ) || $type == MYCRED_DEFAULT_TYPE_KEY ) {
 				$type   = MYCRED_DEFAULT_TYPE_KEY;
@@ -94,18 +94,18 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 				$mycred = mycred( $type );
 			}
 
-			$result = array(
-				'current'   => 0,
-				'total'     => 0,
-				'decimals'  => (int) $mycred->format['decimals'],
-				'label'     => esc_attr__( 'Update Balance', 'mycred' ),
-				'results'   => '',
-				'user_id'   => $user_id,
-				'amount'    => $amount,
-				'reference' => $reference,
-				'custom'    => $custom_ref,
-				'entry'     => $entry,
-				'type'      => $type
+			$result          = array(
+				'current'       => 0,
+				'total'         => 0,
+				'decimals'      => (int) $mycred->format['decimals'],
+				'label'         => esc_attr__( 'Update Balance', 'mycred' ),
+				'results'       => '',
+				'user_id'       => $user_id,
+				'amount'        => $amount,
+				'reference'     => $reference,
+				'custom'        => $custom_ref,
+				'entry'         => $entry,
+				'type'          => $type
 			);
 
 			// Make sure we are not attempting to adjust the balance of someone who is excluded
@@ -117,7 +117,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 			}
 
 			// Non admins must give a log entry
-			if ( $mycred->can_edit_creds() && ! $mycred->can_edit_plugin() && strlen( $entry ) == 0 ) {
+			if ( $mycred->user_is_point_editor() && ! $mycred->user_is_point_admin() && strlen( $entry ) == 0 ) {
 
 				$result['results'] = __( 'Log Entry can not be empty', 'mycred' );
 				wp_send_json_error( $result );
@@ -133,10 +133,10 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 			}
 
 			// Format amount
-			$amount = $mycred->number( $amount );
+			$amount          = $mycred->number( $amount );
 
 			// Reference
-			$all_references = mycred_get_all_references();
+			$all_references  = mycred_get_all_references();
 			if ( $reference == 'mycred_custom' ) {
 
 				if ( $custom_ref != '' )
@@ -151,7 +151,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 			$current_balance = $mycred->get_users_balance( $user_id, $type );
 
 			// Data
-			$data = apply_filters( 'mycred_manual_change', array( 'ref_type' => 'user' ), $this );
+			$data            = apply_filters( 'mycred_manual_change', array( 'ref_type' => 'user' ), $this );
 
 			// Just a balance change without a log entry
 			if ( strlen( $entry ) == 0 ) {
@@ -403,11 +403,11 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 				$mycred_types = mycred_get_types();
 				$cred_id      = $query->query_vars['orderby'];
 
-				$order = 'ASC';
+				$order        = 'ASC';
 				if ( isset( $query->query_vars['order'] ) )
 					$order = $query->query_vars['order'];
 
-				$mycred = $this->core;
+				$mycred       = $this->core;
 				if ( isset( $_REQUEST['ctype'] ) && array_key_exists( $_REQUEST['ctype'], $mycred_types ) )
 					$mycred = mycred( $_REQUEST['ctype'] );
 
@@ -469,7 +469,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 				$page .= '_' . $column_name;
 
 			// Row actions
-			$row = array();
+			$row            = array();
 			$row['history'] = '<a href="' . esc_url( admin_url( 'admin.php?page=' . $page . '&user=' . $user_id ) ) . '">' . __( 'History', 'mycred' ) . '</a>';
 			$row['adjust']  = '<a href="javascript:void(0)" class="mycred-open-points-editor" data-userid="' . $user_id . '" data-current="' . $mycred->format_number( $ubalance ) . '" data-total="' . $mycred->format_number( $total ) . '" data-type="' . $column_name . '" data-username="' . $user->display_name . '" data-zero="' . $mycred->zero() . '">' . __( 'Adjust', 'mycred' ) . '</a>';
 
@@ -533,7 +533,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 					$row['excluded']  = false;
 					$row['raw']       = $balance;
 					$row['formatted'] = $mycred->format_creds( $balance );
-					$row['can_edit']  = ( ( $mycred->can_edit_plugin( $editor_id ) ) ? true : false );
+					$row['can_edit']  = ( ( $mycred->user_is_point_editor( $editor_id ) ) ? true : false );
 
 					if ( $row['can_edit'] === true && $load_script === false )
 						$load_script = true;
@@ -688,7 +688,7 @@ jQuery(function($){
 					$mycred = mycred( $point_type );
 
 					// User can not be excluded and we must be allowed to change balances
-					if ( ! $mycred->exclude_user( $user_id ) && $mycred->can_edit_creds( $editor_id ) ) {
+					if ( ! $mycred->exclude_user( $user_id ) && $mycred->user_is_point_editor( $editor_id ) ) {
 
 						$balance = sanitize_text_field( $balance );
 
@@ -714,7 +714,7 @@ jQuery(function($){
 		public function admin_footer() {
 
 			// Security
-			if ( ! $this->core->can_edit_creds() ) return;
+			if ( ! $this->core->user_is_point_editor() ) return;
 
 			$screen = get_current_screen();
 

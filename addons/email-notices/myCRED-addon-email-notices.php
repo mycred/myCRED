@@ -1,24 +1,32 @@
 <?php
 /**
  * Addon: Email Notices
- * Addon URI: http://mycred.me/add-ons/email-notices/
- * Version: 1.3.1
+ * Addon URI: http://codex.mycred.me/chapter-iii/email-notice/
+ * Version: 1.4
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
+// Define constants
 define( 'myCRED_EMAIL',         __FILE__ );
 define( 'myCRED_EMAIL_DIR',     myCRED_ADDONS_DIR . 'email-notices/' );
-define( 'myCRED_EMAIL_VERSION', '1.3.1' );
+define( 'myCRED_EMAIL_VERSION', '1.4' );
+
+// Coupon Key
+if ( ! defined( 'MYCRED_EMAIL_KEY' ) )
+	define( 'MYCRED_EMAIL_KEY', 'mycred_email_notice' );
+
+// Includes
+require_once myCRED_EMAIL_DIR . 'includes/mycred-email-functions.php';
+require_once myCRED_EMAIL_DIR . 'includes/mycred-email-object.php';
+require_once myCRED_EMAIL_DIR . 'includes/mycred-email-shortcodes.php';
 
 /**
  * myCRED_Email_Notice_Module class
  * @since 1.1
- * @version 1.2
+ * @version 2.0
  */
 if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 	class myCRED_Email_Notice_Module extends myCRED_Module {
-
-		public $instances = array();
 
 		/**
 		 * Construct
@@ -53,25 +61,63 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Hook into Init
 		 * @since 1.1
-		 * @version 1.2.3
+		 * @version 1.3
 		 */
 		public function module_init() {
 
 			$this->register_email_notices();
-			$this->setup_instances();
+			$this->setup_cron_jobs();
 
-			add_action( 'mycred_admin_enqueue',          array( $this, 'enqueue_scripts' ), $this->menu_pos );
+			add_action( 'mycred_set_current_account',    array( $this, 'populate_current_account' ) );
+			add_action( 'mycred_get_account',            array( $this, 'populate_account' ) );
+
 			add_filter( 'mycred_add_finished',           array( $this, 'email_check' ), 80, 3 );
-			add_action( 'mycred_badge_level_reached',    array( $this, 'badge_check' ), 10, 3 );
 
-			add_action( 'mycred_user_got_promoted',      array( $this, 'rank_promotion' ), 10, 3 );
-			add_action( 'mycred_user_got_demoted',       array( $this, 'rank_demotion' ), 10, 3 );
+			add_action( 'mycred_badge_level_reached',    array( $this, 'badge_check' ), 10, 3 );
+			add_action( 'mycred_user_got_promoted',      array( $this, 'rank_promotion' ), 10, 4 );
+			add_action( 'mycred_user_got_demoted',       array( $this, 'rank_demotion' ), 10, 4 );
 
 			add_action( 'mycred_send_email_notices',     'mycred_email_notice_cron_job' );
 
-			add_shortcode( 'mycred_email_subscriptions', array( $this, 'render_subscription_shortcode' ) );
+			add_shortcode( MYCRED_SLUG . '_email_subscriptions', 'mycred_render_email_subscriptions' );
 
+			add_action( 'mycred_admin_enqueue',          array( $this, 'enqueue_scripts' ), $this->menu_pos );
 			add_action( 'mycred_add_menu',               array( $this, 'add_to_menu' ), $this->menu_pos );
+
+		}
+
+		/**
+		 * Hook into Admin Init
+		 * @since 1.1
+		 * @version 1.1
+		 */
+		public function module_admin_init() {
+
+			add_filter( 'post_updated_messages', array( $this, 'post_updated_messages' ) );
+
+			add_filter( 'parent_file',           array( $this, 'parent_file' ) );
+			add_filter( 'submenu_file',          array( $this, 'subparent_file' ), 10, 2 );
+
+			add_action( 'admin_head',            array( $this, 'admin_header' ) );
+
+			add_filter( 'enter_title_here',      array( $this, 'enter_title_here' ) );
+			add_filter( 'page_row_actions',      array( $this, 'adjust_row_actions' ), 10, 2 );
+
+			add_filter( 'user_can_richedit',     array( $this, 'disable_richedit' ) );
+			add_filter( 'default_content',       array( $this, 'default_content' ) );
+
+			add_filter( 'manage_' . MYCRED_EMAIL_KEY . '_posts_columns',       array( $this, 'adjust_column_headers' ), 50 );
+			add_action( 'manage_' . MYCRED_EMAIL_KEY . '_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
+			add_action( 'save_post_' . MYCRED_EMAIL_KEY,                       array( $this, 'save_email_notice' ), 10, 2 );
+
+		}
+
+		/**
+		 * Setup Cron Jobs
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function setup_cron_jobs() {
 
 			// Schedule Cron
 			if ( ! isset( $this->emailnotices['send'] ) ) return;
@@ -84,36 +130,6 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			elseif ( $this->emailnotices['send'] == '' && wp_next_scheduled( 'mycred_send_email_notices' ) !== false )
 				wp_clear_scheduled_hook( 'mycred_send_email_notices' );
-
-		}
-
-		/**
-		 * Hook into Admin Init
-		 * @since 1.1
-		 * @version 1.1
-		 */
-		public function module_admin_init() {
-
-			add_filter( 'post_updated_messages',                          array( $this, 'post_updated_messages' ) );
-
-			add_filter( 'manage_mycred_email_notice_posts_columns',       array( $this, 'adjust_column_headers' ), 50 );
-			add_action( 'manage_mycred_email_notice_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
-
-			add_filter( 'parent_file',                                    array( $this, 'parent_file' ) );
-			add_filter( 'submenu_file',                                   array( $this, 'subparent_file' ), 10, 2 );
-
-			add_action( 'admin_head',                                     array( $this, 'admin_header' ) );
-
-			add_filter( 'enter_title_here',                               array( $this, 'enter_title_here' ) );
-			add_filter( 'post_row_actions',                               array( $this, 'adjust_row_actions' ), 10, 2 );
-
-			add_filter( 'default_content',                                array( $this, 'default_content' ) );
-			add_action( 'post_submitbox_start',                           array( $this, 'publish_warning' ) );
-
-			add_action( 'save_post_mycred_email_notice',                  array( $this, 'save_email_notice' ), 10, 2 );
-
-			//if ( $this->emailnotices['use_html'] === false )
-			//	add_filter( 'user_can_richedit', array( $this, 'disable_richedit' ) );
 
 		}
 
@@ -155,7 +171,70 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				'register_meta_box_cb' => array( $this, 'add_metaboxes' )
 			);
 
-			register_post_type( 'mycred_email_notice', apply_filters( 'mycred_register_emailnotices', $args ) );
+			register_post_type( MYCRED_EMAIL_KEY, apply_filters( 'mycred_register_emailnotices', $args ) );
+
+		}
+
+		/**
+		 * Register Scripts & Styles
+		 * @since 1.7
+		 * @version 1.0
+		 */
+		public function scripts_and_styles() {
+
+			// Register Email List Styling
+			wp_register_style(
+				'mycred-email-notices',
+				plugins_url( 'assets/css/email-notice.css', myCRED_EMAIL ),
+				false,
+				myCRED_EMAIL_VERSION . '.1',
+				'all'
+			);
+
+			// Register Edit Email Notice Styling
+			wp_register_style(
+				'mycred-email-edit-notice',
+				plugins_url( 'assets/css/edit-email-notice.css', myCRED_EMAIL ),
+				false,
+				myCRED_EMAIL_VERSION . '.1',
+				'all'
+			);
+
+		}
+
+		/**
+		 * Populate Current Account
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function populate_current_account() {
+
+			global $mycred_current_account;
+
+			if ( isset( $mycred_current_account )
+				&& ( $mycred_current_account instanceof myCRED_Account )
+				&& ( isset( $mycred_current_account->email_block ) )
+			) return;
+
+			$mycred_current_account->email_block = (array) mycred_get_user_meta( $mycred_current_account->user_id, 'mycred_email_unsubscriptions', '', true );
+
+		}
+
+		/**
+		 * Populate Account
+		 * @since 1.8
+		 * @version 1.0
+		 */
+		public function populate_account() {
+
+			global $mycred_account;
+
+			if ( isset( $mycred_account )
+				&& ( $mycred_account instanceof myCRED_Account )
+				&& ( isset( $mycred_account->email_block ) )
+			) return;
+
+			$mycred_account->email_block = (array) mycred_get_user_meta( $mycred_account->user_id, 'mycred_email_unsubscriptions', '', true );
 
 		}
 
@@ -166,7 +245,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		 */
 		public function post_updated_messages( $messages ) {
 
-			$messages['mycred_email_notice'] = array(
+			$messages[ MYCRED_EMAIL_KEY ] = array(
 				0  => '',
 				1  => __( 'Email Notice Updated.', 'mycred' ),
 				2  => __( 'Email Notice Updated.', 'mycred' ),
@@ -187,16 +266,20 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Add Admin Menu Item
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function add_to_menu() {
+
+			// In case we are using the Master Template feautre on multisites, and this is not the main
+			// site in the network, bail.
+			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
 
 			add_submenu_page(
 				MYCRED_SLUG,
 				__( 'Email Notifications', 'mycred' ),
 				__( 'Email Notifications', 'mycred' ),
-				$this->core->edit_creds_cap(),
-				'edit.php?post_type=mycred_email_notice'
+				$this->core->get_point_editor_capability(),
+				'edit.php?post_type=' . MYCRED_EMAIL_KEY
 			);
 
 		}
@@ -204,16 +287,16 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Parent File
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.1
 		 */
 		public function parent_file( $parent = '' ) {
 
 			global $pagenow;
 
-			if ( isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_email_notice' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
+			if ( isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_EMAIL_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
 				return MYCRED_SLUG;
 
-			if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_email_notice' )
+			if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_EMAIL_KEY )
 				return MYCRED_SLUG;
 
 			return $parent;
@@ -229,15 +312,15 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			global $pagenow;
 
-			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'mycred_email_notice' ) {
+			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_EMAIL_KEY ) {
 
-				return 'edit.php?post_type=mycred_email_notice';
+				return 'edit.php?post_type=' . MYCRED_EMAIL_KEY;
 			
 			}
 
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'mycred_email_notice' ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_EMAIL_KEY ) {
 
-				return 'edit.php?post_type=mycred_email_notice';
+				return 'edit.php?post_type=' . MYCRED_EMAIL_KEY;
 
 			}
 
@@ -254,7 +337,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			global $post_type;
 
-			if ( $post_type == 'mycred_email_notice' )
+			if ( $post_type == MYCRED_EMAIL_KEY )
 				return __( 'Email Subject', 'mycred' );
 
 			return $title;
@@ -287,29 +370,30 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Adjust Column Content
 		 * @since 1.1
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function adjust_column_content( $column_name, $post_id ) {
 
 			// Get the post
 			if ( in_array( $column_name, array( 'mycred-email-status', 'mycred-email-reference', 'mycred-email-ctype' ) ) )
-				$post = get_post( $post_id );
+				$email = mycred_get_email_notice( $post_id );
 
 			// Email Status Column
 			if ( $column_name == 'mycred-email-status' ) {
 
-				if ( $post->post_status != 'publish' && $post->post_status != 'future' )
+				if ( $email->post->post_status != 'publish' && $email->post->post_status != 'future' )
 					echo '<p>' . __( 'Not Active', 'mycred' ) . '</p>';
 
-				elseif ( $post->post_status == 'future' )
-					echo '<p>' . sprintf( __( 'Scheduled:<br /><strong>%1$s</strong>', 'mycred' ), date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), strtotime( $post->post_date ) ) ) . '</p>';
+				elseif ( $email->post->post_status == 'future' )
+					echo '<p>' . sprintf( '<strong>%s</strong> %s', __( 'Scheduled', 'mycred' ), date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), strtotime( $email->post->post_date ) ) ) . '</p>';
 
 				else {
-					$date = get_post_meta( $post_id, 'mycred_email_last_run', true );
-					if ( empty( $date ) )
-						echo '<p>' . __( 'Active', 'mycred' ) . '</p>';
+
+					if ( empty( $email->last_run ) )
+						echo '<p><strong>' . __( 'Active', 'mycred' ) . '</strong></p>';
 					else
-						echo '<p>' . sprintf( __( 'Active - Last run:<br /><strong>%1$s</strong>', 'mycred' ), date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), $date ) ) . '</p>';
+						echo '<p>' . sprintf( '<strong>%s</strong> %s', __( 'Active - Last run', 'mycred' ), date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), $email->last_run ) ) . '</p>';
+
 				}
 
 			}
@@ -317,44 +401,52 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			// Email Setup Column
 			elseif ( $column_name == 'mycred-email-reference' ) {
 
-				echo '<p>';
-				$instance_key = get_post_meta( $post->ID, 'mycred_email_instance', true );
-				$label        = $this->get_instance( $instance_key );
+				$instances  = mycred_get_email_instances();
+				$references = mycred_get_all_references();
 
-				if ( ! empty( $instance_key ) && ! empty( $label ) )
-					echo '<em>' . __( 'Email is sent when', 'mycred' ) .' ' . $label . '.</em></br />';
-				else
-					echo '<em>' . __( 'Missing instance for this notice!', 'mycred' ) . '</em><br />';
+				$trigger     = $email->get_trigger();
+				$description = array();
 
-				$settings = get_post_meta( $post->ID, 'mycred_email_settings', true );
-				if ( ! empty( $settings ) && isset( $settings['recipient'] ) )
-					$recipient = $settings['recipient'];
-				else
-					$recipient = 'user';
+				if ( $trigger == '' )
+					$description[] = sprintf( '<strong>%s:</strong> %s', __( 'Sent when', 'mycred' ), __( 'Not set', 'mycred' ) );
 
-				if ( $recipient == 'user' )
-					echo '<strong>' . __( 'Sent To', 'mycred' ) . '</strong>: ' . __( 'User', 'mycred' ) . '</p>';
-				elseif ( $recipient == 'admin' )
-					echo '<strong>' . __( 'Sent To', 'mycred' ) . '</strong>: ' . __( 'Administrator', 'mycred' ) . '</p>';
+				elseif ( array_key_exists( $trigger, $instances ) )
+					$description[] = sprintf( '<strong>%s:</strong> %s', __( 'Sent when', 'mycred' ), $instances[ $trigger ] );
+
+				elseif( array_key_exists( $trigger, $references ) )
+					$description[] = sprintf( '<strong>%s:</strong> %s', __( 'Sent when', 'mycred' ), $references[ $trigger ] );
+
 				else
-					echo '<strong>' . __( 'Sent To', 'mycred' ) . '</strong>: ' . __( 'Both Administrator and User', 'mycred' ) . '</p>';
+					$description[] = sprintf( '<strong>%s:</strong> %s', __( 'Sent at custom events', 'mycred' ), str_replace( ',', ', ', $trigger ) );
+
+				if ( $email->settings['recipient'] == 'user' )
+					$description[] = sprintf( '<strong>%s:</strong> %s', __( 'Recipient', 'mycred' ), __( 'User', 'mycred' ) );
+
+				elseif ( $email->settings['recipient'] == 'admin' )
+					$description[] = sprintf( '<strong>%s:</strong> %s', __( 'Recipient', 'mycred' ), __( 'Administrator', 'mycred' ) );
+
+				else
+					$description[] = sprintf( '<strong>%s:</strong> %s', __( 'Recipient', 'mycred' ), __( 'Both', 'mycred' ) );
+
+				echo '<p>' . implode( '<br />', $description ) . '</p>';
 
 			}
 
 			// Email Setup Column
 			elseif ( $column_name == 'mycred-email-ctype' ) {
 
-				$type = get_post_meta( $post_id, 'mycred_email_ctype', true );
-				if ( $type == '' ) $type = 'all';
+				echo '<p>';
+				if ( empty( $email->point_types ) )
+					_e( 'No point types selected', 'mycred' );
 
-				if ( $type == 'all' )
-					echo __( 'All types', 'mycred' );
-
-				elseif ( array_key_exists( $type, $this->point_types ) )
-					echo $this->point_types[ $type ];
-
-				else
-					echo '-';
+				else {
+					$types = array();
+					foreach ( $email->point_types as $type_key ) {
+						$types[] = $this->point_types[ $type_key ];
+					}
+					echo implode( ', ', $types );
+				}
+				echo '</p>';
 
 			}
 
@@ -363,11 +455,11 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Adjust Row Actions
 		 * @since 1.1
-		 * @version 1.0
+		 * @version 1.0.1
 		 */
 		public function adjust_row_actions( $actions, $post ) {
 
-			if ( $post->post_type == 'mycred_email_notice' ) {
+			if ( $post->post_type == MYCRED_EMAIL_KEY ) {
 				unset( $actions['inline hide-if-no-js'] );
 				unset( $actions['view'] );
 			}
@@ -379,15 +471,15 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Add Meta Boxes
 		 * @since 1.1
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function add_metaboxes() {
 
 			add_meta_box(
 				'mycred-email-setup',
-				__( 'Email Settings', 'mycred' ),
+				__( 'Email Trigger', 'mycred' ),
 				array( $this, 'metabox_email_setup' ),
-				'mycred_email_notice',
+				MYCRED_EMAIL_KEY,
 				'side',
 				'high'
 			);
@@ -396,18 +488,16 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				'mycred-email-tags',
 				__( 'Available Template Tags', 'mycred' ),
 				array( $this, 'metabox_template_tags' ),
-				'mycred_email_notice',
+				MYCRED_EMAIL_KEY,
 				'normal',
 				'core'
 			);
 
-			if ( $this->emailnotices['use_html'] === false ) return;
-
 			add_meta_box(
-				'mycred-email-header',
-				__( 'Email Header', 'mycred' ),
-				array( $this, 'metabox_email_header' ),
-				'mycred_email_notice',
+				'mycred-email-details',
+				__( 'Email Details', 'mycred' ),
+				array( $this, 'metabox_email_details' ),
+				MYCRED_EMAIL_KEY,
 				'normal',
 				'high'
 			);
@@ -423,25 +513,42 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			$screen = get_current_screen();
 			// Commonly used
-			if ( $screen->id == 'edit-mycred_email_notice' || $screen->id == 'mycred_email_notice' )
+			if ( $screen->id == 'edit-' . MYCRED_EMAIL_KEY || $screen->id == MYCRED_EMAIL_KEY )
 				wp_enqueue_style( 'mycred-admin' );
 
 			// Edit Email Notice Styling
-			if ( $screen->id == 'mycred_email_notice' ) {
+			if ( $screen->id == MYCRED_EMAIL_KEY ) {
 
-				//wp_enqueue_style( 'mycred-email-edit-notice' );
+				wp_enqueue_style( 'mycred-email-edit-notice' );
 				wp_enqueue_style( 'mycred-bootstrap-grid' );
 				wp_enqueue_style( 'mycred-forms' );
 
-				add_filter( 'postbox_classes_mycred_email_notice_mycred-email-setup',  array( $this, 'metabox_classes' ) );
-				add_filter( 'postbox_classes_mycred_email_notice_mycred-email-tags',   array( $this, 'metabox_classes' ) );
-				add_filter( 'postbox_classes_mycred_email_notice_mycred-email-header', array( $this, 'metabox_classes' ) );
+				wp_enqueue_script( 'mycred-edit-email', plugins_url( 'assets/js/edit-email.js', myCRED_EMAIL ), array( 'jquery' ), myCRED_EMAIL_VERSION, true );
+
+				add_filter( 'postbox_classes_' . MYCRED_EMAIL_KEY . '_mycred-email-setup',   array( $this, 'metabox_classes' ) );
+				add_filter( 'postbox_classes_' . MYCRED_EMAIL_KEY . '_mycred-email-tags',    array( $this, 'metabox_classes' ) );
+				add_filter( 'postbox_classes_' . MYCRED_EMAIL_KEY . '_mycred-email-details', array( $this, 'metabox_classes' ) );
 
 			}
 
 			// Email Notice List Styling
-			elseif ( $screen->id == 'edit-mycred_email_notice' )
+			elseif ( $screen->id == 'edit-' . MYCRED_EMAIL_KEY )
 				wp_enqueue_style( 'mycred-email-notices' );
+
+		}
+
+		/**
+		 * Admin Header
+		 * @since 1.1
+		 * @version 1.0
+		 */
+		public function admin_header() {
+
+			$screen = get_current_screen();
+			if ( $screen->id == MYCRED_EMAIL_KEY && $this->emailnotices['use_html'] === false ) {
+				remove_action( 'media_buttons', 'media_buttons' );
+				echo '<style type="text/css">#ed_toolbar { display: none !important; }</style>';
+			}
 
 		}
 
@@ -454,7 +561,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			global $post;
 
-			if ( isset( $post->post_type ) && $post->post_type == 'mycred_email_notice' )
+			if ( isset( $post->post_type ) && $post->post_type == MYCRED_EMAIL_KEY && $this->emailnotices['use_html'] === false )
 				return false;
 
 			return $default;
@@ -470,32 +577,10 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			global $post_type;
 
-			if ( $post_type == 'mycred_email_notice' && !empty( $this->emailnotices['content'] ) )
+			if ( $post_type == MYCRED_EMAIL_KEY && !empty( $this->emailnotices['content'] ) )
 				$content = $this->emailnotices['content'];
 
 			return $content;
-
-		}
-
-		/**
-		 * Add Publish Notice
-		 * @since 1.1
-		 * @version 1.0
-		 */
-		public function publish_warning() {
-
-			global $post;
-
-			if ( $post->post_type != 'mycred_email_notice' ) return;
-
-			echo '<style type="text/css">#mycred-email-notice { margin-top: 0; } #visibility { display: none; }</style>';
-
-			if ( $post->post_status != 'publish' && $post->post_status != 'future' )
-				echo '<p id="mycred-email-notice"><span class="description">' . __( 'Once a notice is "published" it becomes active! Select "Save Draft" if you are not yet ready to use this email notice!', 'mycred' ) . '</span></p>';
-			elseif ( $post->post_status == 'future' )
-				echo '<p id="mycred-email-notice"><span class="description">' . sprintf( __( 'This notice will become active on:<br /><strong>%1$s</strong>', 'mycred' ), date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), strtotime( $post->post_date ) ) ) . '</span></p>';
-			else
-				echo '<p id="mycred-email-notice"><span class="description">' . __( 'This email notice is active.', 'mycred' ) . '</span></p>';
 
 		}
 
@@ -506,117 +591,104 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		 */
 		public function metabox_email_setup( $post ) {
 
-			// Get instance
-			$instance = get_post_meta( $post->ID, 'mycred_email_instance', true );
+			// Get trigger
+			$email         = mycred_get_email_notice( $post->ID );
+			$trigger       = $email->get_trigger();
 
-			// Get settings
-			$settings = $this->get_email_settings( $post->ID );
+			$instances     = mycred_get_email_instances();
+			$references    = mycred_get_all_references();
 
-			$set_type = get_post_meta( $post->ID, 'mycred_email_ctype', true );
-			if ( $set_type == '' )
-				$set_type = MYCRED_DEFAULT_TYPE_KEY;
+			$uses_generic  = ( $trigger == '' || array_key_exists( $trigger, $instances ) ) ? true : false;
+			$uses_specific = ( ! $uses_generic && array_key_exists( $trigger, $references ) ) ? true : false;
+			$uses_custom   = ( ! $uses_generic && ! $uses_specific ) ? true : false;
 
 ?>
 <div class="form">
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="mycred-email-instance"<?php if ( $post->post_status == 'publish' && empty( $instance ) ) echo ' style="color:red;font-weight:bold;"'; ?>><?php _e( 'Send this email notice when...', 'mycred' ); ?></label>
+				<label for="mycred-email-instance"<?php if ( $post->post_status == 'publish' && empty( $trigger ) ) echo ' style="color:red;font-weight:bold;"'; ?>><?php _e( 'Send this email notice when...', 'mycred' ); ?></label>
 				<select name="mycred_email[instance]" id="mycred-email-instance" class="form-control">
 <?php
 
-			// Default
-			echo '<option value=""';
-			if ( empty( $instance ) ) echo ' selected="selected"';
-			echo '>' . __( 'Select', 'mycred' ) . '</option>';
-
 			// Loop though instances
-			foreach ( $this->instances as $hook_ref => $values ) {
+			foreach ( $instances as $instance => $event ) {
 
-				if ( is_array( $values ) ) {
-					foreach ( $values as $key => $value ) {
-
-						// Make sure that the submitted value is unique
-						$key_value = $hook_ref . '|' . $key;
-
-						// Option group starts with 'label'
-						if ( $key == 'label' )
-							echo '<optgroup label="' . $value . '">';
-
-						// Option group ends with 'end'
-						elseif ( $key == 'end' )
-							echo '</optgroup>';
-
-						// The selectable options
-						else {
-							echo '<option value="' . $key_value . '"';
-							if ( $instance == $key_value ) echo ' selected="selected"';
-							echo '>... ' . $this->core->template_tags_general( $value ) . '</option>';
-						}
-
-					}
-				}
+				echo '<option value="' . $instance . '"';
+				if ( $instance == $trigger || ( $instance == 'any' && $trigger == '' ) || ( $instance == 'custom' && ( $uses_specific || $uses_custom ) ) ) echo ' selected="selected"';
+				echo '>... ' . esc_html( $event ) . '</option>';
 
 			}
 
 ?>
 				</select>
 			</div>
-			<div class="form-group">
-				<label for="mycred-email-recipient-user"><?php _e( 'Recipient:', 'mycred' ); ?></label>
-				<div class="inline-radio">
-					<label for="mycred-email-recipient-user"><input type="radio" name="mycred_email[recipient]" id="mycred-email-recipient-user" value="user" <?php checked( $settings['recipient'], 'user' ); ?> /> <?php _e( 'User', 'mycred' ); ?></label>
-				</div>
-				<div class="inline-radio">
-					<label for="mycred-email-recipient-admin"><input type="radio" name="mycred_email[recipient]" id="mycred-email-recipient-admin" value="admin" <?php checked( $settings['recipient'], 'admin' ); ?> /> <?php _e( 'Administrator', 'mycred' ); ?></label>
-				</div>
-				<div class="inline-radio">
-					<label for="mycred-email-recipient-both"><input type="radio" name="mycred_email[recipient]" id="mycred-email-recipient-both" value="both" <?php checked( $settings['recipient'], 'both' ); ?> /> <?php _e( 'Both', 'mycred' ); ?></label>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="mycred-email-label"><?php _e( 'Label', 'mycred' ); ?></label>
-				<input type="text" name="mycred_email[label]" id="mycred-email-label" class="form-control" value="<?php echo esc_attr( $settings['label'] ); ?>" />
-			</div>
-
-			<?php if ( count( $this->point_types ) > 1 ) : ?>
-
-			<div class="form-group">
-				<label for="mycred-email-ctype"><?php _e( 'Point Type', 'mycred' ); ?></label>
-				<select name="mycred_email[ctype]" id="mycred-email-ctype" class="form-control">
+			<div id="reference-selection" style="display: <?php if ( $uses_specific || $uses_custom ) echo 'block'; else echo 'none'; ?>;">
+				<div class="form-group">
+					<label for="mycred-email-ctype"><?php _e( 'Reference', 'mycred' ); ?></label>
+					<select name="mycred_email[reference]" id="mycred-email-reference" class="form-control">
 <?php
 
-			echo '<option value="all"';
-			if ( $set_type == 'all' ) echo ' selected="selected"';
-			echo '>' . __( 'All types', 'mycred' ) . '</option>';
+			$references['mycred_custom'] = __( 'Custom Reference', 'mycred' );
 
-			foreach ( $this->point_types as $type_id => $label ) {
-				echo '<option value="' . $type_id . '"';
-				if ( $set_type == $type_id ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+			foreach ( $references as $ref_id => $ref_description ) {
+
+				echo '<option value="' . esc_attr( $ref_id ) . '"';
+				if ( $uses_specific && $trigger == $ref_id ) echo ' selected="selected"';
+				elseif ( $ref_id == 'mycred_custom' && $uses_custom ) echo ' selected="selected"';
+				echo '>' . esc_html( $ref_description ) . '</option>';
+
 			}
 
 ?>
-				</select>
+					</select>
+				</div>
+				<div id="custom-reference-selection" style="display: <?php if ( $uses_custom ) echo 'block'; else echo 'none'; ?>;">
+					<div class="form-group">
+						<label for="mycred-email-custom-ref"><?php _e( 'Custom Reference', 'mycred' ); ?></label>
+						<input type="text" name="mycred_email[custom_reference]" placeholder="<?php _e( 'required', 'mycred' ); ?>" id="mycred-email-custom-ref" class="form-control" value="<?php echo esc_attr( $trigger ); ?>" />
+					</div>
+					<p class="description" style="line-height: 16px;"><?php _e( 'This can be either a single reference or a comma separated list of references.', 'mycred' ); ?></p>
+				</div>
 			</div>
-
-			<?php else : ?>
-
-			<input type="hidden" name="mycred_email[ctype]" id="mycred-email-ctype" value="<?php echo MYCRED_DEFAULT_TYPE_KEY; ?>" />
-
-			<?php endif; ?>
+			<hr />
 
 			<div class="form-group">
-				<label for="mycred-email-senders-name"><?php _e( 'Senders Name:', 'mycred' ); ?></label>
-				<input type="text" name="mycred_email[senders_name]" id="mycred-email-senders-name" class="form-control" value="<?php echo esc_attr( $settings['senders_name'] ); ?>" />
+				<label for="mycred-email-ctype"><?php _e( 'Point Types', 'mycred' ); ?></label>
+<?php
+
+			if ( count( $this->point_types ) > 1 ) {
+
+				mycred_types_select_from_checkboxes( 'mycred_email[ctype][]', 'mycred-email-ctype', $email->point_types );
+
+			}
+
+			else {
+
+?>
+
+				<p class="form-control-static"><?php echo $this->core->plural(); ?></p>
+				<input type="hidden" name="mycred_email[ctype][]" id="mycred-email-ctype" value="<?php echo MYCRED_DEFAULT_TYPE_KEY; ?>" />
+<?php
+
+			}
+
+?>
+
 			</div>
-			<div class="form-group">
-				<label for="mycred-email-senders-email"><?php _e( 'Senders Email:', 'mycred' ); ?></label>
-				<input type="text" name="mycred_email[senders_email]" id="mycred-email-senders-email" class="form-control" value="<?php echo esc_attr( $settings['senders_email'] ); ?>" />
-			</div>
-			<div class="form-group">
-				<label for="mycred-email-reply-to"><?php _e( 'Reply-To Email:', 'mycred' ); ?></label>
-				<input type="text" name="mycred_email[reply_to]" id="mycred-email-reply-to" class="form-control" value="<?php echo esc_attr( $settings['reply_to'] ); ?>" />
+			<hr />
+
+			<div class="form-group" style="margin-bottom: 0;">
+				<label for="mycred-email-recipient-user"><?php _e( 'Recipient:', 'mycred' ); ?></label>
+				<div class="inline-radio">
+					<label for="mycred-email-recipient-user"><input type="radio" name="mycred_email[recipient]" id="mycred-email-recipient-user" value="user" <?php checked( $email->settings['recipient'], 'user' ); ?> /> <?php _e( 'User', 'mycred' ); ?></label>
+				</div>
+				<div class="inline-radio">
+					<label for="mycred-email-recipient-admin"><input type="radio" name="mycred_email[recipient]" id="mycred-email-recipient-admin" value="admin" <?php checked( $email->settings['recipient'], 'admin' ); ?> /> <?php _e( 'Administrator', 'mycred' ); ?></label>
+				</div>
+				<div class="inline-radio">
+					<label for="mycred-email-recipient-both"><input type="radio" name="mycred_email[recipient]" id="mycred-email-recipient-both" value="both" <?php checked( $email->settings['recipient'], 'both' ); ?> /> <?php _e( 'Both', 'mycred' ); ?></label>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -629,11 +701,40 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		}
 
 		/**
-		 * Email Header Metabox
-		 * @since 1.1
+		 * Email Details Metabox
+		 * @since 1.8
 		 * @version 1.0
 		 */
-		public function metabox_email_header( $post ) {
+		public function metabox_email_details( $post ) {
+
+			$email = mycred_get_email_notice( $post->ID );
+
+?>
+<div class="form">
+	<div class="row">
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="mycred-email-senders-name"><?php _e( 'Senders Name:', 'mycred' ); ?></label>
+				<input type="text" name="mycred_email[senders_name]" id="mycred-email-senders-name" class="form-control" value="<?php echo esc_attr( $email->settings['senders_name'] ); ?>" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="mycred-email-senders-email"><?php _e( 'Senders Email:', 'mycred' ); ?></label>
+				<input type="text" name="mycred_email[senders_email]" id="mycred-email-senders-email" class="form-control" value="<?php echo esc_attr( $email->settings['senders_email'] ); ?>" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<label for="mycred-email-reply-to"><?php _e( 'Reply-To Email:', 'mycred' ); ?></label>
+				<input type="text" name="mycred_email[reply_to]" id="mycred-email-reply-to" class="form-control" value="<?php echo esc_attr( $email->settings['reply_to'] ); ?>" />
+			</div>
+		</div>
+	</div>
+</div>
+<?php
+
+			if ( $this->emailnotices['use_html'] !== false ) {
 
 ?>
 <div class="form">
@@ -641,15 +742,16 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="mycred-email-styling"><?php _e( 'CSS Styling', 'mycred' ); ?></label>
-				<textarea name="mycred_email[styling]" class="form-control code" rows="10" cols="30" id="mycred-email-styling"><?php echo $this->get_email_styling( $post->ID ); ?></textarea>
+				<textarea name="mycred_email[styling]" class="form-control code" rows="10" cols="30" id="mycred-email-styling"><?php echo esc_html( $email->get_email_styling() ); ?></textarea>
 			</div>
 		</div>
 	</div>
 </div>
-
-<?php do_action( 'mycred_email_header_box', $this ); ?>
-
 <?php
+
+			}
+
+			do_action( 'mycred_email_details_box', $this );
 
 		}
 
@@ -757,248 +859,153 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		 */
 		public function save_email_notice( $post_id, $post = NULL ) {
 
-			if ( $post === NULL || ! current_user_can( $this->core->edit_creds_cap() ) || ! isset( $_POST['mycred_email'] ) ) return $post_id;
+			if ( $post === NULL || ! $this->core->user_is_point_editor() || ! isset( $_POST['mycred_email'] ) ) return $post_id;
+
+			global $mycred_types;
+
+			$email       = mycred_get_email_notice( $post_id );
+			$current     = $email->get_trigger();
 
 			// Update Instance
-			if ( ! empty( $_POST['mycred_email']['instance'] ) ) {
+			$instances   = mycred_get_email_instances();
+			$references  = mycred_get_all_references();
+			$instance    = '';
+			$event       = '';
+			$settings    = array();
+			$point_types = array();
 
-				$instance_key = sanitize_text_field( $_POST['mycred_email']['instance'] );
-				$keys         = explode( '|', $instance_key );
-				if ( ! empty( $keys ) );
-					update_post_meta( $post_id, 'mycred_email_instance', $instance_key );
+			// Generic
+			if ( $_POST['mycred_email']['instance'] != '' && $_POST['mycred_email']['instance'] != 'custom' ) {
+
+				$instance = sanitize_key( $_POST['mycred_email']['instance'] );
+				if ( ! array_key_exists( $instance, $instances ) )
+					$instance = '';
+
+				else {
+					$event = 'generic';
+				}
 
 			}
 
-			// Construct new settings
-			$settings         = array();
+			// Specific
+			elseif ( $_POST['mycred_email']['instance'] != '' ) {
 
+				$event     = 'specific';
+				$reference = sanitize_key( $_POST['mycred_email']['reference'] );
+
+				// Based on built-in reference
+				if ( array_key_exists( $reference, $references ) )
+					$instance = $reference;
+
+				// Based on custom reference
+				else {
+
+					$reference_list   = array();
+					$custom_reference = explode( ',', $_POST['mycred_email']['custom_reference'] );
+
+					foreach ( $custom_reference as $reference_id ) {
+
+						$reference_id = sanitize_key( $reference_id );
+						if ( ! empty( $reference_id ) && ! array_key_exists( $reference_id, $instances ) )
+							$reference_list[] = $reference_id;
+
+					}
+
+					if ( ! empty( $reference_list ) )
+						$instance = implode( ',', $reference_list );
+
+				}
+
+			}
+
+			$email->set_trigger( $instance );
+
+			// Construct new settings
 			if ( ! empty( $_POST['mycred_email']['recipient'] ) )
 				$settings['recipient']     = sanitize_text_field( $_POST['mycred_email']['recipient'] );
-			else
-				$settings['recipient']     = 'user';
 
 			if ( ! empty( $_POST['mycred_email']['senders_name'] ) )
 				$settings['senders_name']  = sanitize_text_field( $_POST['mycred_email']['senders_name'] );
-			else
-				$settings['senders_name']  = $this->emailnotices['from']['name'];
 
 			if ( ! empty( $_POST['mycred_email']['senders_email'] ) )
 				$settings['senders_email'] = sanitize_text_field( $_POST['mycred_email']['senders_email'] );
-			else
-				$settings['senders_email'] = $this->emailnotices['from']['email'];
 
 			if ( ! empty( $_POST['mycred_email']['reply_to'] ) )
 				$settings['reply_to']      = sanitize_text_field( $_POST['mycred_email']['reply_to'] );
-			else
-				$settings['reply_to']      = $this->emailnotices['from']['reply_to'];
 
-			$settings['label'] = sanitize_text_field( $_POST['mycred_email']['label'] );
+			$email->save_settings( $settings );
 
-			// Save settings
-			update_post_meta( $post_id, 'mycred_email_settings', $settings );
+			// Point Types
+			if ( array_key_exists( 'ctype', $_POST['mycred_email'] ) && ! empty( $_POST['mycred_email']['ctype'] ) ) {
 
-			$point_type        = sanitize_key( $_POST['mycred_email']['ctype'] );
-			if ( mycred_point_type_exists( $point_type ) )
-				update_post_meta( $post_id, 'mycred_email_ctype', $point_type );
+				$checked_types = ( isset( $_POST['mycred_email']['ctype'] ) ) ? $_POST['mycred_email']['ctype'] : array();
+				if ( ! empty( $checked_types ) ) {
+					foreach ( $checked_types as $type_key ) {
+						$type_key = sanitize_key( $type_key );
+						if ( mycred_point_type_exists( $type_key ) && ! in_array( $type_key, $point_types ) )
+							$point_types[] = $type_key;
+					}
+				}
+				mycred_update_post_meta( $post_id, 'mycred_email_ctype', $point_types );
+
+			}
+
+			// Trigger changed, so we need to remove all existing instances of this email
+			// before we add the new instance in.
+			if ( $current != $instance ) {
+				foreach ( $mycred_types as $type_id => $label ) {
+
+					mycred_delete_email_trigger( $post_id, $type_id );
+
+				}
+			}
+
+			if ( ! empty( $point_types ) ) {
+				foreach ( $point_types as $type_id ) {
+
+					mycred_add_email_trigger( $event, $instance, $post_id, $type_id );
+
+				}
+			}
 
 			// If rich editing is disabled bail now
-			if ( $this->emailnotices['use_html'] === false ) return;
+			if ( $email->emailnotices['use_html'] === false ) return;
 
 			// Save styling
 			if ( ! empty( $_POST['mycred_email']['styling'] ) )
-				update_post_meta( $post_id, 'mycred_email_styling', wp_kses_post( $_POST['mycred_email']['styling'] ) );
-
-		}
-
-		/**
-		 * Admin Header
-		 * @since 1.1
-		 * @version 1.0
-		 */
-		public function admin_header() {
-
-			$screen = get_current_screen();
-			if ( $screen->id == 'mycred_email_notice' && $this->emailnotices['use_html'] === false ) {
-				remove_action( 'media_buttons', 'media_buttons' );
-				echo '<style type="text/css">#ed_toolbar { display: none !important; }</style>';
-			}
-
-		}
-
-		/**
-		 * Register Scripts & Styles
-		 * @since 1.7
-		 * @version 1.0
-		 */
-		public function scripts_and_styles() {
-
-			// Register Email List Styling
-			wp_register_style(
-				'mycred-email-notices',
-				plugins_url( 'assets/css/email-notice.css', myCRED_EMAIL ),
-				false,
-				myCRED_EMAIL_VERSION . '.1',
-				'all'
-			);
-
-			// Register Edit Email Notice Styling
-			wp_register_style(
-				'mycred-email-edit-notice',
-				plugins_url( 'assets/css/edit-email-notice.css', myCRED_EMAIL ),
-				false,
-				myCRED_EMAIL_VERSION . '.1',
-				'all'
-			);
-
-		}
-
-		/**
-		 * Setup Instances
-		 * @since 1.1
-		 * @version 1.1
-		 */
-		public function setup_instances() {
-
-			$instances['']        = __( 'Select', 'mycred' );
-			$instances['general'] = array(
-				'label'    => __( 'General', 'mycred' ),
-				'all'      => __( 'users balance changes', 'mycred' ),
-				'positive' => __( 'user gains %_plural%', 'mycred' ),
-				'negative' => __( 'user lose %_plural%', 'mycred' ),
-				'zero'     => __( 'users balance reaches zero', 'mycred' ),
-				'minus'    => __( 'users balance goes minus', 'mycred' ),
-				'end'      => ''
-			);
-
-			if ( class_exists( 'myCRED_Badge_Module' ) ) {
-				$instances['badges'] = array(
-					'label'    => __( 'Badge Add-on', 'mycred' ),
-					'positive' => __( 'user gains a badge', 'mycred' ),
-					'end'      => ''
-				);
-			}
-
-			if ( class_exists( 'myCRED_Sell_Content_Module' ) ) {
-				$instances['buy_content'] = array(
-					'label'    => __( 'Sell Content Add-on', 'mycred' ),
-					'negative' => __( 'user buys content', 'mycred' ),
-					'positive' => __( 'authors content gets sold', 'mycred' ),
-					'end'      => ''
-				);
-			}
-
-			if ( class_exists( 'myCRED_buyCRED_Module' ) ) {
-				$instances['buy_creds'] = array(
-					'label'    => __( 'buyCREDs Add-on', 'mycred' ),
-					'positive' => __( 'user buys %_plural%', 'mycred' ),
-					'end'      => ''
-				);
-			}
-
-			if ( class_exists( 'myCRED_Transfer_Module' ) ) {
-				$instances['transfer'] = array(
-					'label'    => __( 'Transfer Add-on', 'mycred' ),
-					'negative' => __( 'user sends %_plural%', 'mycred' ),
-					'positive' => __( 'user receives %_plural%', 'mycred' ),
-					'end'      => ''
-				);
-			}
-
-			if ( class_exists( 'myCRED_Ranks_Module' ) ) {
-				$instances['ranks'] = array(
-					'label'    => __( 'Ranks Add-on', 'mycred' ),
-					'negative' => __( 'user is demoted', 'mycred' ),
-					'positive' => __( 'user is promoted', 'mycred' ),
-					'end'      => ''
-				);
-			}
-
-			$this->instances = apply_filters( 'mycred_email_instances', $instances );
-
-		}
-
-		/**
-		 * Get Instance
-		 * @since 1.1
-		 * @version 1.0
-		 */
-		public function get_instance( $key = '', $detail = NULL ) {
-
-			$instance_keys = explode( '|', $key );
-			if ( $instance_keys === false || empty( $instance_keys ) || count( $instance_keys ) != 2 ) return NULL;
-
-			// By default we return the entire array for the given key
-			if ( $detail === NULL && array_key_exists( $instance_keys[0], $this->instances ) )
-				return $this->core->template_tags_general( $this->instances[ $instance_keys[0] ][ $instance_keys[1] ] );
-
-			if ( $detail !== NULL && array_key_exists( $detail, $this->instances[ $instance_keys[0] ] ) )
-				return $this->core->template_tags_general( $this->instances[ $instance_keys[0] ][ $detail ] );
-
-			return NULL;
-
-		}
-
-		/**
-		 * Email Notice Check
-		 * @since 1.4.6
-		 * @version 1.2.2
-		 */
-		public function get_events_from_instance( $request, $mycred ) {
-
-			extract( $request );
-
-			$events = array( 'general|all' );
-
-			// Events based on amount being given or taken
-			if ( $amount < $mycred->zero() )
-				$events[] = 'general|negative';
-			else
-				$events[] = 'general|positive';
-
-			// Events based on this transaction leading to the users balance
-			// reaching or surpassing zero
-			$users_current_balance = $mycred->get_users_balance( $user_id, $type );
-			if ( ( $users_current_balance - $amount ) < $mycred->zero() )
-				$events[] = 'general|minus';
-
-			elseif ( ( $users_current_balance - $amount ) == $mycred->zero() )
-				$events[] = 'general|zero';
-
-			// Let others play
-			return apply_filters( 'mycred_get_email_events', $events, $request, $mycred );
+				mycred_update_post_meta( $post_id, 'mycred_email_styling', wp_kses_post( $_POST['mycred_email']['styling'] ) );
 
 		}
 
 		/**
 		 * Email Notice Check
 		 * @since 1.1
-		 * @version 1.5.1
+		 * @version 1.6
 		 */
 		public function email_check( $ran, $request, $mycred ) {
 
 			// Exit now if $ran is false or new settings is not yet saved.
 			if ( $ran === false || ! isset( $this->emailnotices['send'] ) ) return $ran;
 
-			$user_id = absint( $request['user_id'] );
+			$user_id        = absint( $request['user_id'] );
+			$balance        = $mycred->get_users_balance( $user_id );
+			$point_type     = $mycred->get_point_type_key();
 
-			// Construct events
-			$events  = $this->get_events_from_instance( $request, $mycred );
+			// Check for triggered emails
+			$emails         = mycred_get_triggered_emails( $request, $balance );
 
-			// Do not send emails now
-			if ( $this->emailnotices['send'] != '' ) {
+			// No emails, bail
+			if ( empty( $emails ) ) return $ran;
 
-				// Save for cron job
-				mycred_add_user_meta( $user_id, 'mycred_scheduled_email_notices', '', array(
-					'events'  => $events,
-					'request' => $request
-				), false );
+			$request['new'] = $balance;
+			$request['old'] = $balance - $request['amount'];
 
-			}
+			// This event might have triggered multiple emails
+			foreach ( $emails as $notice_id ) {
 
-			// Send emails now
-			else {
-
-				$this->do_email_notices( $events, $request );
+				// Respect unsubscriptions
+				if ( mycred_user_wants_email( $user_id, $notice_id ) )
+					mycred_send_new_email( $notice_id, $request, $point_type );
 
 			}
 
@@ -1009,235 +1016,50 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Badge Check
 		 * @since 1.7
-		 * @version 1.0.3
+		 * @version 1.1
 		 */
 		public function badge_check( $user_id, $badge_id, $level_reached ) {
 
 			if ( $level_reached === false ) return;
 
-			$meta_key      = 'mycred_badge' . $badge_id;
+			$badge       = mycred_get_badge( $badge_id );
 
-			// No assignment should occur if we already have this badge + level
-			$current_level = mycred_get_user_meta( $user_id, $meta_key );
-			if ( $current_level != '' && $current_level == $level_reached ) return;
+			$instance    = 'badge_level';
+			$users_level = $badge->get_users_current_level( $user_id );
 
-			$events  = array( 'badges|positive' );
-			$request = array(
-				'ref'     => 'badge',
-				'user_id' => $user_id,
-				'amount'  => 0,
-				'entry'   => 'New Badge',
-				'type'    => MYCRED_DEFAULT_TYPE_KEY,
-				'time'    => current_time( 'timestamp' ),
-				'ref_id'  => $badge_id,
-				'data'    => array( 'ref_type' => 'post' )
-			);
+			// Earning a badge
+			if ( $users_level === false )
+				$instance = 'badge_new';
 
-			// Do not send emails now
-			if ( $this->emailnotices['send'] != '' ) {
+			global $mycred_types;
 
-				// Save for cron job
-				mycred_add_user_meta( $user_id, 'mycred_scheduled_email_notices', '', array(
-					'events'  => $events,
-					'request' => $request
-				), false );
+			foreach ( $mycred_types as $type_id => $label ) {
 
-			}
+				$emails     = mycred_get_event_emails( $type_id, 'generic', $instance );
+				if ( empty( $emails ) ) continue;
 
-			// Send emails now
-			else {
+				$mycred     = mycred( $type_id );
+				$balance    = $mycred->get_users_balance( $user_id );
+				$point_type = $mycred->get_point_type_key();
 
-				$this->do_email_notices( $events, $request );
+				$request    = array(
+					'ref'      => $instance,
+					'user_id'  => $user_id,
+					'amount'   => 0,
+					'entry'    => 'New Badge',
+					'ref_id'   => $badge_id,
+					'data'     => array( 'ref_type' => 'post' ),
+					'type'     => $type_id,
+					'level'    => $level_reached,
+					'new'      => $balance,
+					'old'      => $balance
+				);
 
-			}
+				foreach ( $emails as $notice_id ) {
 
-		}
-
-		/**
-		 * Rank Promotions
-		 * @since 1.7.6
-		 * @version 1.0.1
-		 */
-		public function rank_promotion( $user_id, $promoted_to, $query ) {
-
-			$events             = array( 'ranks|positive' );
-
-			$request            = array();
-			$request['id']      = 0;
-			$request['user_id'] = $user_id;
-			$request['ref']     = 'rank_promotion';
-			$request['creds']   = 0;
-			$request['ref_id']  = $promoted_to;
-			$request['time']    = current_time( 'timestamp' );
-			$request['data']    = array( 'ref_type' => 'post' );
-			$request['ctype']   = get_post_meta( $promoted_to, 'ctype', true );
-
-			if ( $this->emailnotices['send'] != '' ) {
-
-				// Save for cron job
-				mycred_add_user_meta( $user_id, 'mycred_scheduled_email_notices', '', array(
-					'events'  => $events,
-					'request' => $request
-				), false );
-
-			}
-
-			// Send emails now
-			else {
-
-				$this->do_email_notices( $events, $request );
-
-			}
-
-		}
-
-		/**
-		 * Rank Demotions
-		 * @since 1.7.6
-		 * @version 1.0.1
-		 */
-		public function rank_demotion( $user_id, $demoted_to, $query ) {
-
-			$events             = array( 'ranks|negative' );
-
-			$request            = array();
-			$request['id']      = 0;
-			$request['user_id'] = $user_id;
-			$request['ref']     = 'rank_demotion';
-			$request['creds']   = 0;
-			$request['ref_id']  = $demoted_to;
-			$request['time']    = current_time( 'timestamp' );
-			$request['data']    = array( 'ref_type' => 'post' );
-			$request['ctype']   = get_post_meta( $demoted_to, 'ctype', true );
-
-			if ( $this->emailnotices['send'] != '' ) {
-
-				// Save for cron job
-				mycred_add_user_meta( $user_id, 'mycred_scheduled_email_notices', '', array(
-					'events'  => $events,
-					'request' => $request
-				), false );
-
-			}
-
-			// Send emails now
-			else {
-
-				$this->do_email_notices( $events, $request );
-
-			}
-
-		}
-
-		/**
-		 * Do Email Notices
-		 * @since 1.1
-		 * @version 1.2.1
-		 */
-		public function do_email_notices( $events = array(), $request = array() ) {
-
-			if ( ! isset( $request['user_id'] ) || empty( $events ) ) return;
-
-			extract( $request );
-
-			// Get all notices that a user has unsubscribed to
-			$unsubscriptions = (array) mycred_get_user_meta( $user_id, 'mycred_email_unsubscriptions', '', true );
-
-			global $wpdb;
-
-			// Loop though events
-			foreach ( $events as $event ) {
-
-				// Get the email notice post object
-				$notice = $wpdb->get_row( $wpdb->prepare( "
-					SELECT * 
-					FROM {$wpdb->posts} notices
-
-					LEFT JOIN {$wpdb->postmeta} instances 
-						ON ( notices.ID = instances.post_id AND instances.meta_key = 'mycred_email_instance' )
-
-					LEFT JOIN {$wpdb->postmeta} pointtype 
-						ON ( notices.ID = pointtype.post_id AND pointtype.meta_key = 'mycred_email_ctype' )
-
-					WHERE instances.meta_value = %s 
-						AND pointtype.meta_value IN (%s,'all') 
-						AND notices.post_type = 'mycred_email_notice' 
-						AND notices.post_status = 'publish';", $event, $request['type'] ) );
-
-				// Notice found
-				if ( $notice !== NULL ) {
-
-					// Ignore unsubscribed events
-					if ( in_array( $notice->ID, $unsubscriptions ) ) continue;
-
-					// Get notice setup
-					$settings = $this->get_email_settings( $notice->ID );
-
-					// Send to user
-					if ( $settings['recipient'] == 'user' || $settings['recipient'] == 'both' ) {
-						$user = get_user_by( 'id', $user_id );
-						$to   = $user->user_email;
-						unset( $user );
-					}
-
-					elseif ( $settings['recipient'] == 'admin' ) {
-						$to   = get_option( 'admin_email' );
-					}
-
-					// Filtered Subject
-					if ( $this->emailnotices['filter']['subject'] === true )
-						$subject = get_the_title( $notice->ID );
-
-					// Unfiltered Subject
-					else $subject = $notice->post_title;
-
-					// Filtered Content
-					if ( $this->emailnotices['filter']['content'] === true )
-						$message = apply_filters( 'the_content', $notice->post_content );
-
-					// Unfiltered Content
-					else $message = $notice->post_content;
-
-					$headers     = array();
-					$attachments = '';
-
-					if ( ! $this->emailnotices['override'] ) {
-
-						// Construct headers
-						if ( $this->emailnotices['use_html'] === true ) {
-							$headers[] = 'MIME-Version: 1.0';
-							$headers[] = 'Content-Type: text/HTML; charset="' . get_option( 'blog_charset' ) . '"';
-						}
-						$headers[] = 'From: ' . $settings['senders_name'] . ' <' . $settings['senders_email'] . '>';
-
-						// Reply-To
-						if ( $settings['reply_to'] != '' )
-							$headers[] = 'Reply-To: ' . $settings['reply_to'];
-
-						// If email was successfully sent we update 'last_run'
-						if ( $this->wp_mail( $to, $subject, $message, $headers, $attachments, $request, $notice->ID ) === true ) {
-
-							update_post_meta( $notice->ID, 'mycred_email_last_run', time() );
-
-							if ( $settings['recipient'] == 'both' )
-								$this->wp_mail( get_option( 'admin_email' ), $subject, $message, $headers, $attachments, $request, $notice->ID );
-
-						}
-
-					}
-					else {
-
-						// If email was successfully sent we update 'last_run'
-						if ( $this->wp_mail( $to, $subject, $message, $headers, $attachments, $request, $notice->ID ) === true ) {
-
-							update_post_meta( $notice->ID, 'mycred_email_last_run', time() );
-
-							if ( $settings['recipient'] == 'both' )
-								$this->wp_mail( get_option( 'admin_email' ), $subject, $message, $headers, $attachments, $request, $notice->ID );
-
-						}
-
-					}
+					// Respect unsubscriptions
+					if ( mycred_user_wants_email( $user_id, $notice_id ) )
+						mycred_send_new_email( $notice_id, $request, $point_type );
 
 				}
 
@@ -1246,154 +1068,72 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		}
 
 		/**
-		 * WP Mail
-		 * @since 1.1
-		 * @version 1.3.4
-		 */
-		public function wp_mail( $to, $subject, $message, $headers, $attachments, $request, $email_id ) {
-
-			// Let others play before we do our thing
-			$filtered = apply_filters( 'mycred_email_before_send', compact( 'to', 'subject', 'message', 'headers', 'attachments', 'request', 'email_id' ) );
-
-			if ( ! isset( $filtered['request'] ) || ! is_array( $filtered['request'] ) ) return false;
-
-			$subject  = $this->template_tags_request( $filtered['subject'], $filtered['request'] );
-			$message  = $this->template_tags_request( $filtered['message'], $filtered['request'] );
-
-			$entry    = $this->request_to_entry( $filtered['request'] );
-			$mycred   = mycred( $filtered['request']['type'] );
-
-			$subject  = $mycred->template_tags_user( $subject, $filtered['request']['user_id'] );
-			$message  = $mycred->template_tags_user( $message, $filtered['request']['user_id'] );
-
-			$subject  = $mycred->template_tags_amount( $subject, $filtered['request']['amount'] );
-			$message  = $mycred->template_tags_amount( $message, $filtered['request']['amount'] );
-			
-			$subject  = $mycred->parse_template_tags( $subject, $entry );
-			$message  = $mycred->parse_template_tags( $message, $entry );
-
-			if ( $this->emailnotices['use_html'] )
-				$message = wpautop( $message );
-
-			$message  = wptexturize( $message );
-
-			$subject  = apply_filters( 'mycred_email_subject_body', $subject, $filtered, $this );
-			$message  = apply_filters( 'mycred_email_message_body', $message, $filtered, $this );
-
-			// Construct HTML Content
-			if ( $this->emailnotices['use_html'] ) {
-				$styling = $this->get_email_styling( $email_id );
-				$message = '<html><head><title>' . $subject . '</title><style type="text/css" media="all"> ' . trim( $styling ) . '</style></head><body>' . $message . '</body></html>';
-			}
-
-			$body     = apply_filters( 'mycred_email_content_body', $message, $filtered, $this );
-
-			// Send Email
-			add_filter( 'wp_mail_content_type', array( $this, 'get_email_format' ) );
-			$result   = wp_mail( $filtered['to'], $subject, $body, $filtered['headers'], $filtered['attachments'] );
-			remove_filter( 'wp_mail_content_type', array( $this, 'get_email_format' ) );
-
-			// Let others play
-			do_action( 'mycred_email_sent', $filtered );
-
-			return $result;
-
-		}
-
-		/**
-		 * Get Email Format
-		 * @since 1.1
-		 * @version 1.0
-		 */
-		public function get_email_format() {
-
-			if ( ! $this->emailnotices['use_html'] )
-				return 'text/plain';
-
-			return 'text/html';
-
-		}
-
-		/**
-		 * Request Related Template Tags
-		 * @since 1.1
-		 * @version 1.3.2
-		 */
-		public function template_tags_request( $content, $request ) {
-
-			$type        = $this->core;
-			if ( $request['type'] != MYCRED_DEFAULT_TYPE_KEY )
-				$type = mycred( $request['type'] );
-
-			$user_id     = absint( $request['user_id'] );
-			$new_balance = $type->get_users_balance( $user_id, $request['type'] );
-
-			if ( $request['amount'] > 0 )
-				$old_balance = $type->number( $new_balance - $request['amount'] );
-			else
-				$old_balance = $type->number( $new_balance + $request['amount'] );
-
-			$content     = str_replace( '%old_balance%',   $old_balance, $content );
-			$content     = str_replace( '%old_balance_f%', $type->format_creds( $old_balance ), $content );
-
-			$content     = str_replace( '%new_balance%',   $new_balance, $content );
-			$content     = str_replace( '%new_balance_f%', $type->format_creds( $new_balance ), $content );
-
-			$content     = str_replace( '%amount%',        $request['amount'], $content );
-			$content     = str_replace( '%entry%',         $request['entry'], $content );
-			$content     = str_replace( '%data%',          maybe_serialize( $request['data'] ), $content );
-
-			$content     = str_replace( '%blog_name%',     get_option( 'blogname' ), $content );
-			$content     = str_replace( '%blog_url%',      get_option( 'home' ), $content );
-			$content     = str_replace( '%blog_info%',     get_option( 'blogdescription' ), $content );
-			$content     = str_replace( '%admin_email%',   get_option( 'admin_email' ), $content );
-			$content     = str_replace( '%num_members%',   $this->core->count_members(), $content );
-
-			return $content;
-
-		}
-
-		/**
-		 * Get Email Settings
-		 * @since 1.1
+		 * Rank Promotions
+		 * @since 1.7.6
 		 * @version 1.1
 		 */
-		public function get_email_settings( $post_id ) {
+		public function rank_promotion( $user_id, $rank_id, $query, $point_type ) {
 
-			$settings = get_post_meta( $post_id, 'mycred_email_settings', true );
-			if ( $settings == '' )
-				$settings = array();
+			$emails     = mycred_get_event_emails( $point_type, 'generic', 'rank_up' );
+			if ( empty( $emails ) ) return;
 
-			// Defaults
-			$default = array(
-				'recipient'     => 'user',
-				'senders_name'  => $this->emailnotices['from']['name'],
-				'senders_email' => $this->emailnotices['from']['email'],
-				'reply_to'      => $this->emailnotices['from']['reply_to'],
-				'label'         => ''
+			$mycred     = mycred( $point_type );
+			$balance    = $mycred->get_users_balance( $user_id );
+
+			$request    = array(
+				'ref'      => 'rank_promotion',
+				'user_id'  => $user_id,
+				'amount'   => 0,
+				'entry'    => 'New Rank',
+				'ref_id'   => $rank_id,
+				'data'     => array( 'ref_type' => 'post' ),
+				'type'     => $point_type,
+				'new'      => $balance,
+				'old'      => $balance
 			);
 
-			$settings = mycred_apply_defaults( $default, $settings );
+			foreach ( $emails as $notice_id ) {
 
-			return apply_filters( 'mycred_email_notice_settings', $settings, $post_id );
+				// Respect unsubscriptions
+				if ( mycred_user_wants_email( $user_id, $notice_id ) )
+					mycred_send_new_email( $notice_id, $request, $point_type );
+
+			}
 
 		}
 
 		/**
-		 * Get Email Styling
-		 * @since 1.1
-		 * @version 1.0
+		 * Rank Demotions
+		 * @since 1.7.6
+		 * @version 1.1
 		 */
-		public function get_email_styling( $post_id ) {
+		public function rank_demotion( $user_id, $rank_id, $query, $point_type ) {
 
-			if ( $this->emailnotices['use_html'] === false ) return '';
-			$style = get_post_meta( $post_id, 'mycred_email_styling', true );
+			$emails     = mycred_get_event_emails( $point_type, 'generic', 'rank_down' );
+			if ( empty( $emails ) ) return;
 
-			// Defaults
-			if ( empty( $style ) )
-				return $this->emailnotices['styling'];
+			$mycred     = mycred( $point_type );
+			$balance    = $mycred->get_users_balance( $user_id );
 
-			return $style;
+			$request    = array(
+				'ref'      => 'rank_promotion',
+				'user_id'  => $user_id,
+				'amount'   => 0,
+				'entry'    => 'New Rank',
+				'ref_id'   => $rank_id,
+				'data'     => array( 'ref_type' => 'post' ),
+				'type'     => $point_type,
+				'new'      => $balance,
+				'old'      => $balance
+			);
+
+			foreach ( $emails as $notice_id ) {
+
+				// Respect unsubscriptions
+				if ( mycred_user_wants_email( $user_id, $notice_id ) )
+					mycred_send_new_email( $notice_id, $request, $point_type );
+
+			}
 
 		}
 
@@ -1518,7 +1258,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		/**
 		 * Save Settings
 		 * @since 1.1
-		 * @version 1.2
+		 * @version 1.3
 		 */
 		public function sanitize_extra_settings( $new_data, $data, $core ) {
 
@@ -1535,111 +1275,9 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			$new_data['emailnotices']['styling']           = sanitize_textarea_field( $data['emailnotices']['styling'] );
 
 			$new_data['emailnotices']['send']              = sanitize_text_field( $data['emailnotices']['send'] );
-
-			if ( ! isset( $data['emailnotices']['override'] ) )
-				$data['emailnotices']['override'] = 0;
-
-			$new_data['emailnotices']['override'] = ( $data['emailnotices']['override'] == 1 ) ? 1 : 0;
+			$new_data['emailnotices']['override']          = ( isset( $data['emailnotices']['override'] ) ) ? 1 : 0;
 
 			return $new_data;
-
-		}
-
-		/**
-		 * Subscription Shortcode
-		 * @since 1.4.6
-		 * @version 1.0
-		 */
-		public function render_subscription_shortcode( $attr, $content = NULL ) {
-
-			extract( shortcode_atts( array(
-				'success' => __( 'Settings Updated', 'mycred' )
-			), $attr ) );
-
-			if ( ! is_user_logged_in() ) return $content;
-
-			$user_id         = get_current_user_id();
-			$unsubscriptions = mycred_get_user_meta( $user_id, 'mycred_email_unsubscriptions', '', true );
-
-			if ( $unsubscriptions == '' ) $unsubscriptions = array();
-
-			// Save
-			$saved           = false;
-			if ( isset( $_REQUEST['do'] ) && $_REQUEST['do'] == 'mycred-unsubscribe' && wp_verify_nonce( $_REQUEST['token'], 'update-mycred-email-subscriptions' ) ) {
-
-				if ( isset( $_POST['mycred_email_unsubscribe'] ) && ! empty( $_POST['mycred_email_unsubscribe'] ) )
-					$new_selection = $_POST['mycred_email_unsubscribe'];
-				else
-					$new_selection = array();
-
-				mycred_update_user_meta( $user_id, 'mycred_email_unsubscriptions', '', $new_selection );
-				$unsubscriptions = $new_selection;
-				$saved           = true;
-
-			}
-
-			global $wpdb;
-
-			$email_notices   = $wpdb->get_results( $wpdb->prepare( "
-				SELECT * 
-				FROM {$wpdb->posts} notices
-
-				LEFT JOIN {$wpdb->postmeta} prefs 
-					ON ( notices.ID = prefs.post_id AND prefs.meta_key = 'mycred_email_settings' )
-
-				WHERE notices.post_type = 'mycred_email_notice' 
-					AND notices.post_status = 'publish'
-					AND ( prefs.meta_value LIKE %s OR prefs.meta_value LIKE %s );", '%s:9:"recipient";s:4:"user";%', '%s:9:"recipient";s:4:"both";%' ) );
-
-			ob_start();
-
-			if ( $saved )
-				echo '<p class="updated-email-subscriptions">' . $success . '</p>';
-
-			$url             = add_query_arg( array( 'do' => 'mycred-unsubscribe', 'user' => get_current_user_id(), 'token' => wp_create_nonce( 'update-mycred-email-subscriptions' ) ) );
-
-?>
-<form action="<?php echo esc_url( $url ); ?>" id="mycred-email-subscriptions" method="post">
-	<table class="table">
-		<thead>
-			<tr>
-				<th class="check"><?php _e( 'Unsubscribe', 'mycred' ); ?></th>
-				<th class="notice-title"><?php _e( 'Email Notice', 'mycred' ); ?></th>
-			</tr>
-		</thead>
-		<tbody>
-
-		<?php if ( ! empty( $email_notices ) ) : ?>
-		
-			<?php foreach ( $email_notices as $notice ) : $settings = $this->get_email_settings( $notice->ID ); ?>
-
-			<?php if ( $settings['label'] == '' ) continue; ?>
-
-			<tr>
-				<td class="check"><input type="checkbox" name="mycred_email_unsubscribe[]"<?php if ( in_array( $notice->ID, $unsubscriptions ) ) echo ' checked="checked"'; ?> value="<?php echo $notice->ID; ?>" /></td>
-				<td class="notice-title"><?php echo $settings['label']; ?></td>
-			</tr>
-
-			<?php endforeach; ?>
-		
-		<?php else : ?>
-
-			<tr>
-				<td colspan="2"><?php _e( 'There are no email notifications yet.', 'mycred' ); ?></td>
-			</tr>
-
-		<?php endif; ?>
-
-		</tbody>
-	</table>
-	<input type="submit" class="btn btn-primary button button-primary pull-right" value="<?php _e( 'Save Changes', 'mycred' ); ?>" />
-</form>
-<?php
-
-			$content = ob_get_contents();
-			ob_end_clean();
-
-			return apply_filters( 'mycred_render_email_subscriptions', $content, $attr );
 
 		}
 
@@ -1663,42 +1301,3 @@ if ( ! function_exists( 'mycred_load_email_notice_addon' ) ) :
 	}
 endif;
 add_filter( 'mycred_load_modules', 'mycred_load_email_notice_addon', 60, 2 );
-
-/**
- * myCRED Email Notifications Cron Job
- * @since 1.2
- * @version 1.0.1
- */
-if ( ! function_exists( 'mycred_email_notice_cron_job' ) ) :
-	function mycred_email_notice_cron_job() {
-
-		if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) return;
-
-		$email_notice = new myCRED_Email_Notice_Module();
-
-		global $wpdb;
-
-		$pending = $wpdb->get_results( "
-			SELECT * 
-			FROM {$wpdb->usermeta} 
-			WHERE meta_key = 'mycred_scheduled_email_notices';" );
-
-		if ( $pending ) {
-
-			foreach ( $pending as $instance ) {
-
-				$_instance = maybe_unserialize( $instance->meta_value );
-				$email_notice->do_email_notices( $_instance['events'], $_instance['request'] );
-
-				$wpdb->delete(
-					$wpdb->usermeta,
-					array( 'umeta_id' => $instance->umeta_id ),
-					array( '%d' )
-				);
-
-			}
-
-		}
-
-	}
-endif;

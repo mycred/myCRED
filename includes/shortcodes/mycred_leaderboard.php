@@ -23,9 +23,7 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderboard' ) ) :
 			'current'      => 0,
 			'exclude_zero' => 1,
 			'timeframe'    => ''
-		), $atts );
-
-		if ( ! MYCRED_ENABLE_LOGGING ) return '';
+		), $atts, MYCRED_SLUG . '_leaderboard' );
 
 		// Construct the leaderboard class
 		$leaderboard = mycred_get_leaderboard( $args );
@@ -39,4 +37,4 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderboard' ) ) :
 
 	}
 endif;
-add_shortcode( 'mycred_leaderboard', 'mycred_render_shortcode_leaderboard' );
+add_shortcode( MYCRED_SLUG . '_leaderboard', 'mycred_render_shortcode_leaderboard' );

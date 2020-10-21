@@ -12,7 +12,7 @@ function mycred_about_header() {
 
 ?>
 <style type="text/css">
-#mycred-badge { background: url('<?php echo plugins_url( 'assets/images/badge.png', myCRED_THIS ); ?>') no-repeat center center; background-size: 140px 160px; }
+#mycred-badge { background: url('<?php echo plugins_url( 'assets/images/badge.png', myCRED_THIS ); ?>') no-repeat center center; background-size: 140px 160px; }.dashboard_page_mycred-about #wpwrap {background-color: white;}#wpwrap #mycred-about a {color: #666;background-color: #EBEBEB;padding: 10px;text-decoration: none;border-radius: 5px;}
 </style>
 <h1><?php printf( __( 'Welcome to %s %s', 'mycred' ), $name, myCRED_VERSION ); ?></h1>
 <div class="about-text"><?php printf( 'An adaptive points management system for WordPress powered websites.', $name ); ?></div>
@@ -71,42 +71,48 @@ function mycred_about_page() {
 		<h2>Improved Management Tools</h2>
 		<div class="feature-section two-col">
 			<div class="col">
-				<img src="<?php echo plugins_url( 'assets/images/mycred-about-balance.png', myCRED_THIS ); ?>" alt="" />
-				<h3>New Balance & Log Editor</h3>
-				<p>The new balance editor allows you to adjust your users balances and add a log entry with your adjustment. You can now also see a preview of the users latest log entries.</p>
+				<img src="<?php echo plugins_url( 'assets/images/mycred16-stats-addon.png', myCRED_THIS ); ?>" alt="" />			
 			</div>
 			<div class="col">
-				<img src="<?php echo plugins_url( 'assets/images/mycred-about-hooks.png', myCRED_THIS ); ?>" alt="" />
-				<h3>Manage Hooks like Widgets</h3>
-				<p>The hook management page has been re-designed to work and look just like the widget editor in WordPress. Activating  or deactivating a hook is now a matter of drag and drop.</p>
+				<h3>Statistics 2.0</h3>
+				<p>The Statistics add-on has received a complete re-write in order to add support for showing charts and statistical data on the front end of your website. The add-on comes with pre-set types of data that you can select to show either as a table or using charts (or both).</p>								
+				<a href="https://mycred.me/guides/1-8-guide-statistics-add-on/">Documentation</a>
+			</div>
+			<div class="col">
+				<h3>New BuyCred Checkout</h3>
+				<p>One of the most requested features for buyCRED has been to making the checkout process easier to customize, so the checkout process has been completely re-written. You can now override the built-in template via your theme and style or customize the checkout page anyway you like.</p>
+				<p><a href="https://mycred.me/guides/1-8-guide-buycred-add-on-updates/">Documentation</a></p>
+			</div>
+			<div class="col">	
+				<img src="<?php echo plugins_url( 'assets/images/buycred-checkout-page.png', myCRED_THIS ); ?>" alt="" />							
 			</div>
 		</div>
 		<hr />
 		<h2>Add-on Improvements</h2>
 		<div class="feature-section two-col">
 			<div class="col">
-				<h3>Sell Content 2.0</h3>
-				<p>As of version 1.7, the sell content add-on supports sales using multiple point types! You can furthermore also set content for sale by default based on post type, category or tags.</p>
+				<h3>Ranks</h3>
+				<p>As of version 1.8, ranks can be set to be assigned to users manually, just like badges. This means that you will need to manually change your users rank as myCRED will take no action. To do this, simply edit the user in question in the admin area and select the rank you want to assign them.</p>
 			</div>
 			<div class="col">
-				<h3>Badges 1.2</h3>
-				<p>The badge editor has been completely re-written to make badge creations easier. Badges can now also have multiple requirements and you can reward users for gaining a badge.</p>
+				<h3>Email Notifications</h3>
+				<p>The email notifications add-on now supports setting up emails for specific instances based on reference.</p>
 			</div>
 		</div>
 		<hr />
 		<h2>New Shortcodes</h2>
 		<div class="feature-section three-col">
 			<div class="col">
-				<h3><code>[mycred_show_if]</code></h3>
-				<p>This shortcode can be used to wrap around content that you want to show only to those who have a certain balance and / or rank.</p>
+				<h3><code>[mycred_chart_circulation]</code></h3>
+				<p>This shortcode will render charts based on the amount of points that currently exists amongst your users for each point type.</p>
 			</div>
 			<div class="col">
-				<h3><code>[mycred_hide_if]</code></h3>
-				<p>This is the polar opposite of the mycred_show_if shortcode.</p>
+				<h3><code>[mycred_chart_gain_loss]</code></h3>
+				<p>This shortcode will render charts based on the amount of points that has been given to users vs. the total amount taken.</p>
 			</div>
 			<div class="col">
-				<h3><code>[mycred_total_since]</code></h3>
-				<p>Show your users the total number of points they have gained or lost, since a given time period e.g. this month or today.</p>
+				<h3><code>[mycred_chart_top_balances]</code></h3>
+				<p>This shortcode will render a list of balances ordered by size.</p>
 			</div>
 		</div>
 		<div class="feature-section one-col">

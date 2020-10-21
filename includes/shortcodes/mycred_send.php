@@ -22,7 +22,7 @@ if ( ! function_exists( 'mycred_render_shortcode_send' ) ) :
 			'type'   => MYCRED_DEFAULT_TYPE_KEY,
 			'class'  => 'button button-primary btn btn-primary',
 			'reload' => 0
-		), $atts ) );
+		), $atts, MYCRED_SLUG . '_send' ) );
 
 		if ( ! mycred_point_type_exists( $type ) ) return 'Point type not found.';
 
@@ -66,7 +66,7 @@ if ( ! function_exists( 'mycred_render_shortcode_send' ) ) :
 
 	}
 endif;
-add_shortcode( 'mycred_send', 'mycred_render_shortcode_send' );
+add_shortcode( MYCRED_SLUG . '_send', 'mycred_render_shortcode_send' );
 
 /**
  * myCRED Send Points Ajax
@@ -79,12 +79,12 @@ if ( ! function_exists( 'mycred_shortcode_send_points_ajax' ) ) :
 		// Security
 		check_ajax_referer( 'mycred-send-points', 'token' );
 
-		$user_id   = get_current_user_id();
+		$user_id       = get_current_user_id();
 
 		if ( mycred_force_singular_session( $user_id, 'mycred-last-send' ) )
 			wp_send_json( 'error' );
 
-		$point_type = MYCRED_DEFAULT_TYPE_KEY;
+		$point_type    = MYCRED_DEFAULT_TYPE_KEY;
 		if ( isset( $_POST['type'] ) )
 			$point_type = sanitize_text_field( $_POST['type'] );
 
@@ -92,23 +92,26 @@ if ( ! function_exists( 'mycred_shortcode_send_points_ajax' ) ) :
 		if ( ! mycred_point_type_exists( $point_type ) ) die();
 
 		// Prep
-		$recipient = (int) sanitize_text_field( $_POST['recipient'] );
-		$reference = sanitize_text_field( $_POST['reference'] );
-		$log_entry = strip_tags( trim( $_POST['log'] ), '<a>' );
+		$recipient     = (int) sanitize_text_field( $_POST['recipient'] );
+		$reference     = sanitize_text_field( $_POST['reference'] );
+		$log_entry     = strip_tags( trim( $_POST['log'] ), '<a>' );
 
 		// No sending to ourselves
 		if ( $user_id == $recipient )
 			wp_send_json( 'error' );
 
+		$mycred        = mycred( $point_type );
+
 		// Prep amount
-		$mycred = mycred( $point_type );
-		$amount = sanitize_text_field( $_POST['amount'] );
-		$amount = $mycred->number( abs( $amount ) );
+		$amount        = sanitize_text_field( $_POST['amount'] );
+		$amount        = $mycred->number( abs( $amount ) );
 
 		// Check solvency
 		$account_limit = $mycred->number( apply_filters( 'mycred_transfer_acc_limit', $mycred->zero() ) );
 		$balance       = $mycred->get_users_balance( $user_id, $point_type );
 		$new_balance   = $balance-$amount;
+
+		$data          = array( 'ref_type' => 'user' );
 
 		// Insufficient Funds
 		if ( $new_balance < $account_limit )
@@ -119,14 +122,12 @@ if ( ! function_exists( 'mycred_shortcode_send_points_ajax' ) ) :
 			$reply = 'zero';
 
 		// Check if this is the last time we can do these kinds of amounts
-		elseif ( $new_balance-$amount < $account_limit )
+		elseif ( $new_balance - $amount < $account_limit )
 			$reply = 'minus';
 
 		// Else everything is fine
 		else
 			$reply = 'done';
-
-		$data = array( 'ref_type' => 'user' );
 
 		// First deduct points
 		if ( $mycred->add_creds(
