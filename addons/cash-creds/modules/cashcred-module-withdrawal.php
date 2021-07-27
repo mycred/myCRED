@@ -1114,7 +1114,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				'currency'   => __( 'Currency', 'mycred' )
 			);
 
-			check_site_update_post_meta( $post_id, 'status', $new_status );
+			mycred_cashcred_update_status( $post_id, 'status', $new_status );
 
 			mycred_update_user_meta( $_POST['user_id'], cashcred_get_user_settings(), '', $updated_user_settings );
 
@@ -1124,7 +1124,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				$old_value = check_site_get_post_meta( $post_id, $meta_key, true );
 
 				if ( $new_value != $old_value ) {
-					check_site_update_post_meta( $post_id, $meta_key, $new_value );
+					mycred_cashcred_update_status( $post_id, $meta_key, $new_value );
 					$changed_fields[] = $withdraw_request_messages[ $meta_key ];
 				}
 				

@@ -304,7 +304,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 					return;
 				}
 
-				$user_id     = get_current_user_id();
+				$user_id = apply_filters('mycred_woo_gateway_user_id', get_current_user_id(), $order_id);
 
 				// Make sure we have not been excluded
 				if ( $this->mycred->exclude_user( $user_id ) ) {

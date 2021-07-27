@@ -232,7 +232,7 @@ jQuery(function($) {
 
 				if ( $( '#toggle-advanced-options' ).hasClass( 'open' ) )
 					$( '#toggle-advanced-options' ).click();
-
+				
 
 			},
 			success    : function( response ) {

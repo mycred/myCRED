@@ -199,7 +199,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['cash-creds'] = array(	
 				'name'        => 'cashCRED',
 				'description' => __( '', 'mycred' ),
-				'addon_url'   => '#',
+				'addon_url'   => 'https://codex.mycred.me/chapter-iii/cashcred/',
 				'version'     => '1.0',
 				'author'      => 'Gabriel S Merovingi',
 				'author_url'  => 'https://www.merovingi.com',
@@ -211,7 +211,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			$installed['banking'] = array(
 				'name'        => 'Central Deposit',
 				'description' => __( 'Setup recurring payouts or offer / charge interest on user account balances.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/banking/',
+				'addon_url'   => 'https://codex.mycred.me/chapter-iii/central-deposit-add-on/',
 				'version'     => '2.0',
 				'author'      => 'myCred',
 				'author_url'  => 'https://www.mycred.me',

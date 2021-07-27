@@ -35,22 +35,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			parent::__construct( 'myCRED_Email_Notice_Module', array(
 				'module_name' => 'emailnotices',
-				'defaults'    => array(
-					'from'        => array(
-						'name'        => get_bloginfo( 'name' ),
-						'email'       => get_bloginfo( 'admin_email' ),
-						'reply_to'    => get_bloginfo( 'admin_email' )
-					),
-					'filter'      => array(
-						'subject'     => 0,
-						'content'     => 0
-					),
-					'use_html'    => true,
-					'content'     => '',
-					'styling'     => '',
-					'send'        => '',
-					'override'    => 0
-				),
+				'defaults'    => mycred_get_addon_defaults( 'emailnotices' ),
 				'register'    => false,
 				'add_to_core' => true,
 				'menu_pos'    => 90
@@ -75,14 +60,16 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			add_action( 'mycred_badge_level_reached',    array( $this, 'badge_check' ), 10, 3 );
 			add_action( 'mycred_user_got_promoted',      array( $this, 'rank_promotion' ), 10, 4 );
-			add_action( 'mycred_user_got_demoted',       array( $this, 'rank_demotion' ), 10, 4 );
-
-			add_action( 'mycred_send_email_notices',     'mycred_email_notice_cron_job' );
+			add_action( 'mycred_user_got_demoted',       array( $this, 'rank_demotion' ), 10, 4 );		
+            
+            add_action( 'mycred_send_email_notices',     'mycred_email_notice_cron_job' );
 
 			add_shortcode( MYCRED_SLUG . '_email_subscriptions', 'mycred_render_email_subscriptions' );
 
 			add_action( 'mycred_admin_enqueue',          array( $this, 'enqueue_scripts' ), $this->menu_pos );
 			add_action( 'mycred_add_menu',               array( $this, 'add_to_menu' ), $this->menu_pos );
+			
+            add_action( 'mycred_after_payment_request',  array( $this, 'after_payment_request' ), 10, 2);	
 
 		}
 
@@ -848,6 +835,46 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		</div>
 	</div>
 </div>
+<div class="row">
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<h3><?php _e( 'Badge Related', 'mycred' ); ?></h3>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<strong>%badge_title%</strong>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div><?php _e( 'Gained badge title', 'mycred' ); ?></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<strong>%badge_image%</strong>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div><?php _e( 'Gained badge image', 'mycred' ); ?></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<h3><?php _e( 'Rank Related', 'mycred' ); ?></h3>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<strong>%rank_title%</strong>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div><?php _e( 'Users rank title', 'mycred' ); ?></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<strong>%rank_image%</strong>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div><?php _e( 'Users rank image', 'mycred' ); ?></div>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 
 		}
@@ -1102,6 +1129,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 		}
 
+
 		/**
 		 * Rank Demotions
 		 * @since 1.7.6
@@ -1135,6 +1163,48 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			}
 
+		}
+		
+		/**
+		 * Cashcred Pending
+		 * @since 2.1.1
+		 * @version 1.0
+		 */
+		public function after_payment_request( $payment_withdrawal_request , $meta_value ) {
+
+            $point_type = $payment_withdrawal_request['point_type'];
+			$user_id = $payment_withdrawal_request['user_id'];
+
+			$status = 'pending';
+			if( $meta_value == 'Approved' )
+			    $status = 'approved';
+			elseif( $meta_value == 'Cancelled' )
+			    $status = 'cancel';
+			    
+			$emails  = mycred_get_event_emails( $point_type, 'generic', 'cashcred_' . $status );
+			if ( empty( $emails ) ) return;
+			$mycred     = mycred( $point_type );
+			$balance    = $payment_withdrawal_request['user_balance'];
+
+			$request    = array(
+				'ref'      => 'cashcred_payment_process',
+				'user_id'  => $user_id,
+				'amount'   => $payment_withdrawal_request['points'],
+				'entry'    => 'cashcred_payment_request',
+				'ref_id'   => $payment_withdrawal_request['post_id'],
+				'data'     => array( 'ref_type' => 'post' ),
+				'type'     => $point_type,
+				'new'      => $balance,
+				'old'      => $balance
+			);
+
+			foreach ( $emails as $notice_id ) {
+				// Respect unsubscriptions
+				if ( mycred_user_wants_email( $user_id, $notice_id ) )
+					mycred_send_new_email( $notice_id, $request, $point_type );
+
+			}
+		
 		}
 
 		/**

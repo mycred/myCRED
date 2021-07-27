@@ -35,18 +35,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			parent::__construct( 'myCRED_Sell_Content_Module', array(
 				'module_name' => 'sell_content',
 				'register'    => false,
-				'defaults'    => array(
-					'post_types'  => 'post,page',
-						'filters'     => array(),
-					'type'        => array( MYCRED_DEFAULT_TYPE_KEY ),
-					'reload'      => 0,
-					'working'     => 'Processing ...',
-					'templates'   => array(
-						'members'     => '<div class="text-center"><h3>Premium Content</h3><p>Buy access to this content.</p><p>%buy_button%</p></div>',
-						'visitors'    => '<div class="text-center"><h3>Premium Content</h3><p>Login to buy access to this content.</p></div>',
-						'cantafford'  => '<div class="text-center"><h3>Premium Content</h3><p>Buy access to this content.</p><p><strong>Insufficient Funds</strong></p></div>'
-					)
-				),
+				'defaults'    => mycred_get_addon_defaults( 'sell_content' ),
 				'add_to_core' => true
 			) );
 
@@ -897,7 +886,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 				'textarea_rows' => 10
 			) );
 
-			echo '<p>' . $this->core->available_template_tags( array( 'post' ) ) . '</p>';
+			echo '<p>' . $this->core->available_template_tags( array( 'post' ), '%price%' ) . '</p>';
 
 ?>
 		</div>

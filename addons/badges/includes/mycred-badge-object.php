@@ -103,8 +103,17 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 				$this->manual = true;
 
 			// Indicate open badge
-			if ( absint( mycred_get_post_meta( $this->post_id, 'open_badge', true ) ) === 1 )
-				$this->open_badge = true;
+			if ( absint( mycred_get_post_meta( $this->post_id, 'open_badge', true ) ) === 1 ) {
+ 
+				$badge_setting = mycred_get_addon_settings( 'badges' );
+
+				if ( isset( $badge_setting['open_badge'] ) && $badge_setting['open_badge'] === 1 ) {
+					
+					$this->open_badge = true;
+
+				}
+			
+			}
 
 			// If we requested a particular level
 			if ( $level_id !== NULL )
@@ -228,7 +237,7 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 				return absint( $mycred_current_account->badge_ids[ $this->post_id ] );
 
 			$current_level = mycred_get_user_meta( $user_id, $this->user_meta_key, '', true );
-			$current_level = ( ! empty( $current_level ) ) ? absint( $current_level ) : false;
+			$current_level = ( ! empty( $current_level ) || $current_level === '0' ) ? absint( $current_level ) : false;
 
 			return $current_level;
 
@@ -718,8 +727,7 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 			$image_width  = ( $this->image_width !== false ) ? ' width="' . esc_attr( $this->image_width ) . '"' : '';
 			$image_height = ( $this->image_height !== false ) ? ' height="' . esc_attr( $this->image_height ) . '"' : '';
 
-			if ( !$image_url )
-			    return false;
+			if ( ! $image_url ) return false;
 
 			$html         = '<img src="' . esc_url( $image_url ) . '" class="' . MYCRED_SLUG . '-badge-image badge-level' . esc_attr( $level ) . '" title="' . esc_attr( $this->title ) . '" alt="' . esc_attr( $this->title ) . '"' . $image_width . $image_height . ' />';
 

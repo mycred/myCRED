@@ -32,30 +32,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 			parent::__construct( 'myCRED_Transfer_Module', array(
 				'module_name' => 'transfers',
-				'defaults'    => array(
-					'types'      => array( MYCRED_DEFAULT_TYPE_KEY ),
-					'logs'       => array(
-						'sending'   => 'Transfer of %plural% to %display_name%',
-						'receiving' => 'Transfer of %plural% from %display_name%'
-					),
-					'errors'     => array(
-						'low'       => 'You do not have enough %plural% to send.',
-						'over'      => 'You have exceeded your %limit% transfer limit.'
-					),
-					'templates'  => array(
-						'login'     => '',
-						'balance'   => 'Your current balance is %balance%',
-						'limit'     => 'Your current %limit% transfer limit is %left%',
-						'button'    => 'Transfer'
-					),
-					'autofill'   => 'user_login',
-					'reload'     => 1,
-					'message'    => 0,
-					'limit'      => array(
-						'amount'    => 1000,
-						'limit'     => 'none'
-					)
-				),
+				'defaults'    => mycred_get_addon_defaults( 'transfers' ),
 				'register'    => false,
 				'add_to_core' => true
 			) );

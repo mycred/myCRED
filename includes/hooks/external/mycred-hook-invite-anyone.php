@@ -71,7 +71,7 @@ function mycred_load_invite_anyone_hook() {
 			if ( $this->prefs['accept_invite']['creds'] != 0 ) {
 
 				// Hook into user activation
-				if ( function_exists( 'buddypress' ) && apply_filters( 'bp_core_signup_send_activation_key', true ) )
+				if ( function_exists( 'buddypress' ) )
 					add_action( 'bp_core_activated_user', array( $this, 'verified_signup' ) );
 
 				add_action( 'accepted_email_invite', array( $this, 'accept_invite' ), 10, 2 );
@@ -157,7 +157,7 @@ function mycred_load_invite_anyone_hook() {
 				// Award Points
 				$run = true;
 
-				if ( function_exists( 'buddypress' ) && apply_filters( 'bp_core_signup_send_activation_key', true ) ) {
+				if ( function_exists( 'buddypress' ) ) {
 
 					$run = false;
 

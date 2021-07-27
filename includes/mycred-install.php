@@ -9,7 +9,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.2
  */
 if ( ! class_exists( 'myCRED_Install' ) ) :
-	final class myCRED_Install {
+	final class myCRED_Install{
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -123,7 +123,7 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		 * @version 1.4
 		 */
 		public static function reactivate() {
-		
+
 			$version = get_option( 'mycred_version', false );
 			do_action( 'mycred_reactivation', $version );
 
@@ -172,6 +172,24 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 
 		}
 
+        /**
+         * Checks if set to remove on installation
+         * @param $key
+         * @return bool
+         * @since 2.1.1
+         * @version 1.0
+         */
+        public static function remove_setting( $key ) {
+
+            $hooks = mycred_get_option( 'mycred_pref_core', false );
+
+            if ( is_array( $hooks ) && in_array( $key, $hooks ) )
+                if ( $hooks['uninstall'][$key] == 1 )
+                    return true;
+
+            return false;
+        }
+
 		/**
 		 * Uninstall
 		 * Removes all myCRED related data from the database.
@@ -180,25 +198,16 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		 */
 		public static function uninstall() {
 
-			global $wpdb;
+            global $wpdb;
 
 			$mycred_types = mycred_get_types();
 
-			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
 			// Options to delete
-			$options_to_delete = array(
-				'mycred_setup_completed',
-				'mycred_pref_core',
-				$option_id,
-				'mycred_pref_addons',
+			$options_to_delete  = array(
 				'mycred_pref_bank',
 				'mycred_pref_remote',
-				'mycred_types',
 				'woocommerce_mycred_settings',
 				'mycred_sell_content_one_seven_updated',
-				'mycred_version',
-				'mycred_version_db',
-				'mycred_key',
 				'mycred_network',
 				'widget_mycred_widget_balance',
 				'widget_mycred_widget_list',
@@ -211,37 +220,39 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 				MYCRED_SLUG . '-last-clear-stats'
 			);
 
-			foreach ( $mycred_types as $type => $label ) {
-				$options_to_delete[] = 'mycred_pref_core_' . $type;
-				$options_to_delete[] = 'mycred-cache-total-' . $type;
-			}
-			$options_to_delete = apply_filters( 'mycred_uninstall_options', $options_to_delete );
+            $can_remove_hooks = self::remove_setting( 'hooks' );
 
-			if ( ! empty( $options_to_delete ) ) {
+            //Delete Hooks
+            if ( $can_remove_hooks ) {
 
-				// Multisite installations where we are not using the "Master Template" feature
-				if ( is_multisite() && ! mycred_override_settings() ) {
+                $options_to_delete[] = 'mycred_pref_hooks';
 
-					// Remove settings on all sites where myCRED was enabled
-					$site_ids = get_sites( array( 'fields' => 'ids' ) );
-					foreach ( $site_ids as $site_id ) {
-
-						// Check if myCRED was installed
-						$installed = get_blog_option( $site_id, 'mycred_setup_completed', false );
-						if ( $installed === false ) continue;
-
-						foreach ( $options_to_delete as $option_id )
-							delete_blog_option( $site_id, $option_id );
-
-					}
-
+                foreach ( $mycred_types as $type => $label ) {
+					$options_to_delete[] = 'mycred_pref_hooks_' . $type;
 				}
+            
+            }
 
-				else {
+            $can_remove_addons = self::remove_setting( 'addon' );
 
-					foreach ( $options_to_delete as $option_id )
-						delete_option( $option_id );
+            //Delete All Addons Settings
+            if ( $can_remove_addons )
+                $options_to_delete[] = 'mycred_pref_addons';
 
+            $can_remove_types = self::remove_setting( 'types' );
+
+			if ( $can_remove_types ) {
+                
+                $options_to_delete[] = 'mycred_setup_completed';
+				$options_to_delete[] = 'mycred_version';
+				$options_to_delete[] = 'mycred_version_db';
+				$options_to_delete[] = 'mycred_key';
+                $options_to_delete[] = 'mycred_types';
+                $options_to_delete[] = 'mycred_pref_core';
+
+                foreach ( $mycred_types as $type => $label ) {
+					$options_to_delete[] = 'mycred_pref_core_' . $type;
+					$options_to_delete[] = 'mycred-cache-total-' . $type;
 				}
 
 			}
@@ -264,7 +275,46 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 			}
 
 			// Delete all custom post types created by myCRED
-			$post_types                  = get_mycred_post_types();
+			$post_types       = array( 'buycred_payment' );
+
+			// Coupons
+			$post_types[] = ( defined( 'MYCRED_COUPON_KEY' ) ) ? MYCRED_COUPON_KEY : 'mycred_coupon';
+
+			if ( ! defined( 'MYCRED_RANK_KEY' ) ) define( 'MYCRED_RANK_KEY', 'mycred_rank' );
+			if ( ! defined( 'MYCRED_BADGE_KEY' ) ) define( 'MYCRED_BADGE_KEY', 'mycred_badge' );
+			if ( ! defined( 'MYCRED_BADGE_CATEGORY' ) ) define( 'MYCRED_BADGE_CATEGORY', 'mycred_badge' );
+
+			// Badges
+			$can_remove_badges  = self::remove_setting( 'badges' );
+
+			if ( $can_remove_badges ) {
+				
+				$post_types[] = MYCRED_BADGE_KEY;
+
+				$terms = get_terms( 
+					array(
+                    	'hide_empty' => false
+                	) 	
+                );
+
+                foreach ( $terms as $term ) {
+
+                    if ( $term->taxonomy == MYCRED_BADGE_CATEGORY )
+                        wp_delete_term( $term->term_id, MYCRED_BADGE_CATEGORY );
+ 
+                }
+				
+			}
+
+			// Ranks
+			$can_remove_ranks = self::remove_setting( 'ranks' );
+
+			if ( $can_remove_ranks ) {
+				
+				$post_types[] = MYCRED_RANK_KEY;
+
+			}
+
 			$mycred_post_types_to_delete = apply_filters( 'mycred_uninstall_post_types', $post_types );
 
 			if ( ! empty( $mycred_post_types_to_delete ) ) {
@@ -274,7 +324,7 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 					if ( $posts->have_posts() ) {
 
 						// wp_delete_post() will also handle all post meta deletions
-						foreach ( $query->posts as $post_id )
+						foreach ( $posts->posts as $post_id )
 							wp_delete_post( $post_id, true );
 
 					}
@@ -283,97 +333,168 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 				}
 			}
 
-			if ( ! defined( 'MYCRED_RANK_KEY' ) ) define( 'MYCRED_RANK_KEY', 'mycred_rank' );
-			if ( ! defined( 'MYCRED_BADGE_KEY' ) ) define( 'MYCRED_BADGE_KEY', 'mycred_badge' );
+            $can_remove_users_data =  self::remove_setting( 'users' );
+			
+			//Delete Users' Data
+            if ( $can_remove_users_data ) {
+                // Delete user meta
+                // 'meta_key' => true (exact key) / false (use LIKE)
+                $mycred_usermeta_to_delete = array(
+                    MYCRED_RANK_KEY                => true,
+                    'mycred-last-send'             => true,
+                    'mycred-last-linkclick'        => true,
+                    'mycred-last-transfer'         => true,
+                    'mycred_affiliate_link'        => true,
+                    'mycred_email_unsubscriptions' => true,
+                    'mycred_transactions'          => true,
+                    MYCRED_BADGE_KEY . '%'         => false,
+                    MYCRED_RANK_KEY . '%'          => false,
+                    'mycred_epp_%'                 => false,
+                    'mycred_payments_%'            => false,
+                    'mycred_comment_limit_post_%'  => false,
+                    'mycred_comment_limit_day_%'   => false,
+                    'mycred-last-clear-stats'      => true
+                );
 
-			// Delete user meta
-			// 'meta_key' => true (exact key) / false (use LIKE)
-			$mycred_usermeta_to_delete = array(
-				MYCRED_RANK_KEY                => true,
-				'mycred-last-send'             => true,
-				'mycred-last-linkclick'        => true,
-				'mycred-last-transfer'         => true,
-				'mycred_affiliate_link'        => true,
-				'mycred_email_unsubscriptions' => true,
-				'mycred_transactions'          => true,
-				MYCRED_BADGE_KEY . '%'         => false,
-				MYCRED_RANK_KEY . '%'          => false,
-				'mycred_epp_%'                 => false,
-				'mycred_payments_%'            => false,
-				'mycred_comment_limit_post_%'  => false,
-				'mycred_comment_limit_day_%'   => false,
-				'mycred-last-clear-stats'      => true
-			);
+                if ( MYCRED_UNINSTALL_CREDS ) {
 
-			if ( MYCRED_UNINSTALL_CREDS ) {
+                    foreach ( $mycred_types as $type => $label ) {
 
-				foreach ( $mycred_types as $type => $label ) {
+                        $mycred_usermeta_to_delete[ $type ]                                = true;
+                        $mycred_usermeta_to_delete[ $type . '_total' ]                     = true;
+                        $mycred_usermeta_to_delete[ 'mycred_ref_counts-' . $type ]         = true;
+                        $mycred_usermeta_to_delete[ 'mycred_ref_sums-' . $type ]           = true;
+                        $mycred_usermeta_to_delete[ $type . '_comp' ]                      = true;
+                        $mycred_usermeta_to_delete[ 'mycred_banking_rate_' . $type ]       = true;
+                        $mycred_usermeta_to_delete[ 'mycred_buycred_rates_' . $type ]      = true;
+                        $mycred_usermeta_to_delete[ 'mycred_sell_content_share_' . $type ] = true;
+                        $mycred_usermeta_to_delete[ 'mycred_transactions_' . $type ]       = true;
 
-					$mycred_usermeta_to_delete[ $type ]                                = true;
-					$mycred_usermeta_to_delete[ $type . '_total' ]                     = true;
-					$mycred_usermeta_to_delete[ 'mycred_ref_counts-' . $type ]         = true;
-					$mycred_usermeta_to_delete[ 'mycred_ref_sums-' . $type ]           = true;
-					$mycred_usermeta_to_delete[ $type . '_comp' ]                      = true;
-					$mycred_usermeta_to_delete[ 'mycred_banking_rate_' . $type ]       = true;
-					$mycred_usermeta_to_delete[ 'mycred_buycred_rates_' . $type ]      = true;
-					$mycred_usermeta_to_delete[ 'mycred_sell_content_share_' . $type ] = true;
-					$mycred_usermeta_to_delete[ 'mycred_transactions_' . $type ]       = true;
+                    }
 
-				}
+                }
+                $mycred_usermeta_to_delete = apply_filters( 'mycred_uninstall_usermeta', $mycred_usermeta_to_delete );
 
-			}
-			$mycred_usermeta_to_delete = apply_filters( 'mycred_uninstall_usermeta', $mycred_usermeta_to_delete );
+                if ( ! empty( $mycred_usermeta_to_delete ) ) {
+                    foreach ( $mycred_usermeta_to_delete as $meta_key => $exact ) {
 
-			if ( ! empty( $mycred_usermeta_to_delete ) ) {
-				foreach ( $mycred_usermeta_to_delete as $meta_key => $exact ) {
+                        if ( $exact )
+                            delete_metadata( 'user', 0, $meta_key, '', true );
+                        else
+                            $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s;", $meta_key ) );
 
-					if ( $exact )
-						delete_metadata( 'user', 0, $meta_key, '', true );
-					else
-						$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s;", $meta_key ) );
+                    }
+                }
+            }
 
-				}
-			}
+            $table_name = '';
 
-			// Delete log table
-			if ( MYCRED_UNINSTALL_LOG ) {
+            if( defined( 'MYCRED_LOG_TABLE' ) ) {
+                     
+                $table_name = MYCRED_LOG_TABLE;
+            
+            }
+            else {
 
-				if ( defined( 'MYCRED_LOG_TABLE' ) )
-					$table_name = MYCRED_LOG_TABLE;
+                if ( mycred_centralize_log() )
+                    $table_name = $wpdb->base_prefix . 'myCRED_log';
+                else
+                    $table_name = $wpdb->prefix . 'myCRED_log';
 
-				else {
+            }
 
-					if ( mycred_centralize_log() )
-						$table_name = $wpdb->base_prefix . 'myCRED_log';
-					else
-						$table_name = $wpdb->prefix . 'myCRED_log';
+            $can_remove_logs = self::remove_setting( 'logs' );
 
-				}
+            if ( ! $can_remove_types && $can_remove_logs ) {
+            	
+            	if( ! is_multisite() || ( is_multisite() && mycred_centralize_log() ) ) {
 
-				if ( ! is_multisite() || ( is_multisite() && mycred_centralize_log() ) ) {
+                    $wpdb->query( "TRUNCATE TABLE {$table_name};" );
 
-					$wpdb->query( "DROP TABLE IF EXISTS {$table_name};" );
+                }
+                else {
 
-				}
-				else {
+                    $site_ids = get_sites( array( 'fields' => 'ids' ) );
+                    foreach ( $site_ids as $site_id ) {
 
-					$site_ids = get_sites( array( 'fields' => 'ids' ) );
-					foreach ( $site_ids as $site_id ) {
+                        $site_id = absint( $site_id );
+                        if ( $site_id === 0 ) continue;
 
-						$site_id = absint( $site_id );
-						if ( $site_id === 0 ) continue;
+                        $table = $wpdb->base_prefix . $site_id . '_myCRED_log';
+                        if ( $site === 1 )
+                            $table_name = $wpdb->base_prefix . 'myCRED_log';
 
-						$table = $wpdb->base_prefix . $site_id . '_myCRED_log';
-						if ( $site === 1 )
-							$table_name = $wpdb->base_prefix . 'myCRED_log';
+                        $wpdb->query( "TRUNCATE TABLE {$table_name};" );
 
-						$wpdb->query( "DROP TABLE IF EXISTS {$table_name};" );
+                    }
 
-					}
+                }
 
-				}
+            }
 
-			}
+			//Delete Logs
+			if( $can_remove_types ) {
+
+                //Delete log table
+                if( MYCRED_UNINSTALL_LOG ) {
+                    
+                    if( ! is_multisite() || ( is_multisite() && mycred_centralize_log() ) ) {
+
+                        $wpdb->query( "DROP TABLE IF EXISTS {$table_name};" );
+
+                    }
+                    else {
+
+                        $site_ids = get_sites( array( 'fields' => 'ids' ) );
+                        foreach ( $site_ids as $site_id ) {
+
+                            $site_id = absint( $site_id );
+                            if ( $site_id === 0 ) continue;
+
+                            $table = $wpdb->base_prefix . $site_id . '_myCRED_log';
+                            if ( $site === 1 )
+                                $table_name = $wpdb->base_prefix . 'myCRED_log';
+
+                            $wpdb->query( "DROP TABLE IF EXISTS {$table_name};" );
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+			$options_to_delete = apply_filters( 'mycred_uninstall_options', $options_to_delete );
+
+            if ( ! empty( $options_to_delete ) ) {
+
+                // Multisite installations where we are not using the "Master Template" feature
+                if ( is_multisite() && ! mycred_override_settings() ) {
+
+                    // Remove settings on all sites where myCRED was enabled
+                    $site_ids = get_sites( array( 'fields' => 'ids' ) );
+                    foreach ( $site_ids as $site_id ) {
+
+                        // Check if myCRED was installed
+                        $installed = get_blog_option( $site_id, 'mycred_setup_completed', false );
+                        if ( $installed === false ) continue;
+
+                        foreach ( $options_to_delete as $option_id )
+                            delete_blog_option( $site_id, $option_id );
+
+                    }
+
+                }
+
+                else {
+
+                    foreach ( $options_to_delete as $option_id )
+                        delete_option( $option_id );
+
+                }
+
+            }
 
 			// Clear stats data (if enabled)
 			if ( function_exists( 'mycred_delete_stats_data' ) )

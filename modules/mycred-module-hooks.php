@@ -17,6 +17,7 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 		public function __construct( $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
 			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
+
 			parent::__construct( 'myCRED_Hooks_Module', array(
 				'module_name' => 'hooks',
 				'option_id'   => $option_id,
@@ -552,8 +553,12 @@ jQuery(function($) {
 						$active_hooks = array_unique( $active_hooks, SORT_STRING );
 						$this->active = $active_hooks;
 
+						if ( $ctype != MYCRED_DEFAULT_TYPE_KEY ) {
+							$option_id = $option_id . '_' . $ctype;
+						}
+
 						// Update our settings to activate the hook(s)
-						mycred_update_option( $this->option_id, array(
+						mycred_update_option( $option_id, array(
 							'active'     => $this->active,
 							'installed'  => $installed,
 							'hook_prefs' => $this->hook_prefs
@@ -592,11 +597,13 @@ jQuery(function($) {
 			if ( isset( $_POST[$mycred_pref_hooks_save] ) || isset($_POST[ $mycred_pref_hooks_save.'_' . $ctype ]) ) {
 
 				// Get hook settings
-				if ( $ctype == MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[$mycred_pref_hooks_save]['hook_prefs'] ) )
+				if ( $ctype == MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[$mycred_pref_hooks_save]['hook_prefs'] ) ) {
 					$hook_prefs = $_POST[$mycred_pref_hooks_save]['hook_prefs'][ $hook_id ];
-
-				elseif ( $ctype != MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[ $mycred_pref_hooks_save.'_' . $ctype ]['hook_prefs'] ) )
+				}
+				elseif ( $ctype != MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[ $mycred_pref_hooks_save.'_' . $ctype ]['hook_prefs'] ) ) {
 					$hook_prefs = $_POST[ $mycred_pref_hooks_save.'_' . $ctype ]['hook_prefs'][ $hook_id ];
+					$mycred_pref_hooks_save = $mycred_pref_hooks_save . '_' . $ctype;
+				}
 
 				if ( $hook_prefs === false ) die;
 
@@ -614,15 +621,17 @@ jQuery(function($) {
 
 			}
 
+			$hooks_update = apply_filters( 'mycred_before_hooks_save', $this, $mycred_pref_hooks_save, $hook_id );
+
 			// Update our settings to activate the hook(s)
-			mycred_update_option( $this->option_id, array(
-				'active'     => $this->active,
+			mycred_update_option( $mycred_pref_hooks_save, array(
+				'active'     => $hooks_update->active,
 				'installed'  => $installed,
-				'hook_prefs' => $this->hook_prefs
+				'hook_prefs' => $hooks_update->hook_prefs
 			) );
 
 			if ( isset( $_POST['mycred_pref_hooks'] ) || isset($_POST[ 'mycred_pref_hooks_' . $ctype ]) ) 
-			    $this->call( 'preferences', $installed[ $hook_id ]['callback'] );
+			    $hooks_update->call( 'preferences', $installed[ $hook_id ]['callback'] );
 
 			die;
 

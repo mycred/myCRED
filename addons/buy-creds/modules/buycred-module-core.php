@@ -596,7 +596,8 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 					$type_id = sanitize_key( $type_id );
 					if ( ! mycred_point_type_exists( $type_id ) ) continue;
 
-					$point_types[]    = $type_id;
+					if ( isset( $setup['enabled'] ) ) 
+						$point_types[]    = $type_id;
 
 					$settings         = array();
 					$settings['min']  = sanitize_text_field( $setup['min'] );

@@ -89,11 +89,16 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 		/**
 		 * Insert Export Front
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		public function insert_export_front( $user_id ) {
 
-			if ( absint( $this->export['front'] ) !== 1 || ! is_user_logged_in() || get_current_user_id() != $user_id ) return;
+		    if ( empty( $user_id ) )
+		        $user_id = get_current_user_id();
+
+		    if ( !empty( $user_id )  && get_current_user_id() != $user_id ) return;
+
+			if ( absint( $this->export['front'] ) !== 1 || ! is_user_logged_in() ) return;
 
 			// No need to export if there is nothing to export
 			if ( ! mycred_user_has_log_entries( $user_id ) ) return;

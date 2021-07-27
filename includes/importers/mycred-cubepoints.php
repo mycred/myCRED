@@ -27,7 +27,7 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 			$this->import_page   = MYCRED_SLUG . '-import-cp';
 			$this->delimiter     = empty( $_POST['delimiter'] ) ? ',' : (string) strip_tags( trim( $_POST['delimiter'] ) );
 			$this->documentation = 'http://codex.mycred.me/chapter-ii/import-data/import-cubepoints/';
-
+			
 		}
 
 		/**
@@ -72,6 +72,8 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 			return ( $enc == 'UTF-8' ) ? $data : utf8_encode( $data );
 		}
 
+	
+
 		/**
 		 * Checks CubePoints Installation
 		 * @version 1.1
@@ -89,6 +91,66 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 			return true;
 
 		}
+
+		public function add_to_log( $ref = '', $user_id = '', $amount = '', $entry = '', $ref_id = '', $data = '', $type = NULL, $entrytime  ) {
+
+			// Minimum Requirements: Reference not empty, User ID not empty and Amount is not empty
+			if ( empty( $ref ) || empty( $user_id ) || empty( $amount ) || empty( $entry ) ) return false;
+
+			$myCred = mycred($type);
+
+			// Prep amount
+			$amount    = $myCred->number( $amount );
+			$amount    = $myCred->enforce_max( $user_id, $amount );
+			if ( $amount === $myCred->zero() || $amount == 0 ) return false;
+			
+			$insert_id = 0;
+
+			mycred_update_users_history( $user_id, $type, $ref, $ref_id, $amount );
+
+			// Option to disable logging
+			if ( MYCRED_ENABLE_LOGGING ) {
+
+				global $wpdb, $mycred_types;
+
+				// Strip HTML from log entry
+				$entry = $myCred->allowed_tags( $entry );
+
+				// Point type
+				if ( $type === NULL || ! array_key_exists( $type, $mycred_types ) )
+					$type = $myCred->get_point_type_key();
+
+				
+				$insert = array(
+					'ref'     => $ref,
+					'ref_id'  => $ref_id,
+					'user_id' => (int) $user_id,
+					'creds'   => $amount,
+					'ctype'   => $type,
+					'time'    => $entrytime,
+					'entry'   => $entry,
+					'data'    => ( is_array( $data ) || is_object( $data ) ) ? serialize( $data ) : $data
+				);
+
+				// Insert into DB
+				$wpdb->insert(
+					$myCred->log_table,
+					$insert,
+					array( '%s', '%d', '%d', '%s', '%s', '%d', '%s', ( is_numeric( $data ) ) ? '%d' : '%s' )
+				);
+
+				$insert_id = $wpdb->insert_id;
+
+				wp_cache_delete( 'mycred_references' . $type, MYCRED_SLUG );
+
+				delete_transient( 'mycred_log_entries' );
+
+			}
+
+			return $insert;
+
+		}
+
 
 		/**
 		 * Import Function
@@ -108,6 +170,8 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 
 			if ( ! mycred_point_type_exists( $point_type ) ) $point_type = MYCRED_DEFAULT_TYPE_KEY;
 			$mycred     = mycred( $type );
+
+			
 
 			// Import Log
 			if ( $action == 'log' || $action == 'both' ) {
@@ -251,7 +315,9 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 						if ( $ref_id === false && ! empty( $entry_data ) && ! is_array( $entry_data ) ) $ref_id = absint( $entry->data );
 						if ( $ref_id === false ) $ref_id = 0;
 
-						$mycred->add_to_log( $reference, $entry->uid, $entry->points, $log_entry, $ref_id, $data, $point_type );
+						 $this->add_to_log( $reference, $entry->uid, $entry->points, $log_entry, $ref_id, $data, $point_type, $entry->timestamp );
+
+						
 
 						$loop ++;
 						$this->imported++;

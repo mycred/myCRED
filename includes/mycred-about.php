@@ -400,7 +400,7 @@ function mycred_about_page() {
 				
 				<div class="button-wrap mycred-clear">
 					<div class="left">
-						<?php
+						<?php 
 						if ( !is_mycred_ready() ) {
 						?>
 							<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" onclick="startTour()" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange">
@@ -410,7 +410,7 @@ function mycred_about_page() {
 						}
 						?>
 					</div>
-					<div class="<?php if ( is_mycred_ready() ) echo 'center'; else echo 'right'; ?>">
+					<div class="<?php echo ( is_mycred_ready() ? 'center' : 'right' ); ?>">
 						<a href="https://codex.mycred.me/" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-grey" target="_blank" rel="noopener noreferrer">
 							Documentation
 						</a>

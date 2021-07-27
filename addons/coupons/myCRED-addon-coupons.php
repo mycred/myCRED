@@ -33,16 +33,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 			parent::__construct( 'myCRED_Coupons_Module', array(
 				'module_name' => 'coupons',
-				'defaults'    => array(
-					'log'         => 'Coupon redemption',
-					'invalid'     => 'This is not a valid coupon',
-					'expired'     => 'This coupon has expired',
-					'user_limit'  => 'You have already used this coupon',
-					'min'         => 'A minimum of %amount% is required to use this coupon',
-					'max'         => 'A maximum of %amount% is required to use this coupon',
-					'excluded'    => 'You can not use coupons.',
-					'success'     => '%amount% successfully deposited into your account'
-				),
+				'defaults'    => mycred_get_addon_defaults( 'coupons' ),
 				'register'    => false,
 				'add_to_core' => true,
 				'menu_pos'    => 80

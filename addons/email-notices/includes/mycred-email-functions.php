@@ -94,6 +94,13 @@ if ( ! function_exists( 'mycred_get_email_instances' ) ) :
 			$instances['transfer_in']  = __( 'user receives a transfer', 'mycred' );
 		}
 
+		if ( class_exists( 'myCRED_cashCRED_Module' ) ) {
+			$instances['cashcred_approved'] = __( 'cashcred withdraw approval', 'mycred' );
+			$instances['cashcred_pending']  = __( 'cashcred withdraw pending', 'mycred' );
+			$instances['cashcred_cancel']  = __( 'cashcred cancel', 'mycred' );
+		}
+		
+		
 		$instances['custom']  = __( 'a custom event occurs', 'mycred' );
 
 		return apply_filters( 'mycred_email_instances', $instances );
@@ -121,7 +128,10 @@ if ( ! function_exists( 'mycred_get_email_triggers' ) ) :
 			'rank_up'      => array(),
 			'rank_down'    => array(),
 			'transfer_out' => array(),
-			'transfer_in'  => array()
+			'transfer_in'  => array(),
+			'cashcred_approved'   => array(),
+			'cashcred_pending'    => array(),
+			'cashcred_cancel'	=>array()
 		);
 
 		$defaults = array(
@@ -414,9 +424,7 @@ if ( ! function_exists( 'mycred_get_event_emails' ) ) :
 
 			if ( array_key_exists( $instance, $triggers[ $event_type ] ) && ! empty( $triggers[ $event_type ][ $instance ] ) )
 				$notices = $triggers[ $event_type ][ $instance ];
-
 		}
-
 		return apply_filters( 'mycred_get_event_emails', $notices, $triggers, $point_type, $event_type, $instance );
 
 	}

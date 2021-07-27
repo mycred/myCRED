@@ -16,7 +16,7 @@ if ( ! function_exists( 'mycred_get_coupon' ) ) :
 
 		if ( isset( $mycred_coupon )
 			&& ( $mycred_coupon instanceof myCRED_Coupon )
-			&& ( $coupon_id === $mycred_coupon->post_id || $coupon_id === $mycred_coupon->code )
+			&&  ( $coupon_id === $mycred_coupon->post_id || strtoupper($coupon_id) === strtoupper($mycred_coupon->code))
 		) {
 			return $mycred_coupon;
 		}

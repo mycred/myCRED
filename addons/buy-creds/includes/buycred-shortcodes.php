@@ -193,7 +193,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 			<input type="hidden" name="token" value="<?php echo wp_create_nonce( 'mycred-buy-creds' ); ?>" />
 			<input type="hidden" name="ctype" value="<?php echo esc_attr( $ctype ); ?>" />
 			<?php if( isset($e_rate) && !empty($e_rate)){ 
-				$e_rate=base64_encode($e_rate);
+				$e_rate=mycred_buycred_encode($e_rate);
 				?>
 			<input type="hidden" name="er_random" value="<?php echo esc_attr($e_rate); ?>" />
 			<?php } ?>			

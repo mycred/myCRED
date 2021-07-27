@@ -24,12 +24,7 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 
 			parent::__construct( 'myCRED_Notifications_Module', array(
 				'module_name' => 'notifications',
-				'defaults'    => array(
-					'life'      => 7,
-					'template'  => '<p>%entry%</p><h1>%cred_f%</h1>',
-					'use_css'   => 1,
-					'duration'  => 3
-				),
+				'defaults'    => mycred_get_addon_defaults( 'notifications' ),
 				'register'    => false,
 				'add_to_core' => true
 			) );

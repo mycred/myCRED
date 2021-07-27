@@ -138,7 +138,6 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 		}
 		
 		public function cashcred_pay_now( $post_id = false, $auto = false ) {
-			 
 			global $cashcred_instance;
 
 			$payment_response = array();
@@ -155,6 +154,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			
 			if( ! empty( $_POST['cashcred_pay_method'] ) ) {
 				$cashcred_pay_method = $_POST['cashcred_pay_method'];	
+
 			} 
 			else {
 				return	$this->response( false, array( 'message' => 'Invalid Payment Gateway' ), $auto );
@@ -163,31 +163,28 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			if ( $cashcred_pay_method !== false && array_key_exists( $cashcred_pay_method, $cashcred_instance->active ) ) {
 			
 				$cashcred_instance->gateway = cashcred_gateway( $cashcred_pay_method );
-
 				$cashcred_prefs = mycred_get_option( 'mycred_pref_cashcreds' , false );
-				
+
 				do_action( 'mycred_cashcred_process',$cashcred_pay_method, $cashcred_prefs );
 				do_action( "mycred_cashcred_process_{$cashcred_pay_method}", $cashcred_prefs );
 				
 				$payment_response =	$cashcred_instance->gateway->process( $post_id );
 
 				if( $payment_response['status'] == true ) {
-					
 					$history_comments = $this->cashcred_update_payment_status( $post_id, $auto );
 					$payment_response['cashcred_total']   = $history_comments['cashcred_total'];
 					$payment_response['history_comments'] = $history_comments['comments'];
 					return	$this->response( true, $payment_response, $auto );
-					
+
 				} 
 				else {
-					
+				    
 					$payment_response['cashcred_total']   = '';
 					$payment_response['date'] 			  = '';
 					$payment_response['history_comments'] = '';	
 					return	$this->response( false, $payment_response, $auto );
 					
 				}
-			 
 			} 
 			else {
 
@@ -271,7 +268,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			$cashcred_total 		= $amount + $cashcred_total;
 
 			update_user_meta( $user_id, 'cashcred_total', $cashcred_total );
-			update_post_meta( $post_id, 'status', 'Approved' );
+			mycred_cashcred_update_status( $post_id, 'status', 'Approved' );
 			 
 			$log_data = array(
 				'post_id' => $post_id ,
@@ -389,7 +386,6 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 		public function process_new_withdraw_request( $gateway_id ){
 
 			global $wp;
-			
 			$requested_url 		   = home_url( $wp->request ) . $_SERVER['REQUEST_URI'];	 
 			$point_type			   = sanitize_text_field( $_POST['cashcred_point_type'] );
 			$cashcred_pay_method   = sanitize_text_field( $_POST['cashcred_pay_method'] );
@@ -411,11 +407,13 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				
 			}
 			
+			$user_id = get_current_user_id();
+			
 			$post_id = wp_insert_post( array(
 				'post_title'     => '',
 				'post_type'      => 'cashcred_withdrawal',
 				'post_status'    => 'publish',
-				'post_author'    =>  get_current_user_id(),
+				'post_author'    =>  $user_id,
 				'ping_status'    => 'closed',
 				'comment_status' => 'open'
 			) );
@@ -432,18 +430,24 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				check_site_add_post_meta( $post_id, 'currency',     $currency, true );
 				check_site_add_post_meta( $post_id, 'from',         get_current_user_id(), true );
 				check_site_add_post_meta( $post_id, 'user_ip',      $_SERVER['REMOTE_ADDR'], true );
-				check_site_add_post_meta( $post_id, 'status',       'Pending', true );
 				check_site_add_post_meta( $post_id, 'manual',       'Manual', true );
 				
-				if( isset( $mycred_pref_cashcreds['gateway_prefs'][ $cashcred_pay_method ]["allow_auto_withdrawal"] ) &&  
+				if( isset( $mycred_pref_cashcreds['gateway_prefs'][ $cashcred_pay_method ]["allow_auto_withdrawal"] ) && 
 					$mycred_pref_cashcreds['gateway_prefs'][ $cashcred_pay_method ]["allow_auto_withdrawal"] == "yes" ) {
-				
+					
 					$cashcred_auto_payment = $this->cashcred_pay_now( $post_id, true );
-
+                    
+                    if(isset( $cashcred_auto_payment['status'] ) && ! $cashcred_auto_payment['status'] ) {
+                        mycred_cashcred_update_status( $post_id, 'status', 'Pending' );
+                    }
+					
 					$this->notification_message( $cashcred_auto_payment['message'], $requested_url );
 
 				}
-
+				else {
+					mycred_cashcred_update_status( $post_id, 'status', 'Pending' );
+				}
+					    
 				$this->notification_message( '', $requested_url );
 
 			}

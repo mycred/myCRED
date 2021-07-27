@@ -372,6 +372,7 @@ if ( ! function_exists( 'mycred_content_purchase_has_expired' ) ) :
 		if ( $length > 0 ) {
 
 			$expiration = apply_filters( 'mycred_sell_expire_calc', absint( $length * HOUR_IN_SECONDS ), $length, $payment->user_id, $payment->ref_id );
+
 			$expiration = $expiration + $payment->time;
 
 			if ( $expiration <= current_time( 'timestamp' ) )
@@ -509,7 +510,41 @@ if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 
 		$post_type         = get_post_type_object( $post->post_type );
 		$url               = mycred_get_permalink( $post->ID );
+		
+		if ( $status == 'mycred-sell-insufficient' ) {
+			$post        = mycred_get_post( $post_id );
+			$settings    = mycred_sell_content_settings();
+			$prices      = array();
 
+			foreach ( $settings['type'] as $point_type ) {	
+
+				$setup  = mycred_get_option( 'mycred_sell_this_' . $point_type );
+				$status = $setup['status'];
+
+				// Point type not enabled
+				if ( $status == 'disabled' ) continue;
+				
+				$mycred = mycred( $point_type );
+				$price  = mycred_get_content_price( $post->ID, $point_type, $user_id );
+
+				// Manual mode
+				if ( $settings['filters'][ $post->post_type ]['by'] == 'manual' ) {
+
+					$suffix       = ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? '_' . $point_type : '';
+					
+					$manual_setup = (array) mycred_get_post_meta( $post->ID, 'myCRED_sell_content' . $suffix, true );
+					
+					if ( ! empty( $manual_setup ) && array_key_exists( 'status', $manual_setup ) )
+						$status = $manual_setup['status'];
+
+				}
+
+				$prices[] = $mycred->format_creds( $price );
+			}
+
+			$template = str_replace( '%price%',implode(', ',$prices), $template );
+		}
+		
 		// Remove old tags that are no longer supported
 		$template          = str_replace( array( '%price%', '%expires%', ), '', $template );
 
@@ -869,5 +904,18 @@ if ( ! function_exists( 'mycred_get_post_type_options' ) ) :
 
 		return apply_filters( 'mycred_sell_post_type_options', $options, $post_type );
 
+	}
+endif;
+
+/**
+ * Render remaining time
+ * @since 2.1.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_seconds_to_time' ) ) :
+	function mycred_seconds_to_time( $seconds ) {
+	    $dtF = new \DateTime('@0');
+	    $dtT = new \DateTime("@$seconds");
+	    return $dtF->diff($dtT)->format('%a days, %h hours,%i minutes ,%s Seconds');
 	}
 endif;

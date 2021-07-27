@@ -115,7 +115,7 @@ if ( ! function_exists( 'mycred_render_badges' ) ) :
                 $row = str_replace( '%badge_title%',   $badge->title,                                  $row );
                 $row = str_replace( '%requirements%',  mycred_display_badge_requirements( $badge_id ), $row );
                 $row = str_replace( '%count%',         $badge->earnedby,                               $row );
-                $row = str_replace( '%default_image%', $badge->main_image,                             $row );
+                $row = str_replace( '%default_image%', $badge->get_image( 'main' ),                             $row );
                 
                 if( mycred_user_has_badge( get_current_user_id(), $badge_id) ) {
                     $row = str_replace( '%main_image%',    $badge->level_image, $row );
@@ -152,94 +152,28 @@ if( !function_exists( 'mycred_render_badges_list' ) ) :
             $atts, MYCRED_SLUG . '_badges_list'
         ) );
 
-        //User Id
-        $user_id = get_current_user_id();
+        ob_start();?>
 
-        $args = array(
-            'taxonomy'      => MYCRED_BADGE_CATEGORY,
-            'orderby'       => 'name',
-            'field'         => 'name',
-            'order'         => 'ASC',
-            'hide_empty'    => false
-        );
+        <div class="mycred-badges-list">
+            <div class="mycred-search-bar">
+                <form method="post">
+                    <input id="mycerd-badges-search" type="text" placeholder="Search for badge">
+                    <button class="mycred-achieved-badge-btn">Achieved</button>
+                    <button class="mycred-not-achieved-badge-btn">Not Achieved</button>
+                    <button class="mycred-clear-filter-btn">Clear All</button>
+                </form>
+            </div>
 
-        $categories     = get_categories( $args );
-        $category_count = count( $categories );
+            <?php 
+            if ( $achievement_tabs == 1 ) {
 
-        //Get Badges
-        $args = array(
-            'post_type' => MYCRED_BADGE_KEY
-        );
+                $badges = mycred_get_categorized_badge_list();
 
-        $query = new WP_Query( $args );
-
-        $badges_list_tabs   = array();
-        $badges_list_panels = array();
-
-        if ( $achievement_tabs == 1 ) {
-
-            $counter = 1;
-
-            foreach ( $categories as $category ) {
-
-                $category_id     = $category->cat_ID;
-                $category_name   = $category->cat_name;
-                $category_badges = mycred_get_badges_by_term_id( $category_id );
-                $badges_count    = count( $category_badges );
-
-                if ( $badges_count > 0 ) {
-                    
-                    $badges_list_tabs[ $category_id ]  = '<li data-id="' . $category_id . '" '. ( $counter == 1 ? 'class="active"' : '' ) .'>';
-                    $badges_list_tabs[ $category_id ] .= $category_name . '<span class="mycred-badge-count">' . $badges_count . '</span>';
-                    $badges_list_tabs[ $category_id ] .= '</li>';
-
-                    $badges_list_panels[ $category_id ]  = '<div data-id="'.$category_id.'" class="mycred-badges-list-panel '. ( $counter == 1 ? 'active' : '' ) .'">';
-                        
-                    foreach ( $category_badges as $badge ) {
-
-                        $badge_id     = $badge->ID;
-
-                        $badge_object = mycred_get_badge( $badge_id );
-
-                        $image_url    = $badge_object->main_image_url;
-
-                        $has_earned   = $badge_object->user_has_badge( $user_id ) ? 'earned' : 'not-earned';
-
-                        $badges_list_panels[ $category_id ] .= '<div class="mycred-badges-list-item '. $has_earned .'" data-url="' . mycred_get_permalink( $badge_id ) . '">';
-
-                        if ( $image_url ) {
-
-                            $badges_list_panels[ $category_id ] .= '<img src="' . esc_url( $image_url ) . '" alt="Badge Image">';
-                        
-                        }
-
-                        $badges_list_panels[ $category_id ] .= '<div class="mycred-left"><h3>' . $badge->post_title . '</h3>' . $badge->post_excerpt . '</div>';
-                        $badges_list_panels[ $category_id ] .= '<div class="clear"></div>';
-                        $badges_list_panels[ $category_id ] .= '</div>';
-                        
-                    }
-
-                    $badges_list_panels[ $category_id ] .= '</div>';
-
-                    $counter++;
-
-                }
-   
-            }
-
-            wp_reset_query();
-
-        }
-
-        if ( $achievement_tabs == 1 ) {
-
-            if ( $category_count > 0 ) {?>
-                
-                <div class="mycred-badges-list">
+                if ( $badges['category_count'] > 0 ) { ?>
                     <div class="mycred-badges-list-nav">
                         <ul class="mycred-badges-list-tabs">
                             <?php 
-                                foreach ( $badges_list_tabs as $id => $element ) {
+                                foreach ( $badges['tabs'] as $id => $element ) {
                                         
                                     echo $element;
 
@@ -249,74 +183,27 @@ if( !function_exists( 'mycred_render_badges_list' ) ) :
                     </div>
                     <div class="mycred-badges-list-panels">
                         <?php 
-                            foreach ( $badges_list_panels as $id => $element ) {
+                            foreach ( $badges['panels'] as $id => $element ) {
                                     
                                 echo $element;
 
                             }
                         ?>
                     </div>
-                </div>
-            <?php
+                <?php
+                }
+
             }
             else {
 
-                echo 'First Create Achievements Containing Badges';
-
+                echo '<div class="mycred-badges-list-all">';
+                echo mycred_get_uncategorized_badge_list();
+                echo '</div>';
+            
             }
+            wp_reset_query();
             ?>
-
-        <?php
-        }
-        else {
-
-            //Show Badges
-            while ( $query->have_posts() ) : $query->the_post();
-                
-                $badge_id     = get_the_ID();
-
-                $badge_object = mycred_get_badge( $badge_id );
-
-                $image_url    = $badge_object->main_image_url;
-    
-                $has_earned   = $badge_object->user_has_badge( $user_id ) ? 'earned' : 'not-earned';
-    
-                $category     = mycred_get_badge_type( $badge_id );
-
-                $categories   = explode( ',', $category );
-
-                ?>
-                <div class="mycred-badges-list-item <?php echo $has_earned; ?>" data-url="<?php echo mycred_get_permalink( $badge_id );?>">
-                    <?php if ( $image_url ): ?>
-                    <img src="<?php echo esc_url( $image_url ) ?>" alt="Badge Image">
-                    <?php endif; ?>
-                    <div class="mycred-left">
-                        <h3>
-                            <?php echo get_the_title(); ?>
-                        </h3>
-                        <?php
-                        if( $category_count > 0 ) {
-
-                            foreach ( $categories as $category ) {
-                            
-                                if( $category != '' ) {
-
-                                    echo '<sup class="mycred-sup-category">'.$category.'</sup>';
-                                
-                                }
-                            
-                            }
-                        
-                        }
-                        ?>
-                        <?php echo the_excerpt(); ?>
-                    </div>
-                    <div class="clear"></div>
-                </div>
-            <?php
-            endwhile;
-        }
-        ?>
+        </div>
         <script type="text/javascript">
                 
             jQuery(document).ready(function(){

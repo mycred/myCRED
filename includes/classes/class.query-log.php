@@ -2529,7 +2529,7 @@ endif;
 /**
  * Get Used Log Entry Count
  * @since 1.7
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_user_has_log_entries' ) ) :
 	function mycred_user_has_log_entries( $user_id = NULL ) {
@@ -2538,7 +2538,7 @@ if ( ! function_exists( 'mycred_user_has_log_entries' ) ) :
 		if ( $user_id === 0 ) return 0;
 
 		$count = mycred_get_user_meta( $user_id, 'mycred-log-count', '', false );
-		if ( $count == '' ) {
+		if ( empty( $count ) ) {
 
 			global $wpdb, $mycred_log_table;
 

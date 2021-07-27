@@ -17,33 +17,37 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		 */
 		function __construct( $hook_prefs, $type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-			parent::__construct( array(
-				'id'       => 'affiliate',
-				'defaults' => array(
-					'visit'    => array(
-						'creds'    => 1,
-						'log'      => '%plural% for referring a visitor',
-						'limit'    => 1,
-						'limit_by' => 'total'
-					),
-					'signup'    => array(
-						'creds'    => 10,
-						'log'      => '%plural% for referring a new member',
-						'limit'    => 1,
-						'limit_by' => 'total'
-					),
-					'setup' => array(
-						'links'    => 'username',
-						'IP'       => 1
-					),
-					'buddypress' => array(
-						'profile'  => 0,
-						'priority' => 10,
-						'title'    => __( 'Affiliate Program', 'mycred' ),
-						'desc'     => ''
-					)
-				)
-			), $hook_prefs, $type );
+            $hook_defaults = array(
+                'id'       => 'affiliate',
+                'defaults' => array(
+                    'visit'    => array(
+                        'creds'    => 1,
+                        'log'      => '%plural% for referring a visitor',
+                        'limit'    => 1,
+                        'limit_by' => 'total'
+                    ),
+                    'signup'    => array(
+                        'creds'    => 10,
+                        'log'      => '%plural% for referring a new member',
+                        'limit'    => 1,
+                        'limit_by' => 'total'
+                    ),
+                    'setup' => array(
+                        'links'    => 'username',
+                        'IP'       => 1
+                    ),
+                    'buddypress' => array(
+                        'profile'  => 0,
+                        'priority' => 10,
+                        'title'    => __( 'Affiliate Program', 'mycred' ),
+                        'desc'     => ''
+                    )
+                )
+            );
+
+            $hook_defaults = apply_filters( 'mycred_hook_referrals', $hook_defaults );
+
+            parent::__construct( $hook_defaults , $hook_prefs, $type );
 
 			// Let others play with the limit by
 			$this->limit_by = apply_filters( 'mycred_affiliate_limit_by', array(
@@ -71,7 +75,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 				add_action( 'bp_after_profile_loop_content', array( $this, 'buddypress_profile' ), $this->prefs['buddypress']['priority'] );
 
 			// Hook into user activation
-			if ( function_exists( 'buddypress' ) && apply_filters( 'bp_core_signup_send_activation_key', true ) )
+			if ( function_exists( 'buddypress' ) )
 				add_action( 'mycred_bp_user_activated', array( $this, 'verified_signup' ) );
 
 			// Register Shortcodes
@@ -328,12 +332,31 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 				if ( $this->ref_counts( $user_id, $IP, 'signup' ) ) {
 
+                    $hooks = mycred_get_option( 'mycred_pref_hooks', false );
+
+                    $active_hooks = $hooks['active'];
+
 					// Award when users account gets activated
-					if ( function_exists( 'buddypress' ) && apply_filters( 'bp_core_signup_send_activation_key', true ) === true ) {
+					if ( function_exists( 'buddypress' ) ) {
 						mycred_add_user_meta( $new_user_id, 'referred_by', '', $user_id, true );
 						mycred_add_user_meta( $new_user_id, 'referred_by_IP', '', $IP, true );
 						mycred_add_user_meta( $new_user_id, 'referred_by_type', '', $this->mycred_type, true );
 					}
+
+					if ( is_plugin_active( 'mycred-woocommerce-plus/mycred-woocommerce-plus.php' ) && in_array( 'affiliate', $active_hooks ) )
+                    {
+                        $user_log = array(
+                            'reference'     =>  'signup_referral',
+                            'referrer'      =>  $user_id,
+                            'creds'         =>  $this->prefs['signup']['creds'],
+                            'log'           =>  $this->prefs['signup']['log'],
+                            'referred'   =>  $new_user_id,
+                            'IP'            =>  $IP,
+                            'point_type'    =>  $this->mycred_type
+                        );
+
+                        do_action( 'mycred_after_signup_referred', $user_log );
+                    }
 
 					// Award now
 					else {
@@ -599,10 +622,11 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			<div class="form-group">
 				<label for="<?php echo $this->field_id( array( 'signup' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'signup' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'signup' => 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['signup']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<span class="description"><?php echo $this->available_template_tags( array( 'general' ), '%user_name%' ); ?></span>
 			</div>
 		</div>
-	</div>
+        <?php do_action( 'mycred_after_referring_signups', $this, $prefs ); ?>
+    </div>
 
 	<?php else : ?>
 
@@ -650,6 +674,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		</div>
 	</div>
 </div>
+
 <?php if ( function_exists( 'bp_is_active' ) && bp_is_active( 'xprofile' ) ) : ?>
 <div class="hook-instance">
 	<h3><?php _e( 'BuddyPress Profile', 'mycred' ); ?></h3>
@@ -739,7 +764,7 @@ if ( ! function_exists( 'mycred_load_referral_program' ) ) :
 	function mycred_load_referral_program() {
 
 		// BuddyPress: Hook into user activation
-		if ( function_exists( 'buddypress' ) && apply_filters( 'bp_core_signup_send_activation_key', true ) === true )
+		if ( function_exists( 'buddypress' ) )
 			add_action( 'bp_core_activated_user', 'mycred_detect_bp_user_activation' );
 
 		// Logged in users do not get points
@@ -747,6 +772,7 @@ if ( ! function_exists( 'mycred_load_referral_program' ) ) :
 
 		// Points for visits
 		add_action( 'template_redirect', 'mycred_detect_referred_visits' );
+		add_action( 'login_init',        'mycred_detect_referred_visits' );
 
 		// Points for signups
 		add_action( 'user_register', 'mycred_detect_referred_signups' );

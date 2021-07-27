@@ -10,15 +10,13 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  */
 if ( ! class_exists( 'myCRED_walkthroug' ) ) :
 	class myCRED_walkthroug {
-
-
         /**
 		 * Construct
 		 */
 		public function __construct() {
 
 			$this->core = mycred();
-
+			
 			add_action( 'wp_loaded', array( $this, 'load' ) );
         }
         /**
@@ -28,37 +26,35 @@ if ( ! class_exists( 'myCRED_walkthroug' ) ) :
 		 */
 		public function load() {
 
-            wp_register_style( 'mycred-tourguide-style', plugins_url( 'assets/css/tourguide.css', myCRED_THIS ),      array(), myCRED_VERSION , 'all' );
-
+			wp_register_style( 'mycred-tourguide-style', plugins_url( 'assets/css/tourguide.css', myCRED_THIS ), array(), myCRED_VERSION , 'all' );
             wp_register_script( 'mycred-tourguide-script', plugins_url( 'assets/js/tourguide.min.js',myCRED_THIS ), array( 'jquery' ), myCRED_VERSION , true );
 
+			$step = intval( $_GET['mycred_tour_guide'] );
 
-				$step = intval($_GET['mycred_tour_guide']);
+			$redirect_url = '';
 
-				$redirect_url = '';
+			if( $step == 2 ) {
 
-				if( $step == 2 ) {
+				$redirect_url = admin_url('admin.php?page=mycred-hooks&mycred_tour_guide=3');
 
-					$redirect_url = admin_url('admin.php?page=mycred-hooks&mycred_tour_guide=3');
+			}
+			else if( $step == 3 ){
 
-				}
-				else if( $step == 3 ){
+				$redirect_url = admin_url('admin.php?page=mycred-addons&mycred_tour_guide=4');
 
-					$redirect_url = admin_url('admin.php?page=mycred-addons&mycred_tour_guide=4');
+			}
+			
+			wp_localize_script(
+				'mycred-tourguide-script',
+				'mycred_tour_guide',
+				array(
+					'step' => $step,
+					'redirect_url' => $redirect_url
+				)
+			);
+			wp_enqueue_script( 'mycred-tourguide-script' );
+			wp_enqueue_style( 'mycred-tourguide-style' );
 
-				}
-				
-				wp_localize_script(
-					'mycred-tourguide-script',
-					'mycred_tour_guide',
-					array(
-						'step' => $step,
-						'redirect_url' => $redirect_url
-					),
-				);
-				wp_enqueue_script( 'mycred-tourguide-script' );
-				wp_enqueue_style( 'mycred-tourguide-style' );
-    }
-
-}
+    	}
+	}
 endif;

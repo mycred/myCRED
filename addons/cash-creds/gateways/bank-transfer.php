@@ -188,9 +188,6 @@ if ( ! class_exists( 'myCRED_cashcred_Bank_Transfer' ) ) :
 			
 			$mycred_pref_cashcreds = mycred_get_option( 'mycred_pref_cashcreds' , false );
 
-			$additional_notes_on   = $mycred_pref_cashcreds["gateway_prefs"]["bank"]["enable_additional_notes"];
-			$additional_notes      = $mycred_pref_cashcreds["gateway_prefs"]["bank"]["additional_notes"];
-
 			$fields    = $this->form_fields();
 
 			$bank_form = new CashCred_Gateway_Fields( $data, $fields );
@@ -202,11 +199,9 @@ if ( ! class_exists( 'myCRED_cashcred_Bank_Transfer' ) ) :
 					<label><h3><?php _e( 'Bank account details', 'mycred' )?></h3></label>
 				</div>
 				
-				<?php if($additional_notes_on == '1'): ?>
+				<?php if( isset( $mycred_pref_cashcreds["gateway_prefs"]["bank"]["enable_additional_notes"] ) ): ?>
 				<div class="form-group">  
-					<p>
-						<?php echo $additional_notes; ?>
-					</p>
+					<p><?php echo $mycred_pref_cashcreds["gateway_prefs"]["bank"]["additional_notes"]; ?></p>
 				</div> 
 				<?php endif;?>
 
@@ -285,7 +280,12 @@ if ( ! class_exists( 'myCRED_cashcred_Bank_Transfer' ) ) :
 			$new_data = array();
 
 			$new_data['additional_notes']    = sanitize_text_field( $data['additional_notes'] );
-			$new_data['enable_additional_notes'] = sanitize_text_field( $data['enable_additional_notes'] );
+			
+			if( isset( $data['enable_additional_notes'] ) ) {
+			
+				$new_data['enable_additional_notes'] = sanitize_text_field( $data['enable_additional_notes'] );
+			
+			}
 			$new_data['minimum_amount'] = sanitize_text_field( $data['minimum_amount'] );
 			$new_data['maximum_amount'] = sanitize_text_field( $data['maximum_amount'] );
 			$new_data['additional_notes']  = wp_kses_post( $data['additional_notes'] );

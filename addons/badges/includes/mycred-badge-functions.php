@@ -1046,3 +1046,157 @@ if ( ! function_exists( 'mycred_set_badge_evidence_page' ) ) :
 
 	}
 endif;
+
+/**
+ * Get badges list
+ * @since 2.1.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_uncategorized_badge_list' ) ) :
+	function mycred_get_uncategorized_badge_list() {
+
+		$badge_list = '';
+
+		//Get Badges
+        $args = array(
+            'numberposts' => -1,
+            'post_type'   => MYCRED_BADGE_KEY
+        );
+             
+        $badges = get_posts( $args );
+
+        $user_id = get_current_user_id();
+        $categories = get_categories( $args );
+        $category_count = count( $categories );
+
+        //Show Badges
+        foreach ( $badges as $badge ) {
+
+            $badge_object = mycred_get_badge( $badge->ID );
+
+            $image_url    = $badge_object->main_image_url;
+
+            $has_earned   = $badge_object->user_has_badge( $user_id ) ? 'earned' : 'not-earned';
+
+            $category     = mycred_get_badge_type( $badge->ID );
+
+            $categories   = explode( ',', $category );
+
+            $badge_list .= '<div class="mycred-badges-list-item '.$has_earned.'" data-url="'.mycred_get_permalink( $badge->ID ).'">';
+
+            if ( $image_url )
+            	$badge_list .= '<img src="'.esc_url( $image_url ).'" alt="Badge Image">';
+
+            $badge_list .= '<div class="mycred-left">';
+            $badge_list .= '<h3>'.$badge->post_title.'</h3>';
+            if( $category_count > 0 ) {
+
+                foreach ( $categories as $category ) {
+                
+                    if( $category != '' ) {
+
+                        $badge_list .= '<sup class="mycred-sup-category">'.$category.'</sup>';
+                    
+                    }
+                
+                }
+            
+            }
+
+            $badge_list .= '<p>'.$badge->post_excerpt.'</p>';
+
+            //mycred-left
+            $badge_list .= '</div>';
+            
+            $badge_list .= '<div class="clear"></div>';
+
+            //mycred-badges-list-item
+            $badge_list .= '</div>';
+           	
+        }
+
+        return $badge_list;
+
+	}
+endif;
+
+/**
+ * Get badges list by categories
+ * @since 2.1.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_categorized_badge_list' ) ) :
+	function mycred_get_categorized_badge_list() {
+
+		$user_id = get_current_user_id();
+
+        $args = array(
+            'taxonomy'      => MYCRED_BADGE_CATEGORY,
+            'orderby'       => 'name',
+            'field'         => 'name',
+            'order'         => 'ASC',
+            'hide_empty'    => false
+        );
+
+        $categories         = get_categories( $args );
+        $category_count     = count( $categories );
+        $badges_list_tabs   = array();
+        $badges_list_panels = array();
+
+        $counter = 1;
+
+        foreach ( $categories as $category ) {
+
+            $category_id     = $category->cat_ID;
+            $category_name   = $category->cat_name;
+            $category_badges = mycred_get_badges_by_term_id( $category_id );
+            $badges_count    = count( $category_badges );
+
+            if ( $badges_count > 0 ) {
+                
+                $badges_list_tabs[ $category_id ]  = '<li data-id="' . $category_id . '" '. ( $counter == 1 ? 'class="active"' : '' ) .'>';
+                $badges_list_tabs[ $category_id ] .= $category_name . '<span class="mycred-badge-count">' . $badges_count . '</span>';
+                $badges_list_tabs[ $category_id ] .= '</li>';
+
+                $badges_list_panels[ $category_id ]  = '<div data-id="'.$category_id.'" class="mycred-badges-list-panel '. ( $counter == 1 ? 'active' : '' ) .'">';
+                    
+                foreach ( $category_badges as $badge ) {
+
+                    $badge_id     = $badge->ID;
+
+                    $badge_object = mycred_get_badge( $badge_id );
+
+                    $image_url    = $badge_object->main_image_url;
+
+                    $has_earned   = $badge_object->user_has_badge( $user_id ) ? 'earned' : 'not-earned';
+
+                    $badges_list_panels[ $category_id ] .= '<div class="mycred-badges-list-item '. $has_earned .'" data-url="' . mycred_get_permalink( $badge_id ) . '">';
+
+                    if ( $image_url ) {
+
+                        $badges_list_panels[ $category_id ] .= '<img src="' . esc_url( $image_url ) . '" alt="Badge Image">';
+                    
+                    }
+
+                    $badges_list_panels[ $category_id ] .= '<div class="mycred-left"><h3>' . $badge->post_title . '</h3>' . $badge->post_excerpt . '</div>';
+                    $badges_list_panels[ $category_id ] .= '<div class="clear"></div>';
+                    $badges_list_panels[ $category_id ] .= '</div>';
+                    
+                }
+
+                $badges_list_panels[ $category_id ] .= '</div>';
+
+                $counter++;
+
+            }
+
+        }
+
+        return array(
+        	'tabs'           => $badges_list_tabs,
+        	'panels'         => $badges_list_panels,
+        	'category_count' => $category_count,
+        );
+
+	}
+endif;

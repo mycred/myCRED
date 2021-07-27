@@ -467,96 +467,108 @@ if ( ! function_exists( 'mycred_get_cashcred_settings' ) ) :
 	}
 endif;
 
-if(!function_exists('check_site_add_post_meta'))
-{
-    /**
-    * add postmeta by checking multisite and current blog
-    * @param $post_id post id
-    * @param $key meta key
-    * @param bool $single
-    * @return mixed
-    */
-    function check_site_add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
-	{
-	    if(is_multisite() AND !is_main_site() AND mycred_override_settings())
-	    {
+/**
+* add postmeta by checking multisite and current blog
+* @param $post_id post id
+* @param $key meta key
+* @param bool $unique
+* @return mixed
+*/
+if( !function_exists('check_site_add_post_meta') ):
+    function check_site_add_post_meta( $post_id, $meta_key, $meta_value, $unique = false ) {
+	    if(is_multisite() AND !is_main_site() AND mycred_override_settings()) {
 	        return add_post_meta( $post_id, $meta_key, $meta_value, $unique );
 	    }
-	    else
-	    {
+	    else {
 	        return mycred_add_post_meta( $post_id, $meta_key, $meta_value, $unique );
 	    }
 	}
-}
+endif;
 
-if(!function_exists('check_site_get_post_meta'))
-{
-    /**
-    * Returns postmeta by checking multisite and current blog
-    * @param $post_id post id
-    * @param $key meta key
-    * @param bool $single
-    * @return mixed
-    */
-    function check_site_get_post_meta($post_id, $key, $single = false)
-	{
-	    if(is_multisite() AND !is_main_site() AND mycred_override_settings())
-	    {
+/**
+* Returns postmeta by checking multisite and current blog
+* @param $post_id post id
+* @param $key meta key
+* @param bool $single
+* @return mixed
+*/
+if( ! function_exists('check_site_get_post_meta') ):
+    function check_site_get_post_meta( $post_id, $key, $single = false ) {
+	    if( is_multisite() AND !is_main_site() AND mycred_override_settings() ) {
 	        return get_post_meta( $post_id, $key, $single );
 	    }
-	    else
-	    {
+	    else {
 	        return mycred_get_post_meta( $post_id, $key, $single );
 	    }
 	}
-}
+endif;
 
-if(!function_exists('cashcred_get_user_settings'))
-{
-    /**
-     * cashCred get user's settings
-    */
-    function cashcred_get_user_settings()
-    {
+/**
+* cashCred get user's settings
+*/
+if(!function_exists('cashcred_get_user_settings')):
+    function cashcred_get_user_settings() {
         $check = '';
 		$cashcred_user_setting = '';
-		if(is_multisite() AND !is_main_site() AND mycred_override_settings())
-		{
+		
+		if( is_multisite() AND !is_main_site() AND mycred_override_settings() ) {
 		    $check = true;
 		}
-		else
-		{
+		else {
 		    $check = false;
 	    }
-		if($check)
-		{
+
+		if( $check ) {
 		    return 'cashcred_user_settings_' . get_current_blog_id();
 		}
-		else
-		{
+		else {
 		    return 'cashcred_user_settings';
 		}
     }
-}
+endif;
 
-if(!function_exists('check_site_update_post_meta'))
-{
-     /**
-    *Checks site is multisite or not and update post meta
-    * @param $post_id post id
-    * @param $key meta key
-    * @param $new_value new meta value
-    * @return mixed
-    */
-    function check_site_update_post_meta( $post_id, $meta_key, $new_value )
-    {
-        if(is_multisite() AND !is_main_site() AND mycred_override_settings())
-	    {
+/**
+*Checks site is multisite or not and update post meta
+* @param $post_id post id
+* @param $key meta key
+* @param $new_value new meta value
+* @return mixed
+*/
+if( ! function_exists( 'check_site_update_post_meta' ) ):
+    function check_site_update_post_meta( $post_id, $meta_key, $new_value ) {
+        if(is_multisite() AND !is_main_site() AND mycred_override_settings()) {
 	        return update_post_meta( $post_id, $meta_key, $new_value );
 	    }
-	    else
-	    {
+	    else {
 	        return mycred_update_post_meta( $post_id, $meta_key, $new_value );
 	    }
     }
-}
+endif;
+
+/**
+* Update payment status
+*/
+if( ! function_exists( 'mycred_cashcred_update_status' ) ):
+    function mycred_cashcred_update_status( $post_id, $meta_key, $meta_value ) {
+	    check_site_update_post_meta( $post_id, $meta_key, $meta_value );
+	    
+        $mycred_pref_cashcreds = mycred_get_option( 'mycred_pref_cashcreds',false  );
+
+		$point_type = check_site_get_post_meta( $post_id, 'point_type', true );
+		$points = check_site_get_post_meta( $post_id, 'points', true );
+		$cashcred_pay_method = check_site_get_post_meta( $post_id, 'gateway' , true );
+		
+		$user_id = get_post_field( 'post_author', $post_id );
+		$user_balance = mycred_get_users_balance( $user_id, $point_type );
+		$payment_withdrawal_request = array(
+			'point_type' 			=> $point_type,
+			'cashcred_pay_method' 	=> $cashcred_pay_method,
+			'points' 				=> $points,
+			'user_balance'			=> $user_balance,
+			'user_id'				=> $user_id,
+			'post_id'				=> $post_id
+		);
+		
+	   do_action( 'mycred_after_payment_request', $payment_withdrawal_request , $meta_value );
+	}
+endif;

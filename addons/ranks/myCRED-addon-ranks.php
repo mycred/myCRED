@@ -44,24 +44,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			parent::__construct( 'myCRED_Ranks_Module', array(
 				'module_name' => 'rank',
-				'defaults'    => array(
-					'manual'      => 0,
-					'public'      => 0,
-					'base'        => 'current',
-					'slug'        => MYCRED_RANK_KEY,
-					'bb_location' => 'top',
-					'bb_template' => 'Rank: %rank_title%',
-					'bp_location' => '',
-					'bb_template' => 'Rank: %rank_title%',
-					'order'       => 'ASC',
-					'support'     => array(
-						'content'         => 0,
-						'excerpt'         => 0,
-						'comments'        => 0,
-						'page-attributes' => 0,
-						'custom-fields'   => 0
-					)
-				),
+				'defaults'    => mycred_get_addon_defaults( 'rank' ),
 				'register'    => false,
 				'add_to_core' => false,
 				'menu_pos'    => 100

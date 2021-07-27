@@ -441,6 +441,12 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 			}
 
+			if( $reference == 'signup_referral' ){
+
+				$content = $this->template_tags_user( $content, $ref_id, $data );
+
+			}
+
 			return $content;
 
 		}
@@ -1869,6 +1875,9 @@ if ( ! function_exists( 'mycred_get_addon_settings' ) ) :
 
 			if ( $settings === false && isset( $main_type->$addon ) )
 				$settings = $main_type->$addon;
+
+			if ( empty( $settings ) )
+				$settings = mycred_get_addon_defaults( $addon );
 
 		}
 
@@ -3350,19 +3359,21 @@ if ( ! function_exists( 'mycred_plugin_deactivation' ) ) :
 		wp_clear_scheduled_hook( 'mycred_banking_interest_compound' );
 		wp_clear_scheduled_hook( 'mycred_banking_interest_payout' );
 
+		/**
+		 * Runs when the plugin is deleted
+		 * @since 1.3
+		 * @version 1.2
+		 */
+		register_uninstall_hook( myCRED_THIS, 'mycred_plugin_uninstall' );
+
 		do_action( 'mycred_deactivation' );
 
 	}
 endif;
 
-/**
- * Runs when the plugin is deleted
- * @since 1.3
- * @version 1.0.2
- */
 if ( ! function_exists( 'mycred_plugin_uninstall' ) ) :
 	function mycred_plugin_uninstall() {
-
+			
 		// Load Installer
 		require_once myCRED_INCLUDES_DIR . 'mycred-install.php';
 		$installer = mycred_installer();
@@ -3656,8 +3667,7 @@ endif;
  * @version 1.0
  */
 if ( !function_exists( 'mycred_badge_level_req_check' ) ):
-    function mycred_badge_level_req_check( $badge_id, $level_index = 0 )
-    {
+    function mycred_badge_level_req_check( $badge_id, $level_index = 0 ) {
         $content = '';
         global $wpdb;
         $user_id = get_current_user_id();
@@ -3731,4 +3741,145 @@ if ( !function_exists( 'mycred_badge_level_req_check' ) ):
 
         return $content;
     }
+endif;
+
+ /**
+ * Get Addon default Settings
+ * @since 2.1.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_addon_defaults' ) ) :
+	function mycred_get_addon_defaults( $addon = '' ) {
+
+		$settings = array();
+
+		switch ( $addon ) {
+			case 'badges':
+				$settings = array(
+                    'show_level_description'   => 0,
+                    'show_congo_text'          => 0,
+                    'show_steps_to_achieve'    => 0,
+                    'show_levels'              => 0,
+                    'show_level_points'        => 0,
+                    'show_earners'             => 0,
+                    'open_badge'               => 0,
+                    'open_badge_evidence_page' => 0,
+                    'buddypress'               => '',
+                    'bbpress'                  => '',
+                    'show_all_bp'              => 0,
+                    'show_all_bb'              => 0
+                );
+				break;
+			case 'coupons':
+				$settings = array(
+					'log'         => 'Coupon redemption',
+					'invalid'     => 'This is not a valid coupon',
+					'expired'     => 'This coupon has expired',
+					'user_limit'  => 'You have already used this coupon',
+					'min'         => 'A minimum of %amount% is required to use this coupon',
+					'max'         => 'A maximum of %amount% is required to use this coupon',
+					'excluded'    => 'You can not use coupons.',
+					'success'     => '%amount% successfully deposited into your account'
+				);
+				break;
+			case 'emailnotices':
+				$settings = array(
+					'from'        => array(
+						'name'        => get_bloginfo( 'name' ),
+						'email'       => get_bloginfo( 'admin_email' ),
+						'reply_to'    => get_bloginfo( 'admin_email' )
+					),
+					'filter'      => array(
+						'subject'     => 0,
+						'content'     => 0
+					),
+					'use_html'    => true,
+					'content'     => '',
+					'styling'     => '',
+					'send'        => '',
+					'override'    => 0
+				);
+				break;
+			case 'notifications':
+				$settings = array(
+					'life'      => 7,
+					'template'  => '<p>%entry%</p><h1>%cred_f%</h1>',
+					'use_css'   => 1,
+					'duration'  => 3
+				);
+				break;
+			case 'rank':
+				$settings = array(
+					'manual'      => 0,
+					'public'      => 0,
+					'base'        => 'current',
+					'slug'        => MYCRED_RANK_KEY,
+					'bb_location' => 'top',
+					'bb_template' => 'Rank: %rank_title%',
+					'bp_location' => '',
+					'bb_template' => 'Rank: %rank_title%',
+					'order'       => 'ASC',
+					'support'     => array(
+						'content'         => 0,
+						'excerpt'         => 0,
+						'comments'        => 0,
+						'page-attributes' => 0,
+						'custom-fields'   => 0
+					)
+				);
+				break;
+			case 'sell_content':
+				$settings = array(
+					'post_types'  => 'post,page',
+						'filters'     => array(),
+					'type'        => array( MYCRED_DEFAULT_TYPE_KEY ),
+					'reload'      => 0,
+					'working'     => 'Processing ...',
+					'templates'   => array(
+						'members'     => '<div class="text-center"><h3>Premium Content</h3><p>Buy access to this content.</p><p>%buy_button%</p></div>',
+						'visitors'    => '<div class="text-center"><h3>Premium Content</h3><p>Login to buy access to this content.</p></div>',
+						'cantafford'  => '<div class="text-center"><h3>Premium Content</h3><p>Buy access to this content.</p><p><strong>Insufficient Funds</strong></p></div>'
+					)
+				);
+				break;
+			case 'stats':
+				$settings = array(
+					'color_positive' => '',
+					'color_negative' => '',
+					'animate'        => 1,
+					'bezier'         => 1,
+					'caching'        => 'off'
+				);
+				break;
+			case 'transfers':
+				$settings = array(
+					'types'      => array( MYCRED_DEFAULT_TYPE_KEY ),
+					'logs'       => array(
+						'sending'   => 'Transfer of %plural% to %display_name%',
+						'receiving' => 'Transfer of %plural% from %display_name%'
+					),
+					'errors'     => array(
+						'low'       => 'You do not have enough %plural% to send.',
+						'over'      => 'You have exceeded your %limit% transfer limit.'
+					),
+					'templates'  => array(
+						'login'     => '',
+						'balance'   => 'Your current balance is %balance%',
+						'limit'     => 'Your current %limit% transfer limit is %left%',
+						'button'    => 'Transfer'
+					),
+					'autofill'   => 'user_login',
+					'reload'     => 1,
+					'message'    => 0,
+					'limit'      => array(
+						'amount'    => 1000,
+						'limit'     => 'none'
+					)
+				);
+				break;
+		}
+
+		return apply_filters( 'mycred_get_addon_defaults', $settings, $addon );
+
+	}
 endif;

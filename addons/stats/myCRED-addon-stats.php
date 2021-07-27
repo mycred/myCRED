@@ -35,13 +35,7 @@ if ( ! class_exists( 'myCRED_Stats_Module' ) ) :
 
 			parent::__construct( 'myCRED_Stats_Module', array(
 				'module_name' => 'stats',
-				'defaults'    => array(
-					'color_positive' => '',
-					'color_negative' => '',
-					'animate'        => 1,
-					'bezier'         => 1,
-					'caching'        => 'off'
-				),
+				'defaults'    => mycred_get_addon_defaults( 'stats' ),
 				'accordion'   => false,
 				'register'    => false,
 				'add_to_core' => false

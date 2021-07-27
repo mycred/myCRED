@@ -1,4 +1,6 @@
 jQuery(document).ready(function (){
+
+    //Validation before switching to Open Badge
     jQuery(document).on( 'click', '#mycred-badge-is-open-badge', function (){
         if ( jQuery('input#mycred-badge-is-open-badge').is(':checked') ) {
             if ( confirm('Activating Open Badge loss will all Levels of this badge.') ) {
@@ -8,6 +10,8 @@ jQuery(document).ready(function (){
             }
         }
     } );
+
+    //Switch all to open badge
     jQuery(document).on( 'click', '#switch-all-to-open-badge', function (e){
         e.preventDefault();
         if ( confirm('Activating Open Badge loss will all Levels of this badge.') ) {
@@ -28,5 +32,5 @@ jQuery(document).ready(function (){
         } else {
             return false;
         }
-    } )
+    } );
 })

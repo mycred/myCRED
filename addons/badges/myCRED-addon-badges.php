@@ -48,20 +48,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             parent::__construct( 'myCRED_Badge_Module', array(
                 'module_name' => 'badges',
-                'defaults'    => array(
-                    'show_level_description'   => 0,
-                    'show_congo_text'          => 0,
-                    'show_steps_to_achieve'    => 0,
-                    'show_levels'              => 0,
-                    'show_level_points'        => 0,
-                    'show_earners'             => 0,
-                    'open_badge'               => 0,
-                    'open_badge_evidence_page' => 0,
-                    'buddypress'               => '',
-                    'bbpress'                  => '',
-                    'show_all_bp'              => 0,
-                    'show_all_bb'              => 0
-                ),
+                'defaults'    => mycred_get_addon_defaults( 'badges' ),
                 'add_to_core' => true,
                 'register'    => false,
                 'menu_pos'    => 50
@@ -177,7 +164,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
          */
         public function enqueue_front_scripts()
         {
-            wp_enqueue_script( 'mycred-badge-front', plugins_url( 'assets/js/front.js', myCRED_BADGE ), '', myCRED_BADGE_VERSION );
+            wp_enqueue_script( 'mycred-badge-front', plugins_url( 'assets/js/front.js', myCRED_BADGE ), array('jquery'), myCRED_BADGE_VERSION );
         }
 
         /**
@@ -201,7 +188,6 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
             add_filter( 'submenu_file',                      array( $this, 'subparent_file' ), 10, 2 );
             add_action( 'mycred_admin_enqueue',              array( $this, 'enqueue_scripts' ), $this->menu_pos );
 
-            add_filter( 'post_row_actions',                  array( $this, 'adjust_row_actions' ), 10, 2 );
 
             add_filter( 'post_updated_messages',             array( $this, 'post_updated_messages' ) );
             add_filter( 'enter_title_here',                  array( $this, 'enter_title_here' ) );
@@ -476,8 +462,8 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             add_submenu_page(
                 MYCRED_SLUG,
-                __( 'Achievement Types', 'mycred' ),
-                __( 'Achievement Types', 'mycred' ),
+                __( 'Achievements', 'mycred' ),
+                __( 'Achievements', 'mycred' ),
                 $this->core->get_point_editor_capability(),
                 'edit-tags.php?post_type=' . MYCRED_BADGE_KEY . '&taxonomy=' . MYCRED_BADGE_CATEGORY
             );
@@ -676,20 +662,6 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
         }
 
-        /**
-         * Adjust Row Actions
-         * @since 1.0
-         * @version 1.0
-         */
-        public function adjust_row_actions( $actions, $post ) {
-
-            if ( $post->post_type == MYCRED_BADGE_KEY ) {
-                unset( $actions['inline hide-if-no-js'] );
-            }
-
-            return $actions;
-
-        }
 
         /**
          * Adjust Enter Title Here
@@ -1713,6 +1685,12 @@ th#badge-users { width: 10%; }
                                             <?php echo $level_select; ?>
 
                                         </div>
+
+                                        <?php if ( $badge->open_badge && array_key_exists( $badge_id, $users_badges ) ):?>
+                                        <div class="badge-image-wrap">
+                                            <a href="<?php echo $badge->get_earned_image( $user_id ); ?> " class="button button-primary button-large mycred-open-badge-download" download>Download</a>
+                                        </div>
+                                        <?php endif; ?>
                                     </div>
                                     <?php
 
@@ -1969,8 +1947,7 @@ th#badge-users { width: 10%; }
                 $show_steps_to_achieve = false;
                 $show_earners = false;
 
-                if ( is_array( $mycred->core ) && array_key_exists('badges', $mycred->core ) )
-                {
+                if ( is_array( $mycred->core ) && array_key_exists('badges', $mycred->core ) ) {
                     $show_level_description = $mycred->core["badges"]["show_level_description"] == '1' ? true : false;
                     $show_congo_text = $mycred->core["badges"]["show_congo_text"] == '1' ? true : false;
                     $show_levels = $mycred->core["badges"]["show_levels"] == '1' ? true : false;
@@ -1997,13 +1974,15 @@ th#badge-users { width: 10%; }
                 $content = '<div class="mycred-badge-page">';
 
                 if ( $show_congo_text && $has_earned ) {
-                    if (!empty($badge_object->congratulation_msg))
-                    {
+                
+                    if ( ! empty( $badge_object->congratulation_msg ) ) {
 
                         $content .= '<div class="mycred-badge-congratulation-msg">' . $badge_object->congratulation_msg . '</div>';
+                    
                     }
+                
                 }
-
+                
                 $content .= '<img src="' . $badge_image_url . '" class="mycred-badge-image" alt="">';
 
                 //Level Description
@@ -2026,10 +2005,10 @@ th#badge-users { width: 10%; }
                     $levels = mycred_show_badge_requirements( $badge_id );
 
                     foreach ( $levels as $id => $level ) {
-
+                        
                         $level_image_url = '';
 
-                        if( !empty( $level_image_url ) )
+                        if( ! empty( $level_image_url ) )
                             $level_image_url = $level["image"];
 
                         $heading = $level["heading"];
