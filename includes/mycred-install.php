@@ -89,8 +89,6 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		public static function activate() {
 
 			$mycred = mycred();
-			
-			set_transient( '_mycred_activation_redirect', true, 60 );
 
 			// Add general settings
 			add_option( 'mycred_version',   myCRED_VERSION );
@@ -115,8 +113,6 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 
 			if ( isset( $_GET['activate-multi'] ) )
 				return;
-
-			set_transient( '_mycred_activation_redirect', true, 60 );
 
 			flush_rewrite_rules();
 		}

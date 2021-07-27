@@ -356,7 +356,7 @@ if ( !is_mycred_ready() ) {
 
 	<div class="button-wrap mycred-clear">
 		<div class="left">
-			<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange mycred-footer-btn">
+			<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" onclick="startTour()" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange mycred-footer-btn">
 			Setup myCred
 			</a>
 		
@@ -403,7 +403,7 @@ function mycred_about_page() {
 						<?php
 						if ( !is_mycred_ready() ) {
 						?>
-							<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange">
+							<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" onclick="startTour()" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange">
 								Setup myCred
 							</a>
 						<?php

@@ -718,6 +718,9 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 			$image_width  = ( $this->image_width !== false ) ? ' width="' . esc_attr( $this->image_width ) . '"' : '';
 			$image_height = ( $this->image_height !== false ) ? ' height="' . esc_attr( $this->image_height ) . '"' : '';
 
+			if ( !$image_url )
+			    return false;
+
 			$html         = '<img src="' . esc_url( $image_url ) . '" class="' . MYCRED_SLUG . '-badge-image badge-level' . esc_attr( $level ) . '" title="' . esc_attr( $this->title ) . '" alt="' . esc_attr( $this->title ) . '"' . $image_width . $image_height . ' />';
 
 			return apply_filters( 'mycred_badge_image', $html, $image, $this );

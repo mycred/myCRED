@@ -361,12 +361,15 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 
 			if ( ! empty( $content ) ) {
 
-                if ( is_array( $event ) &&  array_key_exists( 'ref_id', $event ) )
+				if ( class_exists( 'myCRED_Ranks_Module' ) )
                 {
-                    $rank       = mycred_get_rank( $event['ref_id'] );
-                    $rank_title = $rank->title;
-                    $content = str_replace( '%rank_title%', $rank_title, $content );
-                }
+	                if ( is_array( $event ) &&  array_key_exists( 'ref_id', $event ) )
+	                {
+	                    $rank       = mycred_get_rank( $event['ref_id'] );
+	                    $rank_title = $rank->title;
+	                    $content = str_replace( '%rank_title%', $rank_title, $content );
+	                }
+	            }
 
 				$mycred  = mycred( $point_type );
 

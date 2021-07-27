@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 5.7.1
-Stable tag: 2.1.0.2
+Tested up to: 5.7
+Stable tag: 2.1.0.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,6 +13,8 @@ An adaptive and powerful points management system for WordPress powered websites
 == Description ==
 
 myCred is an intelligent and adaptive **points management system** that allows you to build and manage a broad range of digital rewards including points, ranks and, badges on your WordPress/WooCommerce powered website. 
+
+[youtube https://www.youtube.com/watch?v=-M19tzYo1jo]
 
 Build **brand loyalty** by rewarding your customers through store reward systems, community leaderboards, monetizing your website content, etc. - The possibilities are endless. 
 
@@ -26,7 +28,7 @@ myCred allows **THREE different ways** through which you can award your users:
 
 * **Ranks -** Set ranks within your leaderboards and reward your users with significant perks after they reach a certain milestone.
 
-* **Badges -** Boost your users participation by rewarding them for their exceptional performance.
+* **Badges -** Boost your users’ participation by rewarding them for their exceptional performance.
 
 = BECOME A VIP MEMBER OF THE MYCRED MEMBERSHIP CLUB =
 
@@ -122,20 +124,20 @@ Not only will you be able to manually adjust the point balance system at any tim
 
 = AWARD OR DEDUCT POINTS AUTOMATICALLY =
 
-**myCred** supports an extensive set of WordPress interactions through which you can automatically give/take points from a user. These actions can be as simple as logging in, publishing content, or leaving a comment. These automatic adjustments are managed by a feature called [Hooks](https://mycred.me/about/features/#automatic-points) that can be set up in your admin area.
+**myCred** supports an extensive set of WordPress interactions through which you can automatically give/take points from a user. These actions can be as simple as logging in, publishing content, or leaving a comment. These automatic adjustments are managed by a feature called “[Hooks](https://mycred.me/about/features/#automatic-points)” that can be set up in your admin area.
 
 
 = DEDICATED LOG =
 
-Each time **myCred** adds or deducts points from a user, the adjustment is [logged](https://mycred.me/about/features/#account-history) in a dedicated log, allowing your users to browse their history. This log keeps a record of your user's accountability, badges, and ranks, among other useful statistics.
+Each time **myCred** adds or deducts points from a user, the adjustment is [logged](https://mycred.me/about/features/#account-history) in a dedicated log, allowing your users to browse their history. This log keeps a record of your user’s accountability, badges, and ranks, among other useful statistics.
 
 This log data can be converted into charts to help you visualize the usage and circulation of points on your website.
 
 You can achieve the following features by using a dedicated log for your points system:
 
 * Set a limit to the maximum number of times each hook can give out points to your user.
-* Badges will use the log's data to determine which user has earned a badge.
-* Add-ons such as "Sell Content" use the log to keep track of users who have purchased posts from your website.
+* Badges will use the log’s data to determine which user has earned a badge.
+* Add-ons such as â€œSell Contentâ€ use the log to keep track of users who have purchased posts from your website.
 * Add-ons use the log to make sure that a user does not gain repetitive points for the same interaction within a given time frame.
 
 = BUILT-IN ADD-ONS =
@@ -148,7 +150,7 @@ myCred is much more than just a point management system - The plugin comes with 
 **- Email notifications:** Setup email notifications for status updates.
 **- Gateway:** Let users pay with points in your store.
 **- Notifications:** Enable popup notifications that display status updates.
-**- Ranks:** Create ranks based on the user's point balance.
+**- Ranks:** Create ranks based on the user’s point balance.
 **- Sell Content:** Sell your content in exchange for points.
 **- Statistics:** Get a statistical overview of points in circulation, etc.
 **- Transfers:** Allow your users to transfer points to other users. 
@@ -159,7 +161,7 @@ Power your WordPress website with 50+ add-ons ranging from categories like **Gam
 
 myCred supports some of the most popular WordPress plugins like **BuddyPress, WooCommerce, Jetpack, Contact Form 7, Disqus, Gravity Forms,** among countless others. 
 
-**Simple & organized** To keep your admin area organized, myCred will only show features and setting for those third-party plugins that are installed and enabled.
+**Simple & organized –** To keep your admin area organized, myCred will only show features and setting for those third-party plugins that are installed and enabled.
 
 
 = INTEGRATED WITH THE MOST POPULAR LEARNING MANAGEMENT SYSTEMS =
@@ -231,7 +233,7 @@ You can find extensive [documentation](http://codex.mycred.me/) on myCred relate
 
 = Customizations =
 
-myCred has the ability to "do-it-all" because we have put in a lot of effort to make sure that the supported plugins are as developer-friendly as possible. If you need to build a custom feature, simply submit a [request for a quote](https://mycred.me/customize/request-quote/) via the myCred website.
+myCred has the ability to â€œdo-it-allâ€ because we have put in a lot of effort to make sure that the supported plugins are as developer-friendly as possible. If you need to build a custom feature, simply submit a [request for a quote](https://mycred.me/customize/request-quote/) via the myCred website.
 
 
 = Support =
@@ -274,8 +276,8 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-= 2.0.1 =
-Bug fixes release.
+= 2.1 =
+New features and Bug fixes.
 
 = 2.0 =
 The banking module have been replaced by Central deposite module, and interest related functionality has been removed. If you are using simple interest or compound interest related functionality, you will fine the respective functionalities missing after the update.
@@ -361,11 +363,16 @@ Bug fixes release.
 
 == Changelog ==
 
-= 2.1.0.2 = 
+= 2.1.0.3 =
+FIX - Email notification issues.
+FIX - Broken image if badge default image wasn't set.
+FIX - mycred_my_badges width and height attributes wasn't working.
+
+= 2.1.0.2 =
 Improvement - Code optimization
 
-= 2.1.0.1 = 
-Fix - Remove warnings
+= 2.1.0.1 =
+FIX - Remove warnings
 
 = 2.1 =
 NEW - Open badge functionality in myCred Badge addon.
@@ -376,20 +383,20 @@ NEW - Added support into Badges for Anniversary hook.
 NEW - Added support into Badges for wooCommerce purchase reward.
 NEW - Added %rank_title% template tag support in Email Notifications.
 NEW - Added attributes in mycred_transfer shortcode.
-TWEAK - Removed deprecated functions.
-TWEAK - Code Improvement.
-TWEAK - Improve styling of mycred_transfer shortcode.
 FIX - mycred_history shortcode pagination not working properly when cache enabled.
 FIX - Ranks weren't working properly on the current balance.
 FIX - mycred_sell_this shortcode not working in the bbPress topic
 FIX - The central deposit missing log entry in some cases.
+TWEAK - Removed deprecated functions.
+TWEAK - Code Improvement.
+TWEAK - Improve styling of mycred_transfer shortcode.
 
 = 2.0.2 =
 New - Added compatibility for multiple currencies in CashCred Paypal addon
 Fix - Php erros in myCred woocommerce gateway
 Fix - Points on daily visit hooks not working in some conditions
 Fix - myCred CashCred multisite issues
-Improvement - license system
+TWEAK - license system
 
 = 2.0.1 =
 FIX - myCred membership license not activating for members
@@ -550,7 +557,7 @@ TWEAK - myCred Central Deposit
 - **FIX** - setCookie function error when adding new hook.
 
 = 1.8.4 =
-- **NEW** - Introduce a new filter "mycred_option_id" for manipulating hooks.
+- **NEW** - Introduce a new filter â€œmycred_option_idâ€ for manipulating hooks.
 - **NEW** - Add new action "mycred_pref_hooks" on mycred hooks page
 - **TWEAK** - Limits are showing for Approved comments hook in [mycred_hook_table] shortcode.
 - **FIX** - Sell content undefined offset in Backend Pages & Posts.

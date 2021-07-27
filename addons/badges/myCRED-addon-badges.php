@@ -280,11 +280,11 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
         public function register_badge_category() {
 
             $labels = [
-                'name' => __( 'Achievement Type', 'mycred' ),
-                'menu_name' =>  __( 'Achievement Type', 'mycred' ),
-                'all_items' => __( 'All Achievements', 'mycred' ),
+                'name' => __( 'Achievement Types', 'mycred' ),
+                'menu_name' =>  __( 'Achievement Types', 'mycred' ),
+                'all_items' => __( 'Achievement Types', 'mycred' ),
                 'add_new_item' => __( 'Add New Achievement', 'mycred' ),
-                'parent_item' => __( 'Parent Achievement', 'mycred' ),
+                'parent_item' => __( 'Parent Achievement Type', 'mycred' ),
             ];
 
             $object_type = [
@@ -476,8 +476,8 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             add_submenu_page(
                 MYCRED_SLUG,
-                __( 'Achievements', 'mycred' ),
-                __( 'Achievements', 'mycred' ),
+                __( 'Achievement Types', 'mycred' ),
+                __( 'Achievement Types', 'mycred' ),
                 $this->core->get_point_editor_capability(),
                 'edit-tags.php?post_type=' . MYCRED_BADGE_KEY . '&taxonomy=' . MYCRED_BADGE_CATEGORY
             );
@@ -1962,12 +1962,22 @@ th#badge-users { width: 10%; }
                 
                 $mycred = mycred();
 
-                $show_level_description = $mycred->core["badges"]["show_level_description"] == '1' ? true : false;
-                $show_congo_text = $mycred->core["badges"]["show_congo_text"] == '1' ? true : false;
-                $show_levels = $mycred->core["badges"]["show_levels"] == '1' ? true : false;
-                $show_level_points = $mycred->core["badges"]["show_level_points"] == '1' ? true : false;
-                $show_steps_to_achieve = $mycred->core["badges"]["show_steps_to_achieve"] == '1' ? true : false;
-                $show_earners = $mycred->core["badges"]["show_earners"] == '1' ? true : false;
+                $show_level_description = false;
+                $show_congo_text = false;
+                $show_levels = false;
+                $show_level_points = false;
+                $show_steps_to_achieve = false;
+                $show_earners = false;
+
+                if ( is_array( $mycred->core ) && array_key_exists('badges', $mycred->core ) )
+                {
+                    $show_level_description = $mycred->core["badges"]["show_level_description"] == '1' ? true : false;
+                    $show_congo_text = $mycred->core["badges"]["show_congo_text"] == '1' ? true : false;
+                    $show_levels = $mycred->core["badges"]["show_levels"] == '1' ? true : false;
+                    $show_level_points = $mycred->core["badges"]["show_level_points"] == '1' ? true : false;
+                    $show_steps_to_achieve = $mycred->core["badges"]["show_steps_to_achieve"] == '1' ? true : false;
+                    $show_earners = $mycred->core["badges"]["show_earners"] == '1' ? true : false;
+                }
 
                 //Badge ID
                 $badge_id = $post->ID;
@@ -1993,7 +2003,7 @@ th#badge-users { width: 10%; }
                         $content .= '<div class="mycred-badge-congratulation-msg">' . $badge_object->congratulation_msg . '</div>';
                     }
                 }
-                
+
                 $content .= '<img src="' . $badge_image_url . '" class="mycred-badge-image" alt="">';
 
                 //Level Description
@@ -2016,7 +2026,11 @@ th#badge-users { width: 10%; }
                     $levels = mycred_show_badge_requirements( $badge_id );
 
                     foreach ( $levels as $id => $level ) {
-                        $level_image_url = $level["image"];
+
+                        $level_image_url = '';
+
+                        if( !empty( $level_image_url ) )
+                            $level_image_url = $level["image"];
 
                         $heading = $level["heading"];
 
