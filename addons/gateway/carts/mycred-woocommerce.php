@@ -552,7 +552,7 @@ if ( ! function_exists( 'mycred_woo_available_gateways' ) ) :
 
 		// Calculate cost in CREDs
 		$currency   = get_woocommerce_currency();
-
+		if(!is_object($woocommerce)) return;
 		$cost       = $woocommerce->cart->total;
 		if ( ! mycred_point_type_exists( $currency ) && $currency != 'MYC' )
 			$cost = $mycred->number( ( $woocommerce->cart->total / $gateways['mycred']->get_option( 'exchange_rate' ) ) );

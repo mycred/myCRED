@@ -153,7 +153,7 @@ function mycred_about_header() {
 <div class="mycred_about_header">
 	<div class="wp-badge" id="mycred-badge"></div>
 	<div class="mycred_about_header-title">
-		<p><?php printf( '%s Beta <span>%s</span>', $name, myCRED_VERSION ); ?></span></p>
+		<p><?php printf( '%s <span>%s</span>', $name, myCRED_VERSION ); ?></span></p>
 	</div>
 </div>
 <?php

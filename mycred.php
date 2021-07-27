@@ -3,7 +3,7 @@
  * Plugin Name: myCred
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 2.0.1
+ * Version: 2.0.2
  * Tags: point, credit, loyalty program, engagement, reward, woocommerce rewards
  * Author: myCred
  * Author URI: https://mycred.me
@@ -20,7 +20,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '2.0.1';
+		public $version             = '2.0.2';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -54,14 +54,14 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.0.1' ); }
+		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.0.2' ); }
 
 		/**
 		 * Not allowed
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.0.1' ); }
+		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.0.2' ); }
 
 		/**
 		 * Get
@@ -82,7 +82,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( ! defined( $name ) )
 				define( $name, $value );
 			elseif ( ! $definable && defined( $name ) )
-				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . $name . ' as it is already defined somewhere else!', '2.0.1' );
+				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . $name . ' as it is already defined somewhere else!', '2.0.2' );
 		}
 
 		/**
@@ -94,7 +94,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( file_exists( $required_file ) )
 				require_once $required_file;
 			else
-				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . $required_file . ' not found.', '2.0.1' );
+				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . $required_file . ' not found.', '2.0.2' );
 		}
 
 		/**
@@ -150,6 +150,8 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			add_filter( 'plugin_action_links_mycred/mycred.php', array( $this, 'plugin_links' ), 10, 4 );
 			add_filter( 'plugin_row_meta',                       array( $this, 'plugin_description_links' ), 10, 2 );
 			add_action( 'admin_menu',           				 array( $this, 'plugin_about_page' ), 10 );
+			add_filter( 'pre_http_request', 					 array( $this, 'handle_license_request' ), 10, 3 );
+			add_filter( 'http_request_args',                     array( $this, 'license_request_args' ), 10, 2 );
 
 		}
 
@@ -1107,6 +1109,43 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 
 			return $links;
 
+		}
+
+		/**
+		 * Handle Premium Addon License requests
+		 * @since 1.9
+		 * @version 1.0
+		 */
+		public function handle_license_request( $default, $parsed_args, $url ) {
+			
+			if( $url == 'http://mycred.me/api/plugins/' && ! empty( $parsed_args['body']['action'] ) && $parsed_args['body']['action'] == 'info' ) {
+				
+				$request = unserialize( $parsed_args['body']['request'] );
+				
+				if( get_transient( 'mycred_license_' . $request['slug'] ) ) 
+					return true;
+				else 
+					set_transient( 'mycred_license_' . $request['slug'], $parsed_args, 24 * HOUR_IN_SECONDS );
+				
+			}
+			
+			return $default;
+		}
+
+		/**
+		 * Add argument for handling license request
+		 * @since 1.9
+		 * @version 1.0
+		 */
+		public function license_request_args( $parsed_args, $url ) {
+			
+			if( $url == 'http://mycred.me/api/plugins/' && ! empty( $parsed_args['body']['action'] ) ) {
+				
+				$parsed_args['body']['optimize_license'] = true;
+				
+			}
+			
+			return $parsed_args;
 		}
 
 		/**

@@ -302,7 +302,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 
 			// In case we are using the Master Template feautre on multisites, and this is not the main
 			// site in the network, bail.
-			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
+			//if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
 
 			add_submenu_page(
 				MYCRED_SLUG,
@@ -376,6 +376,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			);
 
 		}
+	
 
 		/**
 		 * Pending Payment Column Content
@@ -385,11 +386,11 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 		public function adjust_column_content( $column_name, $post_id ) {
 
 			global $mycred_modules;
-
 			switch ( $column_name ) {
 				case 'User' :
 					
-					$from = (int) mycred_get_post_meta( $post_id, 'from', true );
+					$from = (int) check_site_get_post_meta( $post_id, 'from', true );
+					$from = (int) check_site_get_post_meta( $post_id, 'from', true );
 					$user = get_userdata( $from );
 
 					if ( isset( $user->display_name ) )
@@ -400,8 +401,8 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				break;
 				case 'Points';
 
-					$type   = mycred_get_post_meta( $post_id, 'point_type', true );
-					$points = mycred_get_post_meta( $post_id, 'points', true );
+					$type   = check_site_get_post_meta( $post_id, 'point_type', true );
+					$points = check_site_get_post_meta( $post_id, 'points', true );
 					$mycred = mycred( $type );
 
 					echo $mycred->format_creds( $points );
@@ -409,22 +410,22 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				break;
 				case 'cost';
 
-					$cost     = mycred_get_post_meta( $post_id, 'cost', true );
-					$currency = mycred_get_post_meta( $post_id, 'currency', true );
+					$cost     = check_site_get_post_meta( $post_id, 'cost', true );
+					$currency = check_site_get_post_meta( $post_id, 'currency', true );
 					echo $cost . ' ' . $currency;
 
 				break;
 				case 'amount';
 					
-					$points = mycred_get_post_meta( $post_id, 'points', true );
-					$cost     = mycred_get_post_meta( $post_id, 'cost', true );
-					$currency = mycred_get_post_meta( $post_id, 'currency', true );
+					$points = check_site_get_post_meta( $post_id, 'points', true );
+					$cost     = check_site_get_post_meta( $post_id, 'cost', true );
+					$currency = check_site_get_post_meta( $post_id, 'currency', true );
 					echo $currency .' ' . $points * $cost;
 
 				break;
 				case 'gateway';
 
-					$gateway   = mycred_get_post_meta( $post_id, 'gateway', true );
+					$gateway   = check_site_get_post_meta( $post_id, 'gateway', true );
 					$installed = $mycred_modules['solo']['cashcred']->get();
 
 					if ( isset( $installed[ $gateway ] ) )
@@ -435,7 +436,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				break;
 				case 'ctype';
 
-					$type = mycred_get_post_meta( $post_id, 'point_type', true );
+					$type = check_site_get_post_meta( $post_id, 'point_type', true );
 					
 					if ( isset( $this->point_types[ $type ] ) )
 						echo $this->point_types[ $type ];
@@ -444,7 +445,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 
 				break;
 					case 'status';
-					$status = mycred_get_post_meta( $post_id, 'status', true );
+					$status = check_site_get_post_meta( $post_id, 'status', true );
 					echo "<div class='cashcred_bages'><span class='cashcred_" . $status . "'>" . $status . "</span></div>";
 
 				break;
@@ -1100,7 +1101,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			$old_status = mycred_get_post_meta( $post_id, 'status', true );
 			$new_status = sanitize_text_field( $_POST['status'] );
 
-			$user_settings = mycred_get_user_meta( $_POST['user_id'], 'cashcred_user_settings', '', true );
+			$user_settings = mycred_get_user_meta( $_POST['user_id'], cashcred_get_user_settings(), '', true );
 			$updated_user_settings = $_POST['cashcred_user_settings'];
 	 
 			$changed_fields  = array();
@@ -1112,21 +1113,21 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				'cost'       => __( 'Cost', 'mycred' ),
 				'currency'   => __( 'Currency', 'mycred' )
 			);
-			
-			mycred_update_post_meta( $post_id, 'status', $new_status );
 
-			mycred_update_user_meta( $_POST['user_id'], 'cashcred_user_settings', '', $updated_user_settings );
-			 
+			check_site_update_post_meta( $post_id, 'status', $new_status );
+
+			mycred_update_user_meta( $_POST['user_id'], cashcred_get_user_settings(), '', $updated_user_settings );
+
 			foreach ( $pending_payment as $meta_key => $meta_value ) {
 
 				$new_value = sanitize_text_field( $meta_value );
-				$old_value = mycred_get_post_meta( $post_id, $meta_key, true );
+				$old_value = check_site_get_post_meta( $post_id, $meta_key, true );
 
 				if ( $new_value != $old_value ) {
-					mycred_update_post_meta( $post_id, $meta_key, $new_value );
+					check_site_update_post_meta( $post_id, $meta_key, $new_value );
 					$changed_fields[] = $withdraw_request_messages[ $meta_key ];
 				}
-
+				
 			}
 
 			$changes = join( ", ", $changed_fields );

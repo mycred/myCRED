@@ -34,7 +34,7 @@ if ( ! class_exists( 'myCRED_Hook_Site_Visits' ) ) :
 			// Make sure user is logged in. Also to prevent unneccery db queries we
 			// check to make sure the user does not have the cookie.
 			if ( is_user_logged_in() && ! isset( $_COOKIE['mycred_site_visit'] ) )
-				add_action( 'wp_head', array( $this, 'site_visit' ) );
+				add_action( 'init', array( $this, 'site_visit' ) );
 
 		}
 
@@ -53,7 +53,7 @@ if ( ! class_exists( 'myCRED_Hook_Site_Visits' ) ) :
 
 			// Set cookie to prevent db queries again today.
 			$lifespan = (int) ( 24*3600 ) - ( date( 'H', $now ) * 3600 + date( 'i', $now ) * 60 + date( 's', $now ) );
-			if ( ! headers_sent() ) setcookie( 'mycred_site_visit', 1, $lifespan, COOKIEPATH, COOKIE_DOMAIN );
+			if ( ! headers_sent() ) setcookie( 'mycred_site_visit', 1, time() +$lifespan, COOKIEPATH, COOKIE_DOMAIN, true );
 
 			// Make sure user is not excluded
 			if ( $this->core->exclude_user( $user_id ) ) return;

@@ -206,6 +206,13 @@ if( !function_exists('mycred_is_membership_active') ) {
 
         $membership_status = wp_cache_get('mycred_membership_status');
 
+        if( 'yes' == get_transient( 'mycred_is_membership_active' ) && !isset($_GET['mycred-refresh-license'])) {
+            // if transient is set return its value, unless user clicks on refresh license
+
+            return true;
+            
+        }
+
         if( false === $membership_status ) {
 
             $user_license_key = mycred_get_membership_key();
@@ -214,10 +221,16 @@ if( !function_exists('mycred_is_membership_active') ) {
             
             $url = rtrim( get_bloginfo( 'url' ), '/' );
             if( $mycred_version >= 188 && !empty( $user_license_key ) &&
-                mycred_get_membership_details()['plan'][0]['key'] == $user_license_key &&
-                in_array( $url, mycred_get_membership_details()['sites'][0] )
+                mycred_get_membership_details(true)['plan'][0]['key'] == $user_license_key &&
+                in_array( $url, mycred_get_membership_details(true)['sites'][0] )
             ) {
                 $membership_status = true;
+                
+                set_transient( 'mycred_is_membership_active', 'yes' , DAY_IN_SECONDS*7 );
+                // setting transient so membership request is not sent to mycred server for next 2 days
+            } else {
+
+                set_transient( 'mycred_is_membership_active', 'no' , DAY_IN_SECONDS*7 );
             }
             wp_cache_set( 'mycred_membership_status', $membership_status );
         }
@@ -233,7 +246,36 @@ if( !function_exists('mycred_is_membership_active') ) {
  * @version 1.1
  */
 if( !function_exists('mycred_get_membership_details') ) {
-    function mycred_get_membership_details() {
+    function mycred_get_membership_details($force = false) {
+
+        $membership_details = array();
+        if (true === $force) {
+            $membership_details = mycred_send_req_for_membership_details();
+        } else {
+
+            $saved_membership_details = get_option('mycred_membership_details');
+
+            if (empty($saved_membership_details)) {
+                $membership_details = mycred_send_req_for_membership_details();
+            } else {
+                $membership_details = $saved_membership_details;
+            }
+
+        }
+
+        return $membership_details;
+
+    }
+}
+
+/**
+ * Send Request for membership details
+ * 
+ * @since 1.0
+ * @version 1.1
+ */
+if( !function_exists('mycred_send_req_for_membership_details') ) {
+    function mycred_send_req_for_membership_details() {
 
         $membership_details = wp_cache_get('mycred_membership_details');
 
@@ -245,6 +287,26 @@ if( !function_exists('mycred_get_membership_details') ) {
             if( is_array( $data ) && ! is_wp_error( $data ) && ! empty( $data['response']['code'] ) && $data['response']['code'] == 200 ) {
 
                 $membership_details = json_decode( $data['body'], true );
+
+                $membership_details_to_save = array();
+                if(isset($membership_details['addons']) && !empty($membership_details['addons'])) {
+
+                    foreach($membership_details['addons'] as $key => $value) {
+                        $membership_details_to_save['addons'][$key]['name'] = $value['name'];
+                        $membership_details_to_save['addons'][$key]['slug'] = $value['slug'];
+                        $membership_details_to_save['addons'][$key]['folder'] = $value['folder'];
+                    }
+                    
+                }
+
+                if(isset($membership_details['order']) && !empty($membership_details['order'])) {
+
+                    foreach($membership_details['order'] as $key => $value) {
+                        $membership_details_to_save['order'][$key]['expire'] = $value['expire'];
+                    }
+                    
+                }
+                update_option( 'mycred_membership_details', $membership_details_to_save );
 
             } else {
 
@@ -276,3 +338,36 @@ if( !function_exists('mycred_get_membership_details') ) {
 
     }
 }
+
+
+/**
+ * Add check for License link to all mycred addons
+ * 
+ * @since 1.0
+ * @version 1.1
+ */
+
+if( !function_exists('mycred_refresh_license') ) {
+    function mycred_refresh_license($plugin_meta, $slug, $file, $plugin_data  ) {
+
+        $plugin_meta[] = '<a href="'.admin_url( 'plugins.php?mycred-refresh-license='.$slug).'">'.__('Refresh License', 'mycred').'</a>';
+        
+        return $plugin_meta;
+
+    }
+
+    add_filter( 'mycred_plugin_info', 'mycred_refresh_license', 80, 4 );
+} 
+
+if( !function_exists('mycred_send_refresh_license_req') ) {
+    function mycred_send_refresh_license_req() {
+
+        if (isset($_GET['mycred-refresh-license'])) {
+            mycred_get_membership_details(true);
+            
+        }
+
+    }
+
+    add_filter( 'pre_current_active_plugins', 'mycred_send_refresh_license_req');
+} 

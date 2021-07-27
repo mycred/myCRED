@@ -47,7 +47,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 		$cashcred_withdraw = true;
 
 		// Button Label
-		$button_label = $point_types[ array_key_first( $point_types ) ]->template_tags_general( $button );
+		$button_label = $point_types[ current(array_keys($point_types)) ]->template_tags_general( $button );
 
 		ob_start();
 			
@@ -122,7 +122,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 						</select>
 					</div>
 				<?php } else {?>
-					<input type="hidden" id="cashcred_point_type" name="cashcred_point_type" value="<?php echo esc_attr( array_key_first( $point_types ) ); ?>" />
+					<input type="hidden" id="cashcred_point_type" name="cashcred_point_type" value="<?php echo esc_attr( current(array_keys($point_types)) ); ?>" />
 				<?php } ?>
 
 				<?php if ( count( $gateways ) > 1 ) { ?>
@@ -137,11 +137,11 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 						</select>
 					</div>
 				<?php } else { ?>
-					<input type="hidden" id="cashcred_pay_method" name="cashcred_pay_method" value="<?php echo esc_attr( array_key_first( $gateways ) ); ?>" />
+					<input type="hidden" id="cashcred_pay_method" name="cashcred_pay_method" value="<?php echo esc_attr( current(array_keys($gateways)) ); ?>" />
 				<?php } ?>
 
 			<div class="form-group">  
-				<label><?php echo sprintf( __('Withdraw %s value', 'mycred'), $point_types[ array_key_first( $point_types ) ]->plural() ); ?></label>
+				<label><?php echo sprintf( __('Withdraw %s value', 'mycred'), $point_types[ current(array_keys($point_types)) ]->plural() ); ?></label>
 				<?php 
 					$amount = ! empty( $amount ) ? floatval( $amount ) : 0;
 				?> 
@@ -264,12 +264,12 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 						?>
 					</select>
 				<?php else:?>
-					<input type="hidden" name="cashcred_save_settings" id="cashcred_save_settings" value="<?php echo esc_attr( array_key_first( $gateways ) ); ?>" />
+					<input type="hidden" name="cashcred_save_settings" id="cashcred_save_settings" value="<?php echo esc_attr( current(array_keys($gateways)) ); ?>" />
 				<?php endif;?>
 				<?php 
 					wp_nonce_field( 'cashCred-payment-settings', 'cashcred_settings_wpnonce' );
-				 
-					foreach ( $gateways as $key => $active_gateways_value ) {
+
+				    foreach ( $gateways as $key => $active_gateways_value ) {
 						
 						$MyCred_payment_setting_call = new $active_gateways_value['callback'][0]($key);
 						$MyCred_payment_setting_call->cashcred_payment_settings($key) ;

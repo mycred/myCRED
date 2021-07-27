@@ -60,10 +60,9 @@ if ( ! function_exists( 'cashcred_get_user_payment_details' ) ) :
 
 		if ( is_admin() ) {
 			$post_id = get_the_ID();
-			$user_id = mycred_get_post_meta( $post_id, 'from', true );
+			$user_id = check_site_get_post_meta( $post_id, 'from', true );
 		}
-			
-		return mycred_get_user_meta( $user_id,  'cashcred_user_settings', '', true );
+		return mycred_get_user_meta( $user_id, 'cashcred_user_settings', '', true );
  
 	}
 endif;
@@ -274,7 +273,7 @@ endif;
  */
 if ( ! function_exists( 'cashcred_get_payment_settings' ) ) :
 	function cashcred_get_payment_settings( $payment_id = NULL ) {
-
+	    
 		// Construct fake pending object ( when no pending payment object exists )
 		if ( is_array( $payment_id ) ) {
 
@@ -299,11 +298,11 @@ if ( ! function_exists( 'cashcred_get_payment_settings' ) ) :
 			$pending_payment                 = new StdClass();
 			$pending_payment->payment_id     = absint( $payment_id );
 			$pending_payment->public_id      = get_the_title( $payment_id );
-			$pending_payment->point_type     = mycred_get_post_meta( $payment_id, 'point_type', true );
-			$pending_payment->points         = mycred_get_post_meta( $payment_id, 'points', true );
-			$pending_payment->cost           = mycred_get_post_meta( $payment_id, 'cost', true );
-			$pending_payment->currency       = mycred_get_post_meta( $payment_id, 'currency', true );
-			$pending_payment->gateway_id     = mycred_get_post_meta( $payment_id, 'gateway', true );
+			$pending_payment->point_type     = check_site_get_post_meta( $payment_id, 'point_type', true );
+			$pending_payment->points         = check_site_get_post_meta( $payment_id, 'points', true );
+			$pending_payment->cost           = check_site_get_post_meta( $payment_id, 'cost', true );
+			$pending_payment->currency       = check_site_get_post_meta( $payment_id, 'currency', true );
+			$pending_payment->gateway_id     = check_site_get_post_meta( $payment_id, 'gateway', true );
 			$pending_payment->transaction_id = $pending_payment->public_id;
 
 		}
@@ -467,3 +466,97 @@ if ( ! function_exists( 'mycred_get_cashcred_settings' ) ) :
 
 	}
 endif;
+
+if(!function_exists('check_site_add_post_meta'))
+{
+    /**
+    * add postmeta by checking multisite and current blog
+    * @param $post_id post id
+    * @param $key meta key
+    * @param bool $single
+    * @return mixed
+    */
+    function check_site_add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
+	{
+	    if(is_multisite() AND !is_main_site() AND mycred_override_settings())
+	    {
+	        return add_post_meta( $post_id, $meta_key, $meta_value, $unique );
+	    }
+	    else
+	    {
+	        return mycred_add_post_meta( $post_id, $meta_key, $meta_value, $unique );
+	    }
+	}
+}
+
+if(!function_exists('check_site_get_post_meta'))
+{
+    /**
+    * Returns postmeta by checking multisite and current blog
+    * @param $post_id post id
+    * @param $key meta key
+    * @param bool $single
+    * @return mixed
+    */
+    function check_site_get_post_meta($post_id, $key, $single = false)
+	{
+	    if(is_multisite() AND !is_main_site() AND mycred_override_settings())
+	    {
+	        return get_post_meta( $post_id, $key, $single );
+	    }
+	    else
+	    {
+	        return mycred_get_post_meta( $post_id, $key, $single );
+	    }
+	}
+}
+
+if(!function_exists('cashcred_get_user_settings'))
+{
+    /**
+     * cashCred get user's settings
+    */
+    function cashcred_get_user_settings()
+    {
+        $check = '';
+		$cashcred_user_setting = '';
+		if(is_multisite() AND !is_main_site() AND mycred_override_settings())
+		{
+		    $check = true;
+		}
+		else
+		{
+		    $check = false;
+	    }
+		if($check)
+		{
+		    return 'cashcred_user_settings_' . get_current_blog_id();
+		}
+		else
+		{
+		    return 'cashcred_user_settings';
+		}
+    }
+}
+
+if(!function_exists('check_site_update_post_meta'))
+{
+     /**
+    *Checks site is multisite or not and update post meta
+    * @param $post_id post id
+    * @param $key meta key
+    * @param $new_value new meta value
+    * @return mixed
+    */
+    function check_site_update_post_meta( $post_id, $meta_key, $new_value )
+    {
+        if(is_multisite() AND !is_main_site() AND mycred_override_settings())
+	    {
+	        return update_post_meta( $post_id, $meta_key, $new_value );
+	    }
+	    else
+	    {
+	        return mycred_update_post_meta( $post_id, $meta_key, $new_value );
+	    }
+    }
+}

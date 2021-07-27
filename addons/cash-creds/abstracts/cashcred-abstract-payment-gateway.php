@@ -248,33 +248,35 @@ if ( ! class_exists( 'myCRED_Cash_Payment_Gateway' ) ) :
 		 * @version 1.0.2
 		 */
 		public function currencies_dropdown( $name = '', $js = '' ) {
+			$currencies = [
+                'AUD'		=>	'Australian dollar',
+                'BRL'		=>	'Brazilian real',
+                'CAD'		=>	'Canadian dollar',
+                'CNY'		=>	'Chinese Renmenbi',
+                'CZK'		=>	'Czech koruna',
+                'DKK'		=>	'Danish krone',
+                'EUR'		=>	'Euro',
+                'HKD'		=>	'Hong Kong dollar',
+                'HUF'		=>	'Hungarian forint',
+                'INR'		=>	'Indian rupee',
+                'ILS'		=>	'Israeli new shekel',
+                'JPY'		=>	'Japanese yen',
+                'MYR'		=>	'Malaysian ringgit',
+                'MXN'		=>	'Mexican peso',
+                'TWD'		=>	'New Taiwan dollar',
+                'NZD'		=>	'New Zealand dollar',
+                'NOK'		=>	'Norwegian krone',
+                'PHP'		=>	'Philippine peso',
+                'PLN'		=>	'Polish złoty',
+                'GBP'		=>	'Pound sterling',
+                'RUB'		=>	'Russian ruble',
+                'SGD'		=>	'Singapore dollar',
+                'SEK'		=>	'Swedish krona',
+                'CHF'		=>	'Swiss franc',
+                'THB'		=>	'Thai baht',
+                'USD'		=>	'United States dollar'
+            ];
 
-			$currencies = array(
-				'USD' => 'US Dollars',
-				'AUD' => 'Australian Dollars',
-				'CAD' => 'Canadian Dollars',
-				'EUR' => 'Euro',
-				'GBP' => 'British Pound Sterling',
-				'JPY' => 'Japanese Yen',
-				'NZD' => 'New Zealand Dollars',
-				'CHF' => 'Swiss Francs',
-				'HKD' => 'Hong Kong Dollars',
-				'SGD' => 'Singapore Dollars',
-				'SEK' => 'Swedish Kronor',
-				'DKK' => 'Danish Kroner',
-				'PLN' => 'Polish Zloty',
-				'NOK' => 'Norwegian Kronor',
-				'HUF' => 'Hungarian Forint',
-				'CZK' => 'Check Koruna',
-				'ILS' => 'Israeli Shekel',
-				'MXN' => 'Mexican Peso',
-				'BRL' => 'Brazilian Real',
-				'MYR' => 'Malaysian Ringgits',
-				'PHP' => 'Philippine Pesos',
-				'RUB' => 'Russian Ruble',
-				'TWD' => 'Taiwan New Dollars',
-				'THB' => 'Thai Baht'
-			);
 			$currencies = apply_filters( 'mycred_dropdown_currencies', $currencies, $this->id );
 			$currencies = apply_filters( 'mycred_dropdown_currencies_' . $this->id, $currencies );
 

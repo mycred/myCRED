@@ -170,7 +170,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				do_action( "mycred_cashcred_process_{$cashcred_pay_method}", $cashcred_prefs );
 				
 				$payment_response =	$cashcred_instance->gateway->process( $post_id );
-				
+
 				if( $payment_response['status'] == true ) {
 					
 					$history_comments = $this->cashcred_update_payment_status( $post_id, $auto );
@@ -383,9 +383,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 
 				$payment_methods[ $type_id ] = $payment_method_data;
 			}
-			
-			update_user_meta( get_current_user_id(), 'cashcred_user_settings', $payment_methods );
-
+			mycred_update_user_meta( get_current_user_id(), 'cashcred_user_settings', '', $payment_methods );
 		}
 
 		public function process_new_withdraw_request( $gateway_id ){
@@ -425,15 +423,17 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			if ( $post_id !== NULL && ! is_wp_error( $post_id ) ) {
 				
 				wp_update_post( array( 'ID' => $post_id, 'post_title' => $post_id ) );
-				mycred_add_post_meta( $post_id, 'point_type',   $point_type, true );
-				mycred_add_post_meta( $post_id, 'gateway', 		$cashcred_pay_method , true );
-				mycred_add_post_meta( $post_id, 'points',     	$points, true );
-				mycred_add_post_meta( $post_id, 'cost',         $cost, true );
-				mycred_add_post_meta( $post_id, 'currency',     $currency, true );
-				mycred_add_post_meta( $post_id, 'from',         get_current_user_id(), true );
-				mycred_add_post_meta( $post_id, 'user_ip',      $_SERVER['REMOTE_ADDR'], true );
-				mycred_add_post_meta( $post_id, 'status',       'Pending', true );
-				mycred_add_post_meta( $post_id, 'manual',       'Manual', true );
+				
+				//Will store post meta by checking multisite and current blog, Will store in current blog's table
+				check_site_add_post_meta( $post_id, 'point_type',   $point_type, true );
+				check_site_add_post_meta( $post_id, 'gateway', 		$cashcred_pay_method , true );
+				check_site_add_post_meta( $post_id, 'points',     	$points, true );
+				check_site_add_post_meta( $post_id, 'cost',         $cost, true );
+				check_site_add_post_meta( $post_id, 'currency',     $currency, true );
+				check_site_add_post_meta( $post_id, 'from',         get_current_user_id(), true );
+				check_site_add_post_meta( $post_id, 'user_ip',      $_SERVER['REMOTE_ADDR'], true );
+				check_site_add_post_meta( $post_id, 'status',       'Pending', true );
+				check_site_add_post_meta( $post_id, 'manual',       'Manual', true );
 				
 				if( isset( $mycred_pref_cashcreds['gateway_prefs'][ $cashcred_pay_method ]["allow_auto_withdrawal"] ) &&  
 					$mycred_pref_cashcreds['gateway_prefs'][ $cashcred_pay_method ]["allow_auto_withdrawal"] == "yes" ) {

@@ -512,7 +512,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
 
         public function get_membership_addons() {
 
-            $membership_details = mycred_get_membership_details();
+            $membership_details = mycred_get_membership_details(true);
             $addons = array();
 
             if(isset($membership_details['addons']) && !empty($membership_details['addons'])){
