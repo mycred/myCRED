@@ -647,8 +647,8 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 				// Add meta details if insertion was a success
 				if ( $post_id !== NULL && ! is_wp_error( $post_id ) ) {
 
-					mycred_add_post_meta( $post_id, 'to',         $to, true );
-					mycred_add_post_meta( $post_id, 'from',       $from, true );
+					mycred_add_post_meta( $post_id, 'from',       $to, true );
+					mycred_add_post_meta( $post_id, 'to',         $from, true );
 					mycred_add_post_meta( $post_id, 'amount',     $amount, true );
 					mycred_add_post_meta( $post_id, 'cost',       $cost, true );
 					mycred_add_post_meta( $post_id, 'currency',   $currency, true );

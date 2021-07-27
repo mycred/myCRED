@@ -198,11 +198,16 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 					$post_id    = absint( $_POST['postid'] );
 					$point_type = sanitize_key( $_POST['ctype'] );
-
+					$buying_cred = $this->sell_content['type'];
+                    $point_types    = mycred_get_types( true );
 					global $mycred_types;
 
-					if ( ! array_key_exists( $point_type, $mycred_types ) || mycred_force_singular_session( $this->current_user_id, 'mycred-last-content-purchase' ) )
+					if ( ! array_key_exists( $point_type, $mycred_types ) || mycred_force_singular_session( $this->current_user_id, 'mycred-last-content-purchase' ) || !in_array($point_type, $buying_cred) )
 						wp_send_json( 'ERROR' );
+
+
+
+
 
 					// If the content is for sale and we have not paid for it
 					if ( mycred_post_is_for_sale( $post_id ) && ! mycred_user_paid_for_content( $this->current_user_id, $post_id ) ) {

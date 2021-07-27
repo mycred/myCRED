@@ -873,9 +873,12 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				$data_query = sanitize_text_field( $this->args['data'] );
 
 				// Check if we are using wildcards
-				if ( str_replace( '%', '', $data_query ) != $data_query )
+				if( str_replace( '!%', '', $data_query ) != $data_query )
+					$wheres[] = $wpdb->prepare( "data NOT LIKE %s", str_replace( '!%', '%', $data_query ) );
+				else if( str_replace( '!', '', $data_query ) != $data_query )
+					$wheres[] = $wpdb->prepare( "data != %s", $data_query );
+				else if( str_replace( '%', '', $data_query ) != $data_query )
 					$wheres[] = $wpdb->prepare( "data LIKE %s", $data_query );
-
 				else
 					$wheres[] = $wpdb->prepare( "data = %s", $data_query );
 
@@ -883,14 +886,12 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 			/**
 			 * Ordering of results
-			 *
-
-				 // Single order
-				 orderby=time&order=ASC
-
-				 // Multiple orders
-				 'orderby' => array( 'time' => 'ASC', 'id' => 'ASC' )
-
+			 * 
+			 * Single order
+			 * orderby=time&order=ASC
+			 * 
+			 * Multiple orders
+			 * 'orderby' => array( 'time' => 'ASC', 'id' => 'ASC' )
 			 */
 			$this->sortby    = "ORDER BY time DESC";
 			if ( ! empty( $this->args['orderby'] ) ) {

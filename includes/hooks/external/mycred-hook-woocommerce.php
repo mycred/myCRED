@@ -354,15 +354,14 @@ if ( ! function_exists( 'mycred_get_woo_product_reward' ) ) :
 		$is_variable  = false;
 		if ( $product_id === 0 ) return false;
 
-		if ( function_exists( 'wc_get_product' ) ) {
+		if ( function_exists( 'wc_get_product' ) ) { 
 
 			$product  = wc_get_product( $product_id );
 
 			// For variations, we need a variation ID
 			if ( $product->is_type( 'variable' ) && $variation_id !== NULL && $variation_id > 0 ) {
-				$parent_product_id   = $product->get_parent();
 				$reward_setup        = (array) mycred_get_post_meta( $variation_id, '_mycred_reward', true );
-				$parent_reward_setup = (array) mycred_get_post_meta( $parent_product_id, 'mycred_reward', true );
+				$parent_reward_setup = (array) mycred_get_post_meta( $product_id, 'mycred_reward', true );
 			}
 			else {
 				$reward_setup        = (array) mycred_get_post_meta( $product_id, 'mycred_reward', true );

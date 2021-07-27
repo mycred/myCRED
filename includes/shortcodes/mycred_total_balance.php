@@ -75,7 +75,7 @@ if ( ! function_exists( 'mycred_render_shortcode_total' ) ) :
 			$point_type = $account->balance[ $types_to_addup[0] ]->point_type;
 
 			// Format requested
-			if ( ! $raw )
+			if ( ! $raw && ! empty( $point_type ) )
 				$balance_sum = $point_type->format( $balance_sum );
 
 		}

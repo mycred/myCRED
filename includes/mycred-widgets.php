@@ -330,7 +330,6 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
 
 			// Footer
 			echo $after_widget;
-
 		}
 
 		/**
@@ -350,7 +349,7 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
 			$order         = isset( $instance['order'] )         ? $instance['order']         : 'DESC';
 			$current       = isset( $instance['current'] )       ? $instance['current']       : 0;
 			$timeframe     = isset( $instance['timeframe'] )     ? $instance['timeframe']     : '';
-
+			$exclude 	   = isset( $instance['exclude'] )     ? $instance['exclude']     : '';
 			$mycred        = mycred( $type );
 			$mycred_types  = mycred_get_types();
 
@@ -420,6 +419,11 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
 	<input id="<?php echo esc_attr( $this->get_field_id( 'timeframe' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'timeframe' ) ); ?>" type="text" value="<?php echo esc_attr( $timeframe ); ?>" size="3" class="widefat" />
 	<small><?php _e( 'Option to limit the leaderboard based on a specific timeframe. Leave empty if not used.', 'mycred' ); ?></small>
 </p>
+<p class="myCRED-widget-field">
+	<label for="<?php echo esc_attr( $this->get_field_id( 'exclude' ) ); ?>"><?php _e( 'Exclude Users', 'mycred' ); ?>:</label>
+	<input id="<?php echo esc_attr( $this->get_field_id( 'exclude' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'timeframe' ) ); ?>" type="text" value="<?php echo esc_attr( $timeframe ); ?>" size="3" class="widefat" />
+	<small><?php _e( 'Option to exclude users from leaderboard based on a specific role or id. Leave empty if not used. Use comma seperated values for Role or ID', 'mycred' ); ?></small>
+</p>
 <?php
 
 		}
@@ -441,6 +445,7 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
 			$instance['order']         = sanitize_text_field( $new_instance['order'] );
 			$instance['current']       = ( isset( $new_instance['current'] ) ) ? 1 : 0;
 			$instance['timeframe']     = sanitize_text_field( $new_instance['timeframe'] );
+			$instance['exclude']     = sanitize_text_field( $new_instance['exclude'] );
 
 			mycred_flush_widget_cache( 'mycred_widget_list' );
 

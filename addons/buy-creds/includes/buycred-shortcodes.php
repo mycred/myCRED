@@ -106,7 +106,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 			'excluded' => '',
 			'maxed'    => '',
 			'gift_to'  => '',
-			'e_rate'  => '',
+			'e_rate'   => '',
 			'gift_by'  => __( 'Username', 'mycred' ),
 			'inline'   => 0
 		), $atts, MYCRED_SLUG . '_buy_form' ) );

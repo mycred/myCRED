@@ -55,7 +55,7 @@ class parseCSV {
 	var $enclosure = '"';
 	
 	# basic SQL-like conditions for row matching
-	var $conditions = null;
+	var $conditions = array();
 	
 	# number of rows to ignore from beginning of data
 	var $offset = null;
@@ -108,7 +108,7 @@ class parseCSV {
 	 * @param   input   CSV file or string
 	 * @return  nothing
 	 */
-	function __construct ($input = null, $offset = null, $limit = null, $conditions = null) {
+	function __construct ($input = null, $offset = null, $limit = null, $conditions = array()) {
 		if ( $offset !== null ) $this->offset = $offset;
 		if ( $limit !== null ) $this->limit = $limit;
 		if ( count($conditions) > 0 ) $this->conditions = $conditions;
@@ -125,7 +125,7 @@ class parseCSV {
 	 * @param   input   CSV file or string
 	 * @return  nothing
 	 */
-	function parse ($input = null, $offset = null, $limit = null, $conditions = null) {
+	function parse ($input = null, $offset = null, $limit = null, $conditions = array()) {
 		if ( !empty($input) ) {
 			if ( $offset !== null ) $this->offset = $offset;
 			if ( $limit !== null ) $this->limit = $limit;

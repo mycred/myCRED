@@ -96,10 +96,8 @@ div.overview-module-wrap div.mycred-type .overview .section strong { padding: 0 
 
 				if ( $total === NULL ) $total = $mycred->zero();
 
-				$data         = $wpdb->get_row( "
-					SELECT SUM( CASE WHEN creds > 0 THEN creds END) as gains,
-						SUM( CASE WHEN creds < 0 THEN creds END) as losses
-					FROM {$mycred->log_table};" );
+				$cred_type=mycred_get_meta_key($point_type);
+				$data         = $wpdb->get_row("SELECT SUM( CASE WHEN creds > 0 THEN creds END) as gains, SUM( CASE WHEN creds < 0 THEN creds END) as losses FROM {$mycred->log_table} WHERE ctype='{$cred_type}';");
 
 				$awarded      = ( isset( $data->gains ) ) ? $data->gains : 0;
 				$awarded_url  = add_query_arg( array( 'num' => 0, 'compare' => urlencode( '>' ) ), $url );

@@ -23,7 +23,8 @@ if ( ! function_exists( 'mycred_render_shortcode_leaderboard' ) ) :
 			'current'      => 0,
 			'exclude_zero' => 1,
 			'timeframe'    => '',
-			'to'    => ''
+			'to'    => '',
+			'exclude'=>''
 		), $atts, MYCRED_SLUG . '_leaderboard' );
 
 		// Construct the leaderboard class

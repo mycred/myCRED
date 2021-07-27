@@ -17,8 +17,6 @@ require_once myCRED_BANK_ABSTRACT_DIR . 'mycred-abstract-service.php';
 require_once myCRED_BANK_INCLUDES_DIR . 'mycred-banking-functions.php';
 
 require_once myCRED_BANK_SERVICES_DIR . 'mycred-service-central.php';
-require_once myCRED_BANK_SERVICES_DIR . 'mycred-service-interest.php';
-require_once myCRED_BANK_SERVICES_DIR . 'mycred-service-payouts.php';
 
 /**
  * myCRED_Banking_Module class
@@ -42,9 +40,9 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 					'service_prefs' => array()
 				),
 				'labels'      => array(
-					'menu'        => __( 'Banking', 'mycred' ),
-					'page_title'  => __( 'Banking', 'mycred' ),
-					'page_header' => __( 'Banking', 'mycred' )
+					'menu'        => __( 'Central Deposit', 'mycred' ),
+					'page_title'  => __( 'Central Deposit', 'mycred' ),
+					'page_header' => __( 'Central Deposit', 'mycred' )
 				),
 				'screen_id'   => MYCRED_SLUG . '-banking',
 				'accordion'   => true,
@@ -138,29 +136,11 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 			// Savings
 			$services['central'] = array(
-				'title'        => __( 'Central Banking', 'mycred' ),
-				'description'  => __( 'Instead of creating %_plural% out of thin-air, all payouts are made from a nominated "Central Bank" account. Any %_plural% a user spends or loses are deposited back into this account. If the central bank runs out of %_plural%, no %_plural% will be paid out.', 'mycred' ),
+				'title'        => __( 'General Settings', 'mycred' ),
+				'description'  => __( 'Instead of creating %_plural% out of thin-air, all payouts are made from a nominated "Central Deposit" account. Any %_plural% a user spends or loses are deposited back into this account. If the central deposit runs out of %_plural%, no %_plural% will be paid out.', 'mycred' ),
 				'cron'         => false,
 				'icon'         => 'dashicons-admin-site',
 				'callback'     => array( 'myCRED_Banking_Service_Central' )
-			);
-
-			// Interest
-			$services['interest'] = array(
-				'title'        => __( 'Compound Interest', 'mycred' ),
-				'description'  => __( 'Offer your users interest on the %_plural% they earn on your website. The interest is compounded daily.', 'mycred' ),
-				'cron'         => true,
-				'icon'         => 'dashicons-vault',
-				'callback'     => array( 'myCRED_Banking_Service_Interest' )
-			);
-
-			// Inflation
-			$services['payouts'] = array(
-				'title'       => __( 'Recurring Payouts', 'mycred' ),
-				'description' => __( 'Setup mass %_singular% payouts for your users.', 'mycred' ),
-				'cron'        => true,
-				'icon'         => 'dashicons-update',
-				'callback'    => array( 'myCRED_Banking_Service_Payouts' )
 			);
 
 			$services = apply_filters( 'mycred_setup_banking', $services );
@@ -190,43 +170,19 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
 			wp_enqueue_style( 'mycred-forms' );
+			wp_enqueue_style( 'mycred-select2-style' );
 
-			wp_register_script( 'mycred-bank-manage-schedules', plugins_url( 'assets/js/manage-schedules.js', myCRED_BANK ), array( 'jquery', 'jquery-ui-core', 'jquery-ui-dialog', 'jquery-effects-core', 'jquery-effects-slide', 'jquery-numerator' ), myCRED_VERSION );
+			wp_register_script( 'mycred-central-deposit-admin', plugins_url( 'assets/js/central-deposit-admin.js', myCRED_BANK ), array( 'jquery', 'mycred-select2-script' ), myCRED_VERSION );
 
-			wp_localize_script(
-				'mycred-bank-manage-schedules',
-				'Banking',
-				array(
-					'ajaxurl'        => admin_url( 'admin-ajax.php' ),
-					'token'          => wp_create_nonce( 'run-mycred-bank-task' . $this->mycred_type ),
-					'new'            => esc_attr__( 'New Recurring Payout', 'mycred' ),
-					'edit'           => esc_attr__( 'Edit Recurring Payout', 'mycred' ),
-					'close'          => esc_attr__( 'Close', 'mycred' ),
-					'emptyfields'    => esc_attr__( 'Please fill out all required fields that are highlighted in red.', 'mycred' ),
-					'confirmremoval' => esc_attr__( 'Are you sure you want to remove this schedule? This can not be undone!', 'mycred' )
-				)
-			);
-			wp_enqueue_script( 'mycred-bank-manage-schedules' );
+			wp_enqueue_script( 'mycred-central-deposit-admin' );
 
 ?>
 <style type="text/css">
-.mycred-update-balance { font-family: "Open Sans",sans-serif; background-color: white !important; z-index: 9999 !important; border: none !important; border-radius: 0 !important; background-image: none !important; padding: 0 !important; overflow: visible !important; }
-.mycred-update-balance.ui-dialog .ui-dialog-content { padding: 0 0 0 0; }
-.mycred-update-balance .ui-widget-header { border: none !important; background: transparent !important; font-weight: normal !important; }
-.mycred-update-balance .ui-dialog-titlebar { line-height: 24px !important; border-bottom: 1px solid #ddd !important; border-left: none; border-top: none; border-right: none; padding: 12px !important; border-radius: 0 !important; }
-.mycred-update-balance .ui-dialog-titlebar:hover { cursor: move; }
-.mycred-update-balance .ui-dialog-titlebar-close { float: right; margin: 0 12px 0 0; background: 0 0; border: none; -webkit-box-shadow: none; box-shadow: none; color: #666; cursor: pointer; display: block; padding: 0; position: absolute; top: 0; right: 0; width: 36px; height: 36px; text-align: center; font-size: 13px; line-height: 26px; vertical-align: top; white-space: nowrap; }
-.mycred-update-balance .ui-icon { display: none !important; }
-.mycred-update-balance .ui-button:focus, .mycred-update-balance .ui-button:active { outline: none !important; }
-.mycred-update-balance .ui-button .ui-button-text { display: block; text-indent: 0; }
-.mycred-update-balance .ui-dialog-title { font-size: 22px; font-weight: 600; margin: 0 0 0 0; width: auto !important; float: none !important; }
-.ui-widget-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeat-x scroll 70% 70% #000; opacity: 0.7; overflow: hidden; background: repeat-x scroll 70% 70% #000; z-index: 99; }
-#manage-recurring-schedule { min-height: 4px !important; background-color: #f3f3f3; }
-#manage-recurring-schedule-form h3 { margin: 0 0 12px 0; }
 .mycred-metabox .form .has-error .form-control { border-color: #dc3232; }
 .alert { padding: 24px; }
 .alert-warning { background-color: #dc3232; color: white; }
 .alert-success { background-color: #46b450; color: white; }
+.mycred-metabox .form-group label.manual-adjust { margin-top: 23px; }
 </style>
 <?php
 
@@ -250,7 +206,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 	<?php $this->update_notice(); ?>
 
-	<h1><?php _e( 'Banking Services', 'mycred' ); ?></h1>
+	<h1><?php _e( 'Central Deposit', 'mycred' ); ?></h1>
 	<form method="post" class="form" action="options.php">
 
 		<?php settings_fields( $this->settings_name ); ?>
@@ -267,10 +223,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 			<h4><span class="dashicons <?php echo $data['icon']; ?><?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' static'; ?>"></span><?php echo $this->core->template_tags_general( $data['title'] ); ?></h4>
 			<div class="body" style="display: none;">
 				<p><?php echo nl2br( $this->core->template_tags_general( $data['description'] ) ); ?></p>
-				<?php if ( $data['cron'] && defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) : ?>
-				<div class="alert alert-warning"><strong><?php _e( 'Warning', 'mycred' ); ?></strong> - <?php _e( 'This banking service uses the WordPress CRON to schedule events. If the WordPress CRON is disabled, this service will not work correctly.', 'mycred' ); ?></div>
-				<?php endif; ?>
-				<label class="subheader"><?php _e( 'Enable', 'mycred' ); ?></label>
+				<label class="subheader" for="mycred-bank-service-<?php echo $key; ?>"><?php _e( 'Enable', 'mycred' ); ?></label>
 				<ol>
 					<li>
 						<input type="checkbox" name="<?php echo $this->option_id; ?>[active][]" id="mycred-bank-service-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> />
@@ -292,15 +245,6 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 		<?php submit_button( __( 'Update Changes', 'mycred' ), 'primary large', 'submit', false ); ?>
 
 	</form>
-</div>
-<style type="text/css">
-body .ui-dialog.ui.widget { height: auto !important; }
-</style>
-<div id="manage-recurring-schedule" style="display: none;">
-	<div class="mycred-container">
-		<form class="form" method="post" action="" id="manage-recurring-schedule-form"></form>
-		<div id="mycred-processing"><div class="loading-indicator"></div></div>
-	</div>
 </div>
 <?php
 

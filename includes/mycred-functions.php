@@ -3639,3 +3639,13 @@ if ( ! function_exists( 'mycred_locate_template' ) ) :
 
 	}
 endif;
+if ( ! function_exists( 'mycred_leaderboard_exclude_role' ) ) :
+	function mycred_leaderboard_exclude_role($exclude) {
+		$roles = explode (",", $exclude); 
+		$exclude = get_users( array( 'role__in'=>$roles,'fields' =>  'ID' ) );
+		$exclude = implode(',', $exclude);
+
+		// Return what we found.
+		return apply_filters( 'mycred_leaderboard_exclude_role', $exclude );
+	}
+endif;

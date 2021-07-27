@@ -183,18 +183,6 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'requires'    => array()
 			);
 
-			// Banking Add-on
-			$installed['banking'] = array(
-				'name'        => 'Banking',
-				'description' => __( 'Setup recurring payouts or offer / charge interest on user account balances.', 'mycred' ),
-				'addon_url'   => 'http://codex.mycred.me/chapter-iii/banking/',
-				'version'     => '2.0',
-				'author'      => 'myCred',
-				'author_url'  => 'https://www.mycred.me',
-				'screenshot'  => plugins_url( 'assets/images/banking-addon.png', myCRED_THIS ),
-				'requires'    => array()
-			);
-
 			// buyCRED Add-on
 			$installed['buy-creds'] = array(
 				'name'        => 'buyCRED',
@@ -204,6 +192,30 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				'author'      => 'myCred',
 				'author_url'  => 'https://www.mycred.me',
 				'screenshot'  => plugins_url( 'assets/images/buy-creds-addon.png', myCRED_THIS ),
+				'requires'    => array()
+			);
+			
+			// cashCRED Add-on
+			$installed['cash-creds'] = array(	
+				'name'        => 'cashCRED',
+				'description' => __( '', 'mycred' ),
+				'addon_url'   => '#',
+				'version'     => '1.0',
+				'author'      => 'Gabriel S Merovingi',
+				'author_url'  => 'https://www.merovingi.com',
+				'screenshot'  => plugins_url( 'assets/images/banking-addon.png', myCRED_THIS ),
+				'requires'    => array()
+			);
+
+			// Central Deposit Add-on
+			$installed['banking'] = array(
+				'name'        => 'Central Deposit',
+				'description' => __( 'Setup recurring payouts or offer / charge interest on user account balances.', 'mycred' ),
+				'addon_url'   => 'http://codex.mycred.me/chapter-iii/banking/',
+				'version'     => '2.0',
+				'author'      => 'myCred',
+				'author_url'  => 'https://www.mycred.me',
+				'screenshot'  => plugins_url( 'assets/images/banking-addon.png', myCRED_THIS ),
 				'requires'    => array()
 			);
 

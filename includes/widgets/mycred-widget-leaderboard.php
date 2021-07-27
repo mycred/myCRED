@@ -41,6 +41,7 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
             $instance['order']         = isset( $instance['order'] )         ? $instance['order']         : 'DESC';
             $instance['current']       = isset( $instance['current'] )       ? $instance['current']       : 0;
             $instance['timeframe']     = isset( $instance['timeframe'] )     ? $instance['timeframe']     : '';
+            $instance['exclude']     = isset( $instance['exclude'] )     ? $instance['exclude']     : '';
             $instance['wrap']          = isset( $instance['wrap'] )          ? $instance['wrap']          : 'li';
             $instance['nothing']       = isset( $instance['nothing'] )       ? $instance['nothing']       : 'Leaderboard is empty';
             $instance['exclude_zero']  = isset( $instance['exclude_zero'] )  ? $instance['exclude_zero']  : 1;
@@ -65,7 +66,8 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
                 'timeframe' => $instance['timeframe'],
                 'wrap' => $instance['wrap'],
                 'nothing' => $instance['nothing'],
-                'exclude_zero' => $instance['exclude_zero']
+                'exclude_zero' => $instance['exclude_zero'],
+                'exclude' => $instance['exclude']
             );
  
             if ( isset( $instance['order'] ) )
@@ -111,7 +113,7 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
             $wrap          = isset( $instance['wrap'] )          ? $instance['wrap']          : 'li';
             $nothing       = isset( $instance['nothing'] )       ? $instance['nothing']       : 'Leaderboard is empty';
             $exclude_zero  = isset( $instance['exclude_zero'] )  ? $instance['exclude_zero']  : 1;
- 
+            $exclude     = isset( $instance['exclude'] )     ? $instance['exclude']     : '';
             $mycred        = mycred( $type );
             $mycred_types  = mycred_get_types();
  
@@ -205,6 +207,11 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
     <input id="<?php echo esc_attr( $this->get_field_id( 'timeframe' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'timeframe' ) ); ?>" type="text" value="<?php echo esc_attr( $timeframe ); ?>" size="3" class="widefat" />
     <small><?php _e( 'Option to limit the leaderboard based on a specific timeframe. Leave empty if not used.', 'mycred' ); ?></small>
 </p>
+<p class="myCRED-widget-field">
+    <label for="<?php echo esc_attr( $this->get_field_id( 'exclude' ) ); ?>"><?php _e( 'Exclude Users', 'mycred' ); ?>:</label>
+    <input id="<?php echo esc_attr( $this->get_field_id( 'exclude' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'exclude' ) ); ?>" type="text" value="<?php echo esc_attr( $exclude ); ?>" size="3" class="widefat" />
+    <small><?php _e( 'Option to exclude users from leaderboard based on a specific role or id. Leave empty if not used. Use comma seperated values for Role or ID', 'mycred' ); ?></small>
+</p>
 <?php
  
         }
@@ -227,9 +234,10 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
             $instance['order']         = sanitize_text_field( $new_instance['order'] );
             $instance['current']       = ( isset( $new_instance['current'] ) ) ? 1 : 0;
             $instance['timeframe']     = sanitize_text_field( $new_instance['timeframe'] );
-            $instance['wrap']     	   = sanitize_text_field( $new_instance['wrap'] );
+            $instance['wrap']          = sanitize_text_field( $new_instance['wrap'] );
             $instance['nothing']       = sanitize_text_field( $new_instance['nothing'] );
             $instance['exclude_zero']  = sanitize_text_field( $new_instance['exclude_zero'] );
+            $instance['exclude']  = sanitize_text_field( $new_instance['exclude'] );
  
             mycred_flush_widget_cache( 'mycred_widget_list' );
  

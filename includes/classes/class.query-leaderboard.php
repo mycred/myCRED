@@ -75,7 +75,8 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 				'order'        => 'DESC',
 				'total'        => 0,
 				'exclude_zero' => 1,
-				'forced'       => 0
+				'forced'       => 0,
+				'exclude'	   => ''
 			);
 
 			return apply_filters( 'mycred_query_leaderboard_args', shortcode_atts( $defaults, $data ), $data, $this );
@@ -187,6 +188,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			// Force a new leaderboard instead of a cached one (if used)
 			$this->args['forced']       = (bool) $args['forced'];
+			$this->args['exclude']    = ( $args['exclude'] != '' ) ? sanitize_text_field( $args['exclude'] ) : '';
 
 		}
 
@@ -306,6 +308,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			$query             = '';
 			$exclude_filter    = $this->get_excludefilter();
+			$exclude_user_filter    = $this->get_exclude_userfilter();
 			$multisite_check   = $this->get_multisitefilter();
 
 			/**
@@ -333,6 +336,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
 					{$time_filter}
 					{$exclude_filter} 
+					{$exclude_user_filter}
 					GROUP BY l.user_id
 					ORDER BY SUM( l.creds ) {$this->order}, l.user_id ASC 
 					{$this->limit};", $point_type_values );
@@ -366,6 +370,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					{$multisite_check} 
 					WHERE {$point_type_is} 
 					{$exclude_filter} 
+					{$exclude_user_filter}
 					ORDER BY l.meta_value+0 {$this->order}, l.user_id ASC
 					{$this->limit};", $point_type_values );
 
@@ -387,6 +392,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			$time_filter       = $this->get_timefilter();
 			$multisite_check   = $this->get_multisitefilter();
+			$exclude_user_filter    = $this->get_exclude_userfilter();
 
 			$reference_is      = 'l.ref = %s';
 			$reference_values  = $this->references[0];
@@ -419,6 +425,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					FROM {$mycred_log_table} l 
 					WHERE {$reference_is} AND {$point_type_is} 
 					{$time_filter} 
+					{$exclude_user_filter}
 					GROUP BY l.user_id 
 					ORDER BY SUM( l.creds ) {$this->order}, l.user_id ASC 
 					{$this->limit};", $reference_values, $point_type_values );
@@ -437,6 +444,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					{$multisite_check} 
 					WHERE {$reference_is} AND {$point_type_is}
 					{$time_filter} 
+					{$exclude_user_filter}
 					GROUP BY l.user_id 
 					ORDER BY SUM( l.creds ) {$this->order}, l.user_id ASC
 					{$this->limit};", $reference_values, $point_type_values );
@@ -466,6 +474,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			$time_filter       = $this->get_timefilter();
 			$exclude_filter    = $this->get_excludefilter();
+			$exclude_user_filter    = $this->get_exclude_userfilter();
 			$multisite_check   = $this->get_multisitefilter();
 
 			$point_type_is     = 'l.ctype = %s';
@@ -497,6 +506,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 								WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
 								{$time_filter} 
 								{$exclude_filter} 
+								{$exclude_user_filter}
 								GROUP BY l.user_id
 								) s, (SELECT @rank := 0) init
 							ORDER BY TotalPoints DESC, s.user_id ASC 
@@ -532,6 +542,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 								{$multisite_check} 
 								WHERE {$point_type_is} 
 								{$exclude_filter}
+								{$exclude_user_filter}
 							) s, (SELECT @rank := 0) init
 							ORDER BY Balance+0 DESC, s.user_id ASC 
 						) r 
@@ -562,6 +573,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 							{$reference_is} 
 							{$time_filter} 
 							{$exclude_filter} 
+							{$exclude_user_filter}
 							GROUP BY l.user_id
 						) s, (SELECT @rank := 0) init
 						ORDER BY TotalPoints DESC, s.user_id ASC 
@@ -596,6 +608,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			$time_filter       = $this->get_timefilter();
 			$exclude_filter    = $this->get_excludefilter();
+			$exclude_user_filter    = $this->get_exclude_userfilter();
 			$multisite_check   = $this->get_multisitefilter();
 
 			$point_type_is     = 'l.ctype = %s';
@@ -627,6 +640,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 								WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
 								{$time_filter} 
 								{$exclude_filter} 
+								{$exclude_user_filter}
 								GROUP BY l.user_id
 								) s, (SELECT @rank := 0) init
 							ORDER BY TotalPoints DESC, s.user_id ASC 
@@ -662,6 +676,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 								{$multisite_check} 
 								WHERE {$point_type_is} 
 								{$exclude_filter}
+								{$exclude_user_filter}
 							) s, (SELECT @rank := 0) init
 							ORDER BY Balance+0 DESC, s.user_id ASC 
 						) r 
@@ -691,7 +706,8 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 							WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
 							{$reference_is} 
 							{$time_filter} 
-							{$exclude_filter} 
+							{$exclude_filter}
+							{$exclude_user_filter}
 							GROUP BY l.user_id
 						) s, (SELECT @rank := 0) init
 						ORDER BY TotalPoints DESC, s.user_id ASC 
@@ -783,6 +799,36 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			}
 
 			return apply_filters( 'mycred_leaderboard_exclude_filter', $query, $this );
+
+		}
+
+		/**
+		 * Get Exclude User Filter
+		 * Generates the required SQL query for filtering results based on user ids or roles that should
+		 * be part of the leaderboard or not. By default, myCRED will not exclude any user.
+		 * @since 1.0
+		 * @version 1.0
+		 */
+		public function get_exclude_userfilter() {
+
+			global $wpdb;
+
+			// Option to exclude zero balances
+			$query = '';
+			$checkIDs='~^\d+(,\d+)?$~';
+			$exclude=$this->args['exclude'];
+
+			if (!empty($exclude)) {
+				if(preg_match($checkIDs,$exclude)){
+
+					$exclude=$this->args['exclude'];
+				}
+				else{
+					$exclude=mycred_leaderboard_exclude_role($exclude);
+				}
+				$query = $wpdb->prepare( "AND l.user_id NOT IN (%s) ",$exclude);
+			}
+			return apply_filters( 'mycred_leaderboard_exclude_user_filter', $query, $this );
 
 		}
 

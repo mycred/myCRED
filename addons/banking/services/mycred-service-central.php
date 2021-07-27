@@ -32,6 +32,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 		public function run() {
 
 			add_filter( 'mycred_add', array( $this, 'mycred_add' ), 1, 3 );
+			add_action( 'wp_ajax_get_bank_accounts', array( $this, 'get_bank_accounts' ) );
 
 		}
 
@@ -101,20 +102,32 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 
 			$prefs = $this->prefs;
 
+			if ( ! empty( $this->prefs['bank_id'] ) )
+				$user = get_userdata( $this->prefs['bank_id'] );
 ?>
 <div class="row">
 	<div class="col-xs-12">
 		<div class="row">
 			<div class="col-sm-4">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( 'bank_id' ); ?>"><?php _e( 'Central Bank Account', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( 'bank_id' ); ?>" id="<?php echo $this->field_id( 'bank_id' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->prefs['bank_id'] ); ?>" />
+					<label for="<?php echo $this->field_id( 'bank_id' ); ?>"><?php _e( 'Select Central Deposit Account', 'mycred' ); ?></label>
+					<select name="<?php echo $this->field_name( 'bank_id' ); ?>" id="<?php echo $this->field_id( 'bank_id' ); ?>" class="form-control mycred_bank_id_select2" style="width:100%;">
+						<?php if ( ! empty( $this->prefs['bank_id'] ) ): ?>
+						<option value="<?php echo esc_attr( $user->ID );?>" selected="selected">
+							<?php echo esc_html( '#'. $user->ID .' - '. $user->display_name . ' (' . $user->user_email . ')' );?>
+						</option>
+						<?php endif; ?>
+					</select>
 				</div>
 				<p><span class="description"><?php _e( 'The ID of the user representing the central bank.', 'mycred' ); ?></span></p>
 			</div>
 			<div class="col-sm-8">
 				<div class="form-group">
-					<div class="checkbox"<label for="<?php echo $this->field_id( 'ignore_manual' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'ignore_manual' ); ?>" id="<?php echo $this->field_id( 'ignore_manual' ); ?>" value="1"<?php checked( $this->prefs['ignore_manual'], 1 ); ?> /> <?php _e( 'Ignore Manual Adjustments', 'mycred' ); ?></label></div>
+					<div class="checkbox">
+						<label for="<?php echo $this->field_id( 'ignore_manual' ); ?>" class="manual-adjust">
+							<input type="checkbox" name="<?php echo $this->field_name( 'ignore_manual' ); ?>" id="<?php echo $this->field_id( 'ignore_manual' ); ?>" value="1"<?php checked( $this->prefs['ignore_manual'], 1 ); ?>> <?php _e( 'Ignore Manual Adjustments', 'mycred' ); ?>
+						</label>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -138,6 +151,37 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 			$new_settings['ignore_manual'] = ( isset( $post['ignore_manual'] ) ) ? absint( $post['ignore_manual'] ) : 0;
 
 			return apply_filters( 'mycred_banking_save_central', $new_settings, $this );
+
+		}
+
+		/**
+		 * Sanitise Preferences
+		 * @since 1.5.2
+		 * @version 1.1
+		 */
+		public function get_bank_accounts() {
+
+			$search_term = sanitize_text_field( $_GET['search'] );
+			$page_no = sanitize_text_field( $_GET['page'] );
+
+			$users_query = new WP_User_Query( array(
+			    'search'         => '*'. $search_term .'*',
+			    'search_columns' => array(
+			    	'ID',
+			        'user_login',
+			        'user_nicename',
+			        'user_email',
+			        'display_name'
+			    ),
+			    'fields'         => array( 'ID', 'display_name', 'user_email' ),
+			    'number'         => 10,
+			    'offset'		 => ( intval( $page_no ) - 1 ) * 10,
+			    'orderby'		 => 'display_name'
+			) );
+			$users = $users_query->get_results();
+
+			echo json_encode( array( 'users' => $users, 'more' => ! empty( $users ) ) );
+			die;
 
 		}
 
