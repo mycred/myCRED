@@ -84,6 +84,11 @@ function mycred_about_header() {
     width: 50%;
     padding-right: 20px;
 }
+#mycred-welcome .button-wrap .center {
+    width: 50%;
+    margin: 0 auto;
+    padding-right: 20px;
+}
 .mycred-admin-page .mycred-btn-orange {
     background-color: #9852f1;
     color: #fff;
@@ -351,7 +356,7 @@ if ( !is_mycred_ready() ) {
 
 	<div class="button-wrap mycred-clear">
 		<div class="left">
-			<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" onclick="startTour()" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange mycred-footer-btn">
+			<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange mycred-footer-btn">
 			Setup myCred
 			</a>
 		
@@ -395,17 +400,17 @@ function mycred_about_page() {
 				
 				<div class="button-wrap mycred-clear">
 					<div class="left">
-						<?php 
+						<?php
 						if ( !is_mycred_ready() ) {
 						?>
-							<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" onclick="startTour()" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange">
+							<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange">
 								Setup myCred
 							</a>
 						<?php
 						}
 						?>
 					</div>
-					<div class="right">
+					<div class="<?php if ( is_mycred_ready() ) echo 'center'; else echo 'right'; ?>">
 						<a href="https://codex.mycred.me/" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-grey" target="_blank" rel="noopener noreferrer">
 							Documentation
 						</a>

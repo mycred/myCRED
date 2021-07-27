@@ -153,7 +153,7 @@ pre { margin: 0 0 12px 0; padding: 10px; background-color: #dedede; }
 
 		<div class="row">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<p><input type="submit" onclick="startTour()" id="mycred-tour" class="button button-primary button-large" value="<?php _e( 'Create Point Type', 'mycred' ); ?>" /><button type="button" id="toggle-advanced-options" class="button button-secondary pull-right" data-hide="<?php _e( 'Hide', 'mycred' ); ?>" data-show="<?php _e( 'Advanced', 'mycred' ); ?>"><?php _e( 'Advanced', 'mycred' ); ?></button></p>
+				<p><input type="submit" id="mycred-tour" class="button button-primary button-large" value="<?php _e( 'Create Point Type', 'mycred' ); ?>" /><button type="button" id="toggle-advanced-options" class="button button-secondary pull-right" data-hide="<?php _e( 'Hide', 'mycred' ); ?>" data-show="<?php _e( 'Advanced', 'mycred' ); ?>"><?php _e( 'Advanced', 'mycred' ); ?></button></p>
 			</div>
 		</div>
 

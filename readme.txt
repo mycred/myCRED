@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 5.7.1
-Stable tag: 2.1
+Stable tag: 2.1.0.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -360,6 +360,12 @@ Bug fixes release.
 
 
 == Changelog ==
+
+= 2.1.0.2 = 
+Improvement - Code optimization
+
+= 2.1.0.1 = 
+Fix - Remove warnings
 
 = 2.1 =
 NEW - Open badge functionality in myCred Badge addon.
