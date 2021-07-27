@@ -1171,7 +1171,7 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			if ( $point_type === NULL || ! array_key_exists( $point_type, $mycred_types ) )
 				$point_type = $this->get_point_type_key();
 
-			if ( mycred_is_current_account( $user_id ) && $mycred_current_account->balance[ $point_type ] !== false )
+			if ( mycred_is_current_account( $user_id ) && ! empty( $mycred_current_account->balance[ $point_type ] ) )
 				$balance = $mycred_current_account->balance[ $point_type ]->get( 'current' );
 
 			else
@@ -3648,4 +3648,87 @@ if ( ! function_exists( 'mycred_leaderboard_exclude_role' ) ) :
 		// Return what we found.
 		return apply_filters( 'mycred_leaderboard_exclude_role', $exclude );
 	}
+endif;
+
+/**
+ * Level Requirements
+ * @since 2.1
+ * @version 1.0
+ */
+if ( !function_exists( 'mycred_badge_level_req_check' ) ):
+    function mycred_badge_level_req_check( $badge_id, $level_index = 0 )
+    {
+        $content = '';
+        global $wpdb;
+        $user_id = get_current_user_id();
+        $badge_requirements = mycred_show_badge_requirements( $badge_id );
+        $require_levels = mycred_get_badge_levels( $badge_id );
+        $total_levels = count( $require_levels );
+        $level = 0;
+        $base_requirements = $require_levels[$level]['requires'];
+        $results = array();
+        $levels_list = array();
+        $starting_index = 0;
+
+        if ( $level_index == 0 )
+            $starting_index = 0;
+        if ( $level_index == 1 )
+            $starting_index = 1;
+        if ( $level_index > 1 )
+            $starting_index = $level_index - 1;
+
+            // Based on the base requirements, we first get the users log entry results
+
+        //Gathering Base requirement's log of current user
+        foreach ( $base_requirements as $requirement ) {
+            if ( $requirement['type'] == '' )
+                $requirement['type'] = MYCRED_DEFAULT_TYPE_KEY;
+
+            $mycred = mycred( $requirement['type'] );
+            if ( $mycred->exclude_user( $user_id ) ) continue;
+
+            $having = 'COUNT(*)';
+            if ( $requirement['by'] != 'count' )
+                $having = 'SUM(creds)';
+
+            $query = $wpdb->get_var( $wpdb->prepare( "SELECT {$having} FROM {$mycred->log_table} WHERE ctype = %s AND ref = %s AND user_id = %d;", $requirement['type'], $requirement['reference'], $user_id ) );
+            if ( $query === NULL ) $query = 0;
+
+            $results[ $requirement['reference'] ] = $query;
+        }
+
+        //Checking requirements has been achieved
+        for ( $i = $starting_index; $i <= $level_index; $i++ )
+        {
+            foreach ($require_levels[$i]['requires'] as $requirement) {
+                $ref = $requirement['reference'];
+                $amount = $requirement['amount'];
+
+                if (!empty($results[$ref]) && $results[$ref] >= $amount)
+                    $levels_list[$i][] = "achieved";
+                else
+                    $levels_list[$i][] = "notAchieved";
+            }
+        }
+
+        //Rendering Level requirements
+        $content .= '<ul>';
+        for( $i = $starting_index; $i <= $level_index; $i++ )
+        {
+            $counter = 0;
+
+            foreach ($badge_requirements[$i]["requirements"] as $id => $requirement)
+            {
+                if( $levels_list[$i][$counter] == 'achieved' )
+                    $content .= "<li class='mycred-level-requirement mycred-strike-off'>{$requirement}</li>";
+                else
+                    $content .= "<li class='mycred-level-requirement'>{$requirement}</li>";
+
+                $counter++;
+            }
+        }
+        $content .= '</ul>';
+
+        return $content;
+    }
 endif;

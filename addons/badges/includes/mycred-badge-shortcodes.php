@@ -91,7 +91,6 @@ endif;
  */
 if ( ! function_exists( 'mycred_render_badges' ) ) :
 	function mycred_render_badges( $atts, $template = '' ) {
-
 		extract( shortcode_atts( array(
 			'width'  => MYCRED_BADGE_WIDTH,
 			'height' => MYCRED_BADGE_HEIGHT
@@ -136,4 +135,246 @@ if ( ! function_exists( 'mycred_render_badges' ) ) :
 		return apply_filters( 'mycred_badges', $output );
 
 	}
+endif;
+
+/**
+ * myCRED Renders Badges List ShortCode
+ * @param string $atts
+ * @since 2.1
+ * @version 1.0
+ */
+if( !function_exists( 'mycred_render_badges_list' ) ) :
+    function mycred_render_badges_list( $atts = '' ) {
+
+        extract( shortcode_atts( array(
+                'achievement_tabs'  =>  '1'
+            ),
+            $atts, MYCRED_SLUG . '_badges_list'
+        ) );
+
+        //User Id
+        $user_id = get_current_user_id();
+
+        $args = array(
+            'taxonomy'      => MYCRED_BADGE_CATEGORY,
+            'orderby'       => 'name',
+            'field'         => 'name',
+            'order'         => 'ASC',
+            'hide_empty'    => false
+        );
+
+        $categories = get_categories($args);
+
+        $category_count = count( $categories );
+
+        //Get Badges
+        $args = array(
+            'post_type' => MYCRED_BADGE_KEY
+        );
+
+        $query = new WP_Query( $args );
+
+        ob_start();
+
+        //Main Div Start
+        echo '<div class="mycred-badges-list">';
+
+        //If achievement tab = true, and categorise > 0, Show navigation
+        if( $achievement_tabs == 1 ) {
+            if ( $category_count < 1 ) echo 'First Create Achievements Containing Badges';
+            ?>
+            <div class="mycred-badges-list-nav">
+                <div class="mycred-tabset">
+                    <?php
+                    //Navbar
+                    $counter = 1;
+
+                    foreach ( $categories as $category ) {
+                        $category_id = $category->cat_ID;
+
+                        $category_name = $category->cat_name;
+
+                        $badge_args = mycred_get_badges_by_term_id( $category_id );
+
+                        $badges_count = count( $badge_args );
+                        if ($badges_count > 0) {
+                            ?>
+                                <input type="radio" name="mycred-tabset" id="mycred-tab<?php echo $category_id;?>" aria-controls="mycred-tab-area-<?php echo $category_id ?>" <?php if ($counter == 1) echo 'checked'; ?>>
+                                <label for="mycred-tab<?php echo $category_id;?>">
+                                    <?php echo $category_name ?>
+                                    <span class="mycred-badge-count"><?php echo $badges_count?></span>
+                                </label>
+                            <?php
+                        }
+                        $counter++;
+                    }
+
+                    echo '<div class="mycred-tab-panels">';
+
+                    //Body
+                    foreach ( $categories as $category ) {
+
+                        $category_id = $category->cat_ID;
+
+                        $category_name = $category->cat_name;
+
+                        //Gathering Badges
+                        $badge_args = mycred_get_badges_by_term_id( $category_id );
+                        ?>
+                        <section id="mycred-tab-area-<?php echo $category_id ?>" class="mycred-tab-panel">
+                            <?php
+
+                            foreach ( $badge_args as $badge ) {
+
+                                $badge_id     = $badge->ID;
+
+                                $badge_object = mycred_get_badge( $badge_id );
+
+                                $image_url    = $badge_object->main_image_url;
+
+                                $has_earned   = $badge_object->user_has_badge( $user_id ) ? 'earned' : 'not-earned';
+
+                                ?>
+
+                                <div class="mycred-badges-list-item <?php echo $has_earned; ?>" data-url="<?php echo mycred_get_permalink( $badge_id );?>">
+                                    <?php if ( $image_url ): ?>
+                                    <img src="<?php echo esc_url( $image_url ) ?>" alt="Badge Image">
+                                    <?php endif; ?>
+                                    <div class="mycred-left">
+                                        <h3>
+                                            <?php echo $badge->post_title; ?>
+                                        </h3>
+                                        <?php echo $badge->post_excerpt; ?>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                                <?php
+                            }
+                            ?>
+                        </section>
+                        <?php
+                    }
+                    wp_reset_query();
+                    ?>
+                </div>
+            </div>
+
+            <?php
+        }
+        else {
+            //Show Badges
+            while ( $query->have_posts() ) : $query->the_post();
+                
+                $badge_id     = get_the_ID();
+
+                $badge_object = mycred_get_badge( $badge_id );
+
+                $image_url    = $badge_object->main_image_url;
+    
+                $has_earned   = $badge_object->user_has_badge( $user_id ) ? 'earned' : 'not-earned';
+    
+                $category     = mycred_get_badge_type( $badge_id );
+
+                $categories   = explode(',', $category);
+
+                ?>
+                <div class="mycred-badges-list-item <?php echo $has_earned; ?>" data-url="<?php echo mycred_get_permalink( $badge_id );?>">
+                    <?php if ( $image_url ): ?>
+                    <img src="<?php echo esc_url( $image_url ) ?>" alt="Badge Image">
+                    <?php endif; ?>
+                    <div class="mycred-left">
+                        <h3>
+                            <?php echo get_the_title(); ?>
+                        </h3>
+                        <?php
+                        if( $category_count > 0 ) {
+
+                            foreach ($categories as $category) {
+                            
+                                if( $category != '' ) {
+                                    echo '<sup class="mycred-sup-category">'.$category.'</sup>';
+                                }
+                            
+                            }
+                        
+                        }
+                        ?>
+                        <?php echo the_excerpt(); ?>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            <?php
+            endwhile;
+
+            echo '<div>';
+        }
+        ?>
+
+        <script type="text/javascript">
+                
+            jQuery(document).ready(function(){
+
+                jQuery('.mycred-badges-list-item').click(function(){
+
+                    window.location.href = jQuery(this).data('url');
+
+                });
+
+            });
+
+        </script>
+
+        <?php
+        $content = ob_get_clean();
+
+        return $content;
+    }
+endif;
+
+/**
+ * Renders Badge's Evidence ShortCode
+ * @param string $atts
+ * @since 2.1
+ * @version 1.0
+ */
+if ( !function_exists( 'mycred_render_badge_evidence' ) ) :
+    function mycred_render_badge_evidence( $atts = '' ) {
+
+        $content = '<div class="mycred-evidence-page">Evidence not found</div>'; 
+
+        if ( isset( $_GET['uid'] ) && isset( $_GET['bid'] ) ) {
+
+            $user_id  = intval( $_GET['uid'] );
+            $badge_id = intval( $_GET['bid'] );
+
+            $user_info = get_userdata( $user_id );
+            $badge     = mycred_get_badge( $badge_id );
+
+            if ( $user_info && $badge && $badge->open_badge ) {
+                
+                $issued_on = mycred_get_user_meta( $user_id, MYCRED_BADGE_KEY . $badge_id, '_issued_on', true );
+
+                $content = '<div class="mycred-evidence-page">
+                                <div class="mycred-left">
+                                    <img src="' . $badge->get_earned_image( $user_id ) . '" alt="">
+                                </div>
+                                <div class="mycred-left intro">
+                                    <h4 class="mycred-remove-margin">' . $badge->title . '</h4>
+                                    <div class="mycred-remove-margin">
+                                        <p>Name: '. $user_info->display_name .'</p>
+                                        <p>Email: ' . $user_info->user_email . '</p>
+                                        <p>Issued On: ' . date( 'Y-m-d\TH:i:sP', $issued_on ) . '</p>
+                                        <p><span class="dashicons dashicons-yes-alt"></span> <span class="icon-txt"> Verified</span></p>
+                                    </div>
+                                </div>
+                                <div class="mycred-clear"></div>
+                            </div>';
+
+            }
+            
+            
+        }
+
+        return $content;
+    }
 endif;

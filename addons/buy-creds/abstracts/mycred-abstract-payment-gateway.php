@@ -193,7 +193,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 
 			elseif ( ! empty( $this->buycred_limit['max'] ) && $this->amount > floatval( $this->buycred_limit['max'] ) ){
 				$valid = false;
-				$this->errors[] = sprintf( __( 'The amount must be less than %d.', 'mycred' ), $this->buycred_limit['max'] );
+				$this->errors[] = apply_filters( 'buycred_max_amount_error', sprintf( __( 'The amount must be less than %d.', 'mycred' ), $this->buycred_limit['max'] ), $this->buycred_limit['max'], $this );
 			}
 
 			elseif ( $this->exceeds_limit() ){

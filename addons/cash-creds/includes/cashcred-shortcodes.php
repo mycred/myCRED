@@ -102,9 +102,11 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					<?php endforeach;?>				
 				</tbody>
 			</table>	
-			<?php } else {?>
+			<?php } else {
+                $mycred_cashcred_gateway_notice = apply_filters( 'mycred_cashcred_gateway_notice', 'Selected gateway details are incomplete.' );
+			    ?>
 
-			<div class="cashcred_gateway_notice"><?php _e( 'Selected gateway details are incomplete.', 'mycred' ) ?></div>
+			<div class="cashcred_gateway_notice"><?php _e( $mycred_cashcred_gateway_notice, 'mycred' ) ?></div>
 
 			<form method="post" class="mycred-cashcred-form" action="">
 

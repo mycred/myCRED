@@ -263,6 +263,19 @@ if ( ! function_exists( 'mycred_woo_save_product_variation_detail' ) ) :
 endif;
 
 /**
+ * Register WooCommerce Purchase Reward refrence
+ * @since 2.1
+ * @version 1.0
+ */
+function mycred_register_woo_reward_ref( $list ) {
+
+    $list['reward'] = 'WooCommerce Purchase reaward';
+    return $list;
+
+}
+add_filter( 'mycred_all_references', 'mycred_register_woo_reward_ref' );
+
+/**
  * Payout Rewards
  * @since 1.5
  * @version 1.2

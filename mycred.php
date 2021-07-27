@@ -3,7 +3,7 @@
  * Plugin Name: myCred
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 2.0.2
+ * Version: 2.1
  * Tags: point, credit, loyalty program, engagement, reward, woocommerce rewards
  * Author: myCred
  * Author URI: https://mycred.me
@@ -20,7 +20,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '2.0.2';
+		public $version             = '2.1';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -54,14 +54,14 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.0.2' ); }
+		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.1' ); }
 
 		/**
 		 * Not allowed
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.0.2' ); }
+		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.1' ); }
 
 		/**
 		 * Get
@@ -82,7 +82,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( ! defined( $name ) )
 				define( $name, $value );
 			elseif ( ! $definable && defined( $name ) )
-				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . $name . ' as it is already defined somewhere else!', '2.0.2' );
+				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . $name . ' as it is already defined somewhere else!', '2.1' );
 		}
 
 		/**
@@ -94,7 +94,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( file_exists( $required_file ) )
 				require_once $required_file;
 			else
-				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . $required_file . ' not found.', '2.0.2' );
+				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . $required_file . ' not found.', '2.1' );
 		}
 
 		/**
@@ -258,6 +258,14 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-protect.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-about.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-nav-menu.php' );
+
+				if( isset ( $_GET['mycred_tour_guide'] ) ){
+
+					$this->file( myCRED_INCLUDES_DIR . 'mycred-walkthrough.php' );
+					$walkthrough = new myCRED_walkthroug();
+					$walkthrough->load();
+				
+				}
 
 				// If myCRED has been setup and is ready to begin
 				if ( mycred_is_installed() ) {

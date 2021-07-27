@@ -194,7 +194,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 			if ( is_user_logged_in() && ! mycred_is_admin() ) {
 
-				if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-buy-content' && isset( $_POST['postid'] ) && isset( $_POST['token'] ) && wp_verify_nonce( $_POST['token'], 'mycred-buy-this-content' ) ) {
+				if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-buy-content' && isset( $_POST['postid'] ) && isset( $_POST['token'] )  && wp_verify_nonce( $_POST['token'], 'mycred-buy-this-content' ) ) {
 
 					$post_id    = absint( $_POST['postid'] );
 					$point_type = sanitize_key( $_POST['ctype'] );
@@ -299,7 +299,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 							$payment_options = mycred_sell_content_payment_buttons( $this->current_user_id, $post_id );
 
 							// User can buy
-							if ( $payment_options !== false ) {
+							if ( $payment_options !== false  ) {
 
 								$content = $this->sell_content['templates']['members'];
 								$content = str_replace( '%buy_button%', $payment_options, $content );
@@ -342,16 +342,22 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			global $mycred_partial_content_sale, $mycred_sell_this;
 
 			$post_id = mycred_sell_content_post_id();
+
+
 			$post    = mycred_get_post( $post_id );
+
 			$content = '';
+
+
 
 			// If content is for sale
 			if ( mycred_post_is_for_sale( $post_id ) && ( bbp_is_single_forum() || bbp_is_single_topic() || bbp_is_single_reply() ) ) {
 
 				$mycred_sell_this = true;
 
+
 				// Partial Content Sale - We have already done the work in the shortcode
-				if ( $mycred_partial_content_sale === true ) return;
+				if ( $mycred_partial_content_sale === true )  return;
 
 				// Logged in users
 				if ( is_user_logged_in() ) {
@@ -369,8 +375,10 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 							if ( $payment_options !== false ) {
 
 								$content = $this->sell_content['templates']['members'];
+								
 								$content = str_replace( '%buy_button%', $payment_options, $content );
 								$content = mycred_sell_content_template( $content, $post, 'mycred-sell-entire-content', 'mycred-sell-unpaid' );
+								
 								$this->mycred_bbp_sell_forum_actions();
 
 							}
@@ -395,6 +403,8 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 					$content = $this->sell_content['templates']['visitors'];
 					$content = mycred_sell_content_template( $content, $post, 'mycred-sell-entire-content', 'mycred-sell-visitor' );
+
+
 					$this->mycred_bbp_sell_forum_actions();
 
 				}
@@ -406,11 +416,14 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 		}
 
 
+
+
 		public function mycred_bbp_sell_forum_actions() {
 
 			add_action( 'bbp_template_before_single_forum', array( $this, 'bbp_template_before_single' ) );
 			add_action( 'bbp_template_before_single_topic', array( $this, 'bbp_template_before_single' ) );
 			add_filter( 'bbp_no_breadcrumb', 				array( $this, 'bbp_remove_breadcrumb' ), 10 );
+			add_filter( 'bbp_is_single_topic',              array( $this, 'bbp_is_topic' ), 10  );
 			add_filter( 'bbp_get_forum_subscribe_link', 	array( $this, 'bbp_remove_subscribe_link' ), 10 , 3 );
 			add_filter( 'bbp_get_topic_subscribe_link', 	array( $this, 'bbp_remove_subscribe_link' ), 10 , 3 );
 			add_filter( 'bbp_get_topic_favorite_link', 		array( $this, 'bbp_remove_subscribe_link' ), 10 , 3 );
@@ -429,6 +442,20 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 		public function bbp_remove_breadcrumb( $is_front ) {
 			return true;
 		}
+
+		public function bbp_is_topic( $post_id = 0 ) {
+
+			// Assume false
+	    	$retval = false;
+
+	    	// Supplied ID is a topic
+	   		if ( ! empty( $post_id ) && ( bbp_get_topic_post_type() === get_post_type( $post_id ) ) ) {
+				$retval = true;
+	    	}
+
+	    	// Filter & return
+	    	return (bool) apply_filters( 'bbp_is_topic', $retval, $post_id );
+        }
 
 		public function bbp_remove_subscribe_link( $retval, $r, $args ) {
 			return '';

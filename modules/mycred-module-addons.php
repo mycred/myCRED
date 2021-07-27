@@ -76,7 +76,7 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 
 					mycred_update_option( 'mycred_pref_addons', $new_settings );
 
-					$url = add_query_arg( array( 'page' => MYCRED_SLUG . '-addons', 'activated' => $result ), admin_url( 'admin.php' ) );
+					$url = add_query_arg( array( 'page' => MYCRED_SLUG . '-addons', 'activated' => $result, $addon_id => $action ), admin_url( 'admin.php' ) );
 
 					wp_safe_redirect( $url );
 					exit;

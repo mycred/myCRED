@@ -32,9 +32,16 @@ if ( ! class_exists( 'myCRED_Setup' ) ) :
 
 			add_action( 'admin_notices',         array( $this, 'admin_notice' ) );
 			add_action( 'admin_menu',            array( $this, 'setup_menu' ) );
+			add_action('current_screen', array( $this, 'menu_setup' ));
+
 
 			add_action( 'wp_ajax_mycred-setup',  array( $this, 'ajax_setup' ) );
 
+			global $pagenow;
+
+			if ( $pagenow == 'index.php' && isset( $_GET['page'] ) && $_GET['page'] == 'mycred-about' ) {
+				remove_all_actions( 'admin_notices' );
+			}
 		}
 
 		/**
@@ -45,7 +52,7 @@ if ( ! class_exists( 'myCRED_Setup' ) ) :
 		public function admin_notice() {
 
 			$screen = get_current_screen();
-			if ( $screen->id == 'plugins_page_' . MYCRED_SLUG . '-setup' || ( isset( $_GET['action'] ) && $_GET['action'] === 'edit' ) || ! mycred_is_admin() ) return;
+			if ( $screen->id == 'plugins_page_' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' || ( isset( $_GET['action'] ) && $_GET['action'] === 'edit' ) || ! mycred_is_admin() ) return;
 
 			echo '<div class="info notice notice-info"><p>' . sprintf( __( '%s needs your attention.', 'mycred' ), mycred_label() ) . ' <a href="' . admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup' ) . '">' . __( 'Run Setup', 'mycred' ) . '</a></p></div>';
 
@@ -60,8 +67,8 @@ if ( ! class_exists( 'myCRED_Setup' ) ) :
 
 			$page = add_submenu_page(
 				'plugins.php',
-				__( 'myCRED Setup', 'mycred' ),
-				__( 'myCRED Setup', 'mycred' ),
+				__( 'myCred Setup', 'mycred' ),
+				__( 'myCred Setup', 'mycred' ),
 				'manage_options',
 				MYCRED_SLUG . '-setup',
 				array( $this, 'setup_page' )
@@ -81,7 +88,7 @@ if ( ! class_exists( 'myCRED_Setup' ) ) :
 			wp_enqueue_style( 'mycred-admin' );
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
 			wp_enqueue_style( 'mycred-forms' );
-
+			
 		}
 
 		/**
@@ -146,7 +153,7 @@ pre { margin: 0 0 12px 0; padding: 10px; background-color: #dedede; }
 
 		<div class="row">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<p><input type="submit" class="button button-primary button-large" value="<?php _e( 'Create Point Type', 'mycred' ); ?>" /><button type="button" id="toggle-advanced-options" class="button button-secondary pull-right" data-hide="<?php _e( 'Hide', 'mycred' ); ?>" data-show="<?php _e( 'Advanced', 'mycred' ); ?>"><?php _e( 'Advanced', 'mycred' ); ?></button></p>
+				<p><input type="submit" onclick="startTour()" id="mycred-tour" class="button button-primary button-large" value="<?php _e( 'Create Point Type', 'mycred' ); ?>" /><button type="button" id="toggle-advanced-options" class="button button-secondary pull-right" data-hide="<?php _e( 'Hide', 'mycred' ); ?>" data-show="<?php _e( 'Advanced', 'mycred' ); ?>"><?php _e( 'Advanced', 'mycred' ); ?></button></p>
 			</div>
 		</div>
 
@@ -182,6 +189,8 @@ pre { margin: 0 0 12px 0; padding: 10px; background-color: #dedede; }
 </div>
 <script type="text/javascript">
 jQuery(function($) {
+
+	var mycred_tour_guide = {};
 
 	$( '#toggle-advanced-options' ).click(function(){
 
@@ -238,7 +247,8 @@ jQuery(function($) {
 					progressbox.hide();
 
 					if ( response.success ) {
-						completedbox.slideDown();
+						window.location.href = '<?php echo admin_url('admin.php?page=mycred&mycred_tour_guide=2'); ?>';
+						//completedbox.slideDown();
 						setupform.remove();
 					}
 					else {
@@ -255,6 +265,7 @@ jQuery(function($) {
 
 });
 </script>
+
 <?php
 
 		}
@@ -270,6 +281,7 @@ jQuery(function($) {
 			$posted = wp_parse_args( $posted, $mycred->defaults() );
 
 ?>
+
 <div class="row">
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 		<h3><?php _e( 'Labels', 'mycred' ); ?></h3>
@@ -475,6 +487,18 @@ jQuery(function($) {
 			// Return the good news
 			wp_send_json_success();
 
+		}
+		public function menu_setup( $current_screen ){
+			
+			if ( $current_screen->id == 'plugins_page_mycred-setup' && ! isset( $_GET['mycred_tour_guide'] ) ){
+				wp_redirect( 
+					add_query_arg( 
+						array('page'=>'mycred-setup', 'mycred_tour_guide' => 1), 
+						admin_url('plugins.php') 
+					) 
+				);
+				exit;
+			}
 		}
 
 	}

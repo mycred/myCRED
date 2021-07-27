@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 5.6
-Stable tag: 2.0.2
+Tested up to: 5.7.1
+Stable tag: 2.1
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -60,7 +60,33 @@ Join the myCred membership club today and take advantage of premium services tha
 * **Pay Through PayPal -** cashCred supports payment through PayPal.
 * **Pay Through Stripe -** cashCred supports payment through Stripe.
 
-**Important Announcement** You have to update your myCred plugin to version 2.0 in order to use the myCred cashCred services.
+myCred v2.1 - Open Badge Features.
+
+**Open badges: new opportunities to recognize and validate achievements digitally.**
+
+The most prominent feature in myCred 2.1 is the **Single Badge Page** which creates an exclusive page for each badge and its information (badge name, image, badge description, achievements, and benefits).
+
+**Open Badge Functionality**
+
+- Create professional-looking badge/point/rank.
+- Add badge details (name, achievement, website details, etc.).
+- Badge recognition and validation through different badge verification websites.
+
+**Achievements**
+
+- Issue badges for any combination of achievements.
+- Detailed badge categorization.
+- Industry-related achievement.
+
+**Achievement list Shortcode**
+
+- Thorough myCred badge listing in tabs.
+- Category wise display in tabs.
+- Different color variants when a lock or unlock.
+
+**Evidence Shortcode**
+
+- Technical support for badge verification purpose.
 
 = Features =
 
@@ -334,6 +360,23 @@ Bug fixes release.
 
 
 == Changelog ==
+
+= 2.1 =
+NEW - Open badge functionality in myCred Badge addon.
+NEW - Introduce Achievement Types.
+NEW - Introduce a new shortcode mycred_badges_list.
+NEW - Single badge page.
+NEW - Added support into Badges for Anniversary hook.
+NEW - Added support into Badges for wooCommerce purchase reward.
+NEW - Added %rank_title% template tag support in Email Notifications.
+NEW - Added attributes in mycred_transfer shortcode.
+TWEAK - Removed deprecated functions.
+TWEAK - Code Improvement.
+TWEAK - Improve styling of mycred_transfer shortcode.
+FIX - mycred_history shortcode pagination not working properly when cache enabled.
+FIX - Ranks weren't working properly on the current balance.
+FIX - mycred_sell_this shortcode not working in the bbPress topic
+FIX - The central deposit missing log entry in some cases.
 
 = 2.0.2 =
 New - Added compatibility for multiple currencies in CashCred Paypal addon

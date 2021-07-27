@@ -361,6 +361,13 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 
 			if ( ! empty( $content ) ) {
 
+                if ( is_array( $event ) &&  array_key_exists( 'ref_id', $event ) )
+                {
+                    $rank       = mycred_get_rank( $event['ref_id'] );
+                    $rank_title = $rank->title;
+                    $content = str_replace( '%rank_title%', $rank_title, $content );
+                }
+
 				$mycred  = mycred( $point_type );
 
 				if ( $this->emailnotices['use_html'] === true )
@@ -400,7 +407,10 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 				$content = str_replace( '%blog_info%',     get_option( 'blogdescription' ), $content );
 				$content = str_replace( '%admin_email%',   get_option( 'admin_email' ), $content );
 
-			}
+                $content = str_replace( '%rank_title%',     get_option( 'blogname' ), $content );
+
+
+            }
 
 			return apply_filters( 'mycred_email_notice_get_body', $content, $this );
 

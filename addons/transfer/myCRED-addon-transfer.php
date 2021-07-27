@@ -224,6 +224,8 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 			}
 
+			$results = apply_filters( 'mycred_transfer_users_list' , $results, $user_id, $this->transfer['autofill'] );
+
 			wp_send_json( $results );
 
 		}

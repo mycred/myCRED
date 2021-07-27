@@ -221,7 +221,9 @@ endif;
 if ( ! function_exists( 'mycred_display_badge_requirement' ) ) :
 	function mycred_display_badge_requirements( $badge_id = NULL ) {
 
+		$badge  = mycred_get_badge( $badge_id );
 		$levels = mycred_get_badge_levels( $badge_id );
+
 		if ( empty( $levels ) ) {
 
 			$reply = '-';
@@ -261,9 +263,15 @@ if ( ! function_exists( 'mycred_display_badge_requirement' ) ) :
 			$output = array();
 			foreach ( $levels as $level => $setup ) {
 
-				$level_label = '<strong>' . sprintf( __( 'Level %s', 'mycred' ), ( $level + 1 ) ) . ':</strong>';
-				if ( $levels[ $level ]['label'] != '' )
-					$level_label = '<strong>' . $levels[ $level ]['label'] . ':</strong>';
+				$level_label = '';
+
+				if ( ! $badge->open_badge ) {
+						
+					$level_label = '<strong>' . sprintf( __( 'Level %s', 'mycred' ), ( $level + 1 ) ) . ':</strong>';
+					if ( $levels[ $level ]['label'] != '' )
+						$level_label = '<strong>' . $levels[ $level ]['label'] . ':</strong>';
+
+				}
 
 				// Construct requirements to be used in an unorganized list.
 				$level_req = array();
@@ -295,7 +303,7 @@ if ( ! function_exists( 'mycred_display_badge_requirement' ) ) :
 
 				if ( empty( $level_req ) ) continue;
 
-				$output[] = $level_label . '<ul class="mycred-badge-requirement-list"><li>' . implode( '</li><li>', $level_req ) . '</li></ul>';
+				$output[] = $level_label . '<ul class="mycred-badge-requirement-list '. ( $badge->open_badge ? 'open_badge' : '' ) .'"><li>' . implode( '</li><li>', $level_req ) . '</li></ul>';
 
 			}
 
@@ -694,6 +702,347 @@ if ( ! function_exists( 'mycred_get_badge_ids' ) ) :
 		wp_cache_set( 'badge_ids', $badge_ids, MYCRED_SLUG );
 
 		return apply_filters( 'mycred_get_badge_ids', $badge_ids );
+
+	}
+endif;
+
+/**
+ * Get Badges by Term ID
+ * @since 2.1
+ * @version 1.0
+ * @param $term_id Pass term Id
+ * return posts by term Id
+ */
+if( !function_exists( 'mycred_get_badges_by_term_id' ) ) :
+    function mycred_get_badges_by_term_id($term_id ) {
+        $badge_args = query_posts(array(
+                'post_type' => MYCRED_BADGE_KEY,
+                'showposts' => -1,
+                'tax_query' => array(
+                    array(
+                        'taxonomy' => MYCRED_BADGE_CATEGORY,
+                        'terms' => $term_id,
+                        'field' => 'term_id',
+                    )
+                ),
+                'orderby' => 'title',
+                'order' => 'ASC' )
+        );
+        return $badge_args;
+    }
+endif;
+
+/**
+ * Get Badge/ Level Requirements
+ * @since 2.1
+ * @version 1.0
+ * @param $badge_id Pass Badge ID
+ */
+if( !function_exists( 'mycred_show_badge_requirements' ) ) :
+    function mycred_show_badge_requirements( $badge_id ) {
+
+        $data = array();
+        $levels = mycred_get_badge_levels( $badge_id );
+        if ( empty( $levels ) ) {
+
+            $reply = '-';
+
+        }
+        else {
+
+            $point_types = mycred_get_types(true);
+            $references = mycred_get_all_references();
+            $req_count = count($levels[0]['requires']);
+
+            // Get the requirements for the first level
+            $base_requirements = array();
+            foreach ($levels[0]['requires'] as $requirement_row => $requirement) {
+
+                if ($requirement['type'] == '')
+                    $requirement['type'] = MYCRED_DEFAULT_TYPE_KEY;
+
+                if (!array_key_exists($requirement['type'], $point_types))
+                    continue;
+
+                if (!array_key_exists($requirement['reference'], $references))
+                    $reference = '-';
+                else
+                    $reference = $references[$requirement['reference']];
+
+                $base_requirements[$requirement_row] = array(
+                    'type' => $requirement['type'],
+                    'ref' => $reference,
+                    'amount' => $requirement['amount'],
+                    'by' => $requirement['by']
+                );
+
+            }
+
+            // Loop through each level
+            $output = array();
+            foreach ($levels as $level => $setup) {
+                //collecting images
+                $image = false;
+
+                if ( $setup['attachment_id'] > 0 ) {
+
+                    $_image = wp_get_attachment_url( $setup['attachment_id'] );
+                    if ( strlen( $_image ) > 5 )
+                        $output['image'] = $_image;
+
+                }
+                else {
+
+                    if ( strlen( $setup['image_url'] ) > 5 )
+                        $output['image'] = $setup['image_url'];
+                }
+
+                $level_label = sprintf(__('Level %s', 'mycred'), ($level + 1));
+                if ($levels[$level]['label'] != '')
+                    $level_label =  $levels[$level]['label'];
+
+                // Construct requirements to be used in an unorganized list.
+                $level_req = array();
+                foreach ($setup['requires'] as $requirement_row => $requirement) {
+                    $level_value = $requirement['amount'];
+                    $requirement = $base_requirements[$requirement_row];
+
+                    $mycred = mycred($requirement['type']);
+
+                    if ($level > 0)
+                        $requirement['amount'] = $level_value;
+
+                    if ($requirement['by'] == 'count')
+                        $rendered_row = sprintf(_x('%s for "%s" x %d', '"Points" for "reference" x times', 'mycred'), $mycred->plural(), $requirement['ref'], $requirement['amount']);
+                    else
+                        $rendered_row = sprintf(_x('%s %s for "%s"', '"Gained/Lost" "x points" for "reference"', 'mycred'), (($requirement['amount'] < 0) ? __('Lost', 'mycred') : __('Gained', 'mycred')), $mycred->format_creds($requirement['amount']), $requirement['ref']);
+
+                    $compare = _x('OR', 'Comparison of badge requirements. A OR B', 'mycred');
+                    if ($setup['compare'] === 'AND')
+                        $compare = _x('AND', 'Comparison of badge requirements. A AND B', 'mycred');
+
+                    if ($req_count > 1 && $requirement_row + 1 < $req_count)
+                        $rendered_row .= ' <span>' . $compare . '</span>';
+
+                    $level_req[] = $rendered_row;
+
+                }
+
+                if ( empty( $level_req ) ) continue;
+
+                $output['heading']      = $level_label;
+                $output['requirements'] = $level_req;
+                $output["reward_type"]  = $setup["reward"]["type"];
+                $output["amount"]       = $setup["reward"]["amount"];
+
+                array_push( $data, $output );
+
+            }
+
+            if ( (int) mycred_get_post_meta( $badge_id, 'manual_badge', true ) === 1 )
+                $output[] = '<strong><small><em>' . __('This badge is manually awarded.', 'mycred') . '</em></small></strong>';
+
+            return $data;
+        }
+
+    }
+endif;
+
+/**
+ * Get users have have specific badge
+ * @param $badge_id Pass Badge ID
+ * @param int $level_id
+ * @return array Will return Array of User ID's have the specific Badge
+ * @since 2.1
+ * @version 1.0
+ */
+if( !function_exists( 'mycred_get_users_has_earned_badge' ) ) :
+    function mycred_get_users_has_earned_badge( $badge_id, $level_id = 0 ) {
+
+        $users_has_badge = array();
+
+        $badge_id = absint( $badge_id );
+
+        $args = array(
+            'fields'    =>  array(
+                'ID',
+                'display_name'
+            )
+        );
+
+        $users = get_users( $args );
+
+        foreach ( $users as $user ) {
+
+            $has_badge = false;
+
+            $user_id = $user->ID;
+
+            // Get the badge object
+            $badge = mycred_get_badge( $badge_id );
+
+            // Most likely not a badge post ID
+            if ( $badge !== false ) {
+            	
+                $current_level = mycred_get_user_meta( $user_id, MYCRED_BADGE_KEY . $badge_id, '', true );
+
+                $current_level = $current_level == '0' ? true : $current_level;
+
+                if ( $current_level )
+                {
+                    $has_badge = true;
+
+                    if ( (int) $current_level < absint( $level_id ) )
+                    {
+                        $has_badge = false;
+                    }
+                    if ( $has_badge )
+                        $users_has_badge[] = $user_id;
+                }
+            }
+        }
+        return $users_has_badge;
+
+    }
+endif;
+
+/**
+ * Get Badge Types
+ * @since 2.1
+ * @version 2.1
+ * @param $badge_id Pass the Badge id
+ * @return array Will return all the categories
+ */
+if ( !function_exists('mycred_get_badge_type') ) :
+    function mycred_get_badge_type( $badge_id ) {
+
+        $badge_terms = get_the_terms( $badge_id, MYCRED_BADGE_CATEGORY, '', ', ' );
+
+        if (is_array( $badge_terms ) || is_object($badge_terms))
+        {
+            $badge_type = join( ', ', wp_list_pluck($badge_terms, 'name') );
+
+            return $badge_type;
+        }
+
+        return false;
+
+    }
+endif;
+
+/**
+ * Get Badge Level Image Url By Passing setup of Level Requirements Use Function mycred_get_badge_requirements()
+ * @since 2.1
+ * @version 1.0
+ * @param $setup
+ * @return bool|false|mixed|string
+ */
+if( !function_exists( 'mycred_get_level_image_url' ) ) :
+    function mycred_get_level_image_url( $setup ) {
+
+        $image = false;
+
+        if ( $setup['attachment_id'] > 0 ) {
+
+            $_image = wp_get_attachment_url( $setup['attachment_id'] );
+            if ( strlen( $_image ) > 5 )
+                return $_image;
+
+        }
+        else {
+
+            if ( strlen( $setup['image_url'] ) > 5 )
+                return $setup['image_url'];
+        }
+
+        return $image;
+
+    }
+endif;
+
+/**
+ * Cretae Evidence page
+ * @since 2.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_evidence_page_id' ) ) :
+	function mycred_get_evidence_page_id() {
+
+		$evidencePageId = 0;
+
+		$badges = mycred_get_addon_settings( 'badges' );
+
+        //If Open badge enabled
+        if ( isset( $badges['open_badge'] ) && $badges['open_badge'] == '1' ) {
+
+            $canCreatePage = true;
+
+            $evidence_page_refrence = mycred_get_option( 'open_badge_evidence_page', 0 );
+
+            if ( ! empty( $badges['open_badge_evidence_page'] ) || ! empty( $evidence_page_refrence ) ) {
+
+            	$pageId = intval( $evidence_page_refrence );
+
+            	if ( ! empty( $badges['open_badge_evidence_page'] ) ) {
+            			
+            		$pageId = intval( $badges['open_badge_evidence_page'] );
+
+            	}
+
+                if ( get_post_status( $pageId ) == 'publish' ) {
+                    
+                    $canCreatePage  = false;
+                    $evidencePageId = $pageId;
+
+                }
+
+            }
+
+            if ( $canCreatePage ) {
+
+                $postData = array(
+                    'post_content'   => '[' . MYCRED_SLUG . '_badge_evidence]',
+                    'post_title'     => 'Badge Evidence',
+                    'post_status'    => 'publish',
+                    'post_type'      => 'page',
+                    'comment_status' => 'closed',
+                    'post_name'      => 'Badge Evidence'
+                );
+
+                $pageId = wp_insert_post( $postData );
+
+                $evidencePageId = intval( $pageId );
+
+                mycred_update_option( 'open_badge_evidence_page', $evidencePageId );
+
+                mycred_set_badge_evidence_page( $evidencePageId );
+
+            }
+        
+        }
+
+        return $evidencePageId;
+
+    }
+endif;
+
+/**
+ * Set Evidence page
+ * @since 2.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_set_badge_evidence_page' ) ) :
+	function mycred_set_badge_evidence_page( $page_id ) {
+
+		$settings = mycred_get_option( 'mycred_pref_core' );
+
+		if ( isset( $settings[ 'badges' ] ) ) {
+
+			$settings[ 'badges' ][ 'open_badge_evidence_page' ] = intval( $page_id );
+
+			mycred_update_option( 'mycred_pref_core', $settings );
+
+		}
 
 	}
 endif;

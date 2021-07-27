@@ -60,7 +60,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 		/**
 		 * AJAX: Update Balance
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function ajax_editor_balance_update() {
 
@@ -190,8 +190,9 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 			}
 
-			wp_send_json_success( $result );
+			do_action( 'mycred_finish_without_log_entry', $result );
 
+			wp_send_json_success( $result );
 		}
 
 		/**

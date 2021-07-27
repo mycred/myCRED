@@ -1053,7 +1053,7 @@ function mycred_load_buddypress_groups_hook() {
 					),
 					'comments'   => array(
 						'creds'     => 1,
-						'log'       => '%plural% for new group comment',
+						'log'       => '%plural% for new group post',
 						'limit'     => '0/x'
 					)
 				)
@@ -1738,7 +1738,7 @@ function mycred_load_buddypress_groups_hook() {
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'New Group Comments', 'mycred' ); ?></h3>
+	<h3><?php _e( 'New Group Post', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">

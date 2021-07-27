@@ -98,7 +98,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		/**
 		 * Hook into Init
 		 * @since 1.4.4
-		 * @version 1.0.1
+		 * @version 1.0.2
 		 */
 		public function module_pre_init() {
 
@@ -107,6 +107,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			add_filter( 'mycred_post_type_excludes', array( $this, 'exclude_ranks' ) );
 			add_filter( 'mycred_add_finished',       array( $this, 'balance_adjustment' ), 20, 3 );
 			add_action( 'mycred_zero_balances',      array( $this, 'zero_balance_action' ) );
+			add_action( 'mycred_finish_without_log_entry', array( $this, 'balance_adjustment_without_log' ) );
 
 		}
 
@@ -641,6 +642,26 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			}
 
 		}
+
+        /**
+         * Manual Balance Adjustment
+         * Checks if User's rank should be change.
+         * @param $result
+         * @since 2.1
+         * @version 1.0
+         */
+        public function balance_adjustment_without_log( $result )
+        {
+            extract( $result );
+
+           if( mycred_rank_based_on_current( $type ) )
+           {
+               $rank = mycred_find_users_rank( $user_id, $type );
+
+               if ( isset( $rank->rank_id ) && $rank->rank_id !== $rank->current_id )
+                   mycred_save_users_rank( $user_id, $rank->rank_id, $type );
+           }
+        }
 
 		/**
 		 * User Related Template Tags

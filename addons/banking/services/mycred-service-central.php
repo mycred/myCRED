@@ -55,7 +55,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 			extract( $request );
 
 			// Make sure that the request is not for our bank account
-			if ( $user_id == $this->prefs['bank_id'] ) return $reply;
+			//if ( $user_id == $this->prefs['bank_id'] ) return $reply;
 
 			// Get the banks balance
 			$bank_balance = $mycred->get_users_balance( $this->prefs['bank_id'], $this->mycred_type );

@@ -63,6 +63,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 					$this->results    = $cached_results['results'];
 					$this->num_rows   = $cached_results['num_rows'];
 					$this->total_rows = $cached_results['total_rows'];
+					$this->max_num_pages = (int)$cached_results['max_num_pages'];
 
 					if ( $this->args['number'] !== NULL && $this->args['number'] < 0 )
 						$this->max_num_pages = ceil( $this->num_rows / $this->args['number'] );
@@ -237,10 +238,11 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			if ( $cache_results ) {
 
 				$new_cache = array(
-					'request'    => $this->request,
-					'results'    => $this->results,
-					'num_rows'   => $this->num_rows,
-					'total_rows' => $this->total_rows
+					'request'       => $this->request,
+					'results'       => $this->results,
+					'num_rows'      => $this->num_rows,
+					'total_rows'    => $this->total_rows,
+                    'max_num_pages' => $this->max_num_pages
 				);
 
 				$this->cache_result( $new_cache );
@@ -2355,7 +2357,8 @@ if ( ! function_exists( 'mycred_get_all_references' ) ) :
 			'link_click'          => __( 'Link Click', 'mycred' ),
 			'watching_video'      => __( 'Watching Video', 'mycred' ),
 			'visitor_referral'    => __( 'Visitor Referral', 'mycred' ),
-			'signup_referral'     => __( 'Signup Referral', 'mycred' )
+			'signup_referral'     => __( 'Signup Referral', 'mycred' ),
+			'anniversary'         => __( 'Anniversary', 'mycred' ),
 		);
 
 		if ( class_exists( 'BuddyPress' ) ) {
@@ -2381,7 +2384,7 @@ if ( ! function_exists( 'mycred_get_all_references' ) ) :
 			$hooks['leaving_group']          = __( 'Leaving Group', 'mycred' );
 			$hooks['upload_group_avatar']    = __( 'New Group Avatar', 'mycred' );
 			$hooks['upload_group_cover']     = __( 'New Group Cover', 'mycred' );
-			$hooks['new_group_comment']      = __( 'New Group Comment', 'mycred' );
+			$hooks['new_group_comment']      = __( 'New Group Post', 'mycred' );
 		}
 
 		if ( function_exists( 'bpa_init' ) || function_exists( 'bpgpls_init' ) ) {

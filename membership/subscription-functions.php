@@ -217,7 +217,7 @@ if( !function_exists('mycred_is_membership_active') ) {
 
             $user_license_key = mycred_get_membership_key();
 
-            $mycred_version = (int) str_replace( '.', '', myCRED_VERSION );
+            $mycred_version = str_pad( (int) str_replace( '.', '', myCRED_VERSION ), 3, '0' );
             
             $url = rtrim( get_bloginfo( 'url' ), '/' );
             if( $mycred_version >= 188 && !empty( $user_license_key ) &&

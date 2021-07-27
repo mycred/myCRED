@@ -642,10 +642,10 @@ endif;
 
 /**
  * Rank Based on Total
- * Checks if ranks for a given point type are based on total or current
+ * Checks if ranks for a given point type are based in total
  * balance.
  * @since 1.6
- * @version 1.1
+ * @version 1.2
  */
 if ( ! function_exists( 'mycred_rank_based_on_total' ) ) :
 	function mycred_rank_based_on_total( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
@@ -659,6 +659,27 @@ if ( ! function_exists( 'mycred_rank_based_on_total' ) ) :
 		return $result;
 
 	}
+endif;
+
+
+/**
+ * Rank Based on Total
+ * Checks if ranks for a given point type are based on current balance.
+ * @since 2.1
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_rank_based_on_current' ) ) :
+    function mycred_rank_based_on_current( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
+
+        $prefs  = mycred_get_addon_settings( 'rank', $point_type );
+
+        $result = false;
+        if ( ! empty( $prefs ) && $prefs['base'] == 'current' )
+            $result = true;
+
+        return $result;
+
+    }
 endif;
 
 /**

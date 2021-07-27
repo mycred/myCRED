@@ -22,8 +22,11 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 			'show_limit'      => 0,
 			'ref'             => 'transfer',
 			'amount'          => '',
+			'amount_placeholder' => '',
 			'min'             => 0,
 			'placeholder'     => '',
+			'message_placeholder'   => '',
+			'recipient_placeholder' => '',
 			'types'           => '',
 			'excluded'        => '',
 			'recipient_label' => __( 'Recipient', 'mycred' ),
@@ -55,7 +58,8 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 				'minimum'     => $atts['min'],
 				'amount'      => $atts['amount'],
 				'recipient'   => $atts['pay_to'],
-				'point_types' => $atts['types']
+				'point_types' => $atts['types'],
+				
 			) ) ) {
 
 				// We meet the minimum requirements! Yay, now let the get_transfer_form() function render our form

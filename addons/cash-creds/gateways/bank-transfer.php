@@ -225,7 +225,7 @@ if ( ! class_exists( 'myCRED_cashcred_Bank_Transfer' ) ) :
 		 */
 		public function form_fields() {
 
-			return array(
+			$gateway_fields = array(
 				'ac_name' => array(
 					'type'        => 'text',
 					'lable'       => 'Account name',
@@ -269,6 +269,8 @@ if ( ! class_exists( 'myCRED_cashcred_Bank_Transfer' ) ) :
 					'placeholder' => 'Swift code',
 				)
 			);
+
+			return apply_filters( 'mycred_cashcred_bank_transfer_fields', $gateway_fields );
 
 		}
 		

@@ -186,3 +186,8 @@ body.version-3-8 #myCRED-wrap #accordion .ui-accordion-content { border-top: 1px
 .mycred-export-points .ui-button .ui-button-text { display: block; text-indent: 0; }
 .mycred-export-points .ui-dialog-title { font-size: 22px; font-weight: 600; margin: 0 0 0 0; width: auto !important; float: none !important; }
 .mycred-export-points .form-control { width: 100%; margin-bottom: 6px; }
+.mycred-switch-all-badges-icon{ vertical-align: middle; display: none; }
+.mycred-switch-all-badges-icon { -webkit-animation: spin 2s linear infinite; /* Safari */animation: spin 2s linear infinite;}
+/* Safari */
+@-webkit-keyframes spin { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
