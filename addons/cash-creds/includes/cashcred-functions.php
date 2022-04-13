@@ -456,7 +456,20 @@ if ( ! function_exists( 'mycred_get_cashcred_settings' ) ) :
 	function mycred_get_cashcred_settings() {
 
 		$defaults = array(
-			'debugging' => 'disable'
+			'debugging' => 'disable',
+			'fees'      => array(
+				'use'         => 0,
+				'account'     => 0,
+				'types'       => array(
+					'mycred_default' => array(
+						'by'             => 'percent',
+						'amount'         => 0,
+						'min_cap'        => 0,
+						'max_cap'        => 0,
+						'presentation'   => '( %fee% + %min% ) max. %max% = %total%'
+					)
+				)
+			)
 		);
 
 		$settings = mycred_get_addon_settings( 'cashcreds' );

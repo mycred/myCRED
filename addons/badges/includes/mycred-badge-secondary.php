@@ -16,9 +16,11 @@ if ( ! class_exists( 'myCRED_Badge_Secondary' ) ) :
 		 * Construct
 		 */
 		function __construct() {
+
 			add_filter( 'mycred_badge_requirement',    array( $this, 'mycred_badge_specific_requirement'), 10, 5 );
 			add_filter( 'mycred_badge_requirement_specific_template', array( $this, 'badge_specific_template'), 10, 5 );
             add_action( 'admin_head',                  array( $this, 'admin_header' ) );
+		
 		}
 
 		/**

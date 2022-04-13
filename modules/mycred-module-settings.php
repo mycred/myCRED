@@ -1,6 +1,10 @@
 <?php
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
+define( 'myCRED_Settings',              __FILE__ );
+
+define( 'myCRED_Settings_VERSION',      '1.3' );
+
 /**
  * myCRED_Settings_Module class
  * @since 0.1
@@ -24,7 +28,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				),
 				'screen_id'   => MYCRED_SLUG . '-settings',
 				'accordion'   => true,
-				'menu_pos'    => 998
+				'menu_pos'    => 100
 			), $type );
 
 		}
@@ -45,7 +49,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			add_action( 'wp_ajax_mycred-action-export-balances', array( $this, 'action_export_balances' ) );
 			add_action( 'wp_ajax_mycred-action-generate-key',    array( $this, 'action_generate_key' ) );
 			add_action( 'wp_ajax_mycred-action-max-decimals',    array( $this, 'action_update_log_cred_format' ) );
-
+			add_action( 'wp_ajax_mycred-get-users-to-exclude', array( $this, 'get_users' ) );
 		}
 
 		/**
@@ -55,6 +59,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 */
 		public function module_admin_init() {
 
+			
+			
 			if ( isset( $_GET['do'] ) && $_GET['do'] == 'export' )
 				$this->load_export();
 
@@ -231,6 +237,31 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 		}
 
+
+		/**
+         * Get Point Image
+         * @since 2.2
+         * @version 1.0
+         */
+        public function get_point_image( $attachment_id, $point_type_field ) {
+
+            $image = false;
+
+            if ( $attachment_id > 0 ) {
+
+                $_image = wp_get_attachment_url( $attachment_id );
+		
+                if ( strlen( $_image ) > 5 )
+				{
+					$image = "<img src='$_image' alt='Point Type image' /><input type='hidden' name='$point_type_field' value='{$attachment_id}' />";
+				}
+
+            }
+
+            return $image;
+
+        }
+
 		/**
 		 * Update Log Cred Format Action
 		 * Will attempt to modify the myCRED log's cred column format.
@@ -348,9 +379,12 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Scripts & Styles
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function scripts_and_styles() {
+
+
+			wp_enqueue_media();
 
 			wp_register_script(
 				'mycred-type-management',
@@ -359,13 +393,17 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				myCRED_VERSION . '.1'
 			);
 
+			wp_enqueue_style( MYCRED_SLUG . '-select2-style' );
+
+			wp_enqueue_script( MYCRED_SLUG . '-select2-script' );
+
 		}
 
 		/**
 		 * Settings Header
 		 * Inserts the export styling
 		 * @since 1.3
-		 * @version 1.2.2
+		 * @version 1.2.3
 		 */
 		public function settings_header() {
 
@@ -424,18 +462,26 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				'mycred-type-management',
 				'myCREDmanage',
 				array(
-					'ajaxurl'       => admin_url( 'admin-ajax.php' ),
-					'token'         => wp_create_nonce( 'mycred-management-actions' ),
-					'cache'         => wp_create_nonce( 'mycred-clear-cache' ),
-					'working'       => esc_attr__( 'Processing...', 'mycred' ),
-					'confirm_log'   => esc_attr__( 'Warning! All entries in your log will be permanently removed! This can not be undone!', 'mycred' ),
-					'confirm_clean' => esc_attr__( 'All log entries belonging to deleted users will be permanently deleted! This can not be undone!', 'mycred' ),
-					'confirm_reset' => esc_attr__( 'Warning! All user balances will be set to zero! This can not be undone!', 'mycred' ),
-					'done'          => esc_attr__( 'Done!', 'mycred' ),
-					'export_close'  => esc_attr__( 'Close', 'mycred' ),
-					'export_title'  => $mycred->template_tags_general( esc_attr__( 'Export %singular% Balances', 'mycred' ) ),
-					'decimals'      => esc_attr__( 'In order to adjust the number of decimal places you want to use we must update your log. It is highly recommended that you backup your current log before continuing!', 'mycred' )
-				)
+					'ajaxurl'       	 => admin_url( 'admin-ajax.php' ),
+					'token'         	 => wp_create_nonce( 'mycred-management-actions' ),
+					'cache'         	 => wp_create_nonce( 'mycred-clear-cache' ),
+					'working'       	 => esc_attr__( 'Processing...', 'mycred' ),
+					'confirm_log'        => esc_attr__( 'Warning! All entries in your log will be permanently removed! This can not be undone!', 'mycred' ),
+					'confirm_clean' 	 => esc_attr__( 'All log entries belonging to deleted users will be permanently deleted! This can not be undone!', 'mycred' ),
+					'confirm_reset' 	 => esc_attr__( 'Warning! All user balances will be set to zero! This can not be undone!', 'mycred' ),
+					'imagelabel'   		 => esc_js( sprintf( '%s {{image}}', __( 'Level', 'mycred' ) ) ),
+					'setImage'     		 => esc_js( __( 'Set Image', 'mycred' ) ),
+					'set_featured_image' => __( 'Set Default Point Type image', 'mycred' ),
+					'changeImage'        => esc_js( __( 'Change Image', 'mycred' ) ),
+					'uploadtitle'  		 => esc_js( esc_attr__( 'Point Type Image', 'mycred' ) ),
+					'uploadbutton' 		 => esc_js( esc_attr__( 'Use as Image', 'mycred' ) ),
+					'done'          	 => esc_attr__( 'Done!', 'mycred' ),
+					'export_close'  	 => esc_attr__( 'Close', 'mycred' ),
+					'export_title' 		 => $mycred->template_tags_general( esc_attr__( 'Export %singular% Balances', 'mycred' ) ),
+					'decimals'      	 => esc_attr__( 'In order to adjust the number of decimal places you want to use we must update your log. It is highly recommended that you backup your current log before continuing!', 'mycred' ),
+					'fieldName'		 	 => $this->field_name(),
+					'excludedUsers'		 => $this->get_excluded_users()
+					)
 			);
 			wp_enqueue_script( 'mycred-type-management' );
 
@@ -506,7 +552,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Admin Page
 		 * @since 0.1
-		 * @version 1.5
+		 * @since 2.3 Added select2, Exclude User by ID and Role 
+		 * @version 1.6
 		 */
 		public function admin_page() {
 
@@ -517,12 +564,37 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			$general     = $this->general;
 			$action_hook = ( ! $this->is_main_type ) ? $this->mycred_type : '';
 			$delete_user = ( isset( $this->core->delete_user ) ) ? $this->core->delete_user : 0;
+			$main_screen = ( get_current_screen()->base == 'toplevel_page_mycred-main' );
 
 			// Social Media Links
 			$social      = array();
 			$social[]    = '<a href="https://www.facebook.com/myCRED" class="facebook" target="_blank">Facebook</a>';
 			$social[]    = '<a href="https://plus.google.com/+MycredMe/posts" class="googleplus" target="_blank">Google+</a>';
 			$social[]    = '<a href="https://twitter.com/my_cred" class="twitter" target="_blank">Twitter</a>';
+			
+			// Exclude Users by ID
+			$all_users = array();
+			$excluded_ids = array();
+			
+			$excluded_ids_args = array(
+				'name'		=>	$this->field_name( array( 'exclude' => 'list' ) ) . '[]',
+				'id'		=>	$this->field_id( array( 'exclude' => 'list' ) ),
+				'class'		=>	'form-control',
+				'multiple'	=>	'multiple'
+			);
+
+			//Exclude Users by Role
+			$excluded_roles = explode( ',', esc_attr( $this->core->exclude['by_roles'] ) );
+			$wp_roles = wp_roles();
+			$roles = array();
+			foreach( $wp_roles->roles as $role => $name )
+				$roles[$role] = $name['name'];
+			$roles_args = array(
+				'name'		=>	$this->field_name( array( 'exclude' => 'by_roles' ) ) . '[]',
+				'id'		=>	$this->field_id( array( 'exclude' => 'by_roles' ) ),
+				'class'		=>	'form-control',
+				'multiple'	=>	'multiple'
+			);
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
@@ -539,7 +611,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		<?php settings_fields( $this->settings_name ); ?>
 
 		<div class="list-items expandable-li" id="accordion">
-			<h4><span class="dashicons dashicons-admin-settings static"></span><label><?php _e( 'Core Settings', 'mycred' ); ?></label></h4>
+			<h4 <?php echo !$main_screen ? '' : 'style="display:none"';?>><span class="dashicons dashicons-admin-settings static"></span><label><?php _e( 'Core Settings', 'mycred' ); ?></label></h4>
 			<div class="body" style="display:none;">
 
 				<div class="row">
@@ -624,11 +696,10 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 									<p><span class="description"><?php _e( 'The maximum amount allowed to be paid out in a single instance.', 'mycred' ); ?></span></p>
 								</div>
 							</div>
-							<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 								<div class="form-group">
-									<label for="<?php echo $this->field_id( array( 'exclude' => 'list' ) ); ?>"><?php _e( 'Exclude by User ID', 'mycred' ); ?></label>
-									<input type="text" name="<?php echo $this->field_name( array( 'exclude' => 'list' ) ); ?>" id="<?php echo $this->field_id( array( 'exclude' => 'list' ) ); ?>" placeholder="<?php _e( 'Optional', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $this->core->exclude['list'] ); ?>" />
-									<p><span class="description"><?php _e( 'Comma separated list of user IDs to exclude from using this point type.', 'mycred' ); ?></span></p>
+									<label for="<?php echo $excluded_ids_args['id']; ?>"><?php _e( 'Exclude Users', 'mycred' ); ?></label>
+									<?php echo mycred_create_select2( $all_users, $excluded_ids_args, $excluded_ids ); ?>
 								</div>
 								<div class="form-group">
 									<div class="checkbox">
@@ -639,11 +710,56 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 									</div>
 								</div>
 							</div>
+							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+								<div class="form-group">
+									<label for="<?php echo $roles_args['id']; ?>"><?php _e( 'Exclude by User Role', 'mycred' ); ?></label>
+									<?php echo mycred_create_select2( $roles, $roles_args, $excluded_roles ); ?>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 				
-				<div class="row">
+
+				<div class="row mycred-image-level">
+							
+					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+						<div id="mycred-image-setup" class="default-image-wrapper">
+
+								<h3><?php _e( 'Point Type Image', 'mycred' ); ?></h3>
+
+							
+								<div class="point-type-image">
+									<div class="point-type-image-wrapper image-wrapper">
+										<?php
+
+										$attachment_id = mycred_get_default_point_image_id();
+
+										$image_url = wp_get_attachment_url( $attachment_id );
+
+										if( property_exists( $this->core, 'attachment_id' ) && $this->get_point_image( $this->core->attachment_id , $this->field_name( 'attachment_id' )) )
+											echo $this->get_point_image( $this->core->attachment_id , $this->field_name( 'attachment_id' ));
+										elseif( !$attachment_id )
+										{
+											?>
+											<div class="default-image-wrapper image-wrapper empty dashicons">
+											</div>
+											<?php
+										}
+										else
+										{
+											echo "<img src='{$image_url}' />";
+											echo "<input type='hidden' value='{$attachment_id}' name='".$this->field_name( 'attachment_id' )."' />";
+										}
+										?>
+									</div>
+									<div class="point-image-buttons">
+										<button type="button" class="button button-secondary" id="point-type-change-default-image"><?php _e( 'Change Image', 'mycred' ) ?></button>
+									</div>
+								</div>
+						</div>	
+					</div>
+				
 					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 						<h3><?php _e( 'Other Settings', 'mycred' ); ?></h3>
 						<div class="form-group">
@@ -666,7 +782,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				$reset_block = true;
 
 ?>
-			<h4><span class="dashicons dashicons-dashboard static"></span><label><?php _e( 'Management', 'mycred' ); ?></label></h4>
+			<h4 <?php echo !$main_screen ? '' : 'style="display:none"';?>><span class="dashicons dashicons-dashboard static"></span><label><?php _e( 'Management', 'mycred' ); ?></label></h4>
 			<div class="body" style="display:none;">
 
 				<div class="row">
@@ -726,7 +842,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 <?php
 
-			if ( isset( $this->mycred_type ) && $this->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) :
+			if ( $main_screen ) :
 
 ?>
 			<h4><span class="dashicons dashicons-star-filled static"></span><label><?php _e( 'Point Types', 'mycred' ); ?></label></h4>
@@ -805,11 +921,16 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<div class="form-group">
-							<label for="mycred-new-ctype-key-label"><?php _e( 'Label', 'mycred' ); ?></label>
+							<label for="mycred-new-ctype-key-label"><?php _e( 'Singular', 'mycred' ); ?></label>
+							<input type="text" id="mycred-new-ctype-key-singular" name="mycred_pref_core[types][new][singular]" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+						<div class="form-group">
+							<label for="mycred-new-ctype-key-label"><?php _e( 'Plural', 'mycred' ); ?></label>
 							<input type="text" id="mycred-new-ctype-key-label" name="mycred_pref_core[types][new][label]" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
 						</div>
 					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"></div>
 				</div>
 				<p id="mycred-ctype-warning">
 					<strong><?php _e( 'Note This meta key must be in lowercase and only contain letters or underscore. All other characters will be deleted! make sure to add some unique prefix to this meta key to avoid any conflicts in database.', 'mycred' ); ?> <a href="https://codex.mycred.me/chapter-i/points/"><?php _e( 'Read More', 'mycred' )?></a></strong>
@@ -821,7 +942,13 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 ?>
 
-			<?php do_action( 'mycred_after_core_prefs' . $action_hook, $this ); ?>
+			<div class="mycred-after-core-prefs" <?php echo $main_screen ? '' : 'style="display:none"';?> >
+				<?php do_action( 'mycred_after_core_prefs' . $action_hook, $this ); ?>
+			</div>
+
+			<div class="mycred-type-prefs" <?php echo !$main_screen ? '' : 'style="display:none"';?>>
+				<?php do_action( 'mycred_type_prefs' . $action_hook, $this ); ?>
+			</div>
 
 		</div>
 
@@ -901,7 +1028,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * Sanititze Settings
 		 * @filter 'mycred_save_core_prefs'
 		 * @since 0.1
-		 * @version 1.5.1
+		 * @since 2.3 Added `by_role` Exclude user by role
+		 * @version 1.5.2
 		 */
 		public function sanitize_settings( $post ) {
 
@@ -932,6 +1060,24 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 							$key           = sanitize_key( $key );
 
 							$types[ $key ] = sanitize_text_field( $data['label'] );
+
+							$type_settings = mycred_get_option( 'mycred_pref_core_' . $key );
+
+							if ( $key !== MYCRED_DEFAULT_TYPE_KEY && empty( $type_settings  ) ) {
+
+								if ( empty( $data['singular'] ) )
+									$data['singular'] = $types[ $key ];
+
+								$mycred = mycred();
+								$new_type_defaults = $mycred->defaults();
+								$new_type_defaults['cred_id'] = $key;
+								$new_type_defaults['name']['singular'] = sanitize_text_field( $data['singular'] );
+								$new_type_defaults['name']['plural']   = $types[ $key ];
+							
+								mycred_update_option( 'mycred_pref_core_' . $key , $new_type_defaults );
+
+								mycred_upload_default_point_image();
+							}
 
 						}
 
@@ -998,17 +1144,34 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			if ( in_array( $new_data['caps']['plugin'], array( 'create_users', 'delete_themes', 'edit_plugins', 'edit_themes', 'edit_users' ) ) && is_multisite() )
 				$new_data['caps']['plugin'] = 'edit_theme_options';
 
+			//Exclude Users by roles and ID
+			$sanitized_exclude_ids = !empty( $post['exclude']['list'] ) ? sanitize_text_field( implode( ',', $post['exclude']['list'] ) ) : '';
+			$sanitized_exclude_roles = !empty( $post['exclude']['by_roles'] ) ? sanitize_text_field( implode( ',', $post['exclude']['by_roles'] ) ) : '';
+
 			// Excludes
 			$new_data['exclude'] = array(
-				'plugin_editors'    => ( isset( $post['exclude']['plugin_editors'] ) ) ? $post['exclude']['plugin_editors'] : 0,
-				'cred_editors'      => ( isset( $post['exclude']['cred_editors'] ) ) ? $post['exclude']['cred_editors'] : 0,
-				'list'              => sanitize_text_field( $post['exclude']['list'] )
+				'plugin_editors'    =>	( isset( $post['exclude']['plugin_editors'] ) ) ? $post['exclude']['plugin_editors'] : 0,
+				'cred_editors'      =>	( isset( $post['exclude']['cred_editors'] ) ) ? $post['exclude']['cred_editors'] : 0,
+				'list'              =>	$sanitized_exclude_ids,
+				'by_roles'			=>	$sanitized_exclude_roles
 			);
 
 			// Remove Exclude users balances
-			if ( $new_data['exclude']['list'] != '' ) {
+			if ( $new_data['exclude']['list'] != '' || $new_data['exclude']['by_roles'] != '' ) {
 
 				$excluded_ids = wp_parse_id_list( $new_data['exclude']['list'] );
+
+				//Exclude by User Role
+				$excluded_roles = $post['exclude']['by_roles'];
+
+				if( !empty( $excluded_roles ) )
+				{
+					$users_by_role = $this->get_users_by_role( $excluded_roles );
+					$excluded_ids = array_merge( $excluded_ids, $users_by_role );
+					$excluded_ids = array_unique( $excluded_ids );
+				}
+
+	
 				if ( ! empty( $excluded_ids ) ) {
 					foreach ( $excluded_ids as $user_id ) {
 
@@ -1022,9 +1185,13 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				}
 
 			}
-
+			
+			
 			// User deletions
 			$new_data['delete_user'] = ( isset( $post['delete_user'] ) ) ? $post['delete_user'] : 0;
+
+			//Point type image
+			$new_data['attachment_id'] = isset( $post['attachment_id'] ) ? $post['attachment_id'] : 0;
 
 			$action_hook             = '';
 			if ( ! $this->is_main_type )
@@ -1034,5 +1201,73 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 		}
 
+		/**
+		 * @since 2.3
+		 * @version 1.0
+		 */
+		public function get_users_by_role( $roles )
+		{
+			$user_ids = array();
+
+			foreach( $roles as $role )
+			{
+				$args = array(
+					'role'	=>	$role
+				);
+
+				$user_query = new WP_User_Query( $args );
+
+				if ( ! empty( $user_query->get_results() ) ) 
+				{
+					foreach ( $user_query->get_results() as $user ) 
+						$user_ids[] = $user->ID;
+				}
+			}
+
+			return $user_ids;
+		}
+
+		/**
+		 * Get users by username/ email ajax callback
+		 * @since 2.4.1
+		 * @version 1.0
+		 */
+		public function get_users()
+		{
+			check_ajax_referer( 'mycred-management-actions', 'token' );
+			
+			if( isset( $_GET['action'] ) && $_GET['action'] == 'mycred-get-users-to-exclude' )
+			{
+				$search = sanitize_text_field( $_GET['search'] );
+
+				$results = mycred_get_users_by_name_email( $search );
+
+				echo json_encode( $results );
+
+				die;
+			}
+		}
+
+		public function get_excluded_users()
+		{
+			$users = array();
+
+			$user_ids = explode( ',', esc_attr( $this->core->exclude['list'] ) );
+
+			if( $user_ids[0] != '' )
+			{
+				foreach( $user_ids as $key => $user_id )
+				{
+					$user_data = get_userdata( $user_id );
+
+					$users[$key]['id'] = $user_data->ID;
+					$users[$key]['text'] = $user_data->user_login;
+					$users[$key]['selected'] = true;
+				}
+			}
+
+			return empty( $users ) ? false : $users;
+		}
 	}
 endif;
+

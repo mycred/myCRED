@@ -535,23 +535,15 @@ function mycred_about_page() {
 				<div class="block">
 					<h2>Change Log</h2>
 					<ul>
-						<li><strong>NEW</strong> - Open badge functionality in myCred Badge addon.</li>
-						<li><strong>NEW</strong> - Introduce Achievement Types.</li>
-						<li><strong>NEW</strong> - Introduce a new shortcode mycred_badges_list.</li>
-						<li><strong>NEW</strong> - Single badge page.</li>
-						<li><strong>NEW</strong> - Added support into Badges for Anniversary hook.</li>
-						<li><strong>NEW</strong> - Added support into Badges for wooCommerce purchase reward.</li>
-						<li><strong>NEW</strong> - Added %rank_title% template tag support in Email Notifications.</li>
-						<li><strong>NEW</strong> - Added attributes in mycred_transfer shortcode.</li>
-						
-						<li><strong>FIX</strong> - mycred_history shortcode pagination not working properly when cache enabled.</li>
-						<li><strong>FIX</strong> - Ranks weren't working properly on the current balance.</li>
-						<li><strong>FIX</strong> - mycred_sell_this shortcode not working in the bbPress topic</li>
-						<li><strong>FIX</strong> - The central deposit missing log entry in some cases.</li>
-						
-						<li><strong>TWEAK</strong> - Removed deprecated functions.</li>
-						<li><strong>TWEAK</strong> - Code Improvement.</li>
-						<li><strong>TWEAK</strong> - Improve styling of mycred_transfer shortcode.</li>
+						<li><strong>NEW</strong> - Introduced a "Bulk Assign" tool for awarding/revoking points, badges, and ranks.</li>
+						<li><strong>NEW</strong> - Introduced a new feature "Exclude by user role" admin can exclude any user role from the specific point type.</li>
+						<li><strong>NEW</strong> - Introduced a timeframe attribute in [mycred_my_balance_converted] shortcode. Now you can show users converted balance of a given timeframe today, yesterday, this week, this month, last month.</li>
+						<li><strong>FIX</strong> - Sometimes user's ranks were not updating automatically.</li>
+						<li><strong>FIX</strong> - Membership page layout issues.</li>
+						<li><strong>FIX</strong> - Points conversion not working when using arrows to increase or decrease the amount in [mycred_cashcred] shortcode.</li>
+						<li><strong>FIX</strong> - buyCred payment dialog couldn’t load on the subsite.</li>
+						<li><strong>FIX</strong> - After deleting the badge their data will keep existing on the user's meta.</li>
+						<li><strong>FIX</strong> - "this-week" value not working in [mycred_leaderboard] timeframe attribute when the week starts other than "Monday" in your WordPress setting.</li>
 					</ul>
 				</div>
 			</div><!-- /.mycred-change-log -->

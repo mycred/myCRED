@@ -34,7 +34,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 		if ( empty( $gateways ) ) return __( 'No gateway available.', 'mycred' );
 
 		$point_types = cashcred_get_point_types( $types, $user_id );
-		
+
 		//We are excluded
 		if ( empty( $point_types ) ) return $excluded;
 
@@ -49,16 +49,18 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 		// Button Label
 		$button_label = $point_types[ current(array_keys($point_types)) ]->template_tags_general( $button );
 
+		$cashcred_setting = mycred_get_cashcred_settings();
+
 		ob_start();
 			
 		$pending_withdrawal = cashcred_get_withdraw_requests('Pending');
 	?>
-<div id="cashcred" class="container">
+<div id="cashcred">
 	<ul class="cashcred-nav-tabs">
-		<li id="tab1" class="active"><a href="javascript:void(0);"><?php _e( 'Withdraw Request', 'mycred' ); ?></a></li>
-		<li id="tab2"><a href="javascript:void(0);"><?php _e( 'Approved Requests', 'mycred' ); ?></a></li>
-		<li id="tab3"><a href="javascript:void(0);"><?php _e( 'Cancelled Requests', 'mycred' ); ?></a></li>
-		<li id="tab4"><a href="javascript:void(0);"><?php _e( 'Payment Settings', 'mycred' ); ?></a></li>
+		<li id="tab1" class="active"><?php _e( 'Withdraw Request', 'mycred' ); ?></li>
+		<li id="tab2"><?php _e( 'Approved Requests', 'mycred' ); ?></li>
+		<li id="tab3"><?php _e( 'Cancelled Requests', 'mycred' ); ?></li>
+		<li id="tab4"><?php _e( 'Payment Settings', 'mycred' ); ?></li>
 	</ul>
 	<div id="cashcred_tab_content">
 		<!--------First tab--------->
@@ -72,6 +74,12 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					<tr>
 						<th><span class="nobr">ID</span></th>
 						<th><span class="nobr">Points</span></th>
+						<?php
+							if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
+								if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
+									<th><span class="nobr">Fee</span></th><?php
+								}
+							}?>
 						<th><span class="nobr">Amount</span></th>
 						<th><span class="nobr">Point Type</span></th>
 						<th><span class="nobr">Gateway</span></th>
@@ -83,6 +91,32 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					<tr>
 						<td><?php echo $post->post_name; ?></td>
 						<td><?php echo get_post_meta($post->ID,'points',true);?></td>
+						<?php 
+						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
+							
+							if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
+							
+								<td><?php 
+															
+									$type_data = $cashcred_setting['fees']['types'][get_post_meta($post->ID,'point_type',true)];
+										
+									if ( $type_data['by'] == 'percent' ) {
+										$fee = ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) );
+									}
+									else{
+										$fee = $type_data['amount'];
+									}
+
+									if( $type_data['min_cap'] != 0 )
+										$fee = $fee + $type_data['min_cap'];
+
+									if( $type_data['max_cap'] != 0 && $fee > $type_data['max_cap'] )
+										$fee = $type_data['max_cap'];
+
+									echo $fee; ?>
+								</td><?php
+							} 
+						}?>
 						<td>
 							<?php echo get_post_meta($post->ID,'currency',true). " " .get_post_meta($post->ID,'points',true) * get_post_meta($post->ID,'cost',true); ?>
 						</td>
@@ -149,16 +183,48 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 				?> 
 				<input type="number" id="withdraw_points" name="points" class="form-control" placeholder="0" value="<?php echo ! empty($amount) ? $amount : 0; ?>" required />
 				<p class="cashcred-min"><?php echo __('Minimum Amount: ');?><span></span></p>
+				
+				<?php 
+				
+				if ( ! empty( $cashcred_setting['fees'] ) ){
+
+				 	if( $cashcred_setting['fees']['use'] == 1 ) { ?>
+					
+						<p class="cashcred-fee" ><?php echo __('Fee : '); ?>
+							
+							<span></span>
+							
+						</p> <?php
+					}
+
+					$format = array();	
+					foreach ($point_types as $key => $value) {
+						$format[$key] = $point_types[$key]->core['format'];
+						
+					}
+
+					wp_localize_script( 'cashcred-withdraw', 'cashcred_data', 
+						array( 
+							'cashcred_setting' => $cashcred_setting['fees'],
+							'format' => $format,
+						)
+					);
+					
+				}
+				?>
 			</div>
-			<div id="cashcred_total" class="form-group">
-				<strong>
-					<span class="amount_label">Amount:&nbsp;</span>
-					<span id="cashcred_currency_symbol"></span> 
-					<span id="cashcred_total_amount"></span>
-				</strong>
-			</div>
-			<div id="submit_button" class="form-group">
-				<input type="submit" class="button btn btn-block btn-lg" value="<?php echo $button_label; ?>" />
+			<div class="mycred-cashcred-withdraw-form-footer">
+				<div id="cashcred_total" class="form-group">
+					<strong>
+						<span class="amount_label">Amount:&nbsp;</span>
+						<span id="cashcred_currency_symbol"></span> 
+						<span id="cashcred_total_amount"></span>
+					</strong>
+				</div>
+				<div id="submit_button" class="form-group">
+					<input type="submit" class="button" value="<?php echo $button_label; ?>" />
+				</div>
+				<div class="mycred-clearfix"></div>
 			</div>
 		</form>
 		<?php } ?>
@@ -176,6 +242,12 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					<tr>
 						<th><span class="nobr">ID</span></th>
 						<th><span class="nobr">Points</span></th>
+						<?php
+						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
+							if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
+								<th><span class="nobr">Fee</span></th><?php
+							}
+						}?>
 						<th><span class="nobr">Amount</span></th>
 						<th><span class="nobr">Point Type</span></th>
 						<th><span class="nobr">Gateway</span></th>
@@ -187,6 +259,32 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					<tr>
 						<td><?php echo $post->post_name; ?></td>
 						<td><?php echo get_post_meta($post->ID,'points',true);?></td>
+						<?php 
+						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
+							
+							if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
+							
+								<td><?php 
+															
+									$type_data = $cashcred_setting['fees']['types'][get_post_meta($post->ID,'point_type',true)];
+										
+									if ( $type_data['by'] == 'percent' ) {
+										$fee = ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) );
+									}
+									else{
+										$fee = $type_data['amount'];
+									}
+
+									if( $type_data['min_cap'] != 0 )
+										$fee = $fee + $type_data['min_cap'];
+
+									if( $type_data['max_cap'] != 0 && $fee > $type_data['max_cap'] )
+										$fee = $type_data['max_cap'];
+
+									echo $fee; ?>
+								</td><?php
+							} 
+						}?>
 						<td>
 							<?php echo  get_post_meta($post->ID,'currency',true). " " .get_post_meta($post->ID,'points',true) * get_post_meta($post->ID,'cost',true);?>
 						</td>
@@ -220,6 +318,12 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					<tr>
 						<th><span class="nobr">ID</span></th>
 						<th><span class="nobr">Points</span></th>
+						<?php
+						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
+							if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
+								<th><span class="nobr">Fee</span></th><?php
+							}
+						}?>
 						<th><span class="nobr">Amount</span></th>
 						<th><span class="nobr">Point Type</span></th>
 						<th><span class="nobr">Gateway</span></th>
@@ -232,6 +336,32 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					 	<td><?php echo $post->post_name; ?></td>
 						
 						<td><?php echo get_post_meta($post->ID,'points',true);?></td>
+						<?php 
+						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
+							
+							if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
+							
+								<td><?php 
+															
+									$type_data = $cashcred_setting['fees']['types'][get_post_meta($post->ID,'point_type',true)];
+										
+									if ( $type_data['by'] == 'percent' ) {
+										$fee = ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) );
+									}
+									else{
+										$fee = $type_data['amount'];
+									}
+
+									if( $type_data['min_cap'] != 0 )
+										$fee = $fee + $type_data['min_cap'];
+
+									if( $type_data['max_cap'] != 0 && $fee > $type_data['max_cap'] )
+										$fee = $type_data['max_cap'];
+
+									echo $fee; ?>
+								</td><?php
+							} 
+						}?>
 						<td>
 							<?php echo get_post_meta($post->ID,'currency',true). " " .get_post_meta($post->ID,'points',true) * get_post_meta($post->ID,'cost',true);?>
 						</td>
@@ -279,12 +409,11 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					}
 				?>
 				<div id="cashcred_save_settings" class="form-group">
-					<input type="submit" class="button btn btn-block btn-lg" value="Save" />
+					<input type="submit" class="button" value="Save" />
 				</div>
 			</form>	
 		</div>
 		<!--------End Fourth tab--------->
-
 	</div>
 </div>
 <?php

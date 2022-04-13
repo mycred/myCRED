@@ -1840,7 +1840,7 @@ jQuery(function($) {
 			if ( ! $this->render_mode ) return;
 
 			if ( isset( $_GET['s'] ) && $_GET['s'] != '' )
-				$serarch_string = $_GET['s'];
+				$serarch_string = sanitize_text_field( $_GET['s'] );
 			else
 				$serarch_string = '';
 
@@ -2457,6 +2457,14 @@ if ( ! function_exists( 'mycred_get_all_references' ) ) :
 			$addons = apply_filters( 'mycred_buycred_refs', $addons );
 		}
 
+		// added cashcred refernce in 2.2.4
+		if ( class_exists( 'myCRED_cashCRED_Module' ) ) {
+			$addons['fee_transfer'] = __( 'cashCred Fee Transfer', 'mycred' );
+			$addons['cashcred_withdrawal_fee']          = __( 'cashCred Withdrawal Fee	', 'mycred' );
+			$addons['cashcred_withdrawal']         = __( 'cashCred Withdrawal', 'mycred' );
+			$addons = apply_filters( 'mycred_cashcred_refs', $addons );
+		}
+
 		if ( class_exists( 'myCRED_Coupons_Module' ) )
 			$addons['coupon'] = __( 'Coupon Usage', 'mycred' );
 
@@ -2754,14 +2762,15 @@ endif;
 /**
  * Get Search Args
  * Converts URL arguments into an array of log query friendly arguments.
- * @since 1.7
+ * @since 1.8
+ * @since 2.3 Added `fields` in exclude array to prevent SQL Injection
  * @version 1.0.3
  */
 if ( ! function_exists( 'mycred_get_search_args' ) ) :
 	function mycred_get_search_args( $exclude = NULL ) {
 
 		if ( $exclude === NULL )
-			$exclude = array( 'page', 'mycred-export', 'mycred-action', 'action', 'set', '_token' );
+			$exclude = array( 'page', 'mycred-export', 'mycred-action', 'action', 'set', '_token', 'fields' );
 
 		$search_args = array();
 		if ( ! empty( $_GET ) ) {

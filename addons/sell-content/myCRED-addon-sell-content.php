@@ -47,7 +47,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 		/**
 		 * Module Init
 		 * @since 0.1
-		 * @version 1.2.1
+		 * @version 1.2.2
 		 */
 		public function module_init() {
 
@@ -70,9 +70,13 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			add_shortcode( MYCRED_SLUG . '_content_buyer_avatars', 'mycred_render_sell_buyer_avatars' );
 
 			// Setup Script
-			add_action( 'mycred_register_assets',          array( $this, 'register_assets' ) );
-			add_action( 'mycred_front_enqueue_footer',     array( $this, 'enqueue_footer' ) );
-			add_action( 'bbp_template_redirect',           array( $this, 'bbp_content' ), 10 ); 
+			add_action( 'admin_enqueue_scripts', 						array( $this, 'admin_enqueue_scripts' ) );
+			add_action( 'mycred_register_assets',          				array( $this, 'register_assets' ) );
+			add_action( 'mycred_front_enqueue_footer',     				array( $this, 'enqueue_footer' ) );
+			add_action( 'bbp_template_redirect',           				array( $this, 'bbp_content' ), 10 ); 
+			add_action( 'mycred_delete_log_entry',                      array( $this, 'sale_content_count_ajax' ), 10, 2 );
+			add_action( 'wp_ajax_mycred_ajax_update_sell_count',        array( $this, 'ajax_update_sell_count' ) );
+	        add_action( 'wp_ajax_nopriv_mycred_ajax_update_sell_count', array( $this, 'ajax_update_sell_count' ) );
 
 		}
 
@@ -102,6 +106,23 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 		}
 
+
+		/**
+		 * Enqueue Admin Script
+		 * @since 2.0.1
+		 * @version 1.0
+		 */
+		public function admin_enqueue_scripts()
+		{
+			wp_enqueue_script(
+				'mycred-admin-sell-content',
+				plugins_url( 'assets/js/admin.js', myCRED_SELL ),
+				array( 'jquery' ),
+				myCRED_SELL_VERSION,
+				true
+			);
+		}
+
 		/**
 		 * Register Assets
 		 * @since 1.7
@@ -113,7 +134,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 				'mycred-sell-this',
 				plugins_url( 'assets/js/buy-content.js', myCRED_SELL ),
 				array( 'jquery' ),
-				'2.0.1',
+				myCRED_SELL_VERSION,
 				true
 			);
 
@@ -150,6 +171,43 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			}
 
 		}
+
+		/**
+		 * Fires when user deletes single log entry ref = buy_content
+		 * @since 2.2
+		 * @version 1.0
+		 */
+		public function sale_content_count_ajax( $row_id, $point_type )
+		{
+			$log = new myCRED_Query_Log( "entry_id = $row_id" );
+
+			$logs = $log->results;
+
+			foreach( $logs as $log )
+			{	
+				$content_id = '';
+
+				if( $log->ref == 'buy_content' && $log->id == $row_id )
+				{
+					
+					$content_id = (int) $log->ref_id;
+						
+					$sold_content = mycred_get_post_meta( $content_id, '_mycred_content_sales', true );
+
+					if ( ! empty( $sold_content ) ) {
+
+						$sold_content = (int) $sold_content;
+						$sold_content--;
+
+						mycred_update_post_meta( $content_id, '_mycred_content_sales', $sold_content );
+					
+					}
+				
+				}
+
+			}
+		}
+
 
 		/**
 		 * Setup Content Filter
@@ -193,10 +251,6 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 					if ( ! array_key_exists( $point_type, $mycred_types ) || mycred_force_singular_session( $this->current_user_id, 'mycred-last-content-purchase' ) || !in_array($point_type, $buying_cred) )
 						wp_send_json( 'ERROR' );
-
-
-
-
 
 					// If the content is for sale and we have not paid for it
 					if ( mycred_post_is_for_sale( $post_id ) && ! mycred_user_paid_for_content( $this->current_user_id, $post_id ) ) {
@@ -250,13 +304,51 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 		}
 
 		/**
+		 * AXAJ Updates sell count
+		 * @since 2.0.1
+		 * @version 1.0
+		 */
+		public function ajax_update_sell_count()
+		{
+			global $wpdb;
+
+			$wpdb->delete( 
+				$wpdb->postmeta,
+				array(
+					'meta_key'	=> '_mycred_content_sales'
+				)
+			);
+
+			$logs = new myCRED_Query_Log( 'ref=buy_content' );
+
+			$logs = $logs->results;
+
+			$ref_counts = array();
+
+			foreach( $logs as $log )
+				$ref_counts[] = $log->ref_id;
+			
+			$sell_counts = array_count_values( $ref_counts );
+
+			foreach( $sell_counts as $post_id => $sell_count )
+				update_post_meta( $post_id, '_mycred_content_sales', $sell_count );
+
+			echo 'Sell Counts Updated';
+			die;
+		}
+
+		/**
 		 * The Content Overwrite
 		 * Handles content sales by replacing the posts content with the appropriate template
 		 * for those who have not paid. Admins and authors are excluded.
 		 * @since 0.1
-		 * @version 1.2.2
+		 * @since 2.3 Added function `mycred_sc_is_points_enable` If points are disabled just return the content
+		 * @version 1.2.3
 		 */
 		public function the_content( $content ) {
+
+			if( !mycred_sc_is_points_enable() )
+				return $content;
 
 			global $mycred_partial_content_sale, $mycred_sell_this;
 
@@ -906,6 +998,13 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			echo '<p>' . $this->core->available_template_tags( array( 'post' ) ) . '</p>';
 
 ?>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<h3><?php _e( 'Sales Count', 'mycred' ); ?></h3>
+			<button class="button button-primary" id="update-sales-count"><span class="dashicons dashicons-update mycred-update-sells-count" style="-webkit-animation: spin 2s linear infinite;animation: spin 2s linear infinite;display: none;vertical-align: middle;"></span>Update Sales Count</button>
 		</div>
 	</div>
 

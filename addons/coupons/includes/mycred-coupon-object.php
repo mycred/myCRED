@@ -77,6 +77,16 @@ if ( ! class_exists( 'myCRED_Coupon' ) ) :
 		public $expires_unix      = 0;
 
 		/**
+		 * Check badges/ranks 
+		 */
+		public $enabled_disabled  = '';
+
+		/**
+		 * Assign badges/ranks rewards
+		 */
+		public $rewards      = 0;
+
+		/**
 		 * Construct
 		 */
 		function __construct( $coupon_id = NULL ) {
@@ -135,6 +145,8 @@ if ( ! class_exists( 'myCRED_Coupon' ) ) :
 			$this->requires_max_type = $this->requires_max['type'];
 
 			$this->used              = $this->get_usage_count();
+			$this->enabled_disabled  = mycred_get_post_meta( $this->post_id, 'check', true );
+			$this->rewards           = mycred_get_post_meta( $this->post_id, 'reward', true );
 
 			if ( ! mycred_point_type_exists( $this->point_type ) )
 				$this->point_type        = MYCRED_DEFAULT_TYPE_KEY;
@@ -305,6 +317,29 @@ if ( ! class_exists( 'myCRED_Coupon' ) ) :
 					$this->code,
 					$this->point_type
 				);
+
+				$enabled_disabled = $this->enabled_disabled;
+				$rewards = $this->rewards;
+				
+				if( $enabled_disabled == 'on' ) {
+
+					if( ! empty ( $rewards )  ) {
+						
+						foreach ($rewards as $key => $value) {
+						
+							if( class_exists( 'myCRED_Badge' ) && $value['types'] == 'mycred_coupon_badges' ) {
+								mycred_assign_badge_to_user( $user_id, $value['ids'] );
+
+							}
+
+							if( class_exists( 'myCRED_Ranks_Module' ) && $value['types'] == 'mycred_coupon_ranks' && mycred_manual_ranks( $this->point_type ) ) {
+								$ranks = new myCRED_Rank( $value['ids'] );
+								$ranks->assign($user_id);
+
+							}
+						}
+					}
+				}
 
 				do_action( 'mycred_use_coupon', $user_id, $this );
 

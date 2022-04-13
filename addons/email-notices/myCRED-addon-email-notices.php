@@ -261,8 +261,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			// site in the network, bail.
 			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
 
-			add_submenu_page(
-				MYCRED_SLUG,
+			mycred_add_main_submenu(
 				__( 'Email Notifications', 'mycred' ),
 				__( 'Email Notifications', 'mycred' ),
 				$this->core->get_point_editor_capability(),
@@ -281,10 +280,10 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			global $pagenow;
 
 			if ( isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_EMAIL_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
-				return MYCRED_SLUG;
+				return MYCRED_MAIN_SLUG;
 
 			if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_EMAIL_KEY )
-				return MYCRED_SLUG;
+				return MYCRED_MAIN_SLUG;
 
 			return $parent;
 
@@ -595,7 +594,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="mycred-email-instance"<?php if ( $post->post_status == 'publish' && empty( $trigger ) ) echo ' style="color:red;font-weight:bold;"'; ?>><?php _e( 'Send this email notice when...', 'mycred' ); ?></label>
-				<select name="mycred_email[instance]" id="mycred-email-instance" class="form-control">
+				<select name="mycred_email[instance]" id="mycred-email-instance" class="form-control mycred-email-instance-options">
 <?php
 
 			// Loop though instances
@@ -644,9 +643,14 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				<label for="mycred-email-ctype"><?php _e( 'Point Types', 'mycred' ); ?></label>
 <?php
 
-			if ( count( $this->point_types ) > 1 ) {
+	
 
-				mycred_types_select_from_checkboxes( 'mycred_email[ctype][]', 'mycred-email-ctype', $email->point_types );
+			if ( count( $this->point_types ) > 1  ) {
+
+				$point_types_html = mycred_types_select_from_checkboxes( 'mycred_email[ctype][]', 'mycred-email-ctype', $email->point_types, true );
+
+
+				echo apply_filters( 'mycred_point_type_checkbox', $point_types_html );
 
 			}
 
@@ -663,6 +667,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 ?>
 
 			</div>
+			<?php do_action('mycred_after_email_triggers', $post); ?>
 			<hr />
 
 			<div class="form-group" style="margin-bottom: 0;">
@@ -1001,7 +1006,8 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			// Save styling
 			if ( ! empty( $_POST['mycred_email']['styling'] ) )
 				mycred_update_post_meta( $post_id, 'mycred_email_styling', wp_kses_post( $_POST['mycred_email']['styling'] ) );
-
+              
+              do_action( 'mycred_save_email_notice', $post_id );
 		}
 
 		/**

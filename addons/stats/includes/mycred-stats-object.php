@@ -366,7 +366,7 @@ if ( ! class_exists( 'myCRED_Chart' ) ) :
 
 						elseif ( $row->type == 'user' ) {
 							$user  = get_userdata( (int) $row->label );
-							$label = $user->display_name;
+							$label = ! empty( $user ) ? $user->display_name : 'User Missing (ID:' . (int) $row->label . ')';
 						}
 
 						elseif ( $row->type == 'amount' ) {

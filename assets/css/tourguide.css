@@ -19,6 +19,12 @@
     pointer-events: none;
     visibility: hidden;
 }
+
+
+.fs-tooltip-trigger {
+    visibility: visible;
+}
+
 .shepherd-element,
 .shepherd-element *,
 .shepherd-element :after,
@@ -34,13 +40,13 @@
 }
 .shepherd-arrow:before {
     content: "";
-    transform: rotate(45deg);
+    transform: rotate(40deg);
     background: #fff;
 }
-.shepherd-element[data-popper-placement^="top"] > .shepherd-arrow {
+ .shepherd-element[data-popper-placement^="top"] > .shepherd-arrow {
     bottom: -10px;
-}
-.shepherd-element[data-popper-placement^="bottom"] > .shepherd-arrow {
+} 
+ .shepherd-element[data-popper-placement^="bottom"] > .shepherd-arrow {
     top: -10px;
 }
 .shepherd-element[data-popper-placement^="left"] > .shepherd-arrow {
@@ -48,7 +54,7 @@
 }
 .shepherd-element[data-popper-placement^="right"] > .shepherd-arrow {
     left: -10px;
-}
+} 
 .shepherd-element.shepherd-centered > .shepherd-arrow {
     opacity: 0;
 }

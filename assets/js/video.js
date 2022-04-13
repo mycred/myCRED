@@ -18,7 +18,7 @@ var done     = {};
  * @since 1.2
  * @version 1.1
  */
-function mycred_view_video( id, state, custom_logic, custom_interval, key, ctype ) {
+function mycred_view_video( id, state, custom_logic, custom_interval, key, ctype, streaming, stream_live ) {
 
 	var videoid = id;
 
@@ -97,14 +97,14 @@ function mycred_view_video( id, state, custom_logic, custom_interval, key, ctype
 					var laps = parseInt( interval[ id ] / 1000, 10 );
 					seconds[ id ] = seconds[ id ] + laps;
 					// key, state, id, actions, seconds, duration
-					mycred_video_call( videoid, key, videostate, actions[ videoid ], seconds[ videoid ], ctype );
+					mycred_video_call( videoid, key, videostate, actions[ videoid ], seconds[ videoid ], ctype, streaming, stream_live );
 				}, interval[ id ] );
 			}
 
 			// Video has ended
 			else if ( state == 0 ) {
 				clearInterval( timer );
-				mycred_video_call( videoid, key, videostate, actions[ videoid ], seconds[ videoid ], ctype );
+				mycred_video_call( videoid, key, videostate, actions[ videoid ], seconds[ videoid ], ctype, streaming, stream_live );
 
 				seconds[ id ] = 0;
 				actions[ id ] = '';
@@ -124,7 +124,7 @@ function mycred_view_video( id, state, custom_logic, custom_interval, key, ctype
  * @since 1.2
  * @version 1.1
  */
-function mycred_video_call( id, key, state, actions, seconds, pointtype ) {
+function mycred_video_call( id, key, state, actions, seconds, pointtype, streaming, stream_live ) {
 
 	if ( done[ id ] === undefined ) {
 
@@ -141,6 +141,8 @@ function mycred_video_call( id, key, state, actions, seconds, pointtype ) {
 				video_b  : seconds,
 				video_c  : duration[ id ],
 				video_d  : state,
+				video_e  : streaming,
+				video_f  : stream_live,
 				type     : pointtype
 			},
 			dataType   : "JSON",

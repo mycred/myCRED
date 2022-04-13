@@ -246,6 +246,9 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 			// Set currency
 			$this->currency = ( $this->currency == '' ) ? $this->prefs['currency'] : $this->currency;
 
+			//Set Cost in raw format 
+			$this->cost = $this->get_cost( $this->amount, $this->point_type, true );
+
 			// Item Name
 			$item_name      = str_replace( '%number%', $this->amount, $this->prefs['item_name'] );
 			$item_name      = $this->core->template_tags_general( $item_name );

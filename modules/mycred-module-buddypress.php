@@ -136,6 +136,8 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 
 			echo apply_filters( 'mycred_bp_profile_details', $output, $balance, $this );
 
+			do_action('mycred_buddypress_profile_details');
+
 		}
 
 		/**
@@ -157,6 +159,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 
 			// Parse template
 			$template     = $this->buddypress['balance_template'];
+			$buddyboss_settings = mycred_get_addon_settings( 'buddyboss' );
 
 			// Loop though all post types
 			$mycred_types = mycred_get_types();
@@ -177,15 +180,24 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 					$balance  = $mycred->get_users_balance( $user_id, $type );
 
 					// Output
-					$template = str_replace( '%label%', $label, $template );
-					$template = $mycred->template_tags_general( $template );
-					$output  .= '<div class="mycred-balance mycred-' . $type . '">' . $template . ' ' . $mycred->format_creds( $balance ) . '</div>';
+					if(!empty($buddyboss_settings) && $buddyboss_settings['types']['sort'][$type] == true  && class_exists( 'BuddyPress' ) &&  is_plugin_active('mycred-buddyboss/mycred-buddyboss.php')) {
+							$template = str_replace( '%label%', $label, $template );
+							$template = $mycred->template_tags_general( $template );
+							$output  .= '<div class="mycred-balance mycred-' . $type . '">' . $template . ' ' . $mycred->format_creds( $balance ) . '</div>';
+						}
+					elseif(!is_plugin_active('mycred-buddyboss/mycred-buddyboss.php')) { 
+						$template = str_replace( '%label%', $label, $template );
+						$template = $mycred->template_tags_general( $template );
+						$output  .= '<div class="mycred-balance mycred-' . $type . '">' . $template . ' ' . $mycred->format_creds( $balance ) . '</div>';
+					}
 
 				}
 			
 			}
 
 			echo apply_filters( 'mycred_bp_profile_header', $output, $this->buddypress['balance_template'], $this );
+
+			do_action('mycred_buddypress_profile_header');
 
 		}
 
@@ -421,7 +433,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			}
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><label>BuddyPress</label></h4>
+<h4><span class="dashicons dashicons-admin-plugins static"></span><label><?php echo apply_filters( 'mycred_bp_change_text', 'BuddyPress' ); ?></label></h4>
 <div class="body" style="display:none;">
 
 	<?php do_action( 'mycred_bp_before_settings', $this ); ?>

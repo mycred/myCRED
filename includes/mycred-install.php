@@ -88,26 +88,10 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 		 */
 		public static function activate() {
 
-			$mycred = mycred();
+			require_once myCRED_INCLUDES_DIR . 'mycred-setup.php';
 
-			// Add general settings
-			add_option( 'mycred_version',   myCRED_VERSION );
-			add_option( 'mycred_key',       wp_generate_password( 12, true, true ) );
-			add_option( 'mycred_pref_core', $mycred->defaults() );
-
-			// Add add-ons settings
-			add_option( 'mycred_pref_addons', array(
-				'installed' => array(),
-				'active'    => array()
-			) );
-
-			// Add hooks settings
-			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
-			add_option( $option_id, array(
-				'installed'  => array(),
-				'active'     => array(),
-				'hook_prefs' => array()
-			) );
+			$setup = new myCRED_Setup();
+			$setup->load();
 
 			do_action( 'mycred_activation' );
 
@@ -217,7 +201,8 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 				'mycred_eventsmanager_gateway_prefs',
 				MYCRED_SLUG . '-cache-stats-keys',
 				MYCRED_SLUG . '-cache-leaderboard-keys',
-				MYCRED_SLUG . '-last-clear-stats'
+				MYCRED_SLUG . '-last-clear-stats',
+				'mycred_deactivated_on'
 			);
 
             $can_remove_hooks = self::remove_setting( 'hooks' );

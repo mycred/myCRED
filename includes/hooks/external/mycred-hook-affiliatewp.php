@@ -207,6 +207,7 @@ function mycred_load_affiliatewp_hook() {
 		/**
 		 * Referral Payout
 		 * @since 1.6
+		 * @since 2.4 @filter added `mycred_affiliate_prefs` for LevelCRED
 		 * @version 1.0
 		 */
 		public function referral_payouts( $referral_id, $new_status, $old_status ) {
@@ -221,6 +222,8 @@ function mycred_load_affiliatewp_hook() {
 
 			// Get the user id
 			$user_id  = affwp_get_affiliate_user_id( $referral->affiliate_id );
+
+			$this->prefs = apply_filters( 'mycred_affiliate_prefs', $this->prefs, $user_id, $this );
 
 			// Check for exclusion
 			if ( $this->core->exclude_user( $user_id ) ) return;

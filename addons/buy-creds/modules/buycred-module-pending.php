@@ -150,15 +150,15 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		protected function register_pending_payments() {
 
 			$labels = array(
-				'name'                => _x( 'Pending Payments', 'Post Type General Name', 'mycred' ),
-				'singular_name'       => _x( 'Pending Payment', 'Post Type Singular Name', 'mycred' ),
-				'menu_name'           => __( 'Pending Payments', 'mycred' ),
+				'name'                => _x( 'buyCred Pending Payments', 'Post Type General Name', 'mycred' ),
+				'singular_name'       => _x( 'buyCred Pending Payment', 'Post Type Singular Name', 'mycred' ),
+				'menu_name'           => __( 'buyCred Pending Payments', 'mycred' ),
 				'parent_item_colon'   => '',
-				'all_items'           => __( 'Pending Payments', 'mycred' ),
+				'all_items'           => __( 'buyCred Pending Payments', 'mycred' ),
 				'view_item'           => '',
 				'add_new_item'        => '',
 				'add_new'             => '',
-				'edit_item'           => __( 'Edit Pending Payment', 'mycred' ),
+				'edit_item'           => __( 'Edit buyCred Pending Payment', 'mycred' ),
 				'update_item'         => '',
 				'search_items'        => '',
 				'not_found'           => __( 'Not found in Trash', 'mycred' ),
@@ -245,8 +245,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 		 */
 		public function add_to_menu() {
 
-			add_submenu_page(
-				MYCRED_SLUG,
+			mycred_add_main_submenu(
 				__( 'Pending Payments', 'mycred' ),
 				__( 'Pending Payments', 'mycred' ),
 				$this->core->get_point_editor_capability(),
@@ -265,7 +264,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 			global $pagenow;
 
 			if ( isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BUY_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
-				return MYCRED_SLUG;
+				return MYCRED_MAIN_SLUG;
 
 			return $parent;
 
@@ -597,7 +596,7 @@ jQuery(function($){
 				$mycred = $this->core;
 
 			else
-				$mycred = mycred( $type );
+				$mycred = mycred( $pending_payment->point_type );
 
 ?>
 <div class="form">
@@ -642,7 +641,7 @@ jQuery(function($){
 
 					echo '<option value="' . $point_type . '"';
 					if ( $pending_payment->point_type == $point_type ) echo ' selected="selected"';
-					echo '>' . mycred_get_point_type_name( $pending_payment->point_type, false ) . '</option>';
+					echo '>' . mycred_get_point_type_name( $point_type, false ) . '</option>';
 
 				}
 

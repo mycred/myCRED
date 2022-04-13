@@ -307,19 +307,21 @@ endif;
  * Render Transfer Message
  * @see http://codex.mycred.me/functions/mycred_transfer_render_message/
  * @since 1.7.6
- * @version 1.0
+ * @version 1.1
  */
 if ( ! function_exists( 'mycred_transfer_render_message' ) ) :
 	function mycred_transfer_render_message( $original = '', $data = array() ) {
+		
+		$message = '';
 
 		if ( empty( $original ) || empty( $data ) ) return $original;
 
 		// Default message
-		$message = apply_filters( 'mycred_transfer_default_message', $original, $data );
+		$original = apply_filters( 'mycred_transfer_default_message', $original, $data );
 
 		// Get saved message
 		if ( ! empty( $data ) && array_key_exists( 'message', $data ) && ! empty( $data['message'] ) )
-			$message = $data['message'];
+			 $original .= ' - ' . $data['message'];
 
 		$content = str_replace( '%transfer_message%', $message, $original );
 

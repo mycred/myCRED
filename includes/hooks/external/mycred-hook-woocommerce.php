@@ -204,12 +204,22 @@ endif;
 /**
  * Save Reward Setup
  * @since 1.5
- * @version 1.0.1
+ * @version 2.0.0
  */
 if ( ! function_exists( 'mycred_woo_save_reward_settings' ) ) :
 	function mycred_woo_save_reward_settings( $post_id ) {
-
-		if ( ! isset( $_POST['mycred_reward'] ) || empty( $_POST['mycred_reward'] ) || mycred_get_post_type( $post_id ) != 'product' ) return;
+		
+		//Works only for multisite
+		$override = ( is_multisite() && mycred_override_settings() && ! mycred_is_main_site() );
+		
+		$post_type = '';
+		
+		if( $override )
+			$post_type = get_post_type( $post_id );
+		else
+			$post_type = mycred_get_post_type( $post_id );
+		
+		if ( ! isset( $_POST['mycred_reward'] ) || empty( $_POST['mycred_reward'] ) || $post_type != 'product' ) return;
 
 		$new_setup = array();
 		foreach ( $_POST['mycred_reward'] as $point_type => $setup ) {

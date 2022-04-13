@@ -74,6 +74,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			if ( function_exists( 'bp_is_active' ) && bp_is_active( 'xprofile' ) && $this->prefs['buddypress']['profile'] )
 				add_action( 'bp_after_profile_loop_content', array( $this, 'buddypress_profile' ), $this->prefs['buddypress']['priority'] );
 
+
 			// Hook into user activation
 			if ( function_exists( 'buddypress' ) )
 				add_action( 'mycred_bp_user_activated', array( $this, 'verified_signup' ) );
@@ -135,7 +136,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		 * @since 1.4
 		 * @version 1.1
 		 */
-		public function shortcode_affiliate_link( $content = '', $atts ) {
+		public function shortcode_affiliate_link( $content, $atts ) {
 
 			extract( shortcode_atts( array(
 				'url'     => 0,
@@ -163,7 +164,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		 * @since 1.4
 		 * @version 1.1
 		 */
-		public function shortcode_affiliate_id( $content = '', $atts ) {
+		public function shortcode_affiliate_id( $content, $atts ) {
 
 			extract( shortcode_atts( array(
 				'user_id' => ''
@@ -259,6 +260,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 					// If referral counts
 					if ( $this->ref_counts( $user_id, $IP ) ) {
 
+						if ( $this->core->has_entry( 'visitor_referral', time(), $user_id, $IP, $this->mycred_type ) ) return;
+
 						// Award
 						$this->core->add_creds(
 							'visitor_referral',
@@ -269,6 +272,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 							$IP,
 							$this->mycred_type
 						);
+
+					
 
 						do_action( 'mycred_visitor_referral', $user_id, $IP, $this );
 
@@ -326,50 +331,47 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			if ( ! headers_sent() )
 				setcookie( $key, $ref, time()-3600, COOKIEPATH, COOKIE_DOMAIN );
 
+			
+
 			// Attempt to get the users IP
 			$IP = apply_filters( 'mycred_affiliate_IP', $_SERVER['REMOTE_ADDR'], 'signup', $this );
+
+			if ( $this->core->has_entry( 'signup_referral', $new_user_id, $user_id, $IP, $this->mycred_type ) ) return;
+
+
 			if ( $IP != '' && $IP != '0.0.0.0' ) {
+
+				if ( $this->core->has_entry( 'signup_referral', $new_user_id, $user_id, $IP, $this->mycred_type ) ) return;
 
 				if ( $this->ref_counts( $user_id, $IP, 'signup' ) ) {
 
-                    $hooks = mycred_get_option( 'mycred_pref_hooks', false );
-
-                    $active_hooks = $hooks['active'];
-
 					// Award when users account gets activated
 					if ( function_exists( 'buddypress' ) ) {
-						mycred_add_user_meta( $new_user_id, 'referred_by', '', $user_id, true );
-						mycred_add_user_meta( $new_user_id, 'referred_by_IP', '', $IP, true );
-						mycred_add_user_meta( $new_user_id, 'referred_by_type', '', $this->mycred_type, true );
+
+						mycred_add_user_meta( $new_user_id, 'referred_by_', $this->mycred_type, $user_id, true );
+						mycred_add_user_meta( $new_user_id, 'referred_by_IP_', $this->mycred_type, $IP, true );
+						mycred_add_user_meta( $new_user_id, 'referred_by_type_', $this->mycred_type, $this->mycred_type, true );
+
 					}
-
-					if ( is_plugin_active( 'mycred-woocommerce-plus/mycred-woocommerce-plus.php' ) && in_array( 'affiliate', $active_hooks ) )
-                    {
-                        $user_log = array(
-                            'reference'     =>  'signup_referral',
-                            'referrer'      =>  $user_id,
-                            'creds'         =>  $this->prefs['signup']['creds'],
-                            'log'           =>  $this->prefs['signup']['log'],
-                            'referred'   =>  $new_user_id,
-                            'IP'            =>  $IP,
-                            'point_type'    =>  $this->mycred_type
-                        );
-
-                        do_action( 'mycred_after_signup_referred', $user_log );
-                    }
-
 					// Award now
 					else {
 
-						$this->core->add_creds(
-							'signup_referral',
-							$user_id,
-							$this->prefs['signup']['creds'],
-							$this->prefs['signup']['log'],
-							$new_user_id,
-							$IP,
-							$this->mycred_type
-						);
+						$execute = apply_filters( 'mycred_signup_referral_execute_woo', true,  $user_id, $IP, $new_user_id , $this );
+
+						if ( $this->core->has_entry( 'signup_referral', $new_user_id, $user_id, $IP, $this->mycred_type ) ) return;
+
+	                    if ( $execute === true ) {
+							$this->core->add_creds(
+								'signup_referral',
+								$user_id,
+								$this->prefs['signup']['creds'],
+								$this->prefs['signup']['log'],
+								$new_user_id,
+								$IP,
+								$this->mycred_type
+							);
+
+						}
 
 						do_action( 'mycred_signup_referral', $user_id, $IP, $new_user_id, $this );
 
@@ -390,11 +392,13 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		public function verified_signup( $user_id ) {
 
 			// Check if there is a referral
-			$referred_by    = mycred_get_user_meta( $user_id, 'referred_by', '', true );
-			$referred_by_IP = mycred_get_user_meta( $user_id, 'referred_by_IP', '', true );
-			$referred_type  = mycred_get_user_meta( $user_id, 'referred_by_type', '', true );
+			$referred_by    = mycred_get_user_meta( $user_id, 'referred_by_', $this->mycred_type, true );
+			$referred_by_IP = mycred_get_user_meta( $user_id, 'referred_by_IP_', $this->mycred_type, true );
+			$referred_type  = mycred_get_user_meta( $user_id, 'referred_by_type_', $this->mycred_type, true );
 
 			if ( $referred_by == '' || $referred_by_IP == '' || $this->mycred_type != $referred_type ) return;
+
+			if ( $this->core->has_entry( 'signup_referral', $user_id, $referred_by, $referred_by_IP, $this->mycred_type ) ) return;
 
 			// Award
 			$this->core->add_creds(
@@ -410,9 +414,9 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			do_action( 'mycred_signup_referral', $referred_by, $referred_by_IP, $user_id, $this );
 
 			// Clean up
-			mycred_delete_user_meta( $user_id, 'referred_by' );
-			mycred_delete_user_meta( $user_id, 'referred_by_IP' );
-			mycred_delete_user_meta( $user_id, 'referred_by_type' );
+			mycred_delete_user_meta( $user_id, 'referred_by_', $this->mycred_type );
+			mycred_delete_user_meta( $user_id, 'referred_by_IP_', $this->mycred_type );
+			mycred_delete_user_meta( $user_id, 'referred_by_type_', $this->mycred_type );
 
 		}
 
@@ -447,6 +451,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		 * Get Ref ID
 		 * Returns a given users referral ID.
 		 * @since 1.4
+		 * @since 2.3 Filter `mycred_affiliate_user_id` added
 		 * @version 1.1
 		 */
 		public function get_ref_id( $user_id ) {
@@ -472,13 +477,20 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 						$number  = $counter+1;
 
 						mycred_update_option( 'mycred_affiliate_counter', $number );
+
+						$number = apply_filters( 'mycred_affiliate_user_id', $number );
+
 						mycred_update_user_meta( $user_id, 'mycred_affiliate_link', '', $number );
 
 						$ref_id = $number;
 
 					}
 					else {
+
+						$id = apply_filters( 'mycred_affiliate_user_id', $id );
+
 						$ref_id = $id;
+						
 					}
 
 				break;
@@ -492,9 +504,13 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		/**
 		 * Get User ID from Ref ID
 		 * @since 1.4
+		 * @since 2.3 @filter added `mycred_affiliate_by_user_id`
 		 * @version 1.0.1
 		 */
 		public function get_user_id_from_ref_id( $string = '' ) {
+
+			if( apply_filters( 'mycred_affiliate_by_user_id', false ) )
+				return $string;
 
 			global $wpdb;
 
@@ -525,6 +541,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			if ( $user_id !== NULL && $this->core->exclude_user( $user_id ) )
 				$user_id = NULL;
 
+				
 			return apply_filters( 'mycred_affiliate_get_user_id', $user_id, $string, $this );
 
 		}
@@ -625,8 +642,9 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 				<span class="description"><?php echo $this->available_template_tags( array( 'general' ), '%user_name%' ); ?></span>
 			</div>
 		</div>
-        <?php do_action( 'mycred_after_referring_signups', $this, $prefs ); ?>
     </div>
+	
+	<?php do_action( 'mycred_after_referring_signups', $this, $prefs ); ?>
 
 	<?php else : ?>
 

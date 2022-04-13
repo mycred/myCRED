@@ -214,9 +214,13 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		/**
 		 * Populate Transaction
 		 * @since 1.8
+		 * @since 2.3 @filter added `mycred_buycred_populate_transaction` to avoid pending payments log in some cases.
 		 * @version 1.0
 		 */
 		public function populate_transaction() {
+
+			if( apply_filters( 'mycred_buycred_populate_transaction', false, $this->id ) )
+				return;
 
 			// Create a new transaction
 			$new_transaction = false;
@@ -485,28 +489,32 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		public function checkout_order() {
 
 			$table_rows   = array();
-			$table_rows[] = '<tr><td class="item">' . esc_html( $this->core->plural() ) . '</td><td class="cost right">' . $this->amount . '</td></tr>';
-
+			$point_type_name = apply_filters( 'mycred_buycred_checkout_order', $this->core->plural(), $this );
+			$table_rows[] = '<tr><td class="item">' . esc_html( $point_type_name ) . '</td><td class="cost right">' . $this->amount . '</td></tr>';
+			$item_label = apply_filters( 'mycred_buycred_checkout_order', __('Item', 'mycred'), $this );
+			$amount_label = apply_filters( 'mycred_buycred_checkout_order', __('Amount', 'mycred'), $this );
+			$cost_label = apply_filters( 'mycred_buycred_checkout_order', __('Cost', 'mycred'), $this );
+		
 			if ( $this->gifting )
-				$table_rows[] = '<tr><td colspan="2"><strong>' . esc_js( esc_attr( __( 'Recipient', 'mycred' ) ) ) . ':</strong> ' . esc_html( get_userdata( $this->recipient_id )->display_name ) . '</td></tr>';
+				$table_rows[] = '<tr><td colspan="2"><strong>' . esc_js( esc_attr($cost_label ) ) . ':</strong> ' . esc_html( get_userdata( $this->recipient_id )->display_name ) . '</td></tr>';
 
-			$table_rows[] = '<tr class="total"><td class="item right">' . esc_js( esc_attr( __( 'Cost', 'mycred' ) ) ) . '</td><td class="cost right">' . sprintf( '%s %s', $this->cost, $this->prefs['currency'] ) . '</td></tr>';
+			$table_rows[] = '<tr class="total"><td class="item right">' . esc_js( esc_attr( __( 'Cost', 'mycred' ) ) ) . '</td><td class="cost right">' . sprintf( '%s %s', apply_filters( 'mycred_buycred_display_user_amount',  $this->cost ), $this->prefs['currency'] ) . '</td></tr>';
 
 			$table_rows   = apply_filters( 'mycred_buycred_order_table_rows', $table_rows, $this );
 
 			if ( ! empty( $table_rows ) )
 				$content = '
-<table class="table" cellspacing="0" cellpadding="0">
-	<thead>
-		<tr>
-			<th class="item">' . esc_js( esc_attr( __( 'Item', 'mycred' ) ) ) . '</td>
-			<th class="cost right">' . esc_js( esc_attr( __( 'Amount', 'mycred' ) ) ) . '</td>
-		</tr>
-	</thead>
-	<tbody>
-		' . implode( '', $table_rows ) . '
-	</tbody>
-</table>';
+					<table class="table" cellspacing="0" cellpadding="0">
+						<thead>
+							<tr>
+								<th class="item">' . esc_js( esc_attr($item_label ) ) . '</td>
+								<th class="cost right">' . esc_js( esc_attr($amount_label ) ) . '</td>
+							</tr>
+						</thead>
+						<tbody>
+							' . implode( '', $table_rows ) . '
+						</tbody>
+					</table>';
 
 			return apply_filters( 'mycred_buycred_checkout_order', $content, $this );
 
@@ -879,7 +887,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		public function get_cost( $amount = 0, $point_type = MYCRED_DEFAULT_TYPE_KEY, $raw = false, $custom_rate = 0 ) {
 
 			if(isset($_REQUEST['er_random']) && !empty($_REQUEST['er_random'])){
-				$custom_rate=mycred_buycred_decode($_REQUEST['er_random']);
+				$custom_rate=mycred_decode_values($_REQUEST['er_random']);
 			}
 
 			$setup = mycred_get_buycred_sale_setup( $point_type );

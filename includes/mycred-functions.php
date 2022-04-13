@@ -56,9 +56,23 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		public $core                = array();
 
 		/**
+		 * myCRED Default attachment_id
+		 * @since 2.2
+ 		 * @version 1.0
+		 */
+		public $attachment_id = false;
+
+		/**
+		 * myCRED Default Image Url
+		 * @since 2.2
+ 		 * @version 1.0
+		 */
+		public $image_url = false;
+
+		/**
 		 * Construct
 		 * @since 1.0
-		 * @version 1.8
+		 * @version 1.9
 		 */
 		public function __construct( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
@@ -88,6 +102,9 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 				}
 			}
 
+			//Point Type Image
+			$this->image_url = $this->get_type_image();
+
 			do_action_ref_array( 'mycred_settings', array( &$this ) );
 
 		}
@@ -95,7 +112,8 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		/**
 		 * Default Settings
 		 * @since 1.3
-		 * @version 1.1
+		 * @since 2.3 Added `by_roles` in exclude
+		 * @version 1.2
 		 */
 		public function defaults() {
 
@@ -123,7 +141,8 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 				'exclude'     => array(
 					'plugin_editors' => 0,
 					'cred_editors'   => 0,
-					'list'           => ''
+					'list'           => '',
+					'by_roles'		 => ''
 				),
 				'frequency'   => array(
 					'rate'        => 'always',
@@ -402,7 +421,7 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function parse_template_tags( $content = '', $log_entry ) {
+		public function parse_template_tags( $content, $log_entry ) {
 
 			// Prep
 			$reference = $log_entry->ref;
@@ -993,7 +1012,8 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		 * Check if user id is in exclude list
 		 * @return true or false
 		 * @since 0.1
-		 * @version 1.1
+		 * @since 2.3 Added to check is user is excluded by role
+		 * @version 1.2
 		 */
 		public function in_exclude_list( $user_id = '' ) {
 
@@ -1009,6 +1029,26 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			$list = wp_parse_id_list( $this->exclude['list'] );
 			if ( in_array( $user_id, $list ) )
 				$result = true;
+
+			//Check if Excluded by Role
+			if( !$result && !empty( $this->exclude['by_roles'] ) )
+			{
+				$roles = explode( ',', $this->exclude['by_roles'] );
+
+				$user = get_user_by(  'id', $user_id );
+
+				$user_roles = $user->roles;
+
+				foreach( $roles as $role )
+				{
+					if( in_array( $role, $user_roles ) )
+					{
+						$result = true;
+						break;
+					}
+				}
+
+			}
 
 			return apply_filters( 'mycred_is_excluded_list', $result, $user_id );
 
@@ -1257,7 +1297,7 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			// Minimum Requirements: User id and amount can not be null
 			if ( $user_id === NULL || $amount === NULL || $amount == $this->zero() ) return $amount;
 
-			global $mycred_types, $mycred_current_account;
+			global $mycred_types, $mycred_current_account, $mycred_account;
 
 			// Point type
 			if ( $point_type === NULL || ! array_key_exists( $point_type, $mycred_types ) )
@@ -1277,6 +1317,9 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			// Update the current account object
 			if ( mycred_is_current_account( $user_id ) && $mycred_current_account->balance[ $point_type ] !== false )
 				$mycred_current_account->balance[ $point_type ]->set( 'current', $new_balance );
+
+			if ( mycred_is_account( $user_id ) && $mycred_account->balance[ $point_type ] !== false  )
+				$mycred_account->balance[ $point_type ]->set( 'current', $new_balance );
 
 			// Let others play
 			do_action( 'mycred_update_user_balance', $user_id, $current_balance, $amount, $point_type );
@@ -1300,7 +1343,7 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 			if ( ! MYCRED_ENABLE_TOTAL_BALANCE || ! MYCRED_ENABLE_LOGGING || $amount == 0 ) return $amount;
 
-			global $mycred_current_account;
+			global $mycred_current_account, $mycred_account;
 
 			if ( mycred_is_current_account( $user_id ) && $mycred_current_account->balance[ $point_type ] !== false )
 				$total_balance = $mycred_current_account->balance[ $point_type ]->get( 'accumulated' );
@@ -1318,6 +1361,9 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 			if ( mycred_is_current_account( $user_id ) && $mycred_current_account->balance[ $point_type ] !== false )
 				$mycred_current_account->balance[ $point_type ]->set( 'accumulated', $total_balance );
+				
+			if ( mycred_is_account( $user_id ) && $mycred_account->balance[ $point_type ] !== false  )
+				$mycred_account->balance[ $point_type ]->set( 'accumulated', $total_balance );
 
 			do_action( 'mycred_update_user_total_balance', $total_balance, $user_id, $point_type, $this );
 
@@ -1331,14 +1377,15 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		 * @param $user_id (int), required user id
 		 * @param $new_balance (int|float), amount to add/deduct from users balance. This value must be pre-formated.
 		 * @returns (bool) true on success or false on fail.
+		 * @since 2.3 `$results` and do_action `mycred_finish_without_log_entry` added, to update users' rank when updating from profile page manually.
 		 * @since 1.7.3
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		public function set_users_balance( $user_id = NULL, $new_balance = NULL ) {
 
 			// Minimum Requirements: User id and amount can not be null
 			if ( $user_id === NULL || $new_balance === NULL ) return false;
-
+			
 			global $mycred_current_account;
 
 			$point_type  = $this->get_point_type_key();
@@ -1352,6 +1399,15 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 			// Clear caches
 			mycred_delete_option( 'mycred-cache-total-' . $point_type );
+
+			$result = array(
+				'current'	=>	$new_balance,
+				'user_id' 	=>	$user_id,
+				'reference' =>	'manual',
+				'type' 		=>	$point_type
+			);
+
+			do_action( 'mycred_finish_without_log_entry', $result );
 
 			// Let others play
 			do_action( 'mycred_set_user_balance', $user_id, $new_balance, $this );
@@ -1643,6 +1699,26 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 		}
 
+		/**
+		 * Gets point type image
+		 * @since 2.2
+ 		 * @version 1.0
+		 */
+		public function get_type_image()
+		{
+			$attachment_url = false;
+
+			if( $this->attachment_id )
+				$attachment_url = wp_get_attachment_url( $this->attachment_id );
+			else
+				$attachment_url = wp_get_attachment_url( mycred_get_default_point_image_id() );
+
+			if( $attachment_url )
+				return $attachment_url;
+
+			return false;
+		}
+
 	}
 endif;
 
@@ -1873,7 +1949,7 @@ if ( ! function_exists( 'mycred_get_addon_settings' ) ) :
 			if ( isset( $mycred->$addon ) )
 				$settings = $mycred->$addon;
 
-			if ( $settings === false && isset( $main_type->$addon ) )
+			if ( $settings === false && isset( $main_type->$addon ) && $point_type == MYCRED_DEFAULT_TYPE_KEY )
 				$settings = $main_type->$addon;
 
 			if ( empty( $settings ) )
@@ -2592,7 +2668,7 @@ if ( ! function_exists( 'mycred_types_select_from_checkboxes' ) ) :
 
 				$id .= '-' . $type;
 
-				$output .= '<label for="' . $id . '"><input type="checkbox" name="' . $name . '" id="' . $id . '" value="' . $type . '"' . $selected . ' /> ' . $label . '</label>';
+				$output .= '<div class="mycred-notify-pt-wrapper"><label for="' . $id . '"><input type="checkbox" name="' . $name . '" id="' . $id . '" value="' . $type . '"' . $selected . ' /> ' . $label . '</label></div>';
 			}
 		}
 
@@ -3358,6 +3434,8 @@ if ( ! function_exists( 'mycred_plugin_deactivation' ) ) :
 		wp_clear_scheduled_hook( 'mycred_banking_recurring_payout' );
 		wp_clear_scheduled_hook( 'mycred_banking_interest_compound' );
 		wp_clear_scheduled_hook( 'mycred_banking_interest_payout' );
+		
+		update_option( 'mycred_deactivated_on', time() );
 
 		/**
 		 * Runs when the plugin is deleted
@@ -3498,7 +3576,7 @@ endif;
  * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_translate_limit_code' ) ) :
-	function mycred_translate_limit_code( $code = '', $id, $mycred ) {
+	function mycred_translate_limit_code( $code, $id, $mycred ) {
 
 		if ( $code == '' ) return '-';
 
@@ -3668,7 +3746,9 @@ endif;
  */
 if ( !function_exists( 'mycred_badge_level_req_check' ) ):
     function mycred_badge_level_req_check( $badge_id, $level_index = 0 ) {
+
         $content = '';
+        
         global $wpdb;
         $user_id = get_current_user_id();
         $badge_requirements = mycred_show_badge_requirements( $badge_id );
@@ -3740,6 +3820,7 @@ if ( !function_exists( 'mycred_badge_level_req_check' ) ):
         $content .= '</ul>';
 
         return $content;
+
     }
 endif;
 
@@ -3883,3 +3964,415 @@ if ( ! function_exists( 'mycred_get_addon_defaults' ) ) :
 
 	}
 endif;
+
+/**
+ * Add submenu inside myCred main menu
+ * @since 2.2
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_add_main_submenu' ) ) :
+	function mycred_add_main_submenu( $page_title, $menu_title, $capability, $menu_slug, $function = '', $position = null ) {
+
+		$main_menu_slug = apply_filters( 'mycred_add_main_submenu_slug', MYCRED_MAIN_SLUG, compact( 
+			'page_title', 
+			'menu_title',  
+			'capability',
+			'menu_slug',
+			'function',
+			'position'
+		));
+
+		return add_submenu_page( $main_menu_slug, $page_title, $menu_title, $capability, $menu_slug, $function, $position );
+
+	}
+endif;
+
+
+/**
+ * Get Badge Rank Social Icons
+ * @since 2.2
+ * @version 1.0
+ */
+if ( !function_exists( 'mycred_br_get_social_icons' ) ):
+	function mycred_br_get_social_icons( $facebook_url = '', $twitter_url = '', $linkedin_url = '', $pinterest_url = '' )
+        {
+            $mycred = mycred();
+
+            $br_enable_fb = isset( $mycred->core["br_social_share"]["enable_fb"] ) && $mycred->core["br_social_share"]["enable_fb"] == '1' ? true : false; 
+            $br_enable_twitter = isset( $mycred->core["br_social_share"]["enable_twitter"] ) && $mycred->core["br_social_share"]["enable_twitter"] == '1' ? true : false; 
+            $br_enable_li = isset( $mycred->core["br_social_share"]["enable_li"] ) && $mycred->core["br_social_share"]["enable_li"] == '1' ? true : false; 
+            $br_enable_pt = isset( $mycred->core["br_social_share"]["enable_pt"] ) && $mycred->core["br_social_share"]["enable_pt"] == '1' ? true : false;
+
+            $content = '';
+
+            $content .= '<div class="mycred-badge-social-icons">';
+
+            $br_socail_icon = isset( $mycred->core["br_social_share"]["button_style"] ) ? $mycred->core["br_social_share"]["button_style"] : ''; 
+
+            if( $br_socail_icon == 'button_style' )
+            {
+                if( $br_enable_fb )
+                    $content .= '
+					<a href="'.$facebook_url.'" target="_blank"><button class="mycred-social-icons mycred-social-icon-facebook">facebook</button></a>';
+                if( $br_enable_twitter )
+                    $content .= '
+					<a href="'.$twitter_url.'" target="_blank"><button class="mycred-social-icons mycred-social-icon-twitter">twitter</button></a>';
+                if( $br_enable_li )
+                    $content .= '
+					<a href="'.$linkedin_url.'" target="_blank"><button class="mycred-social-icons mycred-social-icon-linkedin">linkedin</button></a>';
+                if( $br_enable_pt )
+                    $content .= '
+					<a href="'.$pinterest_url.'" target="_blank"><button class="mycred-social-icons mycred-social-icon-pinterest">pinterest</button></a>';
+            }
+
+            if( $br_socail_icon == 'icon_style' )
+            {
+                if( $br_enable_fb )
+                    $content .= '
+                    <a href="'.$facebook_url.'" target="_blank" class="mycred-social-icons mycred-social-icon-facebook"></a>';
+                if( $br_enable_twitter )
+                    $content .= '
+                    <a href="'.$twitter_url.'" target="_blank" class="mycred-social-icons mycred-social-icon-twitter"></a>';
+                if( $br_enable_li )
+                    $content .= '
+                    <a href="'.$linkedin_url.'" target="_blank" class="mycred-social-icons mycred-social-icon-linkedin"></a>';
+                if( $br_enable_pt )
+                    $content .= '
+                    <a href="'.$pinterest_url.'" target="_blank" class="mycred-social-icons mycred-social-icon-pinterest"></a>';
+            }
+
+            if( $br_socail_icon == 'text_style' )
+            {
+                if( $br_enable_fb )
+                    $content .= '
+                    <a href="'.$facebook_url.'" target="_blank"><button class="facebook social-text">facebook</button></a>';
+                if( $br_enable_twitter )
+                    $content .= '
+                    <a href="'.$twitter_url.'" target="_blank"><button class="twitter social-text">twitter</button></a>';
+                if( $br_enable_li )
+                    $content .= '
+                    <a href="'.$linkedin_url.'" target="_blank"><button class="linkedin social-text">linkedin</button></a>';
+                if( $br_enable_pt )
+                    $content .= '
+                    <a href="'.$pinterest_url.'" target="_blank"><button class="pinterest social-text">pinterest</button></a>';
+            }
+
+            if( $br_socail_icon == 'icon_style_hover' )
+            {
+                if( $br_enable_fb )
+                    $content .= '
+                    <a href="'.$facebook_url.'" target="_blank" class="i-text-admin mycred-social-icons mycred-social-icon-facebook"></a>';
+                if( $br_enable_twitter )
+                    $content .= '
+                    <a href="'.$twitter_url.'" target="_blank" class="i-text-admin mycred-social-icons mycred-social-icon-twitter"></a>';
+                if( $br_enable_li )
+                    $content .= '
+                    <a href="'.$linkedin_url.'" target="_blank" class="i-text-admin mycred-social-icons mycred-social-icon-linkedin"></a>';
+                if( $br_enable_pt )
+                    $content .= '
+                    <a href="'.$pinterest_url.'" target="_blank" class="i-text-admin mycred-social-icons mycred-social-icon-pinterest"></a>';
+            }
+
+            $content .= '</div>';
+        
+
+            return $content;
+        }
+endif;
+
+/**
+ * Upload default point image
+ * @since 2.2
+ * @version 1.1
+ */
+if( !function_exists( 'mycred_upload_default_point_image' ) ):
+function mycred_upload_default_point_image()
+{
+	$default_point_image = mycred_get_option( 'mycred_default_point_image' );
+
+	$image_url = wp_get_attachment_url( $default_point_image );
+
+	if( empty( $default_point_image ) || !$image_url )
+	{
+		$image_url = plugin_dir_path( __DIR__ ) . 'assets/images/default-point-type.png';
+
+		$upload_dir = wp_upload_dir();
+
+		$image_data = file_get_contents( $image_url );
+
+		$filename = basename( $image_url );
+
+		if ( wp_mkdir_p( $upload_dir['path'] ) ) 
+			$file = $upload_dir['path'] . '/' . $filename;
+		else 
+			$file = $upload_dir['basedir'] . '/' . $filename;
+	
+
+		file_put_contents( $file, $image_data );
+
+		$wp_filetype = wp_check_filetype( $filename, null );
+
+		$attachment = array(
+			'post_mime_type' => $wp_filetype['type'],
+			'post_title' => 'mycred_default_image',
+			'post_content' => '',
+			'post_status' => 'inherit'
+		);
+
+		$attach_id = wp_insert_attachment( $attachment, $file );
+
+		$attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+
+		wp_update_attachment_metadata( $attach_id, $attach_data );
+
+		mycred_update_option( 'mycred_default_point_image', $attach_id );
+	}
+}
+endif;
+
+/**
+ * Gets default point image
+ * @since 2.2
+ * @version 1.1
+ */
+if( !function_exists( 'mycred_get_default_point_image_id' ) ):
+function mycred_get_default_point_image_id()
+{
+	$image_id = mycred_get_option( 'mycred_default_point_image' );
+
+	if( empty( $image_id ) )
+		return false;
+	
+	return $image_id;
+}
+endif;
+
+/**
+ * Creates select2
+ * @since 2.3
+ * @version 1.0
+ */
+if( !function_exists( 'mycred_create_select2' ) ):
+function mycred_create_select2( $options = '', $attributes = array(), $selected = array() )
+{
+	$content = '';
+	$is_selected = false;
+	$content .= "<select ";
+
+	if( !empty( $attributes ) )
+		foreach( $attributes as $attr => $value )
+			$content .= "{$attr}='{$value}'";
+
+	$content .= "style='width: 168px;'>";
+
+	if( !empty( $options ) )
+	{
+		foreach( $options as $key => $value )
+		{
+			foreach( $selected as $s_key )
+			{
+				if( $s_key == $key )
+				{
+					$content .= "<option selected='selected' value='{$key}'>{$value}</option>";	
+					$is_selected = true;
+				}
+			}
+			if( $is_selected )
+			{
+				$is_selected = false;
+				continue;	
+			}
+			$content .= "<option value='{$key}'>{$value}</option>";
+		}
+	}										
+
+	$content .= "</select>";
+
+	return $content;
+}
+endif;
+
+/**
+ * Get Ranks Point type 
+ * @var int $rank_id
+ * @since 2.3
+ * @version 1.0
+ * @return bool|string
+ */
+if ( !function_exists( 'mycred_get_rank_pt' ) ):
+function mycred_get_rank_pt( $rank_id )
+{
+	$pt = get_post_meta( $rank_id, 'ctype', true );
+
+	if( $pt )
+		return $pt;
+	else
+		return false;
+}
+endif;
+
+/**
+ * Get Email Notice Instances
+ * Returns an array of supported instances where an email can be sent by this add-on.
+ * @since 1.8
+ * @since 2.3 Moved from Email Norification
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_email_instances' ) ) :
+	function mycred_get_email_instances( $none = true ) {
+
+		$instances = array();
+
+		if ( $none ) $instances[''] = __( 'Select', 'mycred' );
+
+		$instances['any']      = __( 'users balance changes', 'mycred' );
+		$instances['positive'] = __( 'users balance increases', 'mycred' );
+		$instances['negative'] = __( 'users balance decreases', 'mycred' );
+		$instances['zero']     = __( 'users balance reaches zero', 'mycred' );
+		$instances['minus']    = __( 'users balance goes negative', 'mycred' );
+
+		if ( class_exists( 'myCRED_Badge_Module' ) ) {
+			$instances['badge_new'] = __( 'user gains a badge', 'mycred' );
+			$instances['badge_level'] = __( 'user gains a new badge level', 'mycred' );
+		}
+
+		if ( class_exists( 'myCRED_Ranks_Module' ) ) {
+			$instances['rank_up']   = __( 'user is promoted to a higher rank', 'mycred' );
+			$instances['rank_down'] = __( 'user is demoted to a lower rank', 'mycred' );
+		}
+
+		if ( class_exists( 'myCRED_Transfer_Module' ) ) {
+			$instances['transfer_out'] = __( 'user sends a transfer', 'mycred' );
+			$instances['transfer_in']  = __( 'user receives a transfer', 'mycred' );
+		}
+
+		if ( class_exists( 'myCRED_cashCRED_Module' ) ) {
+			$instances['cashcred_approved'] = __( 'cashcred withdraw approval', 'mycred' );
+			$instances['cashcred_pending']  = __( 'cashcred withdraw pending', 'mycred' );
+			$instances['cashcred_cancel']  = __( 'cashcred cancel', 'mycred' );
+		}
+		
+		
+		$instances['custom']  = __( 'a custom event occurs', 'mycred' );
+
+		return apply_filters( 'mycred_email_instances', $instances );
+
+	}
+endif;
+
+/**
+ * Sanitizes Array | Associative  Array | Multi-dimensional Array
+ * @since 2.4
+ * @version 1.0
+ */
+
+if( !function_exists( 'mycred_sanitize_array' ) ):
+function mycred_sanitize_array( $_array )
+{
+	foreach( $_array as $key => $value )
+	{
+		$key = sanitize_text_field( $key );
+		
+		if( is_array( $value ) )
+		{
+			$value = mycred_sanitize_array( $value );
+		}
+		else
+		{
+			$_array[$key] = sanitize_text_field( $value );
+		}
+	}
+
+	return $_array;
+}
+endif;
+
+/**
+ * Get encrypted values
+ * @since 2.4.1
+ * @since 1.0
+ */
+if ( ! function_exists( 'mycred_encode_values' ) ) :
+	function mycred_encode_values($value) {
+
+
+		if ( $value === '' ) {
+			return false;
+		}
+	
+		$key = sha1( AUTH_KEY );
+		$strLen = strlen($value);
+		$keyLen = strlen($key);
+		$j = 0;
+		$crypttext = '';
+	
+		for ($i = 0; $i < $strLen; $i++) {
+			$ordStr = ord(substr($value, $i, 1));
+			if ($j == $keyLen) {
+				$j = 0;
+			}
+			$ordKey = ord(substr($key, $j, 1));
+			$j++;
+			$crypttext .= strrev(base_convert(dechex($ordStr + $ordKey), 16, 36));
+		}
+
+		return $crypttext;
+	}
+endif;
+
+
+/**
+ * Get decrypted values
+ * @since 2.4.1
+ * @since 1.0
+ */
+if ( ! function_exists( 'mycred_decode_values' ) ) :	
+	function mycred_decode_values($value) {
+
+		if ( $value == '' ) {
+			return false;
+		}
+	
+		$key = sha1( AUTH_KEY );
+		$strLen = strlen($value);
+		$keyLen = strlen($key);
+		$j = 0;
+		$decrypttext = '';
+	
+		for ($i = 0; $i < $strLen; $i += 2) {
+			$ordStr = hexdec(base_convert(strrev(substr($value, $i, 2)), 36, 16));
+			if ($j == $keyLen) {
+				$j = 0;
+			}
+			$ordKey = ord(substr($key, $j, 1));
+			$j++;
+			$decrypttext .= chr($ordStr - $ordKey);
+		}
+
+		return $decrypttext;
+	}
+endif;
+
+/**
+ * @since 4.2.1
+ * @version 1.0
+ */
+function mycred_get_users_by_name_email( $query, $get = 'ID' )
+{
+	global $wpdb;
+
+	$results = array();
+
+	$query = "%{$query}%";
+
+	$results['results'] = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT {$get} as `id`, user_login as `text` FROM {$wpdb->users} WHERE user_login LIKE %s || user_email LIKE %s",
+			$query,
+			$query
+		),
+		ARRAY_A 
+	);
+
+	return $results;
+} 

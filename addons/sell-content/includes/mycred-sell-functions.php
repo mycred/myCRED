@@ -453,13 +453,13 @@ if ( ! function_exists( 'mycred_sell_content_payment_buttons' ) ) :
 			$buttons = array();
 
 			foreach ( $settings['type'] as $point_type ) {
-
+				
 				// Load point type
 				$mycred       = mycred( $point_type );
 				$setup        = mycred_get_option( 'mycred_sell_this_' . $point_type );
 				$price        = mycred_get_content_price( $post_id, $point_type, $user_id );
 				$status       = $setup['status'];
-
+				
 				// Manual mode
 				if ( $settings['filters'][ $post->post_type ]['by'] == 'manual' ) {
 
@@ -490,7 +490,7 @@ if ( ! function_exists( 'mycred_sell_content_payment_buttons' ) ) :
 				$result = implode( ' ', $buttons );
 
 		}
-
+	
 		// Return a string of buttons or false if user can not afford
 		return apply_filters( 'mycred_sellcontent_buttons', $result, $user_id, $post_id );
 
@@ -501,7 +501,7 @@ endif;
  * Sell Content Template
  * Parses a particular template.
  * @since 1.7
- * @version 1.0.1
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 	function mycred_sell_content_template( $template = '', $post = NULL, $type = 'mycred-sell-partial-content', $status = 'visitor' ) {
@@ -512,7 +512,7 @@ if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 		$url               = mycred_get_permalink( $post->ID );
 		
 		if ( $status == 'mycred-sell-insufficient' ) {
-			$post        = mycred_get_post( $post_id );
+			$post        = mycred_get_post( $post->ID );
 			$settings    = mycred_sell_content_settings();
 			$prices      = array();
 
@@ -525,7 +525,7 @@ if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 				if ( $status == 'disabled' ) continue;
 				
 				$mycred = mycred( $point_type );
-				$price  = mycred_get_content_price( $post->ID, $point_type, $user_id );
+				$price  = mycred_get_content_price( $post->ID, $point_type, get_current_user_id() );
 
 				// Manual mode
 				if ( $settings['filters'][ $post->post_type ]['by'] == 'manual' ) {
@@ -918,4 +918,28 @@ if ( ! function_exists( 'mycred_seconds_to_time' ) ) :
 	    $dtT = new \DateTime("@$seconds");
 	    return $dtF->diff($dtT)->format('%a days, %h hours,%i minutes ,%s Seconds');
 	}
+endif;
+
+/**
+ * Check if points enable
+ * @since 2.3
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_sc_is_point_enable' ) ) :
+function mycred_sc_is_points_enable() 
+{
+	$point_types = mycred_get_types();
+
+	foreach( array_keys( $point_types ) as $point_type )
+	{
+		$settings = mycred_get_option( "mycred_sell_this_{$point_type}" );
+
+		if( !empty( $settings ) && $settings['status'] == 'enabled' )
+			return true;
+
+		continue;
+	}
+
+	return false;
+}
 endif;

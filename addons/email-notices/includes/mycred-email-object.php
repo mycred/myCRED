@@ -361,35 +361,27 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 
 			if ( ! empty( $content ) ) {
 
-			    if ( class_exists( 'myCRED_Ranks_Module' ) ) {
-                    //rank-title
-                    if ( is_array( $event ) &&  array_key_exists( 'ref_id', $event ) ) {
+				if ( class_exists( 'myCRED_Ranks_Module' ) && ( strpos( $content, '%rank_title%' ) !== false || strpos( $content, '%rank_image%' ) !== false ) ) {
+					
+					if ( is_array( $event ) && array_key_exists( 'ref_id', $event ) ) {
 
                         $rank = mycred_get_rank( $event['ref_id'] );
                         
                         if ( is_object( $rank ) ) {
                         
+                        	//rank-title
                         	$rank_title = $rank->title;
-                        	$content = str_replace( '%rank_title%', $rank_title, $content );
+                        	$content    = str_replace( '%rank_title%', $rank_title, $content );
+                    		
+                    		//rank-image
+                    		$rank_image = "<img src='" . esc_url( $rank->logo_url ) . "'>";
+	                        $content    = str_replace( '%rank_image%', $rank_image, $content );
                         
                         }
 
                     }
 
-                    //rank-image
-                    if ( is_array( $event ) &&  array_key_exists( 'ref_id', $event ) ) {
-
-                        $rank = mycred_get_rank( $event['ref_id'] );
-						
-						if ( is_object( $rank ) ) {
-
-	                        $rank_image = '<img src = '.$rank->logo_url. '>';
-	                        $content    = str_replace( '%rank_image%', $rank_image, $content );
-	                        
-	                    }
-
-                    }
-                }
+				}
 
 				$mycred  = mycred( $point_type );
 
@@ -406,16 +398,37 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 				// Template tags can only be used if the email triggers for one point type only.
 				$content = str_replace( '%entry%',         $event['entry'], $content );
 				$content = $mycred->template_tags_amount( $content, $event['amount'] );
+				
 				// to display correct user names in transfer email
 				if( $event['ref']==='transfer' ){
+
+					$content = $mycred->template_tags_user( $content, $event['user_id'] );
+
+					$content = str_replace( '%user_id_o%',           '%user_id%', $content );
+					$content = str_replace( '%user_name_o%',         '%user_name%', $content );
+					$content = str_replace( '%user_name_en_o%',      '%user_name_en%', $content );
+					$content = str_replace( '%display_name_o%',      '%display_name%', $content );
+					$content = str_replace( '%user_profile_url_o%',  '%user_profile_url%', $content );
+					$content = str_replace( '%user_profile_link_o%', '%user_profile_link%', $content );
+					$content = str_replace( '%user_nicename_o%',     '%user_nicename%', $content );
+					$content = str_replace( '%user_email_o%',        '%user_email%', $content );
+					$content = str_replace( '%user_url_o%',          '%user_url%', $content );
+					$content = str_replace( '%balance_o%',           '%balance%', $content );
+					$content = str_replace( '%balance_f_o%',         '%balance_f%', $content );
+
 					$content = $mycred->template_tags_user( $content, $event['ref_id'] );
 					$content = mycred_transfer_render_message( $content, $event['data'] );
+				
 				}
 				elseif( $event['ref']==='woocommerce_payment' ){
+
 					$content = str_replace( '%order_id%', $event['ref_id'], $content );
+				
 				}
 				else{
+				
 					$content = $mycred->template_tags_user( $content, $event['user_id'] );
+				
 				}
 
 				if ( array_key_exists( 'data', $event ) && is_array($event['data']) && ! empty( $event['data'] ) && array_key_exists( 'ref_type', $event['data'] ) && $event['data']['ref_type'] == 'post' )

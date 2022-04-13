@@ -513,6 +513,8 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 		 */
 		public function show_my_balance( $user ) {
 
+			if ( empty( $user->ID ) ) return;
+
 			$user_id      = $user->ID;
 			$editor_id    = get_current_user_id();
 			$mycred_types = mycred_get_types( true );

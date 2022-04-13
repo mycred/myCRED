@@ -12,7 +12,7 @@ if ( !class_exists( 'myCred_Uninstall_Settings' ) ):
         public function __construct()
         {
             add_action( 'mycred_after_core_prefs', array( $this, 'uninstall_settings' ) );
-            add_filter( 'mycred_save_core_prefs', array( $this, 'sanitize_extra_settings' ), 10, 3 );
+            add_filter( 'mycred_save_core_prefs',  array( $this, 'sanitize_extra_settings' ), 10, 3 );
         }
 
         /**

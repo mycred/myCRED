@@ -591,7 +591,7 @@ if ( ! function_exists( 'mycred_get_users_badges' ) ) :
 			global $wpdb;
 
 			$badge_ids = array();
-			$query     = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key LIKE %s", $user_id, mycred_get_meta_key( MYCRED_BADGE_KEY ) . '%' ) );
+			$query     = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key LIKE %s AND meta_key NOT LIKE '%_issued_on' AND meta_key NOT LIKE '%_ids'", $user_id, mycred_get_meta_key( MYCRED_BADGE_KEY ) . '%' ) );
 
 			if ( ! empty( $query ) ) {
 
@@ -611,7 +611,7 @@ if ( ! function_exists( 'mycred_get_users_badges' ) ) :
 			}
 
 		}
-
+		
 		$clean_ids = array();
 		if ( ! empty( $badge_ids ) ) {
 			foreach ( $badge_ids as $id => $level ) {
@@ -1197,6 +1197,215 @@ if ( ! function_exists( 'mycred_get_categorized_badge_list' ) ) :
         	'panels'         => $badges_list_panels,
         	'category_count' => $category_count,
         );
+
+	}
+endif;
+
+/**
+ * Returns Badge congratulation message.
+ * @since 2.2
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_badge_show_congratulation_msg' ) ) :
+	function mycred_badge_show_congratulation_msg( $user_id, $badge, $settings = NULL ) {
+
+		$content = '';
+
+		if ( empty( $settings ) ) $settings = mycred();
+
+		if( ! empty( $settings->core["badges"]["show_congo_text"] ) && $badge->user_has_badge( $user_id ) && ! empty( $badge->congratulation_msg ) ) {
+
+			$content .= '<div class="mycred-badge-congratulation-msg">' . $badge->congratulation_msg . '</div>';
+		
+		}
+
+		return apply_filters( 'mycred_badge_show_congratulation_msg', $content, $badge, $settings );
+
+	}
+endif;
+
+/**
+ * Returns Badge main image with share icons.
+ * @since 2.2
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_badge_show_main_image_with_social_icons' ) ) :
+	function mycred_badge_show_main_image_with_social_icons( $user_id, $badge, $mycred = NULL ) {
+
+		$content = '';
+
+		$image_url = $badge->get_earned_image( $user_id );
+
+		if ( ! empty( $image_url ) ) {
+
+			$content .= '<div class="mycred-badge-image-wrapper">';
+
+			$content .= '<img src="' . $image_url . '" class="mycred-badge-image" alt="Badge Image">';
+
+			if ( empty( $mycred ) ) $mycred = mycred();
+
+			//If user has earned badge, show user sharing badge option
+            if( 
+            	$badge->user_has_badge( $user_id ) && 
+            	! empty( $mycred->core["br_social_share"]["enable_open_badge_ss"] ) 
+            ) {
+
+                $facebook_url  = "http://www.facebook.com/sharer.php?u=".get_permalink()."&p[images][0]=$image_url";
+                $twitter_url   = "https://twitter.com/share?url=".get_permalink()."";
+                $linkedin_url  = "http://www.linkedin.com/shareArticle?url=".get_permalink()."";
+                $pinterest_url = "https://pinterest.com/pin/create/bookmarklet/?media=$image_url&amp;url=".get_permalink()."";
+
+                $content .= mycred_br_get_social_icons( $facebook_url, $twitter_url, $linkedin_url, $pinterest_url );
+
+            } 
+
+            $content .= '</div>';
+			
+		}
+
+		return apply_filters( 'mycred_badge_show_main_image_with_social_icons', $content, $badge, $mycred );
+
+	}
+endif;
+
+/**
+ * Returns Badge description.
+ * @since 2.2
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_badge_show_description' ) ) :
+	function mycred_badge_show_description( $post, $settings = NULL ) {
+
+		$content = '';
+
+		if ( empty( $settings ) ) $settings = mycred();
+
+		if( ! empty( $settings->core["badges"]["show_level_description"] ) && ! empty( $post->post_content ) ) {
+
+			$content .= "<h3>" . __( "Description", "mycred" ) . "</h3>";
+            $content .= "<p>" . $post->post_content . "</p>";
+		
+		}
+
+		return apply_filters( 'mycred_badge_show_description', $content, $post, $settings );
+
+	}
+endif;
+
+/**
+ * Returns Badge levels.
+ * @since 2.2
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_badge_show_levels' ) ) :
+	function mycred_badge_show_levels( $user_id, $badge, $settings = NULL ) {
+
+		$content = '';
+
+		if ( empty( $settings ) ) $settings = mycred();
+
+		if( ! empty( $settings->core["badges"]["show_levels"] ) || $badge->open_badge && ! empty( $settings->core["badges"]["show_steps_to_achieve"] ) ) {
+
+			if ( ! $badge->open_badge )
+                $content .= "<h3>" . __("Levels", "mycred") . "</h3>";
+            else 
+                $content .= "<h3>" . __("Requirement", "mycred") . "</h3>";
+
+            $levels = mycred_show_badge_requirements( $badge->post_id );
+
+            foreach ( $levels as $id => $level ) {
+
+	            $level_image_url = $level["image"];
+
+	            $heading = $level["heading"];
+
+	            $requirements = $level["requirements"];
+
+	            $reward = $level["amount"];
+
+	            $content .= '<div class="mycred-badge-page-level">';
+
+	            if ( ! $badge->open_badge ) {
+
+	                if ( ! empty( $level_image_url ) )
+	                    $content .= '<img src="'.$level_image_url.'" class="mycred-level-image mycred-float-left" />';
+
+	                $content .= "<h4>$heading</h4>";
+	            }
+
+	            $content .= "<div class='clear'></div>";
+
+	            if ( ! empty( $settings->core["badges"]["show_steps_to_achieve"] ) )
+	                $content .= mycred_badge_level_req_check( $badge->post_id, $id );
+
+	            if ( ! empty( $settings->core["badges"]["show_level_points"] ) && $reward != 0 ) {
+
+	                $reward_type = mycred( $level['reward_type'] );
+
+	                $content .= '<div class="mycred-level-reward">' . __('Reward:', 'mycred') . ' ' . $reward_type->format_creds($reward ) .'</div>';
+	            }
+
+	            $content .= '</div>';
+	        }
+
+	        $content .= '<div class="clear"></div>';
+		
+		}
+
+		return apply_filters( 'mycred_badge_show_levels', $content, $user_id, $badge, $settings );
+
+	}
+endif;
+
+/**
+ * Returns badge earners.
+ * @since 2.2
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_badge_show_earners' ) ) :
+	function mycred_badge_show_earners( $badge, $settings = NULL ) {
+
+		$content = '';
+
+		if ( empty( $settings ) ) $settings = mycred();
+
+		if ( ! empty( $settings->core["badges"]["show_earners"] ) ) {
+
+			$args = array(
+			    'meta_query' => array(
+			        array(
+			            'key' => MYCRED_BADGE_KEY . $badge->post_id,
+			            'compare' => 'EXISTS'
+			        )
+			    )
+			);
+			$users_have_badge = get_users( $args );
+
+			if ( ! empty( $users_have_badge ) ) {
+				
+				$content .= '<div class="mycred-badge-earners">';
+				$content .= "<h3>" . __("Earners", "mycred") . "</h3>";
+                $content .= '<div class="mycred-badge-earner-list">';
+
+				foreach ( $users_have_badge as $user ) {
+
+	                $user_avatar = get_avatar_url( $user->ID );
+
+	                $content .= '<div class="mycred-badge-earner-grid mycred-float-left">';
+	                $content .= '<div><img src="' . $user_avatar . '" /></div>';
+	                $content .= "<h4>$user->display_name</h4>";
+	                $content .= '</div>';
+
+				}
+				$content .= '<div class="mycred-clearfix"></div>';
+                $content .= '</div>';
+				$content .= '</div>';
+
+			}
+			
+		}
+
+		return apply_filters( 'mycred_badge_show_earners', $content, $badge, $settings );
 
 	}
 endif;

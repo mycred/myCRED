@@ -1,0 +1,28 @@
+.the-badge {
+    display: flex;
+    align-items: center;
+  	justify-content: space-between;
+}
+
+hr.badge-line {
+        
+    margin-top: 10px !important;
+}
+
+.page-excerpt {
+    
+    width: 100%;
+    margin-left:10px;
+}
+
+
+.page-excerpt {
+    
+    width: 100%;
+    margin-left:10px;
+}
+
+.demo-badge-title {
+    margin-left: 20px;
+    width: 100%;
+}

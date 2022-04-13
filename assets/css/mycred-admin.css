@@ -19,6 +19,8 @@
 .tr { text-align: right; }
 .tj { text-align: justify; }
 
+
+
 /* Specifics */
 #myCRED-wrap p.submit { margin-top: 0; padding-top: 0; }
 #mycred-social { text-align: right; }
@@ -54,9 +56,9 @@ p span.description { display: block; line-height: 16px; }
 #myCRED-wrap #accordion { margin: 24px 0; padding: 0; float: none; clear: both; }
 body #myCRED-wrap #accordion { border-top: none; border-bottom: 1px solid #dedede; }
 body.version-3-8 #myCRED-wrap #accordion { border-top: 1px solid #dedede; border-bottom: 1px solid #fafafa; }
-#myCRED-wrap #accordion>h4 { font-size: 18px; line-height: 48px; font-weight: normal; color: #464646; font-family: "Open Sans", sans-serif; letter-spacing: 1px; width: 100%; text-align: left; }
-#myCRED-wrap #accordion>h4:focus { outline: none; }
-#myCRED-wrap #accordion>h4:hover { cursor: pointer; }
+#myCRED-wrap #accordion>h4, #myCRED-wrap #accordion>div>h4 { font-size: 18px; line-height: 48px; font-weight: normal; color: #464646; font-family: "Open Sans", sans-serif; letter-spacing: 1px; width: 100%; text-align: left; }
+#myCRED-wrap #accordion>h4:focus, #myCRED-wrap #accordion>div>h4:focus { outline: none; }
+#myCRED-wrap #accordion>h4:hover, #myCRED-wrap #accordion>div>h4:hover { cursor: pointer; }
 #myCRED-wrap #accordion .ui-accordion-header { padding: 0; margin: 0; background-color: transparent; background: none; border-left: none; border-right: none; }
 #myCRED-wrap .ui-accordion .ui-accordion-header .ui-accordion-header-icon { display: none; }
 body #myCRED-wrap #accordion .ui-accordion-header { border-top: 1px solid #dedede; border-bottom: none; }
@@ -108,8 +110,8 @@ body.version-3-8 #myCRED-wrap #accordion .ui-accordion-header { border-top: 1px 
 #myCRED-wrap #accordion h4 .core { background-position: 0 -528px; }
 #myCRED-wrap #accordion h4 .core.icon-active { background-position: -48px -528px; }
 
-#myCRED-wrap #accordion>div { margin: 0; padding: 12px; }
-#myCRED-wrap #accordion>div>p { margin-top: 0; }
+#myCRED-wrap #accordion>div, #myCRED-wrap #accordion>.mycred-after-core-prefs>div, #myCRED-wrap #accordion>.mycred-type-prefs>div { margin: 0; padding: 12px; }
+#myCRED-wrap #accordion>div>p, , #myCRED-wrap #accordion>.mycred-after-core-prefs>div>p, #myCRED-wrap #accordion>.mycred-type-prefs>div>p { margin-top: 0; }
 #myCRED-wrap #accordion .ui-accordion-content { display: none;float: none; clear: both; }
 body #myCRED-wrap #accordion .ui-accordion-content { border-top: 1px solid #dedede; border-bottom: none; background-color: transparent; background: none; border-left: none; border-right: none; }
 body.version-3-8 #myCRED-wrap #accordion .ui-accordion-content { border-top: 1px solid #fafafa; border-bottom: 1px solid #dedede; }
@@ -191,3 +193,50 @@ body.version-3-8 #myCRED-wrap #accordion .ui-accordion-content { border-top: 1px
 /* Safari */
 @-webkit-keyframes spin { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.mycred-after-core-prefs, .mycred-type-prefs {margin: 0px !important;padding: 0px !important;}
+.buycred-cashcred-more-tab-btn .additional-text { font-size: 10px;color: #fff;background: #808080;padding: 4px 5px;border-radius: 3px;margin: 0px 8px;}
+body #myCRED-wrap #accordion .ui-accordion-header.buycred-cashcred-more-tab-btn.disabled-tab, #myCRED-wrap #accordion h4.disabled-tab .dashicons.static {
+    color: #929292;
+}
+h4.buycred-cashcred-more-tab-btn.ui-accordion-header.ui-state-active:before, h4.buycred-cashcred-more-tab-btn.ui-accordion-header:before {
+    content: '';
+}
+
+.v-align-middle{
+    vertical-align: middle;
+}
+
+.mycred-tools-import-export table tr td {
+    width: 215px;
+}
+
+.mycred-tools-import-export table tr td:nth-last-child( 1 ) {
+    width: max-content;
+}
+
+.mycred-tools-import-export table tr {
+    height: 55px;
+}
+
+.mycred-tools-import-export .mycred-container{
+    padding: 10px 0;
+}
+
+.mycred-tools-import-export .mycred-container label{
+    display: block;
+}
+#myCRED-wrap .mycred-tools-setup ol {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding: 0px;
+    padding-inline-start: 40px;
+    margin-bottom: 0px;
+}
+
+.mycred-tools-setup, .mycred-tools-setup-export{
+    float: left;
+    width: 50%;
+}

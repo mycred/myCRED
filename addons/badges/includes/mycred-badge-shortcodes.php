@@ -14,7 +14,9 @@ if ( ! function_exists( 'mycred_render_my_badges' ) ) :
             'show'     => 'earned',
             'width'    => MYCRED_BADGE_WIDTH,
             'height'   => MYCRED_BADGE_HEIGHT,
-            'user_id'  => 'current'
+            'user_id'  => 'current',
+            'title'    => '',
+            'post_excerpt'   => ''
         ), $atts, MYCRED_SLUG . '_my_badges' ) );
 
         if ( ! is_user_logged_in() && $user_id == 'current' )
@@ -47,11 +49,45 @@ if ( ! function_exists( 'mycred_render_my_badges' ) ) :
                 if ( ! array_key_exists( $badge_id, $users_badges ) ) {
 
                     $badge = mycred_get_badge( $badge_id );
+
+                    $page_id = get_page( $badge_id);
+
+                  
                     $badge->image_width  = $width;
                     $badge->image_height = $height;
 
-                    if ( $badge->main_image !== false )
-                        echo $badge->get_image( 'main' );
+                    $badge_title = $badge->title;
+                    $badge_img = $badge->main_image;
+
+
+
+                    if ( $badge->main_image !== false ) {
+
+                                   
+
+                                     echo '<div class="demo-badge-image">' . $badge_img . '</div>';
+
+                                     if($title == 'show'){
+
+                                    
+
+                                    echo   '<div class="demo-badge-title">' . $badge_title . ' '.'</div>';
+
+                                     } else {
+
+                                         echo   '<div class="demo-badge-title" style="display:none;">' . $badge_title . ' '.'</div>';
+
+                                     }
+
+                                     if($post_excerpt == 'show') {
+
+                                     echo   '<div class="page-excerpt">' . $page_id->post_excerpt . ' '.'</div>';
+
+                                     } else {
+                                         echo   '<div class="page-excerpt" style="display:none;">' . $page_id->post_excerpt . ' '.'</div>';;
+                                     }
+                                   
+                    }
 
                 }
 
@@ -63,13 +99,48 @@ if ( ! function_exists( 'mycred_render_my_badges' ) ) :
                     $badge->image_width  = $width;
                     $badge->image_height = $height;
 
-                    if ( $badge->level_image !== false )
-                        echo $badge->get_image( $level );
+                     $badge_page_id = get_page( $badge_id);
+
+
+
+                    if ( $badge->level_image !== false ) {
+                       
+
+                                     echo '<div class="demo-badge-image">' . $badge->get_image( $level ) . '</div>';
+
+                                      if($title == 'show'){
+
+                                    echo   '<div class="demo-badge-title">' . $badge->title . ' '.'</div>';
+
+                                }
+
+                                else {
+
+                                         echo   '<div class="demo-badge-title" style="display:none;">' . $badge->title . ' '.'</div>';
+
+                                     }
+
+                                  if($post_excerpt == 'show') {
+                                   
+                                    echo   '<div class="page-excerpt">' . $badge_page_id->post_excerpt . ' '.'</div>';
+
+                                } else {
+                                         echo   '<div class="page-excerpt" style="display:none;">' . $badge_page_id->post_excerpt . ' '.'</div>';;
+                                     }
+                                   
+                    }
 
                 }
 
                 echo '</div>';
 
+                if($title == 'show' || $post_excerpt == 'show') {
+
+                echo '<hr class="badge-line">';
+                }
+                else {
+                    echo '';
+                }
             }
 
         }
@@ -115,10 +186,13 @@ if ( ! function_exists( 'mycred_render_badges' ) ) :
                 $row = str_replace( '%badge_title%',   $badge->title,                                  $row );
                 $row = str_replace( '%requirements%',  mycred_display_badge_requirements( $badge_id ), $row );
                 $row = str_replace( '%count%',         $badge->earnedby,                               $row );
-                $row = str_replace( '%default_image%', $badge->get_image( 'main' ),                             $row );
+                $row = str_replace( '%default_image%', $badge->get_image( 'main' ),                    $row );
                 
                 if( mycred_user_has_badge( get_current_user_id(), $badge_id) ) {
-                    $row = str_replace( '%main_image%',    $badge->level_image, $row );
+                    $user_id = get_current_user_id();
+                    $badge   = mycred_get_badge( $badge_id );
+                    $level   = $badge->get_users_current_level( $user_id );
+                    $row     = str_replace( '%main_image%',    $badge->get_image( $level ), $row );
                 }
                 else {
                     $row = str_replace( '%main_image%',    '', $row );
@@ -282,3 +356,9 @@ if ( !function_exists( 'mycred_render_badge_evidence' ) ) :
         return $content;
     }
 endif;
+
+add_action( 'wp_enqueue_scripts',  'enqueue_badge_front_shortcode_scripts'  );
+
+ function enqueue_badge_front_shortcode_scripts() {
+     wp_enqueue_style( 'mycred-badge-front-style', plugins_url( 'assets/css/front.css', myCRED_BADGE ), array(), myCRED_BADGE_VERSION , 'all');
+ }

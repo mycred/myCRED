@@ -215,7 +215,7 @@ if ( ! function_exists( 'mycred_count_users_with_rank' ) ) :
 
 		$user_count = mycred_get_post_meta( $rank_id, 'mycred_rank_users', true );
 
-		if ( $user_count == '' ) {
+		if ( empty($user_count) ) {
 
 			$point_type = mycred_get_post_meta( $rank_id, 'ctype', true );
 			if ( $point_type == '' ) return 0;
@@ -251,7 +251,7 @@ if ( ! function_exists( 'mycred_get_users_rank_id' ) ) :
 		if ( $user_id === 0 ) return false;
 
 		$account_object = mycred_get_account( $user_id );
-		if ( isset( $account_object->ranks ) && $account_object->balance[ $point_type ] !== false && $account_object->balance[ $point_type ]->rank !== false )
+		if ( isset( $account_object->ranks ) && $account_object->balance[ $point_type ] !== false && ! empty( $account_object->balance[ $point_type ]->rank ) )
 			return $account_object->balance[ $point_type ]->rank->post_id;
 
 		$rank_id        = mycred_get_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ), true );
@@ -288,12 +288,34 @@ if ( ! function_exists( 'mycred_save_users_rank' ) ) :
 		$rank_id        = absint( $rank_id );
 		$point_type     = sanitize_key( $point_type );
 
-		global $mycred_current_account;
+		$current_rank   = mycred_get_users_current_rank_id( $user_id, $point_type );
 
-		mycred_update_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ), $rank_id );
+		if ( !$current_rank || $current_rank != $rank_id ) {
+			
+			global $mycred_current_account;
 
-		if ( isset( $mycred_current_account->ranks ) && $mycred_current_account->balance[ $point_type ] !== false )
-			$mycred_current_account->balance[ $point_type ]->rank = new myCRED_Rank( $rank_id );
+			//Divest Old Rank
+			if ( ! empty( $current_rank ) )
+			{
+				$old_rank = new myCRED_Rank( $current_rank );
+
+				$old_rank->divest( $user_id );
+			}
+
+			mycred_update_user_rank_id( $user_id, $rank_id );
+
+			$new_rank = new myCRED_Rank( $rank_id );
+			$new_rank->assign( $user_id );
+
+			if ( 
+				isset( $mycred_current_account->user_id ) &&
+				$mycred_current_account->user_id == $user_id && 
+				isset( $mycred_current_account->ranks ) && 
+				$mycred_current_account->balance[ $point_type ] !== false 
+			) 
+			$mycred_current_account->balance[ $point_type ]->rank = $new_rank;
+
+		}
 
 		return true;
 
@@ -390,8 +412,8 @@ if ( ! function_exists( 'mycred_find_users_rank' ) ) :
 		if ( $balance_object === false ) return false;
 
 		if ( isset( $account_object->ranks ) ) {
-			$current_rank_id = ( $balance_object->rank !== false ) ? $balance_object->rank->post_id : false;
-			$current_rank    = ( $balance_object->rank !== false ) ? $balance_object->rank : false;
+			$current_rank_id = (  ! empty( $balance_object->rank ) ) ? $balance_object->rank->post_id : false;
+			$current_rank    = ( ! empty( $balance_object->rank ) ) ? $balance_object->rank : false;
 		}
 
 		else {
@@ -437,7 +459,7 @@ if ( ! function_exists( 'mycred_find_users_rank' ) ) :
 
 			// Demotions
 			if ( $results->current_id !== false && $current_rank !== false && $current_rank->maximum > $results->maximum )
-				do_action( 'mycred_user_got_demoted', $user_id, $results, $current_rank, $point_type );
+				do_action( 'mycred_user_got_demoted', $user_id, $current_rank_id, $current_rank, $point_type );
 
 			// Promotions
 			else {
@@ -603,9 +625,9 @@ if ( ! function_exists( 'mycred_get_users_of_rank' ) ) :
 			$users         = $wpdb->get_results( $wpdb->prepare( "
 				SELECT users.*, creds.meta_value AS balance 
 				FROM {$wpdb->users} users 
-					LEFT JOIN {$wpdb->usermeta} rank ON ( users.ID = rank.user_id AND rank.meta_key = %s ) 
+					LEFT JOIN {$wpdb->usermeta} mycredrank ON ( users.ID = mycredrank.user_id AND mycredrank.meta_key = %s ) 
 					LEFT JOIN {$wpdb->usermeta} creds ON ( users.ID = creds.user_id AND creds.meta_key = %s ) 
-				WHERE rank.meta_value = %d 
+				WHERE mycredrank.meta_value = %d 
 				ORDER BY creds.meta_value+0 DESC LIMIT 25;", $rank_meta_key, $balance_key, $rank_id ) );
 
 			wp_cache_set( $cache_key, $users, MYCRED_SLUG );
@@ -720,4 +742,93 @@ if ( ! function_exists( 'mycred_show_rank_in_bbpress' ) ) :
 		return $result;
 
 	}
+endif;
+
+/**
+ * Update User Ranks IDs
+ * @since 2.3
+ * @version 1.0
+ */
+if( !function_exists( 'mycred_update_user_rank_id' ) ):
+	function mycred_update_user_rank_id( $user_id, $rank_id )
+	{
+		$current_rank_id = $rank_id;
+	
+		$rank_ids = mycred_get_user_meta( $user_id, 'mycred_rank_ids', '', true );
+
+		$promoted_ids = mycred_get_user_meta( $user_id, 'mycred_promoted_rank_ids', '', true );
+
+		$demoted_ids = mycred_get_user_meta( $user_id, 'mycred_demoted_rank_ids', '', true );
+
+		if( !empty( $rank_ids ) )
+		{
+			end($rank_ids);
+			$previous_rank_id = key($rank_ids);
+
+			$previous_rank_id = $rank_ids[$previous_rank_id];
+
+			array_push( $rank_ids, $current_rank_id );
+
+			$prev_maximum = mycred_get_rank( $previous_rank_id )->maximum;
+
+			$current_minimum = mycred_get_rank( $current_rank_id )->minimum;
+
+			//Update for next time
+			mycred_update_user_meta( $user_id, 'mycred_rank_ids', '', $rank_ids );
+
+			//If Demoted
+			if( $current_minimum < $prev_maximum )
+			{
+				//If already exists just update
+				if( !empty( $demoted_ids ) )
+				{
+					array_push( $demoted_ids, $current_rank_id );
+
+					mycred_update_user_meta( $user_id, 'mycred_demoted_rank_ids', '', $demoted_ids );
+
+				}
+				else
+					mycred_update_user_meta( $user_id, 'mycred_demoted_rank_ids', '', array( $current_rank_id ) );
+
+			}
+			//If Promoted
+			else 
+			{
+				//If already exists just update
+				if( !empty( $promoted_ids ) )
+				{
+					array_push( $promoted_ids, $current_rank_id );
+
+					mycred_update_user_meta( $user_id, 'mycred_promoted_rank_ids', '', $promoted_ids );
+
+				}
+				else
+					mycred_update_user_meta( $user_id, 'mycred_promoted_rank_ids', '', array( $current_rank_id ) );
+			}
+		}
+		else
+		{
+			mycred_update_user_meta( $user_id, 'mycred_rank_ids', '', array( $current_rank_id ) );
+			mycred_update_user_meta( $user_id, 'mycred_promoted_rank_ids', '', array( $current_rank_id ) );
+		}
+	}
+endif;
+
+/**
+ * Returns users current rank id
+ * @since 2.3
+ * @version 1.0
+ */
+if( !function_exists( 'mycred_get_users_current_rank_id' ) ):
+function mycred_get_users_current_rank_id( $user_id, $point_type = MYCRED_DEFAULT_TYPE_KEY )
+{
+	$point_type = $point_type == MYCRED_DEFAULT_TYPE_KEY ? '' : $point_type;
+
+	$rank_id = mycred_get_user_meta( $user_id, MYCRED_RANK_KEY, $point_type, true );
+
+	if( !empty ( $rank_id ) )
+		return $rank_id;
+
+	return false;
+}
 endif;
