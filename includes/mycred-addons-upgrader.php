@@ -36,18 +36,26 @@ if ( ! class_exists( 'myCRED_Addons_Upgrader' ) ) :
 
         public function mycred_update_notice() {
 
-            $is_upgrade_done = get_option( 'mycred_addons_upgrade' );
+            $all_installed_plugins   = get_plugins();
+            $mycred_installed_addons = $this->get_installed_mycred_addons( $all_installed_plugins );
 
-            if ( false === $is_upgrade_done ) :?>
-            <div class="notice notice-warning is-dismissible">
-                <h2 style="margin-bottom: 8px;">myCred Addons Update Required</h2>
-                <p style="margin-bottom: 8px;">We have launched myCred version 2.3.1. For your addons to run smoothly, you need to update your myCred addons now! We have also upgraded our license management system to make sure your addons work perfectly after the required update. <br /><a href="https://mycred.me/blog/why-do-you-need-to-update-your-mycred-addons/" target="_blank">Why am I seeing this notice?</a></p>
-                <a href="<?php echo admin_url('options.php?page=mycred-update'); ?>" class="button button-primary button-large">Update Addons Now</a>
-                <a class="button button-large" href="<?php echo add_query_arg( 'mycred_addons_upgrader', 'mycred-addons-updated', home_url( $_SERVER['REQUEST_URI'] ) ) ?>">I have already updated</a>
-                <br>
-                <br>
-            </div>
-            <?php endif;
+            if ( ! empty( $mycred_installed_addons ) ) {
+                    
+                $is_upgrade_done = get_option( 'mycred_addons_upgrade' );
+
+                if ( false === $is_upgrade_done ) :?>
+                <div class="notice notice-warning is-dismissible">
+                    <h2 style="margin-bottom: 8px;">myCred Addons Update Required</h2>
+                    <p style="margin-bottom: 8px;">From myCred version 2.3.1 and onwards, you will be able to use our latest license management system that allows you to run your add-ons more smoothly. Please update your add-ons immediately for a better experience!<br /><a href="https://mycred.me/blog/why-do-you-need-to-update-your-mycred-addons/" target="_blank">Why am I seeing this notice?</a></p>
+                    <a href="<?php echo admin_url('options.php?page=mycred-update'); ?>" class="button button-primary button-large">Update Addons Now</a>
+                    <a class="button button-large" href="<?php echo add_query_arg( 'mycred_addons_upgrader', 'mycred-addons-updated', home_url( $_SERVER['REQUEST_URI'] ) ) ?>">I have already updated</a>
+                    <br>
+                    <br>
+                </div>
+                <?php endif;
+
+            }
+
         }
 
         public function admin_init() {

@@ -300,6 +300,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
             if( !isset($_POST['mmc_lincense_key']) ) return;
 
             $license_key = sanitize_text_field( $_POST['mmc_lincense_key'] );
+
             if( isset( $license_key ) ) {
 
                 update_option( 'mycred_membership_key', $license_key );
@@ -312,14 +313,29 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
 
         public function removeLicenseTransients() {
             
-            $addons = apply_filters( 'mycred_license_addons', array() );
+            $addons      = apply_filters( 'mycred_license_addons', array() );
+            $update_data = get_site_transient( 'update_plugins' );
 
             foreach ( $addons as $addon ) {
+
+                if ( isset( $update_data->response[ $addon . '/' . $addon . '.php' ] ) ) {
+                    unset( $update_data->response[ $addon . '/' . $addon . '.php' ] );
+                }
+
+                if ( isset( $update_data->no_update[ $addon . '/' . $addon . '.php' ] ) ) {
+                    unset( $update_data->no_update[ $addon . '/' . $addon . '.php' ] );
+                }
+
+                if ( isset( $update_data->checked[ $addon . '/' . $addon . '.php' ] ) ) {
+                    unset( $update_data->checked[ $addon . '/' . $addon . '.php' ] );
+                }
                     
                 $transient_key = 'mcl_' . md5( $addon );
                 delete_site_transient( $transient_key );
 
             }
+
+            set_site_transient( 'update_plugins', $update_data );
 
         }
 

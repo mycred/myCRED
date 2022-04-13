@@ -154,19 +154,9 @@ if ( ! class_exists( 'myCRED_License' ) ) :
 
 			$plugin_info = $this->get_plugin_detail();
 
-			if ( ! empty( $plugin_info ) && ! empty( $plugin_info->new_version ) ) {
-				
-				if ( version_compare( $this->version, $plugin_info->new_version, '<' ) ) {
-	                $data->response[ $this->filename ] = $plugin_info;
-	            } else {
-	                $data->no_update[ $this->filename ] = $plugin_info;
-	            }
-
-			}
-
 			if ( empty( $plugin_info->package ) && empty( $plugin_info->expiry ) ) {
 				
-				$message = 'License not found for this addon.';
+				$message = 'License not found.';
 
 				if ( ! empty( $plugin_info->message ) ) {
 					$message = $plugin_info->message;
@@ -177,7 +167,7 @@ if ( ! class_exists( 'myCRED_License' ) ) :
 			}
 			else {
 
-				$plugin_meta[] = '<strong style="color:green;">Your License Expires in ' . $this->calculate_license_expiry( $plugin_info->expiry ) . '</strong>';
+				$plugin_meta[] = '<strong style="color:green;">Expires in ' . $this->calculate_license_expiry( $plugin_info->expiry ) . '</strong>';
 
 			}
 
