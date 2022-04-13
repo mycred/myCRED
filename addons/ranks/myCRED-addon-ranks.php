@@ -1519,6 +1519,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			if ( ! $this->is_manual_mode( $point_type ) )
 				mycred_assign_ranks( $point_type );
+				
+			// Let others play
+            do_action( 'mycred_save_rank', $post_id );
 
 		}
 

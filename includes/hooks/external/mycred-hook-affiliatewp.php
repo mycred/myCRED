@@ -207,6 +207,7 @@ function mycred_load_affiliatewp_hook() {
 		/**
 		 * Referral Payout
 		 * @since 1.6
+		 * @since 2.4 @filter added `mycred_affiliate_prefs` for LevelCRED
 		 * @version 1.0
 		 */
 		public function referral_payouts( $referral_id, $new_status, $old_status ) {

@@ -260,6 +260,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 					// If referral counts
 					if ( $this->ref_counts( $user_id, $IP ) ) {
 
+						if ( $this->core->has_entry( 'visitor_referral', time(), $user_id, $IP, $this->mycred_type ) ) return;
+
 						// Award
 						$this->core->add_creds(
 							'visitor_referral',
@@ -270,6 +272,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 							$IP,
 							$this->mycred_type
 						);
+
+					
 
 						do_action( 'mycred_visitor_referral', $user_id, $IP, $this );
 
@@ -327,9 +331,17 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			if ( ! headers_sent() )
 				setcookie( $key, $ref, time()-3600, COOKIEPATH, COOKIE_DOMAIN );
 
+			
+
 			// Attempt to get the users IP
 			$IP = apply_filters( 'mycred_affiliate_IP', $_SERVER['REMOTE_ADDR'], 'signup', $this );
+
+			if ( $this->core->has_entry( 'signup_referral', $new_user_id, $user_id, $IP, $this->mycred_type ) ) return;
+
+
 			if ( $IP != '' && $IP != '0.0.0.0' ) {
+
+				if ( $this->core->has_entry( 'signup_referral', $new_user_id, $user_id, $IP, $this->mycred_type ) ) return;
 
 				if ( $this->ref_counts( $user_id, $IP, 'signup' ) ) {
 
@@ -361,6 +373,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 					// Award now
 					else {
+
+						 if ( $this->core->has_entry( 'signup_referral', $new_user_id, $user_id, $IP, $this->mycred_type ) ) return;
 
 						$this->core->add_creds(
 							'signup_referral',
@@ -396,6 +410,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			$referred_type  = mycred_get_user_meta( $user_id, 'referred_by_type', '', true );
 
 			if ( $referred_by == '' || $referred_by_IP == '' || $this->mycred_type != $referred_type ) return;
+
+			if ( $this->core->has_entry( 'signup_referral', $user_id, $referred_by, $referred_by_IP, $this->mycred_type ) ) return;
 
 			// Award
 			$this->core->add_creds(

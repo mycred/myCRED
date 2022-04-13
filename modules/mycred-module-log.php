@@ -336,6 +336,10 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				mycred_delete_user_meta( $log_entry->user_id, 'mycred_ref_sums-' . $this->mycred_type );
 
 				mycred_delete_option( 'mycred-cache-total-' . $log_entry->ctype );
+				
+				$old_creds = $this->core->number( $log_entry->creds );
+
+				$this->core->update_users_balance( $log_entry->user_id, $amount - $old_creds, $point_type );
 
 			}
 
@@ -581,7 +585,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			// Search Results
 			if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) )
-				$search_for = ' <span class="subtitle">' . __( 'Search results for', 'mycred' ) . ' "' . $_GET['s'] . '"</span>';
+				$search_for = ' <span class="subtitle">' . __( 'Search results for', 'mycred' ) . ' "' . sanitize_text_field( $_GET['s'] ) . '"</span>';
 
 			elseif ( isset( $_GET['time'] ) && $_GET['time'] != '' ) {
 				$time       = urldecode( $_GET['time'] );

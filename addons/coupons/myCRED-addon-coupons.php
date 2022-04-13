@@ -56,6 +56,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 			add_action( 'mycred_add_menu',       array( $this, 'add_to_menu' ), $this->menu_pos );
 			add_action( 'admin_notices',         array( $this, 'warn_bad_expiration' ), $this->menu_pos );
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		}
 
@@ -82,6 +83,9 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 			add_action( 'manage_' . MYCRED_COUPON_KEY . '_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
 			add_filter( 'bulk_actions-edit-' . MYCRED_COUPON_KEY,               array( $this, 'bulk_actions' ) );
 			add_action( 'save_post_' . MYCRED_COUPON_KEY,                       array( $this, 'save_coupon' ), 10, 2 );
+
+			//AJAX
+            add_action( 'wp_ajax_mycred_change_dropdown', array( $this, 'mycred_change_dropdown_ajax_handler' ) );
 
 		}
 
@@ -380,7 +384,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
 			wp_enqueue_style( 'mycred-forms' );
-
+			wp_enqueue_style( MYCRED_SLUG . '-buttons' );
 			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-setup',        array( $this, 'metabox_classes' ) );
 			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-limits',       array( $this, 'metabox_classes' ) );
 			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-requirements', array( $this, 'metabox_classes' ) );
@@ -395,7 +399,21 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function coupon_style() { }
+		public function coupon_style() {
+
+		}
+
+		/**
+         * Enqueue Admin Script
+         * @since 2.4
+         * @version 1.0
+         */
+        public function enqueue_admin_scripts() {
+
+            wp_register_style( 'mycred-coupon-badge-rank-style', plugins_url( 'assets/css/admin.css', myCRED_COUPONS ), '', myCRED_COUPONS_VERSION );
+            wp_register_script( 'mycred-coupon-badge-rank-js', plugins_url( 'assets/js/admin.js', myCRED_COUPONS ), array( 'jquery' ), myCRED_COUPONS_VERSION, true );
+           
+        }
 
 		/**
 		 * Add Meta Boxes
@@ -430,6 +448,17 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				'side',
 				'core'
 			);
+
+			if( class_exists( 'myCRED_Badge' ) || class_exists( 'myCRED_Ranks_Module' ) ) {
+				add_meta_box(
+					'mycred-coupon-badges-ranks',
+					__( 'Assign Badge/Ranks To Users', 'mycred' ),
+					array( $this, 'mycred_coupon_badges_ranks' ),
+					MYCRED_COUPON_KEY,
+					'advanced',
+					'core'
+				);
+			}
 
 			if ( $post->post_status == 'publish' )
 				add_meta_box(
@@ -599,9 +628,253 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		</div>
 	</div>
 </div>
-<?php
+	<?php
 
 		}
+
+		/**
+		 * Metabox: Coupon Requirements for badge/ranks
+		 * @since 2.4
+		 * @version 1.0
+		 */
+		public function mycred_coupon_badges_ranks( $post ) {
+			
+			wp_enqueue_script( 'mycred-coupon-badge-rank-js' );
+			wp_enqueue_style( 'mycred-coupon-badge-rank-style' );
+			$types_ids = mycred_get_post_meta( $post->ID, 'reward' );
+			$check_enable_disable = mycred_get_post_meta( $post->ID, 'check', true );
+			$enable_disable = ! empty( $check_enable_disable );
+			$coupon = mycred_get_coupon( $post->ID );
+			$manual_rank = '';
+			
+			if( class_exists( 'myCRED_Badge' ) ) {
+				$badge_id = mycred_get_badge_ids();
+			}
+			if( class_exists( 'myCRED_Ranks_Module' ) ){
+				$ranks = mycred_get_ranks();
+				$manual_rank = mycred_manual_ranks( $coupon->point_type );
+			}
+			ob_start(); ?>
+			<div class="mycred-border" >
+				<div class="row">
+					<div class="mycred-title"><button type="button" class="dashicons-before dashicons-no-alt close-button" ></button><?php 
+						_e( 'Reward', 'mycred' ); ?>	 
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="form-group">
+							<label for="mycred-select-coupon-reward"><?php _e( 'Select Reward Type : ', 'mycred' ); ?></label>
+							<div class="mycred-select-coupon-reward" >
+		                        <select name="mycred_coupon[reward][types][]" class="mycred-select-coupon-rewards"><?php
+		                        	if( class_exists( 'myCRED_Badge' ) && ( empty( $ranks ) || ! empty( $badge_id ) ) ){ ?>
+		                        		<option value="mycred_coupon_badges" ><?php _e( 'Badges', 'mycred' ); ?></option>
+		                        <?php } 
+		                        	if( class_exists( 'myCRED_Ranks_Module' ) && $manual_rank && ( ! empty( $ranks ) || empty( $badge_id ) ) ) { ?>
+		                        	<option value="mycred_coupon_ranks" ><?php _e( 'Ranks', 'mycred' ); ?></option>
+								<?php } ?>
+								</select>    
+		                    </div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="form-group">
+							<div class="ids show-badges" >
+								<label for="mycred-select-coupon" id="change-text"><?php echo class_exists( 'myCRED_Badge' ) && ( empty( $ranks ) || ! empty( $badge_id ) ) ? _e( 'Badges : ', 'mycred' ) : _e( 'Ranks : ', 'mycred' ); ?></label>
+								<div class="mycred-select-coupon"><?php
+		                        	if( ! empty( $badge_id ) || ! empty( $ranks ) ){?>	
+			                        	<select name="mycred_coupon[reward][ids][]" class="mycred-select-ids"><?php
+				                        	if( class_exists( 'myCRED_Badge' ) ) {
+					                        	foreach ($badge_id as $key => $value) {
+					                        		$badges = mycred_get_badge( $value );?>
+					                        		<option value="<?php echo $value ?>" ><?php _e( $badges->title ) ?></option><?php
+					                        	 }
+				                        	}
+				                        	if( class_exists( 'myCRED_Ranks_Module' ) && empty($badge_id) ) {
+					                        	foreach ( $ranks as $key => $value ) { ?>
+					                        		<option value="<?php echo $value->post_id ?>"><?php _e( $value->post->post_title ) ?></option><?php
+					                        	} 
+					                        }?>
+				                        </select><?php 
+				                    } ?> 	
+			                    </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<?php $html = ob_get_clean(); ?>
+
+			<div class="mycred-badge-rank-hide-show">
+				<div class="mycred-switch">
+					<label><strong><?php _e( 'Enable this to assign badge/ranks through coupon.', 'mycred' ); ?></strong></label>
+					<label class="mycred-switch1">
+	                    <input type="checkbox" id="mycred-check" name="mycred_coupon[check]" <?php echo $enable_disable == true ? 'checked' : ''; ?>>
+	                    <span class="slider round"></span>
+	                </label>
+	            </div>
+			</div>
+				<div class="form mycred-coupon-form" <?php echo $enable_disable == true ? 'style="display: block;"' : 'style="display: none;"' ?> >
+					<label class="mycred-rank-msg">
+						<strong><?php _e( 'You can only assign Ranks when Ranks are set to Manual Mode.: ', 'mycred' ); ?></strong>
+					</label><?php
+						
+					if( ! empty( $types_ids ) ){
+						foreach ( $types_ids[0] as $keys => $values ) {
+							echo $this->mycred_coupon_badge_rank_html( $values['types'], $values['ids'], $manual_rank );	
+						} 
+					}else {
+						echo $html;
+					}?>
+					
+					<div><button type="button" class="mycred-addmore-button button-secondary">Add More</button></div>
+				</div><?php
+
+	 		wp_localize_script( 'mycred-coupon-badge-rank-js', 'mycred_coupon_object', 
+            	array( 
+		            'html' => $html,
+		        )
+		    );
+		}
+
+		public function mycred_coupon_badge_rank_html( $types, $ids, $manual_rank ){ 
+
+			$selected_type = '';
+			
+			if( class_exists( 'myCRED_Badge' ) ) {
+				$badge_id = mycred_get_badge_ids();
+			}
+			if( class_exists( 'myCRED_Ranks_Module' ) ){
+				$ranks = mycred_get_ranks();
+			}
+			
+			?>
+
+			<div class="mycred-border" >
+				<div class="row">
+					<div class="mycred-title"><button type="button" class="dashicons-before dashicons-no-alt close-button" ></button><?php 
+						_e( 'Reward', 'mycred' ); ?>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="form-group">
+							<label for="mycred-select-coupon-reward"><?php _e( 'Select Reward Type : ', 'mycred' ); ?></label>
+							<div class="mycred-select-coupon-reward">
+		                        <select name="mycred_coupon[reward][types][]" class="mycred-select-coupon-rewards"><?php 
+
+		                        if ( class_exists( 'myCRED_Badge' ) ) { 
+
+		                        	if ( $types == 'mycred_coupon_badges' ) $selected_type = 'badge';
+		                        	
+		                        	?>
+		                        	<option value="mycred_coupon_badges" <?php echo $types == 'mycred_coupon_badges' ? 'selected="selected"' : ''; ?>><?php _e( 'Badges', 'mycred' ); ?></option>
+		                  <?php }
+		                  		else {
+		                  			if ( $types == 'mycred_coupon_badges' && class_exists( 'myCRED_Ranks_Module' ) && $manual_rank ) $selected_type = 'rank';
+		                  		}
+		                        if( class_exists( 'myCRED_Ranks_Module' ) && $manual_rank ) { 
+
+		                        	if ( $types == 'mycred_coupon_ranks' ) $selected_type = 'rank';
+		                        	?>
+		                        	<option value="mycred_coupon_ranks" <?php echo  $types == 'mycred_coupon_ranks' ? 'selected="selected"' : ''; ?>><?php _e( 'Ranks', 'mycred' ); ?></option>
+		                        <?php } 
+		                        else{
+		                        	if ( $types == 'mycred_coupon_ranks' && class_exists( 'myCRED_Badge' ) ) $selected_type = 'badge';
+		                        } ?>
+
+
+								</select>    
+		                    </div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="form-group">
+							<div class="ids show-badges" >
+								<label for="mycred-select-coupon" id="change-text"><?php ( ! empty( $badge_id ) && $types == 'mycred_coupon_badges' ) ? _e( 'Badges : ', 'mycred' ) : _e( 'Ranks : ', 'mycred' ); ?></label>
+								<div class="mycred-select-coupon"><?php
+		                        	
+		                        	if( ! empty( $badge_id ) || ! empty( $ranks ) ){?>
+			                        	
+			                        	<select name="mycred_coupon[reward][ids][]" class="mycred-select-ids"><?php
+				                        	
+				                        	if( $selected_type == 'badge' ){
+					                        	foreach ($badge_id as $key => $value) {
+					                        		$badges = mycred_get_badge( $value );?>
+					                        		<option value="<?php echo $value ?>" <?php echo  $ids == $value ? 'selected="selected"' : ''; ?>><?php _e( $badges->title ) ?></option><?php
+					                        	}
+					                        }elseif( $selected_type == 'rank'  ) { 
+					                        	
+						                        	foreach ( $ranks as $key => $value ) { ?>
+						                        		<option value="<?php echo $value->post_id ?>" <?php echo  $ids == $value->post_id ? 'selected="selected"' : ''; ?>><?php _e( $value->post->post_title ) ?></option><?php
+						                        	}
+						                        }
+					                         ?>
+				                        
+				                        </select><?php
+
+			                        }?>	
+
+			                    </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div><?php
+		}
+
+
+		public function mycred_change_dropdown_ajax_handler() {
+
+			$value = sanitize_text_field( $_POST['value'] );
+			
+			if( class_exists( 'myCRED_Badge' ) ) {
+				$badge_id = mycred_get_badge_ids();
+			}
+			if( class_exists( 'myCRED_Ranks_Module' ) ){
+				$ranks = mycred_get_ranks();
+			}
+
+			if ( $value == 'mycred_coupon_badges' ){
+				
+				$ids_title = array();
+				foreach ($badge_id as $key => $value) {
+					
+					$badges = mycred_get_badge( $value );
+					$badge_title = $badges->title;
+					$badge_id = $value;
+					$ids_title[] =  array( $badge_id, $badge_title );
+
+				}
+
+				$ids_title = json_encode( $ids_title );
+
+		        echo $ids_title;
+		        wp_die();
+		    }
+
+		    if ( $value == 'mycred_coupon_ranks' ){
+				
+				$ids_title = array();
+				foreach ($ranks as $key => $value) {
+
+					$rank_title = $value->post->post_title;
+					$rank_id = $value->post_id;
+					$ids_title[] =  array( $rank_id, $rank_title );
+
+				}
+
+				$ids_title = json_encode( $ids_title );
+
+		        echo $ids_title;
+		        wp_die();
+		    }
+			
+        }
 
 		/**
 		 * Metabox: Coupon Usage
@@ -637,10 +910,31 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 		public function save_coupon( $post_id, $post = NULL ) {
 
 			if ( $post === NULL || ! $this->core->user_is_point_editor() || ! isset( $_POST['mycred_coupon'] ) ) return $post_id;
+			
+			if( ! isset( $_POST['mycred_coupon']['check'] ) ){
+				$_POST['mycred_coupon']['check'] = false;
+			}
 
 			foreach ( $_POST['mycred_coupon'] as $meta_key => $meta_value ) {
 
-				$new_value = sanitize_text_field( $meta_value );
+				if( $meta_key == 'reward' ){
+
+					$types_ids = array();
+					foreach ($meta_value['types'] as $key => $value) {
+						
+						$reward_value = sanitize_text_field( $value );
+						$reward_id = sanitize_text_field( $meta_value['ids'][$key] );
+
+						$types_ids[] = array( 'types' => $reward_value ,  'ids' => $reward_id ) ;
+	
+					}
+
+					$new_value = $types_ids;
+				} 
+				else{
+
+					$new_value = sanitize_text_field( $meta_value );
+				}
 
 				// Make sure we provide a valid date that strtotime() can understand
 				if ( $meta_key == 'expires' && $new_value != '' ) {
@@ -656,9 +950,9 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 
 				// No need to update if it's still the same value
 				$old_value = mycred_get_post_meta( $post_id, $meta_key, true );
+
 				if ( $new_value != $old_value )
 					mycred_update_post_meta( $post_id, $meta_key, $new_value );
-
 			}
 
 		}

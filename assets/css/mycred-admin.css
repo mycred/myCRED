@@ -202,3 +202,41 @@ body #myCRED-wrap #accordion .ui-accordion-header.buycred-cashcred-more-tab-btn.
 h4.buycred-cashcred-more-tab-btn.ui-accordion-header.ui-state-active:before, h4.buycred-cashcred-more-tab-btn.ui-accordion-header:before {
     content: '';
 }
+
+.v-align-middle{
+    vertical-align: middle;
+}
+
+.mycred-tools-import-export table tr td {
+    width: 215px;
+}
+
+.mycred-tools-import-export table tr td:nth-last-child( 1 ) {
+    width: max-content;
+}
+
+.mycred-tools-import-export table tr {
+    height: 55px;
+}
+
+.mycred-tools-import-export .mycred-container{
+    padding: 10px 0;
+}
+
+.mycred-tools-import-export .mycred-container label{
+    display: block;
+}
+#myCRED-wrap .mycred-tools-setup ol {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding: 0px;
+    padding-inline-start: 40px;
+    margin-bottom: 0px;
+}
+
+.mycred-tools-setup, .mycred-tools-setup-export{
+    float: left;
+    width: 50%;
+}

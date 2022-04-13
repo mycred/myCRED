@@ -611,7 +611,7 @@ if ( ! function_exists( 'mycred_get_users_badges' ) ) :
 			}
 
 		}
-
+		
 		$clean_ids = array();
 		if ( ! empty( $badge_ids ) ) {
 			foreach ( $badge_ids as $id => $level ) {

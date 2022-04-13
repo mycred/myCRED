@@ -1,0 +1,70 @@
+.mycred-border{
+	border: 1px solid #e9e9e9; 
+	padding: 0 1em; 
+	margin: 0 0 .8em;
+}
+.mycred-select-coupon-reward{
+	display: inline-block; 
+	margin-left: 15px;
+}
+.mycred-select-coupon-rewards{
+	width: 113px;
+}
+.mycred-coupon-form{
+	padding: 15px 10px;
+}
+.mycred-title{
+	border-bottom: 1px solid #e9e9e9;
+	background-color: #fafafa; 
+	min-height: 1.5em; 
+	margin-bottom: 20px;
+}
+.show-badges { 
+	display: block !important;
+	/*border-top: 1px solid #e9e9e9;*/
+	margin-bottom: 10px;
+	margin-top: 11px;
+}
+.show-ranks { 
+	display: block !important;
+	/*border-top: 1px solid #e9e9e9;*/
+	margin-bottom: 10px;
+	margin-top: 11px;
+}
+.mycred-select-coupon {
+	display: inline-block; 
+	margin-left: 67px; 
+	margin-top: 10px;
+}
+.mycred-select-ids {
+	width: 113px; 
+}
+.mycred-select-coupon-ranks {
+	display: inline-block; 
+	margin-left: 76px; 
+	margin-top: 10px;
+}
+.mycred-select-ranks {
+	width: 113px; 
+	text-align: center;
+}
+.close-button{
+	cursor: pointer; 
+	color: #a00; 
+	opacity: 1; 
+	-webkit-appearance: none!important; 
+	background: 0 0!important; 
+	border: none!important; 
+	position: relative; 
+	top: 0.87em; 
+	line-height: 3em; 
+	display: inline-block;"
+}
+.close-button:hover {
+  color: deeppink !important; 
+  /*color: white;*/
+}
+.mycred-rank-msg{
+	color: #aaa; 
+  font-style: italic;
+}

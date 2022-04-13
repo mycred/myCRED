@@ -7,6 +7,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * for watchinga YouTube video.
  * @see http://codex.mycred.me/shortcodes/mycred_video/
  * @since 1.2
+ * @since 2.4 Removed logic, Interval greater than 3 was not working
  * @version 1.2.2
  */
 if ( ! function_exists( 'mycred_render_shortcode_video' ) ) :
@@ -45,7 +46,7 @@ if ( ! function_exists( 'mycred_render_shortcode_video' ) ) :
 		if ( $id === NULL || empty( $id ) ) return __( 'A video ID is required for this shortcode', 'mycred' );
 
 		// Interval
-		if ( strlen( $interval ) < 3 ) {
+		if ( $interval ) {
 		   $interval = (float) $interval;
            $interval = abs( $interval * 1000 );
         }

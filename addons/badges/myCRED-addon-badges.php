@@ -1106,7 +1106,7 @@ th#badge-users { width: 10%; }
                     $level        = $level_counter;
 
                     $add_level    = '<button type="button" class="button button-seconary button-small top-right-corner" id="badges-add-new-level">' . esc_js( __( 'Add Level', 'mycred' ) ) . '</button>';
-                    $remove_level = '<button type="button" class="button button-seconary button-small top-right-corner remove-badge-level" data-level="' . $level . '">' . esc_js( __( 'Remove Level', 'mycred' ) ) . '</button>';
+                    $remove_level = '<button type="button" class="button button-seconary button-small top-right-corner remove-badge-level" data-level="{{level}}">' . esc_js( __( 'Remove Level', 'mycred' ) ) . '</button>';
 
                     $level_image  = $this->get_level_image( $setup, $level );
                     $empty_level  = 'empty dashicons';
@@ -1117,9 +1117,13 @@ th#badge-users { width: 10%; }
 
                     $template = str_replace( '{{level}}',             $level, $template );
                     $template = str_replace( '{{addlevelbutton}}',    $add_level, $template );
-                    $template = str_replace( '{{removelevelbutton}}', $remove_level, $template );
 
                     $js_level = str_replace( '{{removelevelbutton}}', $remove_level, $js_level );
+
+                    $remove_level = str_replace( '{{level}}',         $level, $remove_level );
+
+                    $template = str_replace( '{{removelevelbutton}}', $remove_level, $template );
+
                     $js_level = str_replace( '{{emptylevelimage}}',   $empty_level, $js_level );
                     $js_level = str_replace( '{{levelimage}}',        '', $js_level );
                     $js_level = str_replace( '{{levelimagebutton}}',  esc_js( __( 'Set Image', 'mycred' ) ), $js_level );
@@ -1267,7 +1271,7 @@ th#badge-users { width: 10%; }
 
                     $template           = str_replace( '{{rewards}}',       $rewards, $template );
 
-                    $rewards            = str_replace( $level,         '{{level}}', $rewards );
+                    $rewards            = str_replace( $level,              '{{level}}', $rewards );
 
                     $js_level           = str_replace( '{{rewards}}',       $rewards, $js_level );
 
@@ -1677,16 +1681,17 @@ th#badge-users { width: 10%; }
          */
         public function badge_user_screen( $user ) {
 
-            // Only visible to admins
-            if ( ! mycred_is_admin() ) return;
-
             $user_id      = $user->ID;
             $all_badges   = mycred_get_badge_ids();
             $users_badges = mycred_get_users_badges( $user_id );
 
+            if ( ! mycred_is_admin() ) 
+                $all_badges = array_keys( $users_badges );
+
             ?>
             <style type="text/css">
                 .badge-wrapper { min-height: 230px; }
+                .badge-wrapper-center { display: inline-flex; justify-content: center; align-items: center; }
                 .badge-wrapper select { width: 100%; }
                 .badge-image-wrap { text-align: center; }
                 .badge-image-wrap .badge-image { display: block; width: 100%; height: 100px; line-height: 100px; }
@@ -1709,6 +1714,7 @@ th#badge-users { width: 10%; }
                                     $earned       = 0;
                                     $earned_level = 0;
                                     $badge_image  = $badge->main_image;
+                                    $level_select = '';
 
                                     if ( array_key_exists( $badge_id, $users_badges ) ) {
                                         $earned       = 1;
@@ -1716,44 +1722,59 @@ th#badge-users { width: 10%; }
                                         $badge_image  = $badge->get_image( $earned_level );
                                     }
 
-                                    $level_select = '<input type="hidden" name="mycred_badge_manual[badges][' . $badge_id . '][level]" value="0" /><select disabled="disabled"><option>Level 1</option></select>';
-                                    if ( count( $badge->levels ) > 1 ) {
+                                    if ( mycred_is_admin() ) {
+                                        
+                                        $level_select = '<input type="hidden" name="mycred_badge_manual[badges][' . $badge_id . '][level]" value="0" /><select disabled="disabled"><option>Level 1</option></select>';
+                                        if ( count( $badge->levels ) > 1 ) {
 
-                                        $level_select  = '<select name="mycred_badge_manual[badges][' . $badge_id . '][level]">';
-                                        $level_select .= '<option value=""';
-                                        if ( ! $earned ) $level_select .= ' selected="selected"';
-                                        $level_select .= '>' . __( 'Select a level', 'mycred' ) . '</option>';
+                                            $level_select  = '<select name="mycred_badge_manual[badges][' . $badge_id . '][level]">';
+                                            $level_select .= '<option value=""';
+                                            if ( ! $earned ) $level_select .= ' selected="selected"';
+                                            $level_select .= '>' . __( 'Select a level', 'mycred' ) . '</option>';
 
-                                        foreach ( $badge->levels as $level_id => $level ) {
-                                            $level_select .= '<option value="' . $level_id . '"';
-                                            if ( $earned && $earned_level == $level_id ) $level_select .= ' selected="selected"';
-                                            $level_select .= '>' . ( ( $level['label'] != '' ) ? $level['label'] : sprintf( '%s %d', __( 'Level', 'mycred' ), ( $level_id + 1 ) ) ) . '</option>';
+                                            foreach ( $badge->levels as $level_id => $level ) {
+                                                $level_select .= '<option value="' . $level_id . '"';
+                                                if ( $earned && $earned_level == $level_id ) $level_select .= ' selected="selected"';
+                                                $level_select .= '>' . ( ( $level['label'] != '' ) ? $level['label'] : sprintf( '%s %d', __( 'Level', 'mycred' ), ( $level_id + 1 ) ) ) . '</option>';
+                                            }
+
+                                            $level_select .= '</select>';
+
                                         }
 
-                                        $level_select .= '</select>';
+                                    }
+                                    else {
+
+                                        if ( ! empty( $badge->levels[ $earned_level ]['label'] ) ) {
+                                            $level_select = $badge->levels[ $earned_level ]['label'];
+                                        }
 
                                     }
 
                                     ?>
-                                    <div class="badge-wrapper color-option<?php if ( $earned === 1 ) echo ' selected'; ?>" id="mycred-badge<?php echo $badge_id; ?>-wrapper">
-                                        <label for="mycred-badge<?php echo $badge_id; ?>"><input type="checkbox" name="mycred_badge_manual[badges][<?php echo $badge_id; ?>][has]" class="toggle-badge" id="mycred-badge<?php echo $badge_id; ?>" <?php checked( $earned, 1 );?> value="1" /> <?php _e( 'Earned', 'mycred' ); ?></label>
-                                        <div class="badge-image-wrap">
+                                    <div class="badge-wrapper<?php if ( ! mycred_is_admin() ) echo ' badge-wrapper-center'; ?> color-option<?php if ( $earned === 1 ) echo ' selected'; ?>" id="mycred-badge<?php echo $badge_id; ?>-wrapper">
+                                        <div>
+                                            <?php if ( mycred_is_admin() ):?>
+                                            <label for="mycred-badge<?php echo $badge_id; ?>"><input type="checkbox" name="mycred_badge_manual[badges][<?php echo $badge_id; ?>][has]" class="toggle-badge" id="mycred-badge<?php echo $badge_id; ?>" <?php checked( $earned, 1 );?> value="1" /> <?php _e( 'Earned', 'mycred' ); ?></label>
+                                            <?php endif; ?>
+                                            <div class="badge-image-wrap">
 
-                                            <div class="badge-image<?php if ( $badge_image == '' ) echo ' empty'; ?>"><?php echo $badge_image; ?></div>
+                                                <div class="badge-image<?php if ( $badge_image == '' ) echo ' empty'; ?>"><?php echo $badge_image; ?></div>
 
-                                            <h4><?php echo $badge->title; ?></h4>
+                                                <h4><?php echo $badge->title; ?></h4>
+                                            </div>
+                                            <div class="badge-actions" style="min-height: 32px;">
+
+                                                <?php echo $level_select; ?>
+
+                                            </div>
+
+                                            <?php if ( $badge->open_badge && array_key_exists( $badge_id, $users_badges ) ):?>
+                                            <div class="badge-image-wrap">
+                                                <a href="<?php echo $badge->get_earned_image( $user_id ); ?> " class="button button-primary button-large mycred-open-badge-download" download>Download</a>
+                                            </div>
+                                            <?php endif; ?>
                                         </div>
-                                        <div class="badge-actions" style="min-height: 32px;">
-
-                                            <?php echo $level_select; ?>
-
-                                        </div>
-
-                                        <?php if ( $badge->open_badge && array_key_exists( $badge_id, $users_badges ) ):?>
-                                        <div class="badge-image-wrap">
-                                            <a href="<?php echo $badge->get_earned_image( $user_id ); ?> " class="button button-primary button-large mycred-open-badge-download" download>Download</a>
-                                        </div>
-                                        <?php endif; ?>
                                     </div>
                                     <?php
 

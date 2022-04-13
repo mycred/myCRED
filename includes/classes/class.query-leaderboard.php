@@ -15,7 +15,6 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		public $core            = NULL;
 		public $user_id         = 0;
 		private $max_size       = 250;
-
 		public $args            = array();
 		public $based_on        = 'balance';
 		public $references      = array();
@@ -216,6 +215,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			$this->leaderboard = $results;
 
+
 			if ( $append_current_user )
 				$this->append_current_user();
 
@@ -287,10 +287,15 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		 */
 		public function get_db_query() {
 
-			if ( $this->based_on == 'balance' )
+
+			if ( $this->based_on == 'balance'  ) {
 				$query = $this->get_balance_db_query();
-			else
+			}
+			else {
 				$query = $this->get_reference_db_query();
+			}
+
+		
 
 			return $query;
 
@@ -390,6 +395,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			global $wpdb, $mycred_log_table;
 
+			$query             = '';
 			$time_filter       = $this->get_timefilter();
 			$multisite_check   = $this->get_multisitefilter();
 			$exclude_user_filter    = $this->get_exclude_userfilter();
@@ -734,10 +740,22 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			global $wpdb;
 
+		
+
+
+
 			// Filter: Daily
 			if ( $this->args['timeframe'] == 'today' ) {
 				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( 'today midnight', $this->now ), $this->args['now'] );
 			}
+
+			// Filter: Yesterday
+			elseif ( $this->args['timeframe'] == 'yesterday' ) {
+				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( '-1 day midnight', $this->now ), strtotime( 'today midnight', $this->now ));
+				
+			}
+
+
 			// Filter: Weekly
 			elseif ( $this->args['timeframe'] == 'this-week' ) {
 
@@ -797,7 +815,6 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					$balance_format = 'CAST( %f AS DECIMAL( ' . $length . ', ' . $this->core->format['decimals'] . ' ) )';
 				}
 
-				if ( ! $this->args['total'] )
 					$query = $wpdb->prepare( "AND l.meta_value != {$balance_format}", $this->core->zero() );
 
 			}
@@ -819,21 +836,25 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			// Option to exclude zero balances
 			$query = '';
-			$checkIDs='~^\d+(,\d+)?$~';
+			$checkIDs='~^\d+(,\d+)*$~'; 
 			$exclude=$this->args['exclude'];
 
 			if (!empty($exclude)) {
+
 				if(preg_match($checkIDs,$exclude)){
 
 					$exclude=$this->args['exclude'];
+
 				}
-				else{
+				elseif(!preg_match($checkIDs,$exclude)){
+				
 					$exclude=mycred_leaderboard_exclude_role($exclude);
+
 				}
-				$query = $wpdb->prepare( "AND l.user_id NOT IN (%s) ",$exclude);
+				$query = $wpdb->prepare( "AND l.user_id NOT IN ($exclude)");	
+
 			}
 			return apply_filters( 'mycred_leaderboard_exclude_user_filter', $query, $this );
-
 		}
 
 		/**

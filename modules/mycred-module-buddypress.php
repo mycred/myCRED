@@ -421,7 +421,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			}
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><label>BuddyPress</label></h4>
+<h4><span class="dashicons dashicons-admin-plugins static"></span><label><?php echo apply_filters( 'mycred_bp_change_text', 'BuddyPress' ); ?></label></h4>
 <div class="body" style="display:none;">
 
 	<?php do_action( 'mycred_bp_before_settings', $this ); ?>

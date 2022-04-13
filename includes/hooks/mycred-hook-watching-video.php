@@ -37,7 +37,7 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 			add_action( 'wp_ajax_mycred-viewing-videos', array( $this, 'ajax_call_video_points' ) );
 
 			add_filter( 'mycred_video_js', array( $this, 'adjust_js' ) );
-			add_filter( 'mycred_video_view_' . $this->mycred_type, array( $this, 'video_view' ), 10, 2 );
+			add_action( 'mycred_video_view_' . $this->mycred_type, array( $this, 'video_view' ), 10 );
 
 		}
 
@@ -79,7 +79,7 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 
 			// Prep
 			$amount   = $this->core->number( $amount );
-			$interval = abs( $interval / 1000 );
+			$interval = abs( floatval( $interval ) / 1000 );
 
 			// Get playback details
 			$actions  = sanitize_text_field( $_POST['video_a'] );
@@ -479,7 +479,7 @@ if ( ! function_exists( 'mycred_video_detect_views' ) ) :
 				foreach ( explode( ',', $setup[5] ) as $type_key ) {
 
 					$type_key = sanitize_key( $type_key );
-					if ( mycred_point_type_exists( $type_key ) && ! in_array( $type_id, $types ) )
+					if ( mycred_point_type_exists( $type_key ) && ! in_array( $type_key, $types ) )
 						$types[] = $type_key;
 
 				}

@@ -91,6 +91,7 @@ endif;
  * Shortcode: mycred_buy_form
  * @see http://codex.mycred.me/shortcodes/mycred_buy_form/
  * @since 1.0
+ * @since 2.4 Submit button input changed with button to add compatibility with modern UI.
  * @version 1.3
  */
 if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
@@ -326,7 +327,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 				</div>
 
 				<div class="form-group">
-					<input type="submit" class="button btn btn-block btn-lg" value="<?php echo $button_label; ?>" />
+					<button class="button btn btn-block btn-lg" ><?php echo $button_label; ?></button>
 				</div>
 
 		</form>

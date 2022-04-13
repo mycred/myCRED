@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 5.8.2
-Stable tag: 2.3.2
+Stable tag: 2.4
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -30,17 +30,35 @@ myCred allows **THREE different ways** through which you can award your users:
 
 * **Badges -** Boost your users' participation by rewarding them for their exceptional performance.
 
+**Latest update - myCred v2.4**
+
+**myCred v2.4** focuses on expanding the plugin’s ability to import and export points, ranks, and badges from and to other sites. What’s better is that you can choose to export or import complete setup settings like point types, achievements level, and created badges with achievements level with the simplest of ease.
+
+Here is a list of the complete features introduced in myCred v2.4:
+* Import or export user points
+* Export all or specific point types
+* Export setup settings for all point types
+* Import or export setup settings in JSON format
+* Import or all or specific export user ranks
+* Import or export all or specific user badges
+* Import badges With ID/Title/Slug
+* Import ranks With ID/Title/Slug
+* Export raw or formatted file
+* Select users fields in the exported file
+* Assign Badges/Ranks using coupons
+* Merged myCred Gutenberg to myCred Core
+
 **Latest update - myCred v2.3**
 
 **myCred v2.3** is a core update that helps the admin award points, badges and ranks to users in bulk. Similarly, the admin can also choose to revoke these award types from multiple users simultaneously.
 
 Here are some of the most prominent features of the latest update:
 
-* A “Bulk Assign” tool for awarding/revoking points, badges, and ranks in bulk.
+* A "Bulk Assign" tool for awarding/revoking points, badges, and ranks in bulk.
 * The admin can exclude any user role from receiving points. Previously, the admin could only exclude users using user ID only.
 * A timeframe attribute in [mycred_my_balance_converted] shortcode - users can see their converted point balance in a given timeframe using predefined filters (Yesterday, Today, this week, this month, last month).
 
-**Last update - myCred v2.2**
+**Recent update - myCred v2.2**
 
 **myCred v2.2** focuses on improving the overall user interface, single badge page layout, point-type image, and social media sharing for a better user experience and operational efficiency.
 
@@ -281,6 +299,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4 =
+New features and Bug fixes.
+
 = 2.3.2 =
 Code improvement.
 
@@ -323,6 +344,21 @@ The banking module have been replaced by Central deposite module, and interest r
 
 == Changelog ==
 
+= 2.4 =
+- **NEW** - Introduced an Import/Export tool. 
+- **NEW** - Admin can assign "Badges" and "Manual Ranks" using coupons. 
+- **NEW** - Merged myCred Gutenberg to myCred Core. 
+- **TWEAK** - Code improvements. 
+- **FIX** - myCred video interval three-digit value not working 
+- **FIX** - exclude_zero attribute not working when total=1 in mycred_leaderboard shortcode. 
+- **FIX** - In the badge edit window, remove level button always removes the first level. 
+- **FIX** - Badges are not visible in the user profile for non-admin users. 
+- **FIX** - When updating log entry it will not reflect on the current balance. 
+- **FIX** - CSS confliction with some themes. 
+- **FIX** - Stopped users from getting points on signup referral multiple times on a single event. 
+- **FIX** - Leaderboard excludes users by role not working. 
+- **FIX** - Leaderboard excludes users by comma-separated ids not working.
+
 = 2.3.2 =
 - **TWAEK** - Code improvement.
 
@@ -336,7 +372,7 @@ The banking module have been replaced by Central deposite module, and interest r
 - **FIX** - Sometimes user's ranks were not updating automatically.
 - **FIX** - Membership page layout issues.
 - **FIX** - Points conversion not working when using arrows to increase or decrease the amount in [mycred_cashcred] shortcode.
-- **FIX** - buyCred payment dialog couldn’t load on the subsite.
+- **FIX** - buyCred payment dialog couldnâ€™t load on the subsite.
 - **FIX** - After deleting the badge their data will keep existing on the user's meta.
 - **FIX** - "this-week" value not working in [mycred_leaderboard] timeframe attribute when the week starts other than "Monday" in your WordPress setting.
 

@@ -3,7 +3,7 @@
  * Plugin Name: myCred
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 2.3.2
+ * Version: 2.4
  * Tags: point, credit, loyalty program, engagement, reward, woocommerce rewards
  * Author: myCred
  * Author URI: https://mycred.me
@@ -20,7 +20,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '2.3.2';
+		public $version             = '2.4';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -54,14 +54,14 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.3.2' ); }
+		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.4' ); }
 
 		/**
 		 * Not allowed
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.3.2' ); }
+		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.4' ); }
 
 		/**
 		 * Get
@@ -82,7 +82,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( ! defined( $name ) )
 				define( $name, $value );
 			elseif ( ! $definable && defined( $name ) )
-				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . $name . ' as it is already defined somewhere else!', '2.2' );
+				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . $name . ' as it is already defined somewhere else!', '2.4' );
 		}
 
 		/**
@@ -94,7 +94,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( file_exists( $required_file ) )
 				require_once $required_file;
 			else
-				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . $required_file . ' not found.', '2.3.2' );
+				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . $required_file . ' not found.', '2.4' );
 		}
 
 		/**
@@ -176,6 +176,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			$this->define( 'myCRED_MEMBERSHIP_DIR',	      myCRED_ROOT_DIR . 'membership/', false );
 			$this->define( 'myCRED_CLASSES_DIR',          myCRED_INCLUDES_DIR . 'classes/', false );
 			$this->define( 'myCRED_IMPORTERS_DIR',        myCRED_INCLUDES_DIR . 'importers/', false );
+			$this->define( 'myCRED_BLOCKS_DIR',        	  myCRED_INCLUDES_DIR . 'mycred-blocks/', false );
 			$this->define( 'myCRED_SHORTCODES_DIR',       myCRED_INCLUDES_DIR . 'shortcodes/', false );
 			$this->define( 'myCRED_WIDGETS_DIR',          myCRED_INCLUDES_DIR . 'widgets/', false );
 			$this->define( 'myCRED_HOOKS_DIR',            myCRED_INCLUDES_DIR . 'hooks/', false );
@@ -225,7 +226,8 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		/**
 		 * Include Plugin Files
 		 * @since 1.7
-		 * @version 1.2
+		 * @since 2.4 Tools Import/ Export Added
+		 * @version 1.3
 		 */
 		public function includes() {
 
@@ -250,7 +252,9 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-nav-menu.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-tools.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-tools-bulk-assign.php' );
-
+				$this->file( myCRED_INCLUDES_DIR . 'mycred-tools-setup-import-export.php' );
+				$this->file( myCRED_INCLUDES_DIR . 'mycred-tools-import-export.php' );
+				
 				if( isset ( $_GET['mycred_tour_guide'] ) ){
 
 					$this->file( myCRED_INCLUDES_DIR . 'mycred-walkthrough.php' );
@@ -277,6 +281,9 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 					$this->file( myCRED_MODULES_DIR . 'mycred-module-br-social-share.php' );
                     $this->file( myCRED_MODULES_DIR . 'mycred-module-management.php' );
 					$this->file( myCRED_MODULES_DIR . 'mycred-module-caching.php' );
+
+					// Mycred Blocks
+					$this->file( myCRED_BLOCKS_DIR . 'mycred-blocks.php' );
 
 					//Uninstall Settings
 					$this->file( myCRED_INCLUDES_DIR . 'mycred-uninstall.php' );

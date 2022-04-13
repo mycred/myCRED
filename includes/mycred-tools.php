@@ -22,6 +22,8 @@ class myCRED_Tools {
 
 	public function admin_enqueue_scripts()
 	{
+		wp_enqueue_style( MYCRED_SLUG . '-admin' );
+
 		wp_enqueue_script( MYCRED_SLUG . '-select2-script' );
 
 		wp_enqueue_style( MYCRED_SLUG . '-select2-style' );
@@ -34,6 +36,7 @@ class myCRED_Tools {
 			MYCRED_SLUG . '-tools-script',
 			'mycredTools',
 			array(
+				'ajax_url' 				=>	admin_url( 'admin-ajax.php' ),
 				'awardConfirmText'		=>	__( 'Do you really want to bulk award?', 'mycred' ),
 				'revokeConfirmText'		=>	__( 'Do you really want to bulk deduct?', 'mycred' ),
 				'successfullyAwarded'	=>	__( 'Successfully Awarded.', 'mycred' ),
@@ -64,13 +67,22 @@ class myCRED_Tools {
 
 	/**
 	 * Tools menu callback
+	 * @since 2.3
+	 * @since 2.4 Import Export Module Added
+	 * @version 1.1
 	 */
 	public function tools_page() { 
 		
-		$import_export = get_mycred_tools_page_url('import-export');
+		$import_export = get_mycred_tools_page_url('points');
 		$logs_cleanup = get_mycred_tools_page_url('logs-cleanup');
 		$reset_data = get_mycred_tools_page_url('reset-data');
-		
+		$pages = array( 
+			'import-export',
+			'points', 
+			'badges', 
+			'ranks',
+			'setup'
+		);
 		?>
 
 		<div class="" id="myCRED-wrap">
@@ -81,8 +93,8 @@ class myCRED_Tools {
 			<div class="mycred-tools-main-nav">
 				<h2 class="nav-tab-wrapper">
 					<a href="<?php echo admin_url('admin.php?page=mycred-tools') ?>" class="nav-tab <?php echo !isset( $_GET['mycred-tools'] ) ? 'nav-tab-active' : ''; ?>">Bulk Assign</a>
-					<!-- <a href="<?php //echo $import_export ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'import-export' ) ? 'nav-tab-active' : ''; ?>">Import/Export</a>
-					<a href="<?php //echo $logs_cleanup ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'logs-cleanup' ) ? 'nav-tab-active' : ''; ?>">Logs Cleanup</a>
+					<a href="<?php echo $import_export ?>" class="nav-tab <?php echo ( isset( $_GET['mycred-tools'] ) && in_array( $_GET['mycred-tools'], $pages ) ) ? 'nav-tab-active' : ''; ?>">Import/Export</a>
+					<!-- <a href="<?php //echo $logs_cleanup ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'logs-cleanup' ) ? 'nav-tab-active' : ''; ?>">Logs Cleanup</a>
 					<a href="<?php //echo $reset_data ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'reset-data' ) ? 'nav-tab-active' : ''; ?>">Reset Data</a> -->
 				</h2>
 			</div>
@@ -90,9 +102,12 @@ class myCRED_Tools {
 		<?php
 
 		if ( isset( $_GET['mycred-tools'] ) ) {
-			if ( $_GET['mycred-tools'] == 'import-export' ) { ?>
-				<h1>IMPORT/EXPORT</h1>
-				<?php
+
+			if ( in_array( $_GET['mycred-tools'], $pages ) )
+			{ 
+				$mycred_tools_import_export = new myCRED_Tools_Import_Export();
+
+				$mycred_tools_import_export->get_header();
 			}
 		}
 

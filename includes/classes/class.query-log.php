@@ -1840,7 +1840,7 @@ jQuery(function($) {
 			if ( ! $this->render_mode ) return;
 
 			if ( isset( $_GET['s'] ) && $_GET['s'] != '' )
-				$serarch_string = $_GET['s'];
+				$serarch_string = sanitize_text_field( $_GET['s'] );
 			else
 				$serarch_string = '';
 

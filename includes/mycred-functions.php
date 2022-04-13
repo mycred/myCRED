@@ -4253,3 +4253,30 @@ if ( ! function_exists( 'mycred_get_email_instances' ) ) :
 
 	}
 endif;
+
+/**
+ * Sanitizes Array | Associative  Array | Multi-dimensional Array
+ * @since 2.4
+ * @version 1.0
+ */
+
+if( !function_exists( 'mycred_sanitize_array' ) ):
+function mycred_sanitize_array( $_array )
+{
+	foreach( $_array as $key => $value )
+	{
+		$key = sanitize_text_field( $key );
+		
+		if( is_array( $value ) )
+		{
+			$value = mycred_sanitize_array( $value );
+		}
+		else
+		{
+			$_array[$key] = sanitize_text_field( $value );
+		}
+	}
+
+	return $_array;
+}
+endif;
