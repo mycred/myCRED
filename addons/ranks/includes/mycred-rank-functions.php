@@ -627,7 +627,7 @@ if ( ! function_exists( 'mycred_get_users_of_rank' ) ) :
 				FROM {$wpdb->users} users 
 					LEFT JOIN {$wpdb->usermeta} mycredrank ON ( users.ID = mycredrank.user_id AND mycredrank.meta_key = %s ) 
 					LEFT JOIN {$wpdb->usermeta} creds ON ( users.ID = creds.user_id AND creds.meta_key = %s ) 
-				WHERE rank.meta_value = %d 
+				WHERE mycredrank.meta_value = %d 
 				ORDER BY creds.meta_value+0 DESC LIMIT 25;", $rank_meta_key, $balance_key, $rank_id ) );
 
 			wp_cache_set( $cache_key, $users, MYCRED_SLUG );
