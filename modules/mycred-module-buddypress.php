@@ -180,7 +180,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 					$balance  = $mycred->get_users_balance( $user_id, $type );
 
 					// Output
-					if($buddyboss_settings['types']['sort'][$type] == true  && class_exists( 'BuddyPress' ) &&  is_plugin_active('mycred-buddyboss/mycred-buddyboss.php')) {
+					if(!empty($buddyboss_settings) && $buddyboss_settings['types']['sort'][$type] == true  && class_exists( 'BuddyPress' ) &&  is_plugin_active('mycred-buddyboss/mycred-buddyboss.php')) {
 							$template = str_replace( '%label%', $label, $template );
 							$template = $mycred->template_tags_general( $template );
 							$output  .= '<div class="mycred-balance mycred-' . $type . '">' . $template . ' ' . $mycred->format_creds( $balance ) . '</div>';

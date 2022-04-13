@@ -5,7 +5,7 @@
     var TextControl = wp.components.TextControl;
     var ToggleControl = wp.components.ToggleControl;
     var TextareaControl = wp.components.TextareaControl;
-
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-transfers', {
         title: __('Transfer', 'mycred'),
@@ -113,9 +113,9 @@
             }
 
             return el('div', {}, [
-                el('p', {}, __('Transfer Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Transfer Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Button Label', 'mycred'),
                             help: __('The submit transfer button label. Leave empty to use the default label you set in your settings.', 'mycred'),
@@ -189,7 +189,8 @@
                             value: balance_label,
                             onChange: setBalanceLabel
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

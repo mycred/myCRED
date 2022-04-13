@@ -109,7 +109,12 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
             );
         }
 
-        public function mycred_support_callback() {?>
+         public function mycred_support_callback() {
+
+            $references  = mycred_get_all_references();
+
+            ?>
+            
             <div class="wrap mycred-support-page-container">
                 <h1 class="wp-heading-inline">myCred Help and Support</h1>
                 
@@ -142,11 +147,20 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                     
                     <h2>myCred Add-ons Update:</h2>
                     <p>For our users' convenience and their site optimization, we made a unified license system for individual and membership users. <a href="<?php echo admin_url('options.php?page=mycred-update'); ?>">Click here to update your add-ons</a></p>
+                    <hr>
+                    
+                    <h2>myCred Log References:</h2>
+                    <div class="row mycred-all-references-list">
+                        <?php foreach ( $references as $key => $entry ):?>   
+                        <div class="col-md-6 mb-2"><code><?php echo $key;?></code> - <?php echo $entry;?></div>
+                        <?php endforeach;?>
+                    </div>
 
                 </div>
-
                 
             </div>
+
+           
            <?php
         }
 

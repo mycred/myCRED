@@ -944,6 +944,19 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
     public function import_export()
     {
+
+        check_ajax_referer( 'mycred-tools', 'token' );
+
+        $current_user_id = get_current_user_id();
+        $mycred = mycred();
+
+        if ( ! $mycred->user_is_point_admin( $current_user_id ) ) {
+
+            wp_send_json( array( 'success', 'accessDenied' ) );
+            wp_die();
+
+        }
+
         if( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-tools-import-export' )
         {
             //Export Raw points 

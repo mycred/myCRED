@@ -698,7 +698,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 							</div>
 							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 								<div class="form-group">
-									<label for="<?php echo $excluded_ids_args['id']; ?>"><?php _e( 'Exclude by User ID', 'mycred' ); ?></label>
+									<label for="<?php echo $excluded_ids_args['id']; ?>"><?php _e( 'Exclude Users', 'mycred' ); ?></label>
 									<?php echo mycred_create_select2( $all_users, $excluded_ids_args, $excluded_ids ); ?>
 								</div>
 								<div class="form-group">
@@ -1234,6 +1234,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 */
 		public function get_users()
 		{
+			check_ajax_referer( 'mycred-management-actions', 'token' );
+			
 			if( isset( $_GET['action'] ) && $_GET['action'] == 'mycred-get-users-to-exclude' )
 			{
 				$search = sanitize_text_field( $_GET['search'] );

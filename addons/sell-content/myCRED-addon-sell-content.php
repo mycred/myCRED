@@ -187,18 +187,22 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			{	
 				$content_id = '';
 
-				if( $log->ref == 'buy_content'  && $log->id == $row_id)
+				if( $log->ref == 'buy_content' && $log->id == $row_id )
 				{
-				
-					$content_id = (int)$log->ref_id;
+					
+					$content_id = (int) $log->ref_id;
 						
-					$sold_content = mycred_get_post_meta( $content_id, '_mycred_content_sales' );
+					$sold_content = mycred_get_post_meta( $content_id, '_mycred_content_sales', true );
+
+					if ( ! empty( $sold_content ) ) {
+
+						$sold_content = (int) $sold_content;
+						$sold_content--;
+
+						mycred_update_post_meta( $content_id, '_mycred_content_sales', $sold_content );
+					
+					}
 				
-					$sold_content = (int)$sold_content[0];
-
-					$sold_content--;
-
-					mycred_update_post_meta( $content_id, '_mycred_content_sales', $sold_content );
 				}
 
 			}

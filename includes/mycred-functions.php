@@ -421,7 +421,7 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		 * @since 0.1
 		 * @version 1.0
 		 */
-		public function parse_template_tags( $content = '', $log_entry ) {
+		public function parse_template_tags( $content, $log_entry ) {
 
 			// Prep
 			$reference = $log_entry->ref;
@@ -3576,7 +3576,7 @@ endif;
  * @version 1.0.1
  */
 if ( ! function_exists( 'mycred_translate_limit_code' ) ) :
-	function mycred_translate_limit_code( $code = '', $id, $mycred ) {
+	function mycred_translate_limit_code( $code, $id, $mycred ) {
 
 		if ( $code == '' ) return '-';
 

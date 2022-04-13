@@ -491,14 +491,14 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			$table_rows   = array();
 			$point_type_name = apply_filters( 'mycred_buycred_checkout_order', $this->core->plural(), $this );
 			$table_rows[] = '<tr><td class="item">' . esc_html( $point_type_name ) . '</td><td class="cost right">' . $this->amount . '</td></tr>';
-
 			$item_label = apply_filters( 'mycred_buycred_checkout_order', __('Item', 'mycred'), $this );
 			$amount_label = apply_filters( 'mycred_buycred_checkout_order', __('Amount', 'mycred'), $this );
-
+			$cost_label = apply_filters( 'mycred_buycred_checkout_order', __('Cost', 'mycred'), $this );
+		
 			if ( $this->gifting )
-				$table_rows[] = '<tr><td colspan="2"><strong>' . esc_js( esc_attr( __( 'Recipient', 'mycred' ) ) ) . ':</strong> ' . esc_html( get_userdata( $this->recipient_id )->display_name ) . '</td></tr>';
+				$table_rows[] = '<tr><td colspan="2"><strong>' . esc_js( esc_attr($cost_label ) ) . ':</strong> ' . esc_html( get_userdata( $this->recipient_id )->display_name ) . '</td></tr>';
 
-			$table_rows[] = '<tr class="total"><td class="item right">' . esc_js( esc_attr( __( 'Cost', 'mycred' ) ) ) . '</td><td class="cost right">' . sprintf( '%s %s', $this->cost, $this->prefs['currency'] ) . '</td></tr>';
+			$table_rows[] = '<tr class="total"><td class="item right">' . esc_js( esc_attr( __( 'Cost', 'mycred' ) ) ) . '</td><td class="cost right">' . sprintf( '%s %s', apply_filters( 'mycred_buycred_display_user_amount',  $this->cost ), $this->prefs['currency'] ) . '</td></tr>';
 
 			$table_rows   = apply_filters( 'mycred_buycred_order_table_rows', $table_rows, $this );
 

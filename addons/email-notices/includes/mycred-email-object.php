@@ -361,35 +361,27 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 
 			if ( ! empty( $content ) ) {
 
-			    if ( class_exists( 'myCRED_Ranks_Module' ) ) {
-                    //rank-title
-                    if ( is_array( $event ) &&  array_key_exists( 'ref_id', $event ) ) {
+				if ( class_exists( 'myCRED_Ranks_Module' ) && ( strpos( $content, '%rank_title%' ) !== false || strpos( $content, '%rank_image%' ) !== false ) ) {
+					
+					if ( is_array( $event ) && array_key_exists( 'ref_id', $event ) ) {
 
                         $rank = mycred_get_rank( $event['ref_id'] );
                         
                         if ( is_object( $rank ) ) {
                         
+                        	//rank-title
                         	$rank_title = $rank->title;
-                        	$content = str_replace( '%rank_title%', $rank_title, $content );
+                        	$content    = str_replace( '%rank_title%', $rank_title, $content );
+                    		
+                    		//rank-image
+                    		$rank_image = "<img src='" . esc_url( $rank->logo_url ) . "'>";
+	                        $content    = str_replace( '%rank_image%', $rank_image, $content );
                         
                         }
 
                     }
 
-                    //rank-image
-                    if ( is_array( $event ) &&  array_key_exists( 'ref_id', $event ) ) {
-
-                        $rank = mycred_get_rank( $event['ref_id'] );
-						
-						if ( is_object( $rank ) ) {
-
-	                        $rank_image = '<img src = '.$rank->logo_url. '>';
-	                        $content    = str_replace( '%rank_image%', $rank_image, $content );
-	                        
-	                    }
-
-                    }
-                }
+				}
 
 				$mycred  = mycred( $point_type );
 

@@ -246,7 +246,9 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			$point_type 			= get_post_meta( $post_id, 'point_type', true );
 			$points 				= get_post_meta( $post_id, 'points', true );
 			$gateway 				= get_post_meta( $post_id, 'gateway', true );
-			 
+			$user_id 				= get_post_meta( $post_id, 'from', true );
+			// $fee_points				= get_post_meta( $post_id, 'fee_points', true );
+
 			$response_send 			= array();
 			
 			//Add comments in history section
@@ -254,13 +256,71 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			$author       			= 'cashCRED';
 			$author_email		    = apply_filters( 'mycred_cashcred_comment_email', 'cashcred-service@mycred.me' );
 			$get_payment_settings   = cashcred_get_payment_settings( $post_id );
+
+			//adding fees attribute in cashcred 2.4
+			$cashcred_setting = mycred_get_cashcred_settings();
+			if( !empty( $cashcred_setting ) ){
+			
+				if( $cashcred_setting['fees']['use'] == 1 ) {
+					
+					$fee = $cashcred_setting['fees']['types'][$point_type]['amount'];
+					
+					if( $cashcred_setting['fees']['types'][$point_type]['by'] == 'percent' )
+						$fee = ( ( $fee / 100 ) * $points );
+
+					if( $cashcred_setting['fees']['types'][$point_type]['min_cap'] != 0 )
+						$fee = $fee + $cashcred_setting['fees']['types'][$point_type]['min_cap'];
+
+					if( $cashcred_setting['fees']['types'][$point_type]['max_cap'] != 0 && $fee > $cashcred_setting['fees']['types'][$point_type]['max_cap'] )
+						$fee = $cashcred_setting['fees']['types'][$point_type]['max_cap'];
+
+					
+					if( $cashcred_setting['fees']['account'] != 0){
+						
+						$log_data = array(
+							'post_id' => $post_id,
+							'fees_setting' => $cashcred_setting['fees'],
+							'transfer_fee_user'	=> $cashcred_setting['fees']['account']
+						);
+
+						$mycred = mycred( $point_type );
+
+						if( ! empty( get_userdata( $cashcred_setting['fees']['account'] )->user_login) )
+							$mycred->add_creds( 
+								'fee_transfer', 
+								$cashcred_setting['fees']['account'], 
+								$fee,
+								'fee transfer to ' . get_userdata( $cashcred_setting['fees']['account'] )->user_login, 
+								$post_id , 
+								$log_data, 
+								$point_type 
+							);
+					}
+
+					$log_data = array(
+						'post_id' => $post_id ,
+						'fees_setting' => $cashcred_setting['fees']
+					);
+
+					mycred_subtract( 
+						'cashcred_withdrawal_fee', 
+						$user_id, 
+						-$fee, 
+						'fee deduct', 
+						$post_id , 
+						$log_data, 
+						$point_type 
+					);
+						
+				}
+			}
+
 			$currency   			= $get_payment_settings->currency;
 			$amount     			= $get_payment_settings->points * $get_payment_settings->cost;
 			$amount_set 			= $currency .' '.$amount;
 			$comment 				= 'Withdrawal payment request processed by %s with the amount %s.' ;
 			$comment 				= apply_filters( 'mycred_cashcred_comment_text' , $comment );
 			$comment				= sprintf( $comment , $user->user_login ,$amount_set);
-			$user_id 				= get_post_meta( $post_id, 'from', true );
 			
 			/* set user total balance */
 			$cashcred_total 		= get_user_meta( $user_id, 'cashcred_total', true );
@@ -344,7 +404,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 
 		/**
 		 * Get Payment Gateways
-		 * Retreivs all available payment gateways that can be used to buyCRED
+		 * Retreivs all available payment gateways that can be used to cashCred
 		 * @since 0.1
 		 * @version 1.1.1
 		 */
@@ -402,10 +462,41 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			
 			$user_balance = mycred_get_users_balance( get_current_user_id() , $point_type );
 
+			
+			//adding fees attribute in cashcred 2.4
+			$cashcred_setting = mycred_get_cashcred_settings();
+			if( ! empty( $cashcred_setting['fees'] ) ){
+			
+				$fee = 0;
+				if( $cashcred_setting['fees']['use'] == 1 ) {
+					
+					$fee_amount = $cashcred_setting['fees']['types'][$point_type]['amount'];
+					$fee = $fee_amount;
+					if( $cashcred_setting['fees']['types'][$point_type]['by'] == 'percent' )
+						$fee = ( ( $fee_amount / 100 ) * $points );
+
+					if( $cashcred_setting['fees']['types'][$point_type]['min_cap'] != 0 )
+						$fee = $fee + $cashcred_setting['fees']['types'][$point_type]['min_cap'];
+
+					if( $cashcred_setting['fees']['types'][$point_type]['max_cap'] != 0 && $fee > $cashcred_setting['fees']['types'][$point_type]['max_cap'] )
+						$fee = $cashcred_setting['fees']['types'][$point_type]['max_cap'];
+						
+					$fee_points = $points + $fee; 
+
+					if( $user_balance < $fee_points ){
+				
+						$notice = __('Insufficient funds after adding fee'); 
+						$this->notification_message( $notice, $requested_url );
+
+					}
+				}
+			}
+
+
 			if( $user_balance < $points ){
 					 
 				$format = __('Insufficient funds your point is %s');  
-				$notice = sprintf($format, mycred_display_users_balance( get_current_user_id() , $point_type )); 
+				$notice = sprintf($format, mycred_display_users_balance( get_current_user_id() , $point_type ));
 
 				$this->notification_message( $notice, $requested_url );
 				
@@ -430,6 +521,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				check_site_add_post_meta( $post_id, 'point_type',   $point_type, true );
 				check_site_add_post_meta( $post_id, 'gateway', 		$cashcred_pay_method , true );
 				check_site_add_post_meta( $post_id, 'points',     	$points, true );
+				check_site_add_post_meta( $post_id, 'fee_points',   $fee, true );
 				check_site_add_post_meta( $post_id, 'cost',         $cost, true );
 				check_site_add_post_meta( $post_id, 'currency',     $currency, true );
 				check_site_add_post_meta( $post_id, 'from',         get_current_user_id(), true );
@@ -670,7 +762,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 
 		<?php settings_fields( $this->settings_name ); ?>
 
-		<?php do_action( 'mycred_before_buycreds_page', $this ); ?>
+		<?php do_action( 'mycred_before_cashcred_page', $this ); ?>
 
 		<div class="list-items expandable-li" id="accordion">
 <?php
@@ -699,14 +791,14 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="buycred-gateway-<?php echo $key; ?>"><input type="checkbox" name="mycred_pref_cashcreds[active][]" id="cashcred-gateway-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php _e( 'Enable', 'mycred' ); ?></label>
+							<label for="cashcred-gateway-<?php echo $key; ?>"><input type="checkbox" name="mycred_pref_cashcreds[active][]" id="cashcred-gateway-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php _e( 'Enable', 'mycred' ); ?></label>
 						</div>
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<?php if ( $has_test_mode ) : ?>
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="buycred-gateway-<?php echo $key; ?>-sandbox"><input type="checkbox" name="mycred_pref_cashcreds[gateway_prefs][<?php echo $key; ?>][sandbox]" id="cashcred-gateway-<?php echo $key; ?>-sandbox" value="<?php echo $key; ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php _e( 'Sandbox Mode', 'mycred' ); ?></label>
+							<label for="cashcred-gateway-<?php echo $key; ?>-sandbox"><input type="checkbox" name="mycred_pref_cashcreds[gateway_prefs][<?php echo $key; ?>][sandbox]" id="cashcred-gateway-<?php echo $key; ?>-sandbox" value="<?php echo $key; ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php _e( 'Sandbox Mode', 'mycred' ); ?></label>
 						</div>
 						<?php endif; ?>
 					</div>
@@ -827,7 +919,7 @@ jQuery(function($) {
 		 */
 		public function sanitize_settings( $data ) {
 
-			$data      = apply_filters( 'mycred_buycred_save_prefs', $data );
+			$data      = apply_filters( 'mycred_cashcred_save_prefs', $data );
 			$installed = $this->get();
 
 			if ( empty( $installed ) ) return $data;
@@ -855,7 +947,7 @@ jQuery(function($) {
 		public function after_general_settings( $mycred = NULL ) {
 
 			$cashcred_prefs = mycred_get_cashcred_settings();
-
+			$point_types = $mycred->point_types;
 			?>
 			<h4><span class="dashicons dashicons-admin-plugins static"></span><strong>cash</strong>CRED</h4>
 			<div class="body" style="display:none;">
@@ -873,9 +965,90 @@ jQuery(function($) {
 						</div>
 
 					</div>
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12"></div>
 				</div>
 
+				<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+					<div class="row">
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="<?php echo $this->field_id( array( 'fees' => 'use' ) ); ?>"><input type="checkbox" name="mycred_pref_core[cashcreds][fees][use]" id="<?php echo $this->field_id( array( 'fees' => 'use' ) ); ?>"<?php checked( $cashcred_prefs['fees']['use'], 1 ); ?> value="1" /> <?php _e( 'Enable this feature', 'mycred' ); ?></label>
+							</div>
+						</div>
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="<?php echo $this->field_id( array( 'fees' => 'account' ) ); ?>"><?php _e( 'Fee Account', 'mycred' ); ?></label>
+								<input type="text" class="form-control" name="mycred_pref_core[cashcreds][fees][account]" id="<?php echo $this->field_id( array( 'fees' => 'account' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['account'] ); ?>" />
+								<p><span class="description"><?php _e( 'Option to deposit transfer fees into a specific users account. Use zero to disable.', 'mycred' ); ?></span></p>
+							</div>
+						</div>
+					</div>
+					<?php
+					
+					foreach ( $point_types as $key => $key ) {
+
+						$mycred = mycred( $key );
+						if ( ! array_key_exists( $key, $cashcred_prefs['fees']['types'] ) )
+							$cashcred_prefs['fees']['types'][ $key ] = array(
+								'amount'       => 0,
+								'by'           => 'percent',
+								'min_cap'      => 0,
+								'max_cap'      => 0,
+								'presentation' => '( %fee% + %min% ) max. %max% = %total%'
+							);
+
+					?>
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<h3><?php printf( __( '%s Transfer Fee', 'mycred' ), $mycred->plural() ); ?></h3>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'amount' ) ); ?>"><?php _e( 'The Fee', 'mycred' ); ?></label>
+								<div>
+									<input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][amount]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'amount' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['amount'] ); ?>" /> 
+									<select name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][by]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'by' ) ); ?>"><?php
+
+										$options = array( 'percent' => __( 'Percent', 'mycred' ), 'sum' => $mycred->plural() );
+										foreach ( $options as $value => $label ) {
+											echo '<option value="' . $value . '"';
+											if ( $cashcred_prefs['fees']['types'][ $key ]['by'] == $value ) echo ' selected="selected"';
+											echo '>' . $label . '</option>';
+										}
+
+									?></select>
+								</div>
+								<p><span class="description"><?php _e( 'Use zero for no fee.', 'mycred' ); ?></span></p>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'min_cap' ) ); ?>"><?php _e( 'Minimum Charge', 'mycred' ); ?></label>
+								<div><input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][min_cap]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'min_cap' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['min_cap'] ); ?>" /> <?php echo $mycred->plural(); ?></div>
+								<p><span class="description"><?php _e( 'Option to set a minimum charge. If set, this amount is added on top of the fee. Example 2% fee + 1.30 points. Use zero to disable.', 'mycred' ); ?></span></p>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'max_cap' ) ); ?>"><?php _e( 'Maximum Cap', 'mycred' ); ?></label>
+								<div><input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][max_cap]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'max_cap' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['max_cap'] ); ?>" /> <?php echo $mycred->plural(); ?></div>
+								<p><span class="description"><?php _e( 'Optional maximum cap for transfer fees. Use zero to disable.', 'mycred' ); ?></span></p>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'presentation' ) ); ?>"><?php _e( 'Presentation', 'mycred' ); ?></label>
+								<input type="text" class="form-control" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][presentation]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'presentation' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['presentation'] ); ?>" />
+								<p><span class="description"><?php _e( 'Option to set how fees are displayed to your users. Available template tags are: %fee%, %min% and %max% = %total%', 'mycred' ); ?></span></p>
+							</div>
+						</div>
+					</div>
+					<?php
+					} 
+					?>
 			</div>
 			<?php
 
@@ -887,10 +1060,22 @@ jQuery(function($) {
 		 * @version 1.0
 		 */
 		public function sanitize_extra_settings( $new_data, $data, $general ) {
-
+			
+			$point_types = $general->point_types;
+			
 			$new_data['cashcreds']['debugging'] = sanitize_text_field( $data['cashcreds']['debugging'] );
+			$new_data['cashcreds']['fees']['use'] = isset( $data['cashcreds']['fees']['use'] ) ? 1 : 0;
+			$new_data['cashcreds']['fees']['account'] = intval( $data['cashcreds']['fees']['account'] );
+			$new_data['cashcreds']['fees']['types'] = array();
+			foreach ( $point_types as $key => $type ) {
 
-			//var_dump( $new_data, $data );die;
+				$new_data['cashcreds']['fees']['types'][$key]['amount'] = sanitize_text_field( $data['cashcreds']['fees']['types'][$key]['amount'] );
+				$new_data['cashcreds']['fees']['types'][$key]['by'] = sanitize_text_field( $data['cashcreds']['fees']['types'][$key]['by'] );
+				$new_data['cashcreds']['fees']['types'][$key]['min_cap'] = sanitize_text_field( $data['cashcreds']['fees']['types'][$key]['min_cap'] );
+				$new_data['cashcreds']['fees']['types'][$key]['max_cap'] = sanitize_text_field( $data['cashcreds']['fees']['types'][$key]['max_cap'] );
+				$new_data['cashcreds']['fees']['types'][$key]['presentation'] = wp_filter_post_kses( $data['cashcreds']['fees']['types'][$key]['presentation'] );
+
+			}
 
 			return $new_data;
 
@@ -901,7 +1086,7 @@ jQuery(function($) {
 endif;
 
 /**
- * Load buyCRED Module
+ * Load cashCred Module
  * @since 1.7
  * @version 1.0
  */

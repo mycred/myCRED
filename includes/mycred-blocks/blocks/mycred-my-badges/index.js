@@ -4,7 +4,7 @@
     var el = wp.element.createElement;
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
-
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-my-badges', {
         title: __('My Badges', 'mycred'),
@@ -52,6 +52,7 @@
                 el('p', {}, __('My Badges Shortcode', 'mycred')
                         ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(SelectControl, {
                             label: __('Show', 'mycred'),
                             help: __('Select if you want to show only badges that a user has earned or all badges', 'mycred'),
@@ -80,8 +81,9 @@
                             help: __('Option to show badges of a particular user. If you want to show the badges of the current user, type in current.', 'mycred'),
                             value: user_id,
                             onChange: setUserId
-                        })
-                        )
+                        }),
+                    )
+                )
             ]);
         },
         save: function (props) {

@@ -521,13 +521,18 @@ line-height:34px;
 }
 
 .mycred-support-page-container {
-    max-width: 1024px;
+    max-width: 1200px;
 }
 
 .mycred-support-page-content {
     padding: 10px 27px 14px 27px;
-    background: white;
+    background: white !important;
+   
     margin-top: 10px;
+}
+
+.mycred-all-references-list {
+    margin-top: 12px;
 }
 
 .mycred-support-page-content h2 {

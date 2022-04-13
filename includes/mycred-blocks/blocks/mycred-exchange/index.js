@@ -10,6 +10,7 @@
     var el = wp.element.createElement;
     var SelectControl = wp.components.SelectControl;
     var TextControl = wp.components.TextControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-exchange', {
         title: __('Exchange', 'mycred'),
@@ -63,9 +64,9 @@
                 props.setAttributes({button: value});
             }
             return el('div', {}, [
-                el('p', {}, 'Exchange Shortcode'
-                        ),
+                el('p', {}, __('Exchange Shortcode', 'mycred' ) ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(SelectControl, {
                             label: __('From', 'mycred'),
                             helper: __('The point type to exchange from', 'mycred'),
@@ -98,7 +99,8 @@
                             value: button,
                             onChange: setButton
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

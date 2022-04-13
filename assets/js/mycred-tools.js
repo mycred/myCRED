@@ -71,6 +71,7 @@ jQuery(document).ready(function() {
             data: function(params) {
                 var query = {
                     search: params.term,
+                    token: mycredTools.token,
                     action: 'mycred-tools-select-user'
                 }
 
@@ -148,6 +149,7 @@ jQuery(document).ready(function() {
             type: 'POST',
             data: {
                 action: 'mycred-tools-assign-award',
+                token: mycredTools.token,
                 selected_type: $selectedType,
                 points_to_award: $pointsToAward,
                 point_type: $pointType,
@@ -166,6 +168,7 @@ jQuery(document).ready(function() {
                 jQuery('.tools-bulk-assign-award-btn').find('span').css('display', 'inherit');
             },
             success: function(data) {
+
                 jQuery('.tools-bulk-assign-award-btn').find('span').hide();
 
                 if (data.success === true && $pointsToAward < 0) {
@@ -177,20 +180,12 @@ jQuery(document).ready(function() {
                 if (data.success === true) {
                     alert(mycredTools.successfullyAwarded);
                     mycredToolsResetForm();
+                    return;
                 }
 
-                if (data.success == 'pointsRequired') {
-                    alert(mycredTools.pointsRequired);
-                }
-                if (data.success == 'logEntryRequired') {
-                    alert(mycredTools.logEntryRequired);
-                }
-                if (data.success == 'userOrRoleIsRequired') {
-                    alert(mycredTools.userOrRoleIsRequired);
-                }
-                if (data.success == 'badgesFieldRequried') {
-                    alert(mycredTools.badgesFieldRequried);
-                }
+                if ( mycredTools.hasOwnProperty( data.success ) ) 
+                    alert( mycredTools[ data.success ] );
+
             }
         })
     });
@@ -211,12 +206,12 @@ jQuery(document).ready(function() {
         var $users = JSON.stringify(jQuery('[name="bulk_users"]').val());
         var $user_roles = JSON.stringify(jQuery('[name="bulk_roles"]').val());
 
-
         jQuery.ajax({
             url: ajaxurl,
             type: 'POST',
             data: {
                 action: 'mycred-tools-assign-award',
+                token: mycredTools.token,
                 selected_type: $selectedType,
                 revoke: 'revoke',
                 badges_to_revoke: $badgesToRevoke,
@@ -228,18 +223,18 @@ jQuery(document).ready(function() {
                 jQuery('.tools-revoke-btn').find('span').css('display', 'inherit');
             },
             success: function(data) {
+
                 jQuery('.tools-revoke-btn').find('span').hide();
 
                 if (data.success === true) {
                     alert(mycredTools.successfullyRevoked);
                     mycredToolsResetForm();
+                    return;
                 }
-                if (data.success == 'userOrRoleIsRequired') {
-                    alert(mycredTools.userOrRoleIsRequired);
-                }
-                if (data.success == 'badgesFieldRequried') {
-                    alert(mycredTools.badgesFieldRequried);
-                }
+
+                if ( mycredTools.hasOwnProperty( data.success ) ) 
+                    alert( mycredTools[ data.success ] );
+
             }
         });
     });
@@ -285,6 +280,7 @@ jQuery(document).ready(function() {
             type: 'POST',
             data: {
                 action: 'mycred-tools-import-export',
+                token: mycredTools.token,
                 request_tab: $requestTab,
                 template: 'formatted'
             },
@@ -306,6 +302,7 @@ jQuery(document).ready(function() {
             type: 'POST',
             data: {
                 action: 'mycred-tools-import-export',
+                token: mycredTools.token,
                 request_tab: $requestTab,
                 template: 'raw'
             },
@@ -383,6 +380,7 @@ jQuery(document).ready(function() {
             type: 'POST',
             data: {
                 action: 'mycred-tools-import-export',
+                token: mycredTools.token,
                 request_tab: $requestTab,
                 request: 'export',
                 template: 'raw',
@@ -420,6 +418,7 @@ jQuery(document).ready(function() {
             type: 'POST',
             data: {
                 action: 'mycred-tools-import-export',
+                token: mycredTools.token,
                 request_tab: $requestTab,
                 request: 'export',
                 template: 'formatted',
@@ -468,6 +467,7 @@ jQuery(document).ready(function() {
 
         var formData = new FormData();
         formData.append('action', 'mycred-tools-import-export');
+        formData.append('token', mycredTools.token);
         formData.append('request_tab', $requestTab);
         formData.append('import_format_type', $importFormatType);
         formData.append('request', 'import');

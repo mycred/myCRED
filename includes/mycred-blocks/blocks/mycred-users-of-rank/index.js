@@ -4,6 +4,7 @@
     var el = wp.element.createElement;
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
 
     registerBlockType('mycred-gb-blocks/mycred-users-of-rank', {
@@ -86,9 +87,9 @@
             });
 
             return el('div', {}, [
-                el('p', {}, __('Users of rank Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Users of rank Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Rank ID', 'mycred'),
                             help: __('The rank to list users for', 'mycred'),
@@ -142,7 +143,8 @@
                             onChange: setPtType,
                             options
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

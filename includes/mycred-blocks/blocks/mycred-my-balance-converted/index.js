@@ -4,6 +4,7 @@
     var el = wp.element.createElement;
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-my-balance-converted', {
         title: __('My Balance Converted', 'mycred'),
@@ -55,9 +56,9 @@
             });
 
             return el('div', {}, [
-                el('p', {}, __('My Balance Converted Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('My Balance Converted Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(SelectControl, {
                             label: __('Point Type', 'mycred'),
                             help: __('The point type you want to show a Conversion for.', 'mycred'),
@@ -82,8 +83,9 @@
                             help: __('', 'mycred'),
                             value: suffix,
                             onChange: setSuffix
-                        })
-                        )
+                        }),
+                    )
+                )
             ]);
         },
         save: function (props) {

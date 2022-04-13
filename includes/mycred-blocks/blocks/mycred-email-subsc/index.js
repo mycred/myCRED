@@ -3,7 +3,7 @@
     var InspectorControls = wp.editor.InspectorControls;
     var el = wp.element.createElement;
     var TextControl = wp.components.TextControl;
-
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-email-subsc', {
         title: __('Email Subscriptions', 'mycred'),
@@ -22,16 +22,17 @@
             }
 
             return el('div', {}, [
-                el('p', {}, __('Email Subscriptions Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Email Subscriptions Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Success', 'mycred'),
                             help: __('Message to show when settings have been changed.', 'mycred'),
                             value: success,
                             onChange: setSuccess
-                        })
-                        )
+                        }),
+                    )
+                )
             ]);
         },
         save: function (props) {

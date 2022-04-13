@@ -4,7 +4,7 @@
     var el = wp.element.createElement;
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
-
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-buy', {
         title: __('Buy', 'mycred'),
@@ -85,9 +85,9 @@
                 });
             });
             return el('div', {}, [
-                el('p', {}, __('Buy Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Buy Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Link Title', 'mycred'),
                             help: __('The purchase link title. If not set, the anchor element will be rendered but will be empty. Only leave this entry if you intend to style the element and need this to be empty!', 'mycred'),
@@ -132,7 +132,8 @@
                             value: login,
                             onChange: setLogin
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

@@ -5,6 +5,7 @@
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
     var ToggleControl = wp.components.ToggleControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-buy-form', {
         title: __('Buy Form', 'mycred'),
@@ -77,9 +78,9 @@
                 });
             });
             return el('div', {}, [
-                el('p', {}, __('Buy Form Shortcode', 'mycred')
-                        ),
-                el(InspectorControls, null,
+                el( 'p', {}, __('Buy Form Shortcode', 'mycred') ),
+                el( InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Button Label', 'mycred'),
                             help: __('The label for the form submit button.', 'mycred'),
@@ -122,7 +123,8 @@
                             checked: inline,
                             onChange: setInline
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

@@ -5,7 +5,7 @@
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
     var TextareaControl = wp.components.TextareaControl;
-
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-link', {
         title: __('Link', 'mycred'),
@@ -131,9 +131,9 @@
                 });
             });
             return el('div', {}, [
-                el('p', {}, __('Link Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Link Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Amount', 'mycred'),
                             help: __('Amount of points for clicking on this link. Use zero to give the amount you set in your "Points for clicking on links" hook settings.', 'mycred'),
@@ -218,8 +218,9 @@
                             label: __('Link Title', 'mycred'),
                             value: content,
                             onChange: setContent
-                        })
-                        )
+                        }),
+                    )
+                )
             ]);
         },
         save: function (props) {

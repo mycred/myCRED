@@ -6,6 +6,7 @@
     var SelectControl = wp.components.SelectControl;
     var ToggleControl = wp.components.ToggleControl;
     var TextareaControl = wp.components.TextareaControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-my-balance', {
         title: __('My Balance', 'mycred'),
@@ -85,9 +86,9 @@
                 });
             });
             return el('div', {}, [
-                el('p', {}, __('My Balance Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('My Balance Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('User ID', 'mycred'),
                             help: __('The users balance you want to show. Use "current" to show the user who is viewing the shortcode. Can not be empty.', 'mycred'),
@@ -136,8 +137,9 @@
                             help: __('Optional message to show when the shortcode is viewed by a visitor that is not logged in.', 'mycred'),
                             value: content,
                             onChange: setContent
-                        })
-                        )
+                        }),
+                    )
+                )
             ]);
         },
         save: function (props) {

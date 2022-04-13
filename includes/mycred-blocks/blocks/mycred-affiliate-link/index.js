@@ -9,6 +9,7 @@
     var el = wp.element.createElement;
     var SelectControl = wp.components.SelectControl;
     var TextControl = wp.components.TextControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
 
     registerBlockType('mycred-gb-blocks/mycred-affiliate-link', {
@@ -39,9 +40,9 @@
                 props.setAttributes({url: value});
             }
             return el('div', {}, [
-                el('p', {}, __('Affiliate Link Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Affiliate Link Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(SelectControl, {
                             label: __('Point Types', 'mycred'),
                             help: __('The point type you want to show the affiliate link for.', 'mycred'),
@@ -56,8 +57,9 @@
                             value: url,
                             onChange: setUrl
 
-                        })
-                        )
+                        }),
+                    )
+                )
             ]);
         },
         save: function (props) {

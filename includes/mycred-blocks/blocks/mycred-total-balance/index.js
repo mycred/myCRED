@@ -5,7 +5,7 @@
     var TextControl = wp.components.TextControl;
     var ToggleControl = wp.components.ToggleControl;
     var TextareaControl = wp.components.TextareaControl;
-
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-total-balance', {
         title: __('Total Balance', 'mycred'),
@@ -45,9 +45,9 @@
                 props.setAttributes({total: value});
             }
             return el('div', {}, [
-                el('p', {}, __('Total Balance Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Total Balance Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('User ID', 'mycred'),
                             help: __('Option to return a specific users balance. Use "current" to show the current users total balance.', 'mycred'),
@@ -74,7 +74,8 @@
                             checked: total,
                             onChange: setTotal
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

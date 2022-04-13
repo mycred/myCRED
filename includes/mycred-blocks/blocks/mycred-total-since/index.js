@@ -5,6 +5,7 @@
     var TextControl = wp.components.TextControl;
     var ToggleControl = wp.components.ToggleControl;
     var SelectControl = wp.components.SelectControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-total-since', {
         title: __('Total Since', 'mycred'),
@@ -66,9 +67,9 @@
             });
 
             return el('div', {}, [
-                el('p', {}, __('Total Since Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Total Since Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('From', 'mycred'),
                             help: __('Option to set from when we should start adding up points. Accepts: "today" for start of today, a UNIX timestamp or a well formatted date. See PHPs strtotime for further information on available options.', 'mycred'),
@@ -108,7 +109,8 @@
                             checked: formatted,
                             onChange: setFormatted
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

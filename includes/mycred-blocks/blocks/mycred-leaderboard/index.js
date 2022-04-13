@@ -5,6 +5,7 @@
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
     var ToggleControl = wp.components.ToggleControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-leaderboard', {
         title: __('Leaderboard', 'mycred'),
@@ -122,9 +123,9 @@
                 });
             });
             return el('div', {}, [
-                el('p', {}, __('Leaderboard Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Leaderboard Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Number of Users', 'mycred'),
                             help: __('The maximum number of users to include in the leaderboard.', 'mycred'),
@@ -202,7 +203,8 @@
                             value: timeframe,
                             onChange: setTimeFrame
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

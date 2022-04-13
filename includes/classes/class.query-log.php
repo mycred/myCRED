@@ -2457,6 +2457,14 @@ if ( ! function_exists( 'mycred_get_all_references' ) ) :
 			$addons = apply_filters( 'mycred_buycred_refs', $addons );
 		}
 
+		// added cashcred refernce in 2.2.4
+		if ( class_exists( 'myCRED_cashCRED_Module' ) ) {
+			$addons['fee_transfer'] = __( 'cashCred Fee Transfer', 'mycred' );
+			$addons['cashcred_withdrawal_fee']          = __( 'cashCred Withdrawal Fee	', 'mycred' );
+			$addons['cashcred_withdrawal']         = __( 'cashCred Withdrawal', 'mycred' );
+			$addons = apply_filters( 'mycred_cashcred_refs', $addons );
+		}
+
 		if ( class_exists( 'myCRED_Coupons_Module' ) )
 			$addons['coupon'] = __( 'Coupon Usage', 'mycred' );
 

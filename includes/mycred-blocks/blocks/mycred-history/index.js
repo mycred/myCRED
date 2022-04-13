@@ -5,6 +5,7 @@
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
     var ToggleControl = wp.components.ToggleControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-history', {
         title: __('History', 'mycred'),
@@ -104,9 +105,9 @@
                 });
             });
             return el('div', {}, [
-                el('p', {}, __('History Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('History Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('User ID', 'mycred'),
                             help: __('Option to show a specific users history. Use "current" to show the current users history or leave empty to show everyones history.', 'mycred'),
@@ -188,7 +189,8 @@
                             checked: inlinenav,
                             onChange: setInlineNav
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

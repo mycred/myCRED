@@ -5,6 +5,7 @@
     var TextControl = wp.components.TextControl;
     var ToggleControl = wp.components.ToggleControl;
     var SelectControl = wp.components.SelectControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-total-pts', {
         title: __('Total Points', 'mycred'),
@@ -59,9 +60,9 @@
             });
 
             return el('div', {}, [
-                el('p', {}, __('Total Points Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Total Points Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Reference ID', 'mycred'),
                             help: __('Option to filter results based on reference ID. Leave empty if not used', 'mycred'),
@@ -94,7 +95,8 @@
                             checked: formatted,
                             onChange: setFormatted
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

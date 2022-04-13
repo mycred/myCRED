@@ -972,7 +972,32 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			$payment_status = get_post_meta( get_the_ID(), 'status', true );
 
 			$user_id = mycred_get_post_meta( get_the_ID(), 'from', true );
+
+			//adding fees attribute in cashcred 2.4
+			$cashcred_setting = mycred_get_cashcred_settings();
+
+			if( ! empty( $cashcred_setting['fees'] ) ) {
+				
+				if( $cashcred_setting['fees']['use'] == 1 ) {
 			
+					$type_data = $cashcred_setting['fees']['types'][get_post_meta($post->ID,'point_type',true)];
+
+					if ( $type_data['by'] == 'percent' ) {
+						$fee = ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) );
+					}
+					else{
+						$fee = $type_data['amount'];
+					}
+
+					if( $type_data['min_cap'] != 0 )
+						$fee = $fee + $type_data['min_cap'];
+
+					if( $type_data['max_cap'] != 0 && $fee > $type_data['max_cap'] )
+						$fee = $type_data['max_cap'];
+				}
+				wp_localize_script( 'cashcred-admin-script', 'cashcred_data', $cashcred_setting['fees'] );
+			}
+
 			if($payment_status == 'Approved' || $this->is_paid_request( $user_id, get_the_ID() ) ) 
 				$readonly =  'readonly';
 		
@@ -1027,19 +1052,32 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				</select>
 			</div>
 		</div>
-		<div class="col-md-2 col-sm-6">
+		<div class="<?php echo $cashcred_setting['fees']['use'] == 1 ? 'col-md-1 col-sm-5' : 'col-md-2 col-sm-6' ?>">
 			<div class="form-group">
 				<label for="cashcred-pending-payment-points"><?php _e( 'Points', 'mycred' ); ?></label>
 				<input type="text" <?php echo $readonly; ?> name="cashcred_pending_payment[points]" id="cashcred-pending-payment-points" class="form-control readonly_fields" value="<?php echo $mycred->number( $pending_payment->points ); ?>" />
 			</div>
 		</div>
-		<div class="col-md-2 col-sm-6">
+		<?php
+		//adding fees attribute in cashcred 2.4 
+		if( ! empty( $cashcred_setting['fees'] ) ) {
+			if( $cashcred_setting['fees']['use'] == 1 ) { ?>
+				<div class="col-md-1 col-sm-5">
+					<div class="form-group">
+						<label for="cashcred-pending-payment-fee"><?php _e( 'Fee', 'mycred' ); ?></label>
+						<input type="text" <?php echo $readonly; ?> name="cashcred_pending_payment[fee]" id="cashcred-pending-payment-fee" class="form-control readonly_fields" value="<?php echo esc_attr( $fee ); ?>" readonly/>
+					</div>
+				</div><?php
+			}
+		}
+		?>
+		<div class="<?php echo $cashcred_setting['fees']['use'] == 1 ? 'col-md-1 col-sm-5' : 'col-md-2 col-sm-6'; ?>">
 			<div class="form-group">
 				<label for="cashcred-pending-payment-cost"><?php _e( 'Cost', 'mycred' ); ?></label>
 				<input type="text" <?php echo $readonly; ?> name="cashcred_pending_payment[cost]" id="cashcred-pending-payment-cost" class="form-control readonly_fields" value="<?php echo esc_attr( $pending_payment->cost ); ?>" />
 			</div>
 		</div>
-		<div class="col-md-2 col-sm-6">
+		<div class="<?php echo $cashcred_setting['fees']['use'] == 1 ? 'col-md-1 col-sm-5' : 'col-md-2 col-sm-6'; ?>">
 			<div class="form-group">
 				<label for="cashcred-pending-payment-currency"><?php _e( 'Currency', 'mycred' ); ?></label>
 				<input type="text" <?php echo $readonly; ?> name="cashcred_pending_payment[currency]" id="cashcred-pending-payment-currency" class="form-control readonly_fields" value="<?php echo esc_attr( $pending_payment->currency ); ?>" />

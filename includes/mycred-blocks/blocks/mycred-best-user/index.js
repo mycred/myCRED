@@ -10,7 +10,7 @@
     var TextControl = wp.components.TextControl;
     var TextareaControl = wp.components.TextareaControl;
     var RichText = wp.editor.RichText;
-
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
 
 
@@ -83,9 +83,9 @@
             }
 
             return el('div', {}, [
-                el('p', {}, __('Best User Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Best User Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextareaControl, {
                             label: __('Reference(s)', 'mycred'),
                             help: __('Comma separated list of references to add up.', 'mycred'),
@@ -140,8 +140,9 @@
                             value: content,
                             onChange: setContent,
                             rows:2
-                        })
-                        )
+                        }),
+                    )
+                )
             ]);
         },
         save: function (props) {

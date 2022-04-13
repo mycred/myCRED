@@ -433,6 +433,7 @@ jQuery(function($) {
             data: function(params) {
                 var query = {
                     search: params.term,
+                    token: myCREDmanage.token,
                     action: 'mycred-get-users-to-exclude'
                 }
 

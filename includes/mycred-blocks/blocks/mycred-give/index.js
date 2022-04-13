@@ -10,6 +10,7 @@
     var SelectControl = wp.components.SelectControl;
     var TextControl = wp.components.TextControl;
     var TextareaControl = wp.components.TextareaControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
 
     registerBlockType('mycred-gb-blocks/mycred-give', {
@@ -79,9 +80,9 @@
                 props.setAttributes({content: value});
             }
             return el('div', {}, [
-                el('p', {}, 'Give Shortcode'
-                        ),
+                el('p', {}, __( 'Give Shortcode', 'mycred' ) ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Amount', 'mycred'),
                             help: __('Required amount to give the user when this shortcode fires', 'mycred'),
@@ -124,8 +125,9 @@
                             help: __('Content to show visitors viewing this shortcode. Leave empty to show nothing.', 'mycred'),
                             value: content,
                             onChange: setContent
-                        })
-                        )
+                        }),
+                    )
+                )
             ]);
         },
         save: function (props) {

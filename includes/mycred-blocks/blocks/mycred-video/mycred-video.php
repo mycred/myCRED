@@ -33,9 +33,12 @@ if ( ! class_exists('mycred_video_block') ) :
         }
 
         public function render_block( $attributes, $content ) {
-            
+            // var_dump($attributes['video_id']);
             if ( empty( $attributes['ctype'] ) )
                 $attributes['ctype'] = 'mycred_default';
+
+            if( ! empty( $attributes['video_id'] ) )
+                $attributes['id'] = $attributes['video_id'];
 
             return "[mycred_video " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
 

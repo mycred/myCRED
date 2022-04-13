@@ -821,6 +821,7 @@ if ( ! function_exists( 'mycred_get_users_history_data' ) ) :
 			global $wpdb, $mycred_log_table;
 
 			$point_colors = mycred_get_type_color();
+
 			$colors       = $point_colors[ $point_type ];
 			$type_object  = new myCRED_Point_Type( $point_type );
 

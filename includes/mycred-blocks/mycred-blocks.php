@@ -105,11 +105,17 @@ final class MyCred_Gutenberg {
         if (class_exists('myCRED_Badge_Module')) {
             $mycred_modules[] = 'mycred-my-badges';
             $mycred_modules[] = 'mycred-badges';
+            $mycred_modules[] = 'mycred-badges-list';
         }
 
         if (class_exists('myCRED_buyCRED_Module')) {
             $mycred_modules[] = 'mycred-buy';
             $mycred_modules[] = 'mycred-buy-form';
+            $mycred_modules[] = 'mycred-buy-pending';
+        }
+
+        if (class_exists('myCRED_cashCRED_Module')) {
+            $mycred_modules[] = 'mycred-cashcred';
         }
         if (class_exists('myCRED_Coupons_Module')) {
             $mycred_modules[] = 'mycred-load-coupon';
@@ -128,6 +134,16 @@ final class MyCred_Gutenberg {
 
         if (class_exists('myCRED_Transfer_Module')) {
             $mycred_modules[] = 'mycred-transfer';
+        }
+
+        if (class_exists('myCRED_Stats_Module')) {
+            $mycred_modules[] = 'mycred-chart-circu';
+            $mycred_modules[] = 'mycred-chart-gain-loss';
+            $mycred_modules[] = 'mycred-chart-history';
+            $mycred_modules[] = 'mycred-chart-balance-history';
+            $mycred_modules[] = 'mycred-chart-top-balance';
+            $mycred_modules[] = 'mycred-chart-instance-history';
+            $mycred_modules[] = 'mycred-chart-top-instance';
         }
 
         foreach ($mycred_modules as $mycred_module) {

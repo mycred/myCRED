@@ -3,7 +3,7 @@
     var InspectorControls = wp.editor.InspectorControls;
     var el = wp.element.createElement;
     var TextControl = wp.components.TextControl;
-
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-load-coupon', {
         title: __('Load Coupon', 'mycred'),
@@ -39,9 +39,9 @@
             }
 
             return el('div', {}, [
-                el('p', {}, __('Load Coupon Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Load Coupon Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Label', 'mycred'),
                             help: __('The coupon label. Can not be empty.', 'mycred'),
@@ -61,8 +61,9 @@
                             help: __('The placeholder label for the coupon field.', 'mycred'),
                             value: placeholder,
                             onChange: setPlaceholder
-                        })
-                        )
+                        }),
+                    )
+                )
             ]);
         },
         save: function (props) {

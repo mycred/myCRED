@@ -628,13 +628,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 		}
 
-        /**
-         * Manual Balance Adjustment
-         * Checks if User's rank should be change.
-         * @param $result
-         * @since 2.1
-         * @version 1.0
-         */
+		/**
+	     * Manual Balance Adjustment
+	     * Checks if User's rank should be change.
+	     * @param $result
+	     * @since 2.1
+	     * @version 1.0
+	     */
         public function balance_adjustment_without_log( $result )
         {
             extract( $result );

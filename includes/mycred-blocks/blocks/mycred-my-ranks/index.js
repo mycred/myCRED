@@ -5,6 +5,7 @@
     var TextControl = wp.components.TextControl;
     var ToggleControl = wp.components.ToggleControl;
     var SelectControl = wp.components.SelectControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-my-ranks', {
         title: __('My Ranks', 'mycred'),
@@ -58,9 +59,9 @@
             }
 
             return el('div', {}, [
-                el('p', {}, __('My Ranks Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('My Ranks Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('User ID', 'mycred'),
                             help: __('Optional ID of a specific user. If you want to show the rank of the user viewing this shortcode, leave this field empty.', 'mycred'),
@@ -96,7 +97,8 @@
                                 {label: 'Title then Logo', value: 'title'}
                             ]
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

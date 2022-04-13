@@ -4,6 +4,7 @@
     var el = wp.element.createElement;
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-list-ranks', {
         title: __('List Ranks', 'mycred'),
@@ -44,9 +45,9 @@
             });
 
             return el('div', {}, [
-                el('p', {}, __('List Ranks Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('List Ranks Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(SelectControl, {
                             label: __('Order', 'mycred'),
                             help: __('Rank listing order', 'mycred'),
@@ -70,7 +71,8 @@
                             value: wrap,
                             onChange: setWrap
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {

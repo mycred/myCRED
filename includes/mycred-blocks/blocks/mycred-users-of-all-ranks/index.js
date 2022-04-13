@@ -5,6 +5,7 @@
     var TextControl = wp.components.TextControl;
     var ToggleControl = wp.components.ToggleControl;
     var SelectControl = wp.components.SelectControl;
+    var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
     registerBlockType('mycred-gb-blocks/mycred-users-of-all-ranks', {
         title: __('Users of all ranks', 'mycred'),
@@ -79,9 +80,9 @@
             });
 
             return el('div', {}, [
-                el('p', {}, __('Users of all ranks Shortcode', 'mycred')
-                        ),
+                el('p', {}, __('Users of all ranks Shortcode', 'mycred') ),
                 el(InspectorControls, null,
+                    el( panelBody, { title: 'Form Settings', initialOpen: true },
                         el(TextControl, {
                             label: __('Login Message', 'mycred'),
                             help: __('Message to show for logged out users. This shortcode will not return anything if this is left empty.', 'mycred'),
@@ -125,7 +126,8 @@
                             value: nothing,
                             onChange: setNothing
                         }),
-                        )
+                    )
+                )
             ]);
         },
         save: function (props) {
