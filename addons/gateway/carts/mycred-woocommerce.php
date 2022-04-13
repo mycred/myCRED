@@ -401,7 +401,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			/**
 			 * Process Refunds
 			 * @since 1.5.4
-			 * @version 1.0.3
+			 * @version 1.0.4
 			 */
 			public function process_refund( $order_id, $amount = null, $reason = '' ) {
 
@@ -420,7 +420,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 				$this->mycred->add_creds(
 					'woocommerce_refund',
 					$user_id,
-					0 - $refund,
+					$refund,
 					$this->log_template_refund,
 					$order_id,
 					array( 'ref_type' => 'post', 'reason' => $reason ),
@@ -552,7 +552,7 @@ if ( ! function_exists( 'mycred_woo_available_gateways' ) ) :
 
 		// Calculate cost in CREDs
 		$currency   = get_woocommerce_currency();
-		if(!is_object($woocommerce)) return;
+		if( ! is_object( $woocommerce ) || empty( $woocommerce->cart ) ) return;
 		$cost       = $woocommerce->cart->total;
 		if ( ! mycred_point_type_exists( $currency ) && $currency != 'MYC' )
 			$cost = $mycred->number( ( $woocommerce->cart->total / $gateways['mycred']->get_option( 'exchange_rate' ) ) );

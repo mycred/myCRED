@@ -292,7 +292,7 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 #sidebar-active .widget-inside form .widget-control-actions { padding-top: 12px; border-top: 1px dashed #dedede; margin-top: 12px; }
 .form .radio { margin-bottom: 12px; }
 </style>
-<div class="wrap">
+<div class="wrap" id="myCRED-wrap">
 	<h1><?php _e( 'Hooks', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-ii/setup-hooks/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 	<div class="widget-liquid-left">
 		<div id="widgets-left">

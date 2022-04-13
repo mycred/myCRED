@@ -32,7 +32,8 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				'screen_id'   => MYCRED_SLUG . '-cashcreds',
 				'accordion'   => true,
 				'add_to_core' => true,
-				'menu_pos'    => 90
+				'menu_pos'    => 80,
+				'main_menu'   => true
 			), $type );
 
 			$this->mycred_type = MYCRED_DEFAULT_TYPE_KEY;
@@ -154,7 +155,6 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			
 			if( ! empty( $_POST['cashcred_pay_method'] ) ) {
 				$cashcred_pay_method = $_POST['cashcred_pay_method'];	
-
 			} 
 			else {
 				return	$this->response( false, array( 'message' => 'Invalid Payment Gateway' ), $auto );
@@ -163,28 +163,31 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			if ( $cashcred_pay_method !== false && array_key_exists( $cashcred_pay_method, $cashcred_instance->active ) ) {
 			
 				$cashcred_instance->gateway = cashcred_gateway( $cashcred_pay_method );
-				$cashcred_prefs = mycred_get_option( 'mycred_pref_cashcreds' , false );
 
+				$cashcred_prefs = mycred_get_option( 'mycred_pref_cashcreds' , false );
+				
 				do_action( 'mycred_cashcred_process',$cashcred_pay_method, $cashcred_prefs );
 				do_action( "mycred_cashcred_process_{$cashcred_pay_method}", $cashcred_prefs );
 				
 				$payment_response =	$cashcred_instance->gateway->process( $post_id );
 
 				if( $payment_response['status'] == true ) {
+					
 					$history_comments = $this->cashcred_update_payment_status( $post_id, $auto );
 					$payment_response['cashcred_total']   = $history_comments['cashcred_total'];
 					$payment_response['history_comments'] = $history_comments['comments'];
 					return	$this->response( true, $payment_response, $auto );
-
+					
 				} 
 				else {
-				    
+					
 					$payment_response['cashcred_total']   = '';
 					$payment_response['date'] 			  = '';
 					$payment_response['history_comments'] = '';	
 					return	$this->response( false, $payment_response, $auto );
 					
 				}
+			 
 			} 
 			else {
 
@@ -386,6 +389,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 		public function process_new_withdraw_request( $gateway_id ){
 
 			global $wp;
+			
 			$requested_url 		   = home_url( $wp->request ) . $_SERVER['REQUEST_URI'];	 
 			$point_type			   = sanitize_text_field( $_POST['cashcred_point_type'] );
 			$cashcred_pay_method   = sanitize_text_field( $_POST['cashcred_pay_method'] );
@@ -653,7 +657,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php _e( 'cashCreds', 'mycred' ); ?></h1>
+	<h1><?php _e( 'cashCred Payment Gateways', 'mycred' ); ?></h1>
 <?php
 
 			// Updated settings

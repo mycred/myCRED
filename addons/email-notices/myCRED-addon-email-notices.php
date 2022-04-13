@@ -261,8 +261,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			// site in the network, bail.
 			if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
 
-			add_submenu_page(
-				MYCRED_SLUG,
+			mycred_add_main_submenu(
 				__( 'Email Notifications', 'mycred' ),
 				__( 'Email Notifications', 'mycred' ),
 				$this->core->get_point_editor_capability(),
@@ -281,10 +280,10 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			global $pagenow;
 
 			if ( isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_EMAIL_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
-				return MYCRED_SLUG;
+				return MYCRED_MAIN_SLUG;
 
 			if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_EMAIL_KEY )
-				return MYCRED_SLUG;
+				return MYCRED_MAIN_SLUG;
 
 			return $parent;
 

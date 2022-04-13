@@ -406,16 +406,37 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 				// Template tags can only be used if the email triggers for one point type only.
 				$content = str_replace( '%entry%',         $event['entry'], $content );
 				$content = $mycred->template_tags_amount( $content, $event['amount'] );
+				
 				// to display correct user names in transfer email
 				if( $event['ref']==='transfer' ){
+
+					$content = $mycred->template_tags_user( $content, $event['user_id'] );
+
+					$content = str_replace( '%user_id_o%',           '%user_id%', $content );
+					$content = str_replace( '%user_name_o%',         '%user_name%', $content );
+					$content = str_replace( '%user_name_en_o%',      '%user_name_en%', $content );
+					$content = str_replace( '%display_name_o%',      '%display_name%', $content );
+					$content = str_replace( '%user_profile_url_o%',  '%user_profile_url%', $content );
+					$content = str_replace( '%user_profile_link_o%', '%user_profile_link%', $content );
+					$content = str_replace( '%user_nicename_o%',     '%user_nicename%', $content );
+					$content = str_replace( '%user_email_o%',        '%user_email%', $content );
+					$content = str_replace( '%user_url_o%',          '%user_url%', $content );
+					$content = str_replace( '%balance_o%',           '%balance%', $content );
+					$content = str_replace( '%balance_f_o%',         '%balance_f%', $content );
+
 					$content = $mycred->template_tags_user( $content, $event['ref_id'] );
 					$content = mycred_transfer_render_message( $content, $event['data'] );
+				
 				}
 				elseif( $event['ref']==='woocommerce_payment' ){
+
 					$content = str_replace( '%order_id%', $event['ref_id'], $content );
+				
 				}
 				else{
+				
 					$content = $mycred->template_tags_user( $content, $event['user_id'] );
+				
 				}
 
 				if ( array_key_exists( 'data', $event ) && is_array($event['data']) && ! empty( $event['data'] ) && array_key_exists( 'ref_type', $event['data'] ) && $event['data']['ref_type'] == 'post' )

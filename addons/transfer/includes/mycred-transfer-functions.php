@@ -319,7 +319,7 @@ if ( ! function_exists( 'mycred_transfer_render_message' ) ) :
 
 		// Get saved message
 		if ( ! empty( $data ) && array_key_exists( 'message', $data ) && ! empty( $data['message'] ) )
-			$message = $data['message'];
+			$original .= ' - ' . $data['message'];
 
 		$content = str_replace( '%transfer_message%', $message, $original );
 

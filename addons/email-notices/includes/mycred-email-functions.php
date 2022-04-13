@@ -424,7 +424,9 @@ if ( ! function_exists( 'mycred_get_event_emails' ) ) :
 
 			if ( array_key_exists( $instance, $triggers[ $event_type ] ) && ! empty( $triggers[ $event_type ][ $instance ] ) )
 				$notices = $triggers[ $event_type ][ $instance ];
+
 		}
+
 		return apply_filters( 'mycred_get_event_emails', $notices, $triggers, $point_type, $event_type, $instance );
 
 	}

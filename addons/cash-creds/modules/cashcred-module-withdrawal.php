@@ -21,7 +21,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				'screen_id'   => '',
 				'accordion'   => false,
 				'add_to_core' => false,
-				'menu_pos'    => 95
+				'menu_pos'    => 81
 			), $type );	
 			
 		}
@@ -70,10 +70,10 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			add_filter( 'bulk_actions-edit-' . MYCRED_CASHCRED_KEY,               array( $this, 'bulk_actions' ) );
 			add_action( 'save_post_' . MYCRED_CASHCRED_KEY,                       array( $this, 'save_pending_payment' ), 10, 2 );
 
-			add_action( 'restrict_manage_posts', array( $this,  'cashcred_filter_html' ));
-			add_filter( 'parse_query',		     array( $this,  'cashcred_filter_query' ));
+			add_action( 'restrict_manage_posts', array( $this,  'cashcred_filter_html' ) );
+			add_action( 'parse_query',		     array( $this,  'cashcred_filter_query' ) );
 			
-			add_action( 'admin_enqueue_scripts', array( $this, 'cashcred_admin_assets' ));
+			add_action( 'admin_enqueue_scripts', array( $this, 'cashcred_admin_assets' ) );
 
 		}
 		
@@ -193,7 +193,8 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				);  
 			}
 					  
-			$query->set( 'meta_query', $meta_query);  
+			if( ! empty( $meta_query ) )
+				$query->set( 'meta_query', $meta_query );  
 		  
 		}
 		
@@ -304,8 +305,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			// site in the network, bail.
 			//if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
 
-			add_submenu_page(
-				MYCRED_SLUG,
+			mycred_add_main_submenu(
 				__( 'cashCred Withdrawal', 'mycred' ),
 				__( 'cashCred Withdrawal', 'mycred' ),
 				$this->core->get_point_editor_capability(),
@@ -324,7 +324,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			global $pagenow;
 
 			if ( isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_CASHCRED_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
-				return MYCRED_SLUG;
+				return MYCRED_MAIN_SLUG;
 
 			return $parent;
 

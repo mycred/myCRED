@@ -250,7 +250,7 @@ if ( ! class_exists( 'myCRED_Caching_Module' ) ) :
 		public function after_general_settings( $mycred = NULL ) {
 
 ?>
-<h4><span class="dashicons dashicons-admin-tools static"></span><?php _e( 'Optimization', 'mycred' ); ?></h4>
+<h4 <?php echo get_current_screen()->base != 'toplevel_page_mycred-main' ? '' : 'style="display:none"';?>><span class="dashicons dashicons-admin-tools static"></span><?php _e( 'Optimization', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
 
 	<?php if ( $this->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) : ?>
@@ -348,7 +348,7 @@ if ( ! class_exists( 'myCRED_Caching_Module' ) ) :
 				$this->clear_cache( 'leaderboards' );
 			}
 
-			$new_data['caching']['autodelete']   = absint( $data['caching']['autodelete'] );
+			$new_data['caching']['autodelete']   = isset( $data['caching']['autodelete'] ) ? absint( $data['caching']['autodelete'] ) : 'off';
 
 			return $new_data;
 

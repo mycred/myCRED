@@ -21,6 +21,50 @@
 .mycred-review-ul li a { display: inline-block; color: #10738B; text-decoration: none; padding-left: 26px; position: relative; }
 .mycred-review-ul li a span { position: absolute; left: 0; top: -2px; }
 
+a.thickbox.open-plugin-details-modal {
+    text-decoration: none ;
+}
+
+.wrap {
+    margin: 10px 20px 0 2px;
+}
+
+.wrap h1.wp-heading-inline {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    display: block;
+    font-weight: 600;
+}
+
+h2, h3 {
+    color: #1d2327;
+    font-size: 1.3em;
+    margin: 1em 0;
+}
+
+
+
+p {
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 1em 0;
+}
+
+/*.theme.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+   flex-wrap: wrap;
+}*/
+
+
+ .theme-browser .theme {
+   min-height: 10em;
+}
 
 .membership-license-activated{
     float: left;
@@ -292,6 +336,55 @@ line-height:34px;
 .row.mycred-money-back {
     display: none;
 }
+
+
+@media (min-width: 1640px) {
+
+.mycred-treasures .theme-browser .theme {
+    width: 29.7%;
+    margin: 0 3% 3% 0;
+    
+}
+
+.mycred-treasures .theme-id-container {
+    width: 100%;
+    height: 100%;
+   
+
+}
+
+.mycred-treasures .theme.active {
+    width: 30%;
+    width: calc(33.1% - 5em);
+}
+
+
+}
+
+
+/*@media screen and (min-width: 1600px) and (max-width: 2299px){
+.theme.active {
+    width: 30%;
+    width: calc(33.1% - 8px);
+}
+
+}*/
+
+@media (max-width: 1120px) {
+
+    .theme-browser .theme {
+    cursor: pointer;
+    float: left;
+    margin: 0 4% 4% 0;
+    position: relative;
+    width: 100%;
+    border: 1px solid #dcdcde;
+    box-shadow: 0 1px 1px -1px rgb(0 0 0 / 10%);
+    box-sizing: border-box;
+}
+
+}
+
 @media (max-width: 510px) {
     div#tabs_package_1{
         margin-bottom: 30px;    
@@ -330,6 +423,34 @@ line-height:34px;
     margin: 0 auto;
 }
 
+.mmc-addons .theme .theme-screenshot1 img {
+    /* height: 100%; */
+    width: 100%;
+  /*  text-align: center;
+    margin: 0 auto;*/
+}
+
+.mmc-addons .theme .theme-screenshot1 {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    -webkit-backface-visibility: hidden;
+    transition: opacity .2s ease-in-out;
+    /*background-color: white;*/
+    text-align: center;
+}
+
+.mmc-addons .theme .theme-screenshot1:after {
+    padding-top: 0%;
+}
+
+.mmc-addons .theme .theme-screenshot1 img {
+    /*margin: 0 auto;*/
+    display: block;
+    float: none;
+    /*position: relative!important;*/
+}
+
 .mmc-addons .theme .theme-screenshot {
     display: block;
     overflow: hidden;
@@ -349,4 +470,85 @@ line-height:34px;
     display: block;
     float: none;
     position: relative!important;
+}
+
+#myCRED-wrap h1{
+    display: block!important;
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: 'mycred-font';
+    src: url('mycred-font/mycred.eot?85147245');
+    src: url('mycred-font/mycred.eot?85147245#iefix') format('embedded-opentype'),
+         url('mycred-font/mycred.woff?85147245') format('woff'),
+         url('mycred-font/mycred.ttf?85147245') format('truetype'),
+         url('mycred-font/mycred.svg?85147245#fontello') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.dashicons-mycred:before {
+    content: '\e800';
+    font-family: "mycred-font";
+    font-style: normal;
+    font-weight: normal;
+    speak: never;
+    display: inline-block;
+    text-decoration: inherit;
+    text-align: center;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.mycred-support-page-container {
+    max-width: 1024px;
+}
+
+.mycred-support-page-content {
+    padding: 10px 27px 14px 27px;
+    background: white;
+    margin-top: 10px;
+}
+
+.mycred-support-page-content h2 {
+    margin-bottom: 2px;
+}
+
+.mycred-support-page-content p {
+    margin-top: 5px;
+}
+
+.mycred-treasure-pack {
+    /*background: white;*/
+    cursor: auto !important;
+}
+
+.mycred-treasure-pack-content {
+    background: white;
+    padding: 20px 20px 10px 20px;
+}
+
+.mycred-treasure-pack img {
+    width: 100%;
+}
+
+.mycred-treasure-pack h3 {
+    color: #2271b1;
+    margin: 8px 0 0 0;
+}
+
+.mycred-treasure-pack p {
+    margin: 8px 0 0 0;
+}
+
+.mycred-treasure-pack .theme-id-container .theme-name {
+    padding: 20px;
+}
+
+.mycred-treasure-pack .theme-id-container .theme-actions {
+    padding: 14px 20px !important;
 }

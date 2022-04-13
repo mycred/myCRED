@@ -499,8 +499,8 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 				if ( MYCRED_ENABLE_LOGGING && $this->args['total'] && $this->args['timeframe'] != '' ) {
 
 					$position          = $wpdb->get_var( $wpdb->prepare( "
-						SELECT rank FROM (
-							SELECT s.*, @rank := @rank + 1 rank FROM (
+						SELECT position FROM (
+							SELECT s.*, @position := @position + 1 position FROM (
 								SELECT l.user_id, sum( l.creds ) TotalPoints FROM {$mycred_log_table} l 
 								{$multisite_check}
 								WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
@@ -508,7 +508,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 								{$exclude_filter} 
 								{$exclude_user_filter}
 								GROUP BY l.user_id
-								) s, (SELECT @rank := 0) init
+								) s, (SELECT @position := 0) init
 							ORDER BY TotalPoints DESC, s.user_id ASC 
 						) r 
 						WHERE user_id = %d", $point_type_values, $user_id ) );
@@ -536,14 +536,14 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					}
 
 					$position          = $wpdb->get_var( $wpdb->prepare( "
-						SELECT rank FROM (
-							SELECT s.*, @rank := @rank + 1 rank FROM (
+						SELECT position FROM (
+							SELECT s.*, @position := @position + 1 position FROM (
 								SELECT l.user_id, l.meta_value AS Balance FROM {$wpdb->usermeta} l 
 								{$multisite_check} 
 								WHERE {$point_type_is} 
 								{$exclude_filter}
 								{$exclude_user_filter}
-							) s, (SELECT @rank := 0) init
+							) s, (SELECT @position := 0) init
 							ORDER BY Balance+0 DESC, s.user_id ASC 
 						) r 
 						WHERE user_id = %d", $point_type_values, $user_id ) );
@@ -565,8 +565,8 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 				}
 
 				$position          = $wpdb->get_var( $wpdb->prepare( "
-					SELECT rank FROM (
-						SELECT s.*, @rank := @rank + 1 rank FROM (
+					SELECT position FROM (
+						SELECT s.*, @position := @position + 1 position FROM (
 							SELECT l.user_id, sum( l.creds ) TotalPoints FROM {$mycred_log_table} l 
 							{$multisite_check}
 							WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
@@ -575,7 +575,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 							{$exclude_filter} 
 							{$exclude_user_filter}
 							GROUP BY l.user_id
-						) s, (SELECT @rank := 0) init
+						) s, (SELECT @position := 0) init
 						ORDER BY TotalPoints DESC, s.user_id ASC 
 					) r 
 					WHERE user_id = %d", $point_type_values, $reference_values, $user_id ) );
@@ -634,7 +634,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 					$value             = $wpdb->get_var( $wpdb->prepare( "
 						SELECT TotalPoints FROM (
-							SELECT s.*, @rank := @rank + 1 rank FROM (
+							SELECT s.*, @position := @position + 1 position FROM (
 								SELECT l.user_id, sum( l.creds ) TotalPoints FROM {$mycred_log_table} l 
 								{$multisite_check}
 								WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
@@ -642,7 +642,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 								{$exclude_filter} 
 								{$exclude_user_filter}
 								GROUP BY l.user_id
-								) s, (SELECT @rank := 0) init
+								) s, (SELECT @position := 0) init
 							ORDER BY TotalPoints DESC, s.user_id ASC 
 						) r 
 						WHERE user_id = %d", $point_type_values, $user_id ) );
@@ -671,13 +671,13 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 					$value             = $wpdb->get_var( $wpdb->prepare( "
 						SELECT Balance FROM (
-							SELECT s.*, @rank := @rank + 1 rank FROM (
+							SELECT s.*, @position := @position + 1 position FROM (
 								SELECT l.user_id, l.meta_value AS Balance FROM {$wpdb->usermeta} l 
 								{$multisite_check} 
 								WHERE {$point_type_is} 
 								{$exclude_filter}
 								{$exclude_user_filter}
-							) s, (SELECT @rank := 0) init
+							) s, (SELECT @position := 0) init
 							ORDER BY Balance+0 DESC, s.user_id ASC 
 						) r 
 						WHERE user_id = %d", $point_type_values, $user_id ) );
@@ -700,7 +700,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 				$value             = $wpdb->get_var( $wpdb->prepare( "
 					SELECT TotalPoints FROM (
-						SELECT s.*, @rank := @rank + 1 rank FROM (
+						SELECT s.*, @position := @position + 1 position FROM (
 							SELECT l.user_id, sum( l.creds ) TotalPoints FROM {$mycred_log_table} l 
 							{$multisite_check}
 							WHERE {$point_type_is} AND ( ( l.creds > 0 ) OR ( l.creds < 0 AND l.ref = 'manual' ) ) 
@@ -709,7 +709,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 							{$exclude_filter}
 							{$exclude_user_filter}
 							GROUP BY l.user_id
-						) s, (SELECT @rank := 0) init
+						) s, (SELECT @position := 0) init
 						ORDER BY TotalPoints DESC, s.user_id ASC 
 					) r 
 					WHERE user_id = %d", $point_type_values, $reference_values, $user_id ) );
@@ -948,6 +948,8 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 				'nothing'      => 'Leaderboard is empty',
 			), $args ) );
 
+			$mycred = mycred( $args['type'] );
+	
 			$output = '';
 
 			// Leaderboard is empty
@@ -1004,6 +1006,12 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					$layout  = $this->core->template_tags_amount( $layout, $user['cred'] );
 					$layout  = $this->core->template_tags_user( $layout, $user['ID'] );
 
+					//Point type Image
+					if( $args['image'] && $mycred->image_url )
+						$layout = str_replace( '%image%', "<img src='{$mycred->image_url}' style='margin-right: 5px;' class='mycred-my-balance-image-".$args["type"]."' width='20px' />", $layout );
+					else
+						$layout = str_replace( '%image%', '', $layout );
+					
 					// Wrapper
 					if ( ! empty( $wrap ) )
 						$layout = '<' . $wrap . ' class="%classes%">' . $layout . '</' . $wrap . '>';

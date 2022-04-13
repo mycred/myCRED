@@ -37,6 +37,8 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 
 		public $main_image_url     = false;
 		public $congratulation_msg = '';
+		public $align              = 'mycred_align_left';
+		public $layout             = 'mycred_layout_left';
 
 		/**
 		 * Construct
@@ -124,6 +126,8 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 			$this->main_image_url     = $this->get_image_url( 'main' );
 			$this->level_image        = $this->get_image( $level_id );
 			$this->congratulation_msg = mycred_get_post_meta( $this->post_id, 'congratulation_msg', true );
+			$this->align 			  = mycred_get_post_meta( $this->post_id, 'mycred_badge_align', true );
+			$this->layout             = mycred_get_post_meta( $this->post_id, 'mycred_layout_check', true );
 
 		}
 
@@ -645,11 +649,15 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 			if ( $user_id === false || absint( $user_id ) === 0 ) return false;
 
 			mycred_delete_user_meta( $user_id, $this->user_meta_key );
+			mycred_delete_user_meta( $user_id, $this->user_meta_key . '_issued_on' );
+			$usermeta = mycred_get_user_meta( $user_id, 'mycred_badge_ids', true );
+			unset( $usermeta[$this->post_id] );
 
 			$this->earnedby --;
 			if ( $this->earnedby < 0 ) $this->earnedby = 0;
 
 			mycred_update_post_meta( $this->post_id, 'total-users-with-badge', $this->earnedby );
+			mycred_update_user_meta( $this->post_id, 'mycred_badge_ids', $this->earnedby );
 
 			return true;
 

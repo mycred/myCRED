@@ -1,6 +1,10 @@
 <?php
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
+define( 'myCRED_Settings',              __FILE__ );
+
+define( 'myCRED_Settings_VERSION',      '1.3' );
+
 /**
  * myCRED_Settings_Module class
  * @since 0.1
@@ -24,7 +28,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				),
 				'screen_id'   => MYCRED_SLUG . '-settings',
 				'accordion'   => true,
-				'menu_pos'    => 998
+				'menu_pos'    => 100
 			), $type );
 
 		}
@@ -55,6 +59,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 */
 		public function module_admin_init() {
 
+			
+			
 			if ( isset( $_GET['do'] ) && $_GET['do'] == 'export' )
 				$this->load_export();
 
@@ -231,6 +237,31 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 		}
 
+
+		/**
+         * Get Point Image
+         * @since 2.2
+         * @version 1.0
+         */
+        public function get_point_image( $attachment_id, $point_type_field ) {
+
+            $image = false;
+
+            if ( $attachment_id > 0 ) {
+
+                $_image = wp_get_attachment_url( $attachment_id );
+		
+                if ( strlen( $_image ) > 5 )
+				{
+					$image = "<img src='$_image' alt='Point Type image' /><input type='hidden' name='$point_type_field' value='{$attachment_id}' />";
+				}
+
+            }
+
+            return $image;
+
+        }
+
 		/**
 		 * Update Log Cred Format Action
 		 * Will attempt to modify the myCRED log's cred column format.
@@ -352,6 +383,9 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 */
 		public function scripts_and_styles() {
 
+
+			wp_enqueue_media();
+
 			wp_register_script(
 				'mycred-type-management',
 				plugins_url( 'assets/js/mycred-type-management.js', myCRED_THIS ),
@@ -365,7 +399,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * Settings Header
 		 * Inserts the export styling
 		 * @since 1.3
-		 * @version 1.2.2
+		 * @version 1.2.3
 		 */
 		public function settings_header() {
 
@@ -424,18 +458,25 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				'mycred-type-management',
 				'myCREDmanage',
 				array(
-					'ajaxurl'       => admin_url( 'admin-ajax.php' ),
-					'token'         => wp_create_nonce( 'mycred-management-actions' ),
-					'cache'         => wp_create_nonce( 'mycred-clear-cache' ),
-					'working'       => esc_attr__( 'Processing...', 'mycred' ),
-					'confirm_log'   => esc_attr__( 'Warning! All entries in your log will be permanently removed! This can not be undone!', 'mycred' ),
-					'confirm_clean' => esc_attr__( 'All log entries belonging to deleted users will be permanently deleted! This can not be undone!', 'mycred' ),
-					'confirm_reset' => esc_attr__( 'Warning! All user balances will be set to zero! This can not be undone!', 'mycred' ),
-					'done'          => esc_attr__( 'Done!', 'mycred' ),
-					'export_close'  => esc_attr__( 'Close', 'mycred' ),
-					'export_title'  => $mycred->template_tags_general( esc_attr__( 'Export %singular% Balances', 'mycred' ) ),
-					'decimals'      => esc_attr__( 'In order to adjust the number of decimal places you want to use we must update your log. It is highly recommended that you backup your current log before continuing!', 'mycred' )
-				)
+					'ajaxurl'       	 => admin_url( 'admin-ajax.php' ),
+					'token'         	 => wp_create_nonce( 'mycred-management-actions' ),
+					'cache'         	 => wp_create_nonce( 'mycred-clear-cache' ),
+					'working'       	 => esc_attr__( 'Processing...', 'mycred' ),
+					'confirm_log'        => esc_attr__( 'Warning! All entries in your log will be permanently removed! This can not be undone!', 'mycred' ),
+					'confirm_clean' 	 => esc_attr__( 'All log entries belonging to deleted users will be permanently deleted! This can not be undone!', 'mycred' ),
+					'confirm_reset' 	 => esc_attr__( 'Warning! All user balances will be set to zero! This can not be undone!', 'mycred' ),
+					'imagelabel'   		 => esc_js( sprintf( '%s {{image}}', __( 'Level', 'mycred' ) ) ),
+					'setImage'     		 => esc_js( __( 'Set Image', 'mycred' ) ),
+					'set_featured_image' => __( 'Set Default Point Type image', 'mycred' ),
+					'changeImage'        => esc_js( __( 'Change Image', 'mycred' ) ),
+					'uploadtitle'  		 => esc_js( esc_attr__( 'Point Type Image', 'mycred' ) ),
+					'uploadbutton' 		 => esc_js( esc_attr__( 'Use as Image', 'mycred' ) ),
+					'done'          	 => esc_attr__( 'Done!', 'mycred' ),
+					'export_close'  	 => esc_attr__( 'Close', 'mycred' ),
+					'export_title' 		 => $mycred->template_tags_general( esc_attr__( 'Export %singular% Balances', 'mycred' ) ),
+					'decimals'      	 => esc_attr__( 'In order to adjust the number of decimal places you want to use we must update your log. It is highly recommended that you backup your current log before continuing!', 'mycred' ),
+					'fieldName'		 	 => $this->field_name()
+					)
 			);
 			wp_enqueue_script( 'mycred-type-management' );
 
@@ -517,6 +558,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			$general     = $this->general;
 			$action_hook = ( ! $this->is_main_type ) ? $this->mycred_type : '';
 			$delete_user = ( isset( $this->core->delete_user ) ) ? $this->core->delete_user : 0;
+			$main_screen = ( get_current_screen()->base == 'toplevel_page_mycred-main' );
 
 			// Social Media Links
 			$social      = array();
@@ -539,7 +581,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		<?php settings_fields( $this->settings_name ); ?>
 
 		<div class="list-items expandable-li" id="accordion">
-			<h4><span class="dashicons dashicons-admin-settings static"></span><label><?php _e( 'Core Settings', 'mycred' ); ?></label></h4>
+			<h4 <?php echo !$main_screen ? '' : 'style="display:none"';?>><span class="dashicons dashicons-admin-settings static"></span><label><?php _e( 'Core Settings', 'mycred' ); ?></label></h4>
 			<div class="body" style="display:none;">
 
 				<div class="row">
@@ -643,7 +685,46 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 					</div>
 				</div>
 				
-				<div class="row">
+
+				<div class="row mycred-image-level">
+							
+					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+						<div id="mycred-image-setup" class="default-image-wrapper">
+
+								<h3><?php _e( 'Point Type Image', 'mycred' ); ?></h3>
+
+							
+								<div class="point-type-image">
+									<div class="point-type-image-wrapper image-wrapper">
+										<?php
+
+										$attachment_id = mycred_get_default_point_image_id();
+
+										$image_url = wp_get_attachment_url( $attachment_id );
+
+										if( property_exists( $this->core, 'attachment_id' ) && $this->get_point_image( $this->core->attachment_id , $this->field_name( 'attachment_id' )) )
+											echo $this->get_point_image( $this->core->attachment_id , $this->field_name( 'attachment_id' ));
+										elseif( !$attachment_id )
+										{
+											?>
+											<div class="default-image-wrapper image-wrapper empty dashicons">
+											</div>
+											<?php
+										}
+										else
+										{
+											echo "<img src='{$image_url}' />";
+											echo "<input type='hidden' value='{$attachment_id}' name='".$this->field_name( 'attachment_id' )."' />";
+										}
+										?>
+									</div>
+									<div class="point-image-buttons">
+										<button type="button" class="button button-secondary" id="point-type-change-default-image"><?php _e( 'Change Image', 'mycred' ) ?></button>
+									</div>
+								</div>
+						</div>	
+					</div>
+				
 					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 						<h3><?php _e( 'Other Settings', 'mycred' ); ?></h3>
 						<div class="form-group">
@@ -666,7 +747,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				$reset_block = true;
 
 ?>
-			<h4><span class="dashicons dashicons-dashboard static"></span><label><?php _e( 'Management', 'mycred' ); ?></label></h4>
+			<h4 <?php echo !$main_screen ? '' : 'style="display:none"';?>><span class="dashicons dashicons-dashboard static"></span><label><?php _e( 'Management', 'mycred' ); ?></label></h4>
 			<div class="body" style="display:none;">
 
 				<div class="row">
@@ -726,7 +807,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 <?php
 
-			if ( isset( $this->mycred_type ) && $this->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) :
+			if ( $main_screen ) :
 
 ?>
 			<h4><span class="dashicons dashicons-star-filled static"></span><label><?php _e( 'Point Types', 'mycred' ); ?></label></h4>
@@ -805,11 +886,16 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<div class="form-group">
-							<label for="mycred-new-ctype-key-label"><?php _e( 'Label', 'mycred' ); ?></label>
+							<label for="mycred-new-ctype-key-label"><?php _e( 'Singular', 'mycred' ); ?></label>
+							<input type="text" id="mycred-new-ctype-key-singular" name="mycred_pref_core[types][new][singular]" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+						<div class="form-group">
+							<label for="mycred-new-ctype-key-label"><?php _e( 'Plural', 'mycred' ); ?></label>
 							<input type="text" id="mycred-new-ctype-key-label" name="mycred_pref_core[types][new][label]" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
 						</div>
 					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"></div>
 				</div>
 				<p id="mycred-ctype-warning">
 					<strong><?php _e( 'Note This meta key must be in lowercase and only contain letters or underscore. All other characters will be deleted! make sure to add some unique prefix to this meta key to avoid any conflicts in database.', 'mycred' ); ?> <a href="https://codex.mycred.me/chapter-i/points/"><?php _e( 'Read More', 'mycred' )?></a></strong>
@@ -821,7 +907,13 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 ?>
 
-			<?php do_action( 'mycred_after_core_prefs' . $action_hook, $this ); ?>
+			<div class="mycred-after-core-prefs" <?php echo $main_screen ? '' : 'style="display:none"';?> >
+				<?php do_action( 'mycred_after_core_prefs' . $action_hook, $this ); ?>
+			</div>
+
+			<div class="mycred-type-prefs" <?php echo !$main_screen ? '' : 'style="display:none"';?>>
+				<?php do_action( 'mycred_type_prefs' . $action_hook, $this ); ?>
+			</div>
 
 		</div>
 
@@ -933,6 +1025,24 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 							$types[ $key ] = sanitize_text_field( $data['label'] );
 
+							$type_settings = mycred_get_option( 'mycred_pref_core_' . $key );
+
+							if ( $key !== MYCRED_DEFAULT_TYPE_KEY && empty( $type_settings  ) ) {
+
+								if ( empty( $data['singular'] ) )
+									$data['singular'] = $types[ $key ];
+
+								$mycred = mycred();
+								$new_type_defaults = $mycred->defaults();
+								$new_type_defaults['cred_id'] = $key;
+								$new_type_defaults['name']['singular'] = sanitize_text_field( $data['singular'] );
+								$new_type_defaults['name']['plural']   = $types[ $key ];
+							
+								mycred_update_option( 'mycred_pref_core_' . $key , $new_type_defaults );
+
+								mycred_upload_default_point_image();
+							}
+
 						}
 
 					}
@@ -1022,9 +1132,13 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				}
 
 			}
-
+			
+			
 			// User deletions
 			$new_data['delete_user'] = ( isset( $post['delete_user'] ) ) ? $post['delete_user'] : 0;
+
+			//Point type image
+			$new_data['attachment_id'] = isset( $post['attachment_id'] ) ? $post['attachment_id'] : 0;
 
 			$action_hook             = '';
 			if ( ! $this->is_main_type )
@@ -1036,3 +1150,4 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 	}
 endif;
+

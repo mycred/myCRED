@@ -56,9 +56,23 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		public $core                = array();
 
 		/**
+		 * myCRED Default attachment_id
+		 * @since 2.2
+ 		 * @version 1.0
+		 */
+		public $attachment_id = false;
+
+		/**
+		 * myCRED Default Image Url
+		 * @since 2.2
+ 		 * @version 1.0
+		 */
+		public $image_url = false;
+
+		/**
 		 * Construct
 		 * @since 1.0
-		 * @version 1.8
+		 * @version 1.9
 		 */
 		public function __construct( $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
@@ -87,6 +101,9 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 					$this->$key = $value;
 				}
 			}
+
+			//Point Type Image
+			$this->image_url = $this->get_type_image();
 
 			do_action_ref_array( 'mycred_settings', array( &$this ) );
 
@@ -1641,6 +1658,26 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 			return apply_filters( 'mycred_has_entry', $has_entry, $reference, $ref_id, $user_id, $data, $type );
 
+		}
+
+		/**
+		 * Gets point type image
+		 * @since 2.2
+ 		 * @version 1.0
+		 */
+		public function get_type_image()
+		{
+			$attachment_url = false;
+
+			if( $this->attachment_id )
+				$attachment_url = wp_get_attachment_url( $this->attachment_id );
+			else
+				$attachment_url = wp_get_attachment_url( mycred_get_default_point_image_id() );
+
+			if( $attachment_url )
+				return $attachment_url;
+
+			return false;
 		}
 
 	}
@@ -3358,6 +3395,8 @@ if ( ! function_exists( 'mycred_plugin_deactivation' ) ) :
 		wp_clear_scheduled_hook( 'mycred_banking_recurring_payout' );
 		wp_clear_scheduled_hook( 'mycred_banking_interest_compound' );
 		wp_clear_scheduled_hook( 'mycred_banking_interest_payout' );
+		
+		update_option( 'mycred_deactivated_on', time() );
 
 		/**
 		 * Runs when the plugin is deleted
@@ -3668,7 +3707,9 @@ endif;
  */
 if ( !function_exists( 'mycred_badge_level_req_check' ) ):
     function mycred_badge_level_req_check( $badge_id, $level_index = 0 ) {
+
         $content = '';
+        
         global $wpdb;
         $user_id = get_current_user_id();
         $badge_requirements = mycred_show_badge_requirements( $badge_id );
@@ -3740,6 +3781,7 @@ if ( !function_exists( 'mycred_badge_level_req_check' ) ):
         $content .= '</ul>';
 
         return $content;
+
     }
 endif;
 
@@ -3882,4 +3924,186 @@ if ( ! function_exists( 'mycred_get_addon_defaults' ) ) :
 		return apply_filters( 'mycred_get_addon_defaults', $settings, $addon );
 
 	}
+endif;
+
+/**
+ * Add submenu inside myCred main menu
+ * @since 2.2
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_add_main_submenu' ) ) :
+	function mycred_add_main_submenu( $page_title, $menu_title, $capability, $menu_slug, $function = '', $position = null ) {
+
+		$main_menu_slug = apply_filters( 'mycred_add_main_submenu_slug', MYCRED_MAIN_SLUG, compact( 
+			'page_title', 
+			'menu_title',  
+			'capability',
+			'menu_slug',
+			'function',
+			'position'
+		));
+
+		return add_submenu_page( $main_menu_slug, $page_title, $menu_title, $capability, $menu_slug, $function, $position );
+
+	}
+endif;
+
+
+/**
+ * Get Badge Rank Social Icons
+ * @since 2.2
+ * @version 1.0
+ */
+if ( !function_exists( 'mycred_br_get_social_icons' ) ):
+	function mycred_br_get_social_icons( $facebook_url = '', $twitter_url = '', $linkedin_url = '', $pinterest_url = '' )
+        {
+            $mycred = mycred();
+
+            $br_enable_fb = isset( $mycred->core["br_social_share"]["enable_fb"] ) && $mycred->core["br_social_share"]["enable_fb"] == '1' ? true : false; 
+            $br_enable_twitter = isset( $mycred->core["br_social_share"]["enable_twitter"] ) && $mycred->core["br_social_share"]["enable_twitter"] == '1' ? true : false; 
+            $br_enable_li = isset( $mycred->core["br_social_share"]["enable_li"] ) && $mycred->core["br_social_share"]["enable_li"] == '1' ? true : false; 
+            $br_enable_pt = isset( $mycred->core["br_social_share"]["enable_pt"] ) && $mycred->core["br_social_share"]["enable_pt"] == '1' ? true : false;
+
+            $content = '';
+
+            $content .= '<div class="mycred-badge-social-icons">';
+
+            $br_socail_icon = isset( $mycred->core["br_social_share"]["button_style"] ) ? $mycred->core["br_social_share"]["button_style"] : ''; 
+
+            if( $br_socail_icon == 'button_style' )
+            {
+                if( $br_enable_fb )
+                    $content .= '
+					<a href="'.$facebook_url.'" target="_blank"><button class="mycred-social-icons mycred-social-icon-facebook">facebook</button></a>';
+                if( $br_enable_twitter )
+                    $content .= '
+					<a href="'.$twitter_url.'" target="_blank"><button class="mycred-social-icons mycred-social-icon-twitter">twitter</button></a>';
+                if( $br_enable_li )
+                    $content .= '
+					<a href="'.$linkedin_url.'" target="_blank"><button class="mycred-social-icons mycred-social-icon-linkedin">linkedin</button></a>';
+                if( $br_enable_pt )
+                    $content .= '
+					<a href="'.$pinterest_url.'" target="_blank"><button class="mycred-social-icons mycred-social-icon-pinterest">pinterest</button></a>';
+            }
+
+            if( $br_socail_icon == 'icon_style' )
+            {
+                if( $br_enable_fb )
+                    $content .= '
+                    <a href="'.$facebook_url.'" target="_blank" class="mycred-social-icons mycred-social-icon-facebook"></a>';
+                if( $br_enable_twitter )
+                    $content .= '
+                    <a href="'.$twitter_url.'" target="_blank" class="mycred-social-icons mycred-social-icon-twitter"></a>';
+                if( $br_enable_li )
+                    $content .= '
+                    <a href="'.$linkedin_url.'" target="_blank" class="mycred-social-icons mycred-social-icon-linkedin"></a>';
+                if( $br_enable_pt )
+                    $content .= '
+                    <a href="'.$pinterest_url.'" target="_blank" class="mycred-social-icons mycred-social-icon-pinterest"></a>';
+            }
+
+            if( $br_socail_icon == 'text_style' )
+            {
+                if( $br_enable_fb )
+                    $content .= '
+                    <a href="'.$facebook_url.'" target="_blank"><button class="facebook social-text">facebook</button></a>';
+                if( $br_enable_twitter )
+                    $content .= '
+                    <a href="'.$twitter_url.'" target="_blank"><button class="twitter social-text">twitter</button></a>';
+                if( $br_enable_li )
+                    $content .= '
+                    <a href="'.$linkedin_url.'" target="_blank"><button class="linkedin social-text">linkedin</button></a>';
+                if( $br_enable_pt )
+                    $content .= '
+                    <a href="'.$pinterest_url.'" target="_blank"><button class="pinterest social-text">pinterest</button></a>';
+            }
+
+            if( $br_socail_icon == 'icon_style_hover' )
+            {
+                if( $br_enable_fb )
+                    $content .= '
+                    <a href="'.$facebook_url.'" target="_blank" class="i-text-admin mycred-social-icons mycred-social-icon-facebook"></a>';
+                if( $br_enable_twitter )
+                    $content .= '
+                    <a href="'.$twitter_url.'" target="_blank" class="i-text-admin mycred-social-icons mycred-social-icon-twitter"></a>';
+                if( $br_enable_li )
+                    $content .= '
+                    <a href="'.$linkedin_url.'" target="_blank" class="i-text-admin mycred-social-icons mycred-social-icon-linkedin"></a>';
+                if( $br_enable_pt )
+                    $content .= '
+                    <a href="'.$pinterest_url.'" target="_blank" class="i-text-admin mycred-social-icons mycred-social-icon-pinterest"></a>';
+            }
+
+            $content .= '</div>';
+        
+
+            return $content;
+        }
+endif;
+
+/**
+ * Upload default point image
+ * @since 2.2
+ * @version 1.1
+ */
+if( !function_exists( 'mycred_upload_default_point_image' ) ):
+function mycred_upload_default_point_image()
+{
+	$default_point_image = mycred_get_option( 'mycred_default_point_image' );
+
+	$image_url = wp_get_attachment_url( $default_point_image );
+
+	if( empty( $default_point_image ) || !$image_url )
+	{
+		$image_url = plugin_dir_path( __DIR__ ) . 'assets/images/default-point-type.png';
+
+		$upload_dir = wp_upload_dir();
+
+		$image_data = file_get_contents( $image_url );
+
+		$filename = basename( $image_url );
+
+		if ( wp_mkdir_p( $upload_dir['path'] ) ) 
+			$file = $upload_dir['path'] . '/' . $filename;
+		else 
+			$file = $upload_dir['basedir'] . '/' . $filename;
+	
+
+		file_put_contents( $file, $image_data );
+
+		$wp_filetype = wp_check_filetype( $filename, null );
+
+		$attachment = array(
+			'post_mime_type' => $wp_filetype['type'],
+			'post_title' => 'mycred_default_image',
+			'post_content' => '',
+			'post_status' => 'inherit'
+		);
+
+		$attach_id = wp_insert_attachment( $attachment, $file );
+
+		$attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+
+		wp_update_attachment_metadata( $attach_id, $attach_data );
+
+		mycred_update_option( 'mycred_default_point_image', $attach_id );
+	}
+}
+endif;
+
+/**
+ * Gets default point image
+ * @since 2.2
+ * @version 1.1
+ */
+if( !function_exists( 'mycred_get_default_point_image_id' ) ):
+function mycred_get_default_point_image_id()
+{
+	$image_id = mycred_get_option( 'mycred_default_point_image' );
+
+	if( empty( $image_id ) )
+		return false;
+	
+	return $image_id;
+}
 endif;

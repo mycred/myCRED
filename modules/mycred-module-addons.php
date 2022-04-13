@@ -1,4 +1,5 @@
 <?php
+
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 /**
@@ -6,6 +7,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @since 0.1
  * @version 1.1.1
  */
+
 if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 	class myCRED_Addons_Module extends myCRED_Module {
 
@@ -27,7 +29,8 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 				),
 				'screen_id'   => MYCRED_SLUG . '-addons',
 				'accordion'   => true,
-				'menu_pos'    => 30
+				'menu_pos'    => 30,
+				'main_menu'   => true
 			), $type );
 
 		}
@@ -83,6 +86,42 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 
 				}
 
+			}
+
+			$this->all_activate_deactivate();
+		}
+
+
+		public function all_activate_deactivate() {
+
+			// Handle actions
+			if ( isset( $_GET['addon_all_action'] ) && isset( $_GET['_token'] ) && wp_verify_nonce( $_GET['_token'], 'mycred-activate-deactivate-addon') && $this->core->user_is_point_admin() ) {
+
+				$action = sanitize_text_field( $_GET['addon_all_action'] );
+
+				if ( $action == 'activate' ) {
+
+					$this->active = array_keys( $this->installed );
+
+				}
+				elseif ( $action == 'deactivate' ) {
+
+					$this->active = array();
+					
+				}
+
+				$new_settings = array(
+					'installed' => $this->installed,
+					'active'    => $this->active
+				);
+
+				mycred_update_option( 'mycred_pref_addons', $new_settings );
+
+				$url = add_query_arg( array( 'page' => MYCRED_SLUG . '-addons' ), admin_url( 'admin.php' ) );
+
+				wp_safe_redirect( $url );
+				exit;
+			
 			}
 
 		}
@@ -343,15 +382,142 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 
 			$installed = $this->get( true );
 
+
 ?>
 <style type="text/css">
 #myCRED-wrap > h1 { margin-bottom: 15px; }
 .theme-browser .theme:focus, .theme-browser .theme:hover { cursor: default !important; }
 .theme-browser .theme:hover .more-details { opacity: 1; }
 .theme-browser .theme:hover a.more-details, .theme-browser .theme:hover a.more-details:hover { text-decoration: none; }
+.mycred-addons-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.mycred-addons-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: lightgreen;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px lightgreen;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.myCRED-addon-heading {
+    float: left;
+}
+
+.mycred-addon-switch {
+    float: right;
+}
+
+p.mycred-activate {
+    float: left;
+     margin: 7px 7px 0px 0px;
+}
+.clear{
+	clear: both;
+}
+.mycred-addon-outer {
+    padding: 10px 0;
+}
 </style>
+
+<script type="text/javascript">
+jQuery(document).ready(function(jQuery){
+   	jQuery("#mycred-addons-checkbox").change(function(){
+		var check = jQuery("#mycred-addons-checkbox").is(":checked");
+		if ( check == true ){
+
+			window.location.href = jQuery('.mycred-addon-switch').attr("data-activation-url");
+
+		}else{
+			window.location.href = jQuery('.mycred-addon-switch').attr("data-deactivation-url");
+
+		}
+   	});
+});
+</script>
+<?php 
+$activate_url = get_mycred_all_addon_activation_url();
+$deactivate_url = get_mycred_all_addon_deactivation_url();
+$free_addons_url = get_mycred_addon_page_url('free_addons');
+$premium_addons_url = get_mycred_addon_page_url('premium_addons');
+?>
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php _e( 'Add-ons', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<div class="mycred-addon-outer">	
+		<div class="myCRED-addon-heading">
+			<h1><?php _e( 'Add-ons', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+		</div>
+		 <?php
+		if( !isset( $_GET['mycred_addons'] ) ){ ?>
+			<div class="mycred-addon-switch" data-activation-url="<?php echo $activate_url ?>" data-deactivation-url="<?php echo $deactivate_url ?>">
+				<!-- Rounded switch -->
+				<label for="mycred-addons-checkbox" class="mycred-addons-switch">
+				  <input type="checkbox" name="mycred-addons-checkbox" id="mycred-addons-checkbox" <?php echo $this->check_all_addons() ? 'checked' : ''; ?> >
+				  <span class="slider round"></span>
+				</label>
+				<p class="mycred-activate"><?php _e( 'Activate/Deactivate All Add-ons', 'mycred' ); ?> </p>
+			</div>
+<?php 	} ?>
+		
+		<div class="clear"></div>
+		<div class="addons-main-nav">
+			<h2 class="nav-tab-wrapper">
+				<a href="<?php echo admin_url('admin.php?page=mycred-addons') ?>" class="nav-tab <?php echo !isset( $_GET['mycred_addons'] ) ? 'nav-tab-active' : ''; ?>">Built-in Addons</a>
+				<a href="<?php echo $free_addons_url ?>" class="nav-tab <?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'free_addons' ) ? 'nav-tab-active' : ''; ?>">Free Addons</a>
+				<a href="<?php echo $premium_addons_url ?>" class="nav-tab <?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'premium_addons' ) ? 'nav-tab-active' : ''; ?>">Premium Addons</a>
+			</h2>
+		</div>
+	</div>
 <?php
 
 			// Messages
@@ -370,7 +536,163 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		<div class="themes">
 <?php
 
-			// Loop though installed
+if ( isset( $_GET['mycred_addons'] ) ) 
+{
+	if ( $_GET['mycred_addons'] == 'free_addons' ) 
+	{
+		$free_addons = array();
+
+			// buyCRED Add-on
+			$free_addons['elementer'] = array(
+				'name'        => 'myCred Elementor',
+				'addon_url'   => 'https://wordpress.org/plugins/mycred-for-elementor/',
+				'screenshot'  => plugins_url( 'assets/images/addons/mycred-for-elementor.jpg', myCRED_THIS ),
+			);
+
+			// learndash Add-on
+			$free_addons['learndash'] = array(
+				'name'        => 'myCred learndash',
+				'addon_url'   => 'https://wordpress.org/plugins/mycred-learndash/',
+				'screenshot'  => plugins_url( 'assets/images/addons/mycred-learndash.jpg', myCRED_THIS ),
+			);
+			
+			// birthday Add-on
+			$free_addons['birthday'] = array(	
+				'name'        => 'myCred Birthdays',
+				'addon_url'   => 'https://wordpress.org/plugins/mycred-birthdays/',
+				'screenshot'  => plugins_url( 'assets/images/addons/mycred-birthdays.jpg', myCRED_THIS ),
+			);
+
+			// gutenberg Add-on
+			$free_addons['gutenberg'] = array(
+				'name'        => 'myCred – Gutenberg Blocks',
+				'addon_url'   => 'https://wordpress.org/plugins/mycred-blocks/',
+				'screenshot'  => plugins_url( 'assets/images/addons/mycred-blocks.jpg', myCRED_THIS ),
+			);
+
+			// H5p Add-on
+			$free_addons['h5p'] = array(
+				'name'        => 'myCred H5P',
+				'addon_url'   => 'https://wordpress.org/plugins/mycred-h5p/',
+				'screenshot'  => plugins_url( 'assets/images/addons/mycred-h5p.jpg', myCRED_THIS ),
+			);
+
+			// bp-group-leaderboard Add-on
+			$free_addons['bp_group_leaderboard'] = array(
+				'name'        => 'myCred BP Group Leaderboards',
+				'addon_url'   => 'https://wordpress.org/plugins/mycred-bp-group-leaderboards/',
+				'screenshot'  => plugins_url( 'assets/images/addons/mycred-bp-group-leaderboards.jpg', myCRED_THIS ),
+			);
+
+			foreach ( $free_addons as $key => $data ) {
+			?>
+
+			<?php if ( $data['screenshot'] != '' ) : ?>
+				<div class="theme inactive" tabindex="0" aria-describedby="badges-action badges-name">
+					
+					<div class="theme-screenshot">
+						<img src="<?php echo $data['screenshot']; ?>" width="384px" height="288px" alt="">
+					</div>
+
+					<div class="theme-id-container">
+						
+						<h2 class="theme-name" id="badges-name"><?php echo $data['name']; ?></h2>
+						
+						<div class="theme-actions">
+
+						<a href="<?php echo $data['addon_url']; ?>" title="Install" target="_blank" class="button button-primary mycred-action badges">Install</a>
+						</div>
+
+					</div>
+
+				</div>
+
+			<?php endif; ?>
+
+		<?php
+		}
+		echo '<div class="theme add-new-theme"><a href="https://mycred.me/product-category/freebies/" target="_blank"><div class="theme-screenshot"><span></span></div><h2 class="theme-name">Add More Free Add-ons</h2></a></div><br class="clear" />';
+	}
+	
+	if ( $_GET['mycred_addons'] == 'premium_addons' ) 
+	{
+			$premium_addons = array();
+
+				// buyCRED Add-on
+				$premium_addons['mycred_woocommerce_plus'] = array(
+					'name'        => 'myCred WooCommerce Plus',
+					'addon_url'   => 'https://mycred.me/store/mycred-woocommerce-plus/',
+					'screenshot'  => plugins_url( 'assets/images/addons/mycred-woocommerce-plus.jpg', myCRED_THIS ),
+				);
+
+				// learndash Add-on
+				$premium_addons['social_share'] = array(
+					'name'        => 'myCred Social Share',
+					'addon_url'   => 'https://mycred.me/store/mycred-social-share-add-on/',
+					'screenshot'  => plugins_url( 'assets/images/addons/mycred-social-share.jpg', myCRED_THIS ),
+				);
+				
+				// birthday Add-on
+				$premium_addons['spin_wheel'] = array(	
+					'name'        => 'myCred Spin Wheel',
+					'addon_url'   => 'https://mycred.me/store/wheel-of-fortune-add-on/',
+					'screenshot'  => plugins_url( 'assets/images/addons/mycred-spin-wheel.jpg', myCRED_THIS ),
+				);
+
+				// gutenberg Add-on
+				$premium_addons['bp_charges'] = array(
+					'name'        => 'myCred BP Charges',
+					'addon_url'   => 'https://mycred.me/store/mycred-bp-charges/',
+					'screenshot'  => plugins_url( 'assets/images/addons/mycred-bp-charges.jpg', myCRED_THIS ),
+				);
+
+				// H5p Add-on
+				$premium_addons['arcade_game'] = array(
+					'name'        => 'myCred Arcade Game',
+					'addon_url'   => 'https://mycred.me/store/mycred-pacman/',
+					'screenshot'  => plugins_url( 'assets/images/addons/mycred-pacman.jpg', myCRED_THIS ),
+				);
+
+				// bp-group-leaderboard Add-on
+				$premium_addons['notification_plus'] = array(
+					'name'        => 'myCred Notifications Plus',
+					'addon_url'   => 'https://mycred.me/store/notifications-plus-add-on/',
+					'screenshot'  => plugins_url( 'assets/images/addons/mycred-notification-plus.jpg', myCRED_THIS ),
+				);
+
+			foreach ( $premium_addons as $key => $data ) {
+			?>
+
+			<?php if ( $data['screenshot'] != '' ) : ?>
+				<div class="theme inactive" tabindex="0" aria-describedby="badges-action badges-name">
+				
+					<div class="theme-screenshot">
+						<img src="<?php echo $data['screenshot']; ?>" width="384px" height="288px" alt="">
+					</div>
+
+					<div class="theme-id-container">
+						
+						<h2 class="theme-name" id="badges-name"><?php echo $data['name']; ?></h2>
+	
+						<div class="theme-actions">
+
+						<a href="<?php echo $data['addon_url']; ?>" title="Install" target="_blank" class="button button-primary mycred-action badges">Install</a>
+						</div>
+
+					</div>
+
+				</div>
+
+			<?php endif; ?>
+
+		<?php
+		}
+		echo '<div class="theme add-new-theme"><a href="https://mycred.me/store/" target="_blank"><div class="theme-screenshot"><span></span></div><h2 class="theme-name">Add More Premium Add-ons</h2></a></div><br class="clear" />';
+	}
+}
+else
+{
+	// Loop though installed
 			if ( ! empty( $installed ) ) {
 
 				foreach ( $installed as $key => $data ) {
@@ -409,14 +731,17 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 
 					<div class="theme-actions">
 
-					<?php echo $this->activate_deactivate( $key ); ?>
+						<?php echo $this->activate_deactivate( $key ); ?>
 
 					</div>
 
 				</div>
 
 			</div>
-<?php
+	<?php
+}
+
+			
 
 				}
 
@@ -454,6 +779,20 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 
 		}
 
+		public function check_all_addons( ) {
+		
+			$all_addons = count($this->installed);
+			$active_addons = count($this->active);
+			
+			if($all_addons == $active_addons){
+				
+				return true;
+
+			}else{
+
+				return false;
+			}
+		}
 	}
 endif;
 
@@ -490,6 +829,52 @@ if ( ! function_exists( 'get_mycred_addon_deactivation_url' ) ) :
 		if ( $addon_id === NULL ) return '#';
 
 		return get_mycred_addon_activation_url( $addon_id, true );
+
+	}
+endif;
+
+
+
+
+if ( ! function_exists( 'get_mycred_all_addon_activation_url' ) ) :
+	function get_mycred_all_addon_activation_url() 
+  {
+
+		$args = array(
+			'page'         => MYCRED_SLUG . '-addons',
+			'addon_all_action' =>  'activate',
+			'_token'       => wp_create_nonce( 'mycred-activate-deactivate-addon' )
+		);
+
+		return esc_url( add_query_arg( $args, admin_url( 'admin.php' ) ) );
+
+	}
+endif;
+
+
+if ( ! function_exists( 'get_mycred_all_addon_deactivation_url' ) ) :
+	function get_mycred_all_addon_deactivation_url( ) {
+		
+		$args = array(
+			'page'         => MYCRED_SLUG . '-addons',
+			'addon_all_action' =>  'deactivate',
+			'_token'       => wp_create_nonce( 'mycred-activate-deactivate-addon' )
+		);
+
+		return esc_url( add_query_arg( $args, admin_url( 'admin.php' ) ) );
+
+	}
+endif;
+
+if ( ! function_exists( 'get_mycred_addon_page_url' ) ) :
+	function get_mycred_addon_page_url( $addon_type ) {
+		
+		$args = array(
+			'page'         => MYCRED_SLUG . '-addons',
+			'mycred_addons' =>  $addon_type,
+		);
+
+		return esc_url( add_query_arg( $args, admin_url( 'admin.php' ) ) );
 
 	}
 endif;

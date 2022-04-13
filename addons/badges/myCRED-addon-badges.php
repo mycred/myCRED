@@ -6,10 +6,11 @@
  */
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
-define( 'myCRED_BADGE',              __FILE__ );
-define( 'myCRED_BADGE_VERSION',      '1.3' );
-define( 'MYCRED_BADGE_DIR',          myCRED_ADDONS_DIR . 'badges/' );
-define( 'MYCRED_BADGE_INCLUDES_DIR', MYCRED_BADGE_DIR . 'includes/' );
+define( 'myCRED_BADGE',               __FILE__ );
+define( 'myCRED_BADGE_VERSION',       '1.3' );
+define( 'MYCRED_BADGE_DIR',           myCRED_ADDONS_DIR . 'badges/' );
+define( 'MYCRED_BADGE_INCLUDES_DIR',  MYCRED_BADGE_DIR . 'includes/' );
+define( 'MYCRED_BADGE_TEMPLATES_DIR', MYCRED_BADGE_DIR . 'templates/' );
 
 // Badge Key
 if ( ! defined( 'MYCRED_BADGE_KEY' ) )
@@ -59,13 +60,15 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
         /**
          * Module Pre Init
          * @since 1.0
-         * @version 1.1
+         * @version 1.2
          */
         public function module_pre_init() {
 
+            add_action( 'wp_head', array( $this, 'social_share_br_header' ) );
             add_filter( 'mycred_add_finished', array( $this, 'add_finished' ), 30, 3 );
-            add_action("wp_ajax_mycred_switch_all_to_open_badge", array( $this, "mycred_switch_all_to_open_badge" ) );
-            add_action("wp_ajax_nopriv_mycred_switch_all_to_open_badge", array( $this, "mycred_switch_all_to_open_badge" ) );
+            add_action( 'wp_ajax_mycred_switch_all_to_open_badge', array( $this, 'mycred_switch_all_to_open_badge' ) );
+            add_action( 'wp_ajax_nopriv_mycred_switch_all_to_open_badge', array( $this, 'mycred_switch_all_to_open_badge' ) );
+
         }
 
         /**
@@ -73,8 +76,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
          * @since 2.1
          * @version 1.0
          */
-        public function mycred_switch_all_to_open_badge()
-        {
+        public function mycred_switch_all_to_open_badge() {
 
             $args = array(
                 'post_type' => 'mycred_badge'
@@ -93,7 +95,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             echo 'Badges successfully switched to Open Badge.';
 
-            die;
+            die();
         }
 
         /**
@@ -162,8 +164,8 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
          * @since 1.3
          * @version 1.0
          */
-        public function enqueue_front_scripts()
-        {
+        public function enqueue_front_scripts() {
+
             wp_enqueue_script( 'mycred-badge-front', plugins_url( 'assets/js/front.js', myCRED_BADGE ), array('jquery'), myCRED_BADGE_VERSION );
         }
 
@@ -172,8 +174,8 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
          * @since 1.3
          * @version 1.0
          */
-        public function enqueue_admin_scripts()
-        {
+        public function enqueue_admin_scripts() {
+
             wp_enqueue_script( 'mycred-badge-admin', plugins_url( 'assets/js/admin.js', myCRED_BADGE ), '', myCRED_BADGE_VERSION );
         }
 
@@ -452,20 +454,18 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
             // site in the network, bail.
             if ( mycred_override_settings() && ! mycred_is_main_site() ) return;
 
-            add_submenu_page(
-                MYCRED_SLUG,
+            mycred_add_main_submenu(
+                __( 'Achievement Types', 'mycred' ),
+                __( 'Achievement Types', 'mycred' ),
+                $this->core->get_point_editor_capability(),
+                'edit-tags.php?post_type=' . MYCRED_BADGE_KEY . '&taxonomy=' . MYCRED_BADGE_CATEGORY
+            );
+
+            mycred_add_main_submenu(
                 __( 'Badges', 'mycred' ),
                 __( 'Badges', 'mycred' ),
                 $this->core->get_point_editor_capability(),
                 'edit.php?post_type=' . MYCRED_BADGE_KEY
-            );
-
-            add_submenu_page(
-                MYCRED_SLUG,
-                __( 'Achievements', 'mycred' ),
-                __( 'Achievements', 'mycred' ),
-                $this->core->get_point_editor_capability(),
-                'edit-tags.php?post_type=' . MYCRED_BADGE_KEY . '&taxonomy=' . MYCRED_BADGE_CATEGORY
             );
 
         }
@@ -481,13 +481,13 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_BADGE_KEY ) {
 
-                return MYCRED_SLUG;
+                return MYCRED_MAIN_SLUG;
 
             }
 
             elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BADGE_KEY ) {
 
-                return MYCRED_SLUG;
+                return MYCRED_MAIN_SLUG;
 
             }
 
@@ -495,7 +495,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
             {
                 $submenu_file = 'edit-tags.php?post_type=' . MYCRED_BADGE_KEY . '&taxonomy=' . MYCRED_BADGE_CATEGORY;
 
-                return MYCRED_SLUG;
+                return MYCRED_MAIN_SLUG;
             }
 
             return $parent;
@@ -796,6 +796,24 @@ th#badge-users { width: 10%; }
                 'low'
             );
 
+            add_meta_box(
+                'mycred-badge-align',
+                __( 'Alignment', 'mycred' ),
+                array( $this, 'metabox_badge_align' ),
+                MYCRED_BADGE_KEY,
+                'side',
+                'low'
+            );
+
+            add_meta_box(
+                'mycred-badge-layout',
+                __( 'Layout', 'mycred' ),
+                array( $this, 'metabox_badge_layout' ),
+                MYCRED_BADGE_KEY,
+                'side',
+                'low'
+            );
+
         }
 
         /**
@@ -976,6 +994,22 @@ th#badge-users { width: 10%; }
                 </div>
             </div>
             <?php
+
+        }
+
+        public function metabox_badge_align( $post ) {
+
+            $mycred_badge_align = mycred_get_post_meta( $post->ID, 'mycred_badge_align', true );
+            require_once MYCRED_BADGE_TEMPLATES_DIR . 'mycred-metabox-badge-alignment.php';
+
+        }
+
+
+
+        public function metabox_badge_layout( $post ) {
+            
+            $mycred_layout = mycred_get_post_meta( $post->ID, 'mycred_layout_check', true );
+            require_once MYCRED_BADGE_TEMPLATES_DIR . 'mycred-metabox-badge-layout.php';
 
         }
 
@@ -1271,6 +1305,14 @@ th#badge-users { width: 10%; }
             if ( isset( $_POST['mycred_badge']['congratulation_msg'] ) )
                 $congratulation_msg = sanitize_text_field( $_POST['mycred_badge']['congratulation_msg'] );
 
+            $badge_align = '';
+            if ( isset( $_POST['mycred_badge']['mycred_badge_align'] ) )
+                $badge_align = sanitize_text_field( $_POST['mycred_badge']['mycred_badge_align'] );
+
+            $layout = '';
+            if ( isset( $_POST['mycred_badge']['mycred_layout_check'] ) )
+                $layout = sanitize_text_field( $_POST['mycred_badge']['mycred_layout_check'] );
+
             $badge_levels       = array();
             $badge_requirements = array();
 
@@ -1389,6 +1431,10 @@ th#badge-users { width: 10%; }
 
             mycred_update_post_meta( $post_id, 'main_image', $image );
 
+            mycred_update_post_meta( $post_id, 'mycred_badge_align', $badge_align );
+
+            mycred_update_post_meta( $post_id, 'mycred_layout_check', $layout );
+
             // Let others play
             do_action( 'mycred_save_badge', $post_id );
 
@@ -1468,30 +1514,30 @@ th#badge-users { width: 10%; }
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <?php if( $settings['open_badge'] == '1' ):?>
-                        <div class="form-group">
-                            <label for="<?php echo $this->field_id( 'open_badge_evidence_page' ); ?>"><?php _e( 'Evidence Page', 'mycred' ); ?></label>
-                            <?php       
+                    <?php if( $settings['open_badge'] == '1' ):?>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <label for="<?php echo $this->field_id( 'open_badge_evidence_page' ); ?>"><?php _e( 'Evidence Page', 'mycred' ); ?></label>
+                                <?php       
 
-                                $selectedEvidencePage = mycred_get_evidence_page_id();   
+                                    $selectedEvidencePage = mycred_get_evidence_page_id();   
 
-                                $args = array(
-                                    'id'       => $this->field_id( 'open_badge_evidence_page' ),
-                                    'name'     => $this->field_name( 'open_badge_evidence_page' ),
-                                    'selected' => $selectedEvidencePage
-                                );
+                                    $args = array(
+                                        'id'       => $this->field_id( 'open_badge_evidence_page' ),
+                                        'name'     => $this->field_name( 'open_badge_evidence_page' ),
+                                        'selected' => $selectedEvidencePage
+                                    );
 
-                                wp_dropdown_pages( $args );
-                            ?>
+                                    wp_dropdown_pages( $args );
+                                ?>
+                            </div>
                         </div>
-                        <?php endif;?>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <div class="form-group">
-                            <button class="button button-large large button-primary" id="switch-all-to-open-badge"><span class="dashicons dashicons-update mycred-switch-all-badges-icon"></span> Switch All Badges To Open Badge.</button>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <button class="button button-large large button-primary" id="switch-all-to-open-badge"><span class="dashicons dashicons-update mycred-switch-all-badges-icon"></span> Switch All Badges To Open Badge.</button>
+                            </div>
                         </div>
-                    </div>
+                    <?php endif;?>
                 </div>
 
                 <h3><?php _e( 'Third-party Integrations', 'mycred' ); ?></h3>
@@ -1572,7 +1618,7 @@ th#badge-users { width: 10%; }
                         <p><a href="http://codex.mycred.me/shortcodes/mycred_my_badges/" target="_blank">[mycred_my_badges]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_badges/" target="_blank">[mycred_badges]</a></p>
                     </div>
                 </div>
-
+                <?php do_action( 'mycred_admin_after_badges_settings' ); ?>
             </div>
             <?php
 
@@ -1926,168 +1972,92 @@ th#badge-users { width: 10%; }
         }
 
         /**
+         * Loads meta in header for Social Sharing
+         * @since 2.2
+         * @version 1.0
+         */
+        public function social_share_br_header() {
+
+            global $post;
+
+            if( is_single() && $post->post_type == MYCRED_BADGE_KEY ) {
+            
+                $badge_id = $post->ID;
+
+                $user_id = get_current_user_id();
+
+                $badge_object = mycred_get_badge( $badge_id );
+                
+                $badge_image_url = $badge_object->get_earned_image( $user_id );?>
+
+                <meta property="og:url" content="<?php echo esc_url( get_the_permalink() ); ?>">
+                <meta property="og:title" content="<?php echo esc_attr( get_the_title() ); ?>">
+                <meta property="og:description" content="<?php echo esc_attr( $post->post_content );?>">
+                <meta property="og:image" content="<?php echo esc_url( $badge_image_url ); ?>">
+                <meta name="twitter:image" content="<?php echo esc_url( $badge_image_url ); ?>">
+                <meta name="twitter:card" content="summary_large_image">
+
+            <?php
+            }
+
+        }
+
+        /**
          * Automatically runs when MYCRED_BADGE_KEY (Post Type Page Loads)
          * @param $content
          * @return string
          * @since 2.1
-         * @version 1.0
+         * @version 1.2
          */
         public function mycred_badge_page_template( $content ) {
 
             global $post;
 
-            if ( $post->post_type == MYCRED_BADGE_KEY && is_single() ) {
-                
+            if ( is_single() && $post->post_type == MYCRED_BADGE_KEY ) {
+
                 $mycred = mycred();
 
-                $show_level_description = false;
-                $show_congo_text = false;
-                $show_levels = false;
-                $show_level_points = false;
-                $show_steps_to_achieve = false;
-                $show_earners = false;
+                if ( is_array( $mycred->core ) && array_key_exists( 'badges', $mycred->core ) ) {
 
-                if ( is_array( $mycred->core ) && array_key_exists('badges', $mycred->core ) ) {
-                    $show_level_description = $mycred->core["badges"]["show_level_description"] == '1' ? true : false;
-                    $show_congo_text = $mycred->core["badges"]["show_congo_text"] == '1' ? true : false;
-                    $show_levels = $mycred->core["badges"]["show_levels"] == '1' ? true : false;
-                    $show_level_points = $mycred->core["badges"]["show_level_points"] == '1' ? true : false;
-                    $show_steps_to_achieve = $mycred->core["badges"]["show_steps_to_achieve"] == '1' ? true : false;
-                    $show_earners = $mycred->core["badges"]["show_earners"] == '1' ? true : false;
-                }
+                    $user_id        = get_current_user_id();
+                    $badge          = mycred_get_badge( $post->ID );
+                    $badge_settings = $mycred->core["badges"];
 
-                //Badge ID
-                $badge_id = $post->ID;
+                    $content = '<div class="mycred-badge-page">';
 
-                $user_id = get_current_user_id();
-
-                $has_earned = mycred_user_has_badge( $user_id, $badge_id );
-
-                $badge_object = mycred_get_badge( $badge_id );
-
-                //Level Image URL, If User has earned (Show Baked) else (Original)
-                $badge_image_url = $badge_object->get_earned_image( $user_id );
-
-                //Preparing Template
-                $content = '';
-
-                $content = '<div class="mycred-badge-page">';
-
-                if ( $show_congo_text && $has_earned ) {
-                
-                    if ( ! empty( $badge_object->congratulation_msg ) ) {
-
-                        $content .= '<div class="mycred-badge-congratulation-msg">' . $badge_object->congratulation_msg . '</div>';
-                    
-                    }
-                
-                }
-                
-                $content .= '<img src="' . $badge_image_url . '" class="mycred-badge-image" alt="">';
-
-                //Level Description
-                if( $show_level_description ) {
-
-                    $content .= "<h3>" . __("Description", "mycred") . "</h3>";
-                    $content .= "<p>" . $post->post_content . "</p>";
-
-                }
-
-                //Showing Badge Levels
-                if( $show_levels || $badge_object->open_badge && $show_steps_to_achieve ) {
-
-                    if ( ! $badge_object->open_badge )
-                        $content .= "<h3>" . __("Levels", "mycred") . "</h3>";
-                    else 
-                        $content .= "<h3>" . __("Requirement", "mycred") . "</h3>";
-
-                    //Badge Requirements
-                    $levels = mycred_show_badge_requirements( $badge_id );
-
-                    foreach ( $levels as $id => $level ) {
+                        $content .= mycred_badge_show_congratulation_msg( $user_id, $badge, $mycred );
                         
-                        $level_image_url = '';
+                        $content .= '<div class="'. $badge->layout .' '. $badge->align .'">';
 
-                        if( ! empty( $level_image_url ) )
-                            $level_image_url = $level["image"];
+                            if( $badge->layout != 'mycred_layout_bottom' )
+                                $content .= mycred_badge_show_main_image_with_social_icons( $user_id, $badge, $mycred );
 
-                        $heading = $level["heading"];
+                            $content .= '<div class="mycred_content">';
 
-                        $requirements = $level["requirements"];
+                                $content .= mycred_badge_show_description( $post, $mycred );
+                                $content .= mycred_badge_show_levels( $user_id, $badge, $mycred );
+                                $content .= mycred_badge_show_earners( $badge, $mycred );
 
-                        $reward = $level["amount"];
-
-                        $content .= '<div class="mycred-badge-page-level">';
-
-                        if ( ! $badge_object->open_badge ) {
-
-                            if ( $level_image_url != '' )
-                                $content .= '<img src="'.$level_image_url.'" class="mycred-level-image mycred-float-left" />';
-
-                            $content .= "<div class='mycred-float-left'><h4>$heading</h4></div>";
-                        }
-
-                        $content .= "<div class='clear'></div>";
-
-                        if ( $show_steps_to_achieve )
-                            $content .= mycred_badge_level_req_check( $badge_id, $id );
-
-                        if ( $show_level_points && $reward != 0 ) {
-
-                            $reward_type = mycred( $level['reward_type'] );
-
-                            $content .= '<div class="mycred-level-reward">' . __('Reward:', 'mycred') . ' ' . $reward_type->format_creds($reward ) .'</div>';
-                        }
-
-                        $content .= '</div>';
-                    }
-
-                    $content .= '<div class="clear"></div>';
-                }
-
-                if( $show_earners ) {
-
-                    $users_have_badge =  mycred_get_users_has_earned_badge( $badge_id );
-
-                    $earned_count = count( $users_have_badge );
-
-                    //If Earners exist
-                    if ( $earned_count > 0 )
-                    {
-                        $content .= "<h3>" . __("Earners", "mycred") . "</h3>";
-
-                        $content .= '<div class="mycred-badge-earners">';
-
-
-                        foreach ( $users_have_badge as $user ) {
-
-                            $user_id = $user;
-
-                            $user_profile = get_avatar_url( $user_id );
-
-                            $user_info = get_userdata( $user_id );
-
-                            $display_name = $user_info->display_name;
-
-                            $content .= '<div class="mycred-badge-earner-grid mycred-float-left">';
-                            $content .= '<div><img src="' . $user_profile . '" /></div>';
-                            $content .= "<h4>$display_name</h4>";
                             $content .= '</div>';
 
-                        }
+                            if( $badge->layout == 'mycred_layout_bottom' )
+                                $content .= mycred_badge_show_main_image_with_social_icons( $user_id, $badge, $mycred );
 
+                            $content .= '<div class="mycred-clearfix"></div>';
+
+                        //layout
                         $content .= '</div>';
-                    }
+                    
+                    //mycred-badge-page
+                    $content .= '</div>';
+
+                
                 }
 
-                $content .= '</div>';
-
-                return $content;
-            
             }
 
             return $content;
-        
+
         }
 
         public function flush_rewrite_rules_for_badges() {

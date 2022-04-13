@@ -119,7 +119,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		 * Front Footer
 		 * @filter 'mycred_transfer_messages'
 		 * @since 0.1
-		 * @version 1.2.1
+		 * @version 1.2.2
 		 */
 		public function maybe_load_script() {
 
@@ -152,9 +152,10 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				'error_7'   => esc_attr__( 'Insufficient Funds. Please try a lower amount.', 'mycred' ),
 				'error_8'   => esc_attr__( 'Transfer Limit exceeded.', 'mycred' ),
 				'error_9'   => esc_attr__( 'Communications error. Please try again later.', 'mycred' ),
-				'error_10'  => esc_attr__( 'The selected point type can not be transferred.', 'mycred' )
+				'error_10'  => esc_attr__( 'The selected point type can not be transferred.', 'mycred' ),
+				'error_11'  => esc_attr__( 'Selected recipient ain\'t allowed by admin.', 'mycred' ),
 			) );
-
+			
 			wp_localize_script(
 				'mycred-transfer',
 				'myCREDTransfer',
@@ -201,7 +202,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 			}
 
-			$results = apply_filters( 'mycred_transfer_users_list' , $results, $user_id, $this->transfer['autofill'] );
+			$results = apply_filters( 'mycred_transfer_users_list' , $results, $user_id, $this->transfers['autofill'] );
 
 			wp_send_json( $results );
 

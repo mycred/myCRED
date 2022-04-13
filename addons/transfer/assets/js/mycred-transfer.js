@@ -72,8 +72,8 @@
 		$.ajax({
 			type       : "POST",
 			data       : {
-				action    : 'mycred-new-transfer',
-				form      : transferform.serialize(),
+				action			: 'mycred-new-transfer',
+				form			: transferform.serialize()
 			},
 			dataType   : "JSON",
 			url        : myCREDTransfer.ajaxurl,
@@ -88,7 +88,6 @@
 
 			},
 			success    : function( response ) {
-
 				console.log( response );
 
 				$( formid + ' input.form-control' ).each(function(index){

@@ -25,14 +25,15 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 					'gateway_prefs' => array()
 				),
 				'labels'      => array(
-					'menu'        => __( 'Payment Gateways', 'mycred' ),
-					'page_title'  => __( 'Payment Gateways', 'mycred' ),
-					'page_header' => __( 'Payment Gateways', 'mycred' )
+					'menu'        => __( 'buyCred Gateways', 'mycred' ),
+					'page_title'  => __( 'buyCred Gateways', 'mycred' ),
+					'page_header' => __( 'buyCred Gateways', 'mycred' )
 				),
 				'screen_id'   => MYCRED_SLUG . '-gateways',
 				'accordion'   => true,
 				'add_to_core' => true,
-				'menu_pos'    => 70
+				'menu_pos'    => 70,
+				'main_menu'   => true
 			), $type );
 
 			$this->mycred_type = MYCRED_DEFAULT_TYPE_KEY;
@@ -244,6 +245,19 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 						if ( $buycred_instance->is_ajax )
 							die( json_encode( array( 'validationFail' => true , 'errors' => $buycred_instance->gateway->errors ) ) );
+						else
+					    {
+					        foreach( $buycred_instance->gateway->errors as $error )
+					        {
+					            global $wp;
+					            echo "
+					            <script>
+					                alert('".$error."');
+					                location.replace( '".home_url( $wp->request )."' );
+					            </script>
+					            ";
+					        }
+					    }
 					}
 
 				}
@@ -725,7 +739,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php _e( 'Payment Gateways', 'mycred' ); ?></h1>
+	<h1><?php _e( 'buyCred Payment Gateways', 'mycred' ); ?></h1>
 <?php
 
 			// Updated settings

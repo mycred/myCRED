@@ -74,6 +74,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			if ( function_exists( 'bp_is_active' ) && bp_is_active( 'xprofile' ) && $this->prefs['buddypress']['profile'] )
 				add_action( 'bp_after_profile_loop_content', array( $this, 'buddypress_profile' ), $this->prefs['buddypress']['priority'] );
 
+
 			// Hook into user activation
 			if ( function_exists( 'buddypress' ) )
 				add_action( 'mycred_bp_user_activated', array( $this, 'verified_signup' ) );

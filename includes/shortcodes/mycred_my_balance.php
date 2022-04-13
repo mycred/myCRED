@@ -6,20 +6,23 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * Returns the current users balance.
  * @see http://codex.mycred.me/shortcodes/mycred_my_balance/
  * @since 1.0.9
- * @version 1.3
+ * @version 1.4
  */
 if ( ! function_exists( 'mycred_render_shortcode_my_balance' ) ) :
 	function mycred_render_shortcode_my_balance( $atts, $content = '' ) {
 
 		extract( shortcode_atts( array(
-			'user_id'    => 'current',
-			'title'      => '',
-			'title_el'   => 'h1',
-			'balance_el' => 'div',
-			'wrapper'    => 1,
-			'formatted'  => 1,
-			'type'       => MYCRED_DEFAULT_TYPE_KEY
+			'user_id'   	=>	'current',
+			'title'      	=>	'',
+			'title_el'   	=>	'h1',
+			'balance_el' 	=>	'div',
+			'wrapper'    	=>	1,
+			'formatted'  	=>	1,
+			'type'       	=>	MYCRED_DEFAULT_TYPE_KEY,
+			'image'			=>	0
 		), $atts, MYCRED_SLUG . '_my_balance' ) );
+
+		$mycred = mycred( $type );
 
 		$output = '';
 
@@ -60,6 +63,10 @@ if ( ! function_exists( 'mycred_render_shortcode_my_balance' ) ) :
 		// Balance
 		if ( ! empty( $balance_el ) )
 			$output .= '<' . $balance_el . '>';
+
+		//Image
+		if( $image && $mycred->image_url)
+			$output .= "<img src='{$mycred->image_url}' style='margin-right: 5px;' class='mycred-my-balance-image-{$type}' width='20px' />";
 
 		if ( $formatted )
 			$output .= $balance->point_type->format( $balance->current );

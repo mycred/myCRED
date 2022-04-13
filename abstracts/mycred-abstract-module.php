@@ -55,6 +55,9 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 		// Pages
 		public $pages = array();
 
+		// Submenu Inside Main menu
+		public $main_menu;
+
 		/**
 		 * Construct
 		 */
@@ -90,7 +93,8 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 				'add_to_core' => false,
 				'accordion'   => false,
 				'cap'         => 'plugin',
-				'menu_pos'    => 10
+				'menu_pos'    => 10,
+				'main_menu'   => false
 			);
 			$args = wp_parse_args( $args, $defaults );
 
@@ -118,6 +122,7 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 
 			$this->default_prefs   = $args['defaults'];
 			$this->now             = current_time( 'timestamp' );
+			$this->main_menu       = $args['main_menu'];
 
 			$this->set_settings();
 
@@ -413,6 +418,9 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 
 				elseif ( isset( $this->labels['menu'] ) )
 					$label_title = $this->labels['menu'];
+
+				if ( $this->main_menu ) 
+					$menu_slug = MYCRED_MAIN_SLUG;
 
 				// Add Submenu Page
 				$page = add_submenu_page(

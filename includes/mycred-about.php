@@ -535,23 +535,23 @@ function mycred_about_page() {
 				<div class="block">
 					<h2>Change Log</h2>
 					<ul>
-						<li><strong>NEW</strong> - Open badge functionality in myCred Badge addon.</li>
-						<li><strong>NEW</strong> - Introduce Achievement Types.</li>
-						<li><strong>NEW</strong> - Introduce a new shortcode mycred_badges_list.</li>
-						<li><strong>NEW</strong> - Single badge page.</li>
-						<li><strong>NEW</strong> - Added support into Badges for Anniversary hook.</li>
-						<li><strong>NEW</strong> - Added support into Badges for wooCommerce purchase reward.</li>
-						<li><strong>NEW</strong> - Added %rank_title% template tag support in Email Notifications.</li>
-						<li><strong>NEW</strong> - Added attributes in mycred_transfer shortcode.</li>
-						
-						<li><strong>FIX</strong> - mycred_history shortcode pagination not working properly when cache enabled.</li>
-						<li><strong>FIX</strong> - Ranks weren't working properly on the current balance.</li>
-						<li><strong>FIX</strong> - mycred_sell_this shortcode not working in the bbPress topic</li>
-						<li><strong>FIX</strong> - The central deposit missing log entry in some cases.</li>
-						
-						<li><strong>TWEAK</strong> - Removed deprecated functions.</li>
-						<li><strong>TWEAK</strong> - Code Improvement.</li>
-						<li><strong>TWEAK</strong> - Improve styling of mycred_transfer shortcode.</li>
+						<li><strong>NEW</strong> - Moved general settings and menus into the newly introduced "myCred" main menu.</li>
+						<li><strong>NEW</strong> - On plugin activation, the default point type will be created automatically.</li>
+						<li><strong>NEW</strong> - Now user can upload a Point type image.</li>
+						<li><strong>NEW</strong> - Introduced an image attribute in mycred_my_balance shortcode.</li>
+						<li><strong>NEW</strong> - Introduced an image attribute in mycred_leaderboard shortcode.</li>
+						<li><strong>NEW</strong> - Introduced Single badge page layout setting.</li>
+						<li><strong>NEW</strong> - Introduced a enable/disable all addons button.</li>
+						<li><strong>NEW</strong> - Added new template tags in email notification for transfer events.</li>
+						<li><strong>NEW</strong> - Users can share their achieved Badges on social media.</li>
+						<li><strong>FIX</strong> - Backend logs are not being exported whether the export raw/formatted log option is set.</li>
+						<li><strong>FIX</strong> - Incorrect achieved badge level image in [mycred_badges] shortcode.</li>
+						<li><strong>FIX</strong> - In the Ranks list page All/Published/Trash links not working properly.</li>
+						<li><strong>FIX</strong> - Unable to revoke badge from the User profile page. FIX – Added some security validations in the transfer form.</li>
+						<li><strong>FIX</strong> - MYSQL 8 syntax error in the leaderboard shortcode.</li>
+						<li><strong>FIX</strong> - Added compatibility with BuddyPress version 8.0.</li>
+						<li><strong>TWEAK</strong> - When a user deletes the log of buy_content, the sales count does not get updated. So, we have Introduced the "Update Sales Count" button in the settings.</li>
+						<li><strong>TWEAK</strong> - Improve new point type creation form setting.</li>
 					</ul>
 				</div>
 			</div><!-- /.mycred-change-log -->

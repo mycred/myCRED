@@ -501,7 +501,7 @@ endif;
  * Sell Content Template
  * Parses a particular template.
  * @since 1.7
- * @version 1.0.1
+ * @version 1.0.2
  */
 if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 	function mycred_sell_content_template( $template = '', $post = NULL, $type = 'mycred-sell-partial-content', $status = 'visitor' ) {
@@ -512,7 +512,7 @@ if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 		$url               = mycred_get_permalink( $post->ID );
 		
 		if ( $status == 'mycred-sell-insufficient' ) {
-			$post        = mycred_get_post( $post_id );
+			$post        = mycred_get_post( $post->ID );
 			$settings    = mycred_sell_content_settings();
 			$prices      = array();
 
@@ -525,7 +525,7 @@ if ( ! function_exists( 'mycred_sell_content_template' ) ) :
 				if ( $status == 'disabled' ) continue;
 				
 				$mycred = mycred( $point_type );
-				$price  = mycred_get_content_price( $post->ID, $point_type, $user_id );
+				$price  = mycred_get_content_price( $post->ID, $point_type, get_current_user_id() );
 
 				// Manual mode
 				if ( $settings['filters'][ $post->post_type ]['by'] == 'manual' ) {

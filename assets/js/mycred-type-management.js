@@ -5,6 +5,12 @@
  */
 jQuery(function($) {
 
+
+	var ChangeDefaultImageButton  = $( '#point-type-change-default-image' );
+
+	var LevelImageSelector;
+	var DefaultImageSelector;
+
 	var wWidth     = $(window).width();
 	var dWidth     = wWidth * 0.75;
 
@@ -127,6 +133,50 @@ jQuery(function($) {
 
 	$(document).ready( function() {
 
+			// Set / Change Point Image Action
+			$( '#mycred-image-setup' ).on( 'click', '#point-type-change-default-image', function(e){
+
+				console.log( 'Change point type image button' );
+	
+				var button       = $(this);
+
+				var buttonDiv = $( '.point-image-buttons' );
+
+				fieldName = myCREDmanage.fieldName.replace( '[]', '' );
+
+				LevelImageSelector = wp.media.frames.file_frame = wp.media({
+					title    : myCREDmanage.uploadtitle,
+					button   : {
+						text     : myCREDmanage.uploadbutton
+					},
+					multiple : false
+				});
+	
+				// When a file is selected, grab the URL and set it as the text field's value
+				LevelImageSelector.on( 'select', function(){
+	
+					attachment = LevelImageSelector.state().get('selection').first().toJSON();
+					if ( attachment.url != '' ) {
+
+						$( '.point-type-image-wrapper' ).fadeOut(function(){
+							$( '.point-type-image-wrapper' ).empty().removeClass( 'default-image dashicons' ).html( `<img src="${attachment.url}" alt="Point type image" \/><input type="hidden" name="${fieldName}[attachment_id]" value="${attachment.id}" \/>` ).fadeIn();
+							$( buttonDiv ).html( `
+								<button type="button" class="button button-secondary" id="point-type-change-default-image" >${myCREDmanage.changeImage}</button>
+							` );
+						});
+	
+					}
+	
+				});
+	
+				// Open the uploader dialog
+				LevelImageSelector.open();
+	
+			});
+
+	
+
+		// Point type ends
 		if ( dWidth < 250 )
 			dWidth = wWidth;
 
