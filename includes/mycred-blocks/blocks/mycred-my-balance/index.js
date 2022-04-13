@@ -7,7 +7,7 @@
     var ToggleControl = wp.components.ToggleControl;
     var TextareaControl = wp.components.TextareaControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-my-balance', {
+    registerBlockType('mycred-gb-blocks/mycred-my-balance', {
         title: __('My Balance', 'mycred'),
         category: 'mycred',
         attributes: {

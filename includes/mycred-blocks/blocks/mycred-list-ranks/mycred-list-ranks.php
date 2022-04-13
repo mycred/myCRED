@@ -1,22 +1,47 @@
 <?php
+namespace MG_Blocks;
 
-add_action('enqueue_block_editor_assets', 'mycred_list_ranks');
+if ( ! defined('ABSPATH') ) exit;
 
-function mycred_list_ranks() {
+if ( ! class_exists('mycred_list_ranks_block') ) :
+    class mycred_list_ranks_block {
 
-    wp_enqueue_script(
-            'mycred-list-ranks', plugins_url('index.js', __FILE__), array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor')
-    );
-}
+        public function __construct() {
 
-register_block_type('mycred-blocks/mycred-list-ranks', array(
-    'render_callback' => 'mycred_list_ranks_callback'
-));
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
 
-function mycred_list_ranks_callback($attributes) {
+            register_block_type( 
+                'mycred-gb-blocks/mycred-list-ranks', 
+                array( 'render_callback' => array( $this, 'render_block' ) )
+            );
+        
+        }
 
-    if ($attributes['ctype'] == '')
-        $attributes['ctype'] = 'mycred_default';
+        public function register_assets() {
 
-    return "[mycred_list_ranks  " . mycred_extract_attributes($attributes) . "]";
-}
+            wp_enqueue_script(
+                'mycred-list-ranks', 
+                plugins_url('index.js', __FILE__), 
+                array( 
+                    'wp-blocks', 
+                    'wp-element', 
+                    'wp-components', 
+                    'wp-editor'
+                )
+            );
+
+        }
+
+        public function render_block( $attributes, $content ) {
+            
+            if ( empty( $attributes['ctype'] ) )
+                $attributes['ctype'] = 'mycred_default';
+
+            return "[mycred_list_ranks " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+
+        }
+
+    }
+endif;
+
+new mycred_list_ranks_block();

@@ -6,7 +6,7 @@
     var SelectControl = wp.components.SelectControl;
     var ToggleControl = wp.components.ToggleControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-leaderboard', {
+    registerBlockType('mycred-gb-blocks/mycred-leaderboard', {
         title: __('Leaderboard', 'mycred'),
         category: 'mycred',
         attributes: {

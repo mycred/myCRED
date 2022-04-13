@@ -1,12 +1,13 @@
 <?php
+namespace MG_Blocks;
 
-if (!defined('ABSPATH')) {
+if ( ! defined('ABSPATH') ) {
     exit; // Exit if accessed directly.
 }
 
-define( 'mycred_gutenberg_SLUG', 'mycred-gutenberg-blocks' );
-define( 'mycred_gutenberg_VERSION', '1.1.2' );
-define( 'mycred_gutenberg', __FILE__ );
+define( 'mycred_gb_gutenberg_SLUG', 'mycred-gutenberg-blocks' );
+define( 'mycred_gb_gutenberg_VERSION', '1.1.2' );
+define( 'mycred_gb_gutenberg', __FILE__ );
 
 final class MyCred_Gutenberg {
 
@@ -43,6 +44,7 @@ final class MyCred_Gutenberg {
             return;
 
         $this->includes();
+        $this->register_block_category();
         add_action('init', [$this, 'load_modules']);
     }
 
@@ -60,6 +62,24 @@ final class MyCred_Gutenberg {
 
     public function includes() {
         require_once( __DIR__ . '/includes/mycred-gutenberg-functions.php' );
+    }
+
+    public function register_block_category() {
+
+        add_filter( 'block_categories_all', array( $this, 'mb_block_categories' ), 10, 2 );
+
+    }
+
+    public function mb_block_categories( $categories, $post ) {
+        return array_merge(
+            $categories, 
+            array(
+                array(
+                    'slug' => 'mycred',
+                    'title' => __('MYCRED', 'mycred'),
+                ),
+            )
+        );
     }
 
     public function load_modules() {

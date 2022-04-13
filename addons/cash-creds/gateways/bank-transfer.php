@@ -196,7 +196,7 @@ if ( ! class_exists( 'myCRED_cashcred_Bank_Transfer' ) ) :
 			<div id="panel_<?php echo $data;?>" class="cashcred_panel">
 					
 				<div class="form-group">  
-					<label><h3><?php _e( 'Bank account details', 'mycred' )?></h3></label>
+					<label><h3><?php echo apply_filters( 'mycred_cashcred_bank_transfer_title', __( 'Bank account details', 'mycred' ) ); ?></h3></label>
 				</div>
 				
 				<?php if( isset( $mycred_pref_cashcreds["gateway_prefs"]["bank"]["enable_additional_notes"] ) ): ?>

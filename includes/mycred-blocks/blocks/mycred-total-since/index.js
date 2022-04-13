@@ -6,7 +6,7 @@
     var ToggleControl = wp.components.ToggleControl;
     var SelectControl = wp.components.SelectControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-total-since', {
+    registerBlockType('mycred-gb-blocks/mycred-total-since', {
         title: __('Total Since', 'mycred'),
         category: 'mycred',
         attributes: {

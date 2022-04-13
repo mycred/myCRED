@@ -5,7 +5,7 @@
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-list-ranks', {
+    registerBlockType('mycred-gb-blocks/mycred-list-ranks', {
         title: __('List Ranks', 'mycred'),
         category: 'mycred',
         attributes: {

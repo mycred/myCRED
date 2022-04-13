@@ -1,21 +1,47 @@
 <?php
+namespace MG_Blocks;
 
-add_action('enqueue_block_editor_assets', 'mycred_total_balance');
+if ( ! defined('ABSPATH') ) exit;
 
-function mycred_total_balance() {
+if ( ! class_exists('mycred_total_balance_block') ) :
+    class mycred_total_balance_block {
 
-    wp_enqueue_script(
-            'mycred-total-balance', plugins_url('index.js', __FILE__), array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor')
-    );
-}
+        public function __construct() {
 
-register_block_type('mycred-blocks/mycred-total-balance', array(
-    'render_callback' => 'mycred_total_balance_callback'
-));
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
 
-function mycred_total_balance_callback($attributes) {
-    if ($attributes['types'] == '')
-        $attributes['types'] = 'mycred_default';
+            register_block_type( 
+                'mycred-gb-blocks/mycred-total-balance', 
+                array( 'render_callback' => array( $this, 'render_block' ) )
+            );
+        
+        }
 
-    return "[mycred_total_balance " . mycred_extract_attributes($attributes) . "]";
-}
+        public function register_assets() {
+
+            wp_enqueue_script(
+                'mycred-total-balance', 
+                plugins_url('index.js', __FILE__), 
+                array( 
+                    'wp-blocks', 
+                    'wp-element', 
+                    'wp-components', 
+                    'wp-editor', 
+                )
+            );
+
+        }
+
+        public function render_block( $attributes, $content ) {
+            
+            if ( empty( $attributes['types'] ) )
+                $attributes['types'] = 'mycred_default';
+
+            return "[mycred_total_balance " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+
+        }
+
+    }
+endif;
+
+new mycred_total_balance_block();

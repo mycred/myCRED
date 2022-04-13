@@ -223,7 +223,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 				} 
 
 				if( isset($e_rate) && !empty($e_rate)){ 
-					$e_rate=mycred_buycred_encode($e_rate);
+					$e_rate=mycred_encode_values($e_rate);
 				?>
 			<input type="hidden" name="er_random" value="<?php echo esc_attr($e_rate); ?>" />
 			<?php } ?>			

@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 5.8.2
-Stable tag: 2.4
+Stable tag: 2.4.1
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -35,6 +35,7 @@ myCred allows **THREE different ways** through which you can award your users:
 **myCred v2.4** focuses on expanding the plugin’s ability to import and export points, ranks, and badges from and to other sites. What’s better is that you can choose to export or import complete setup settings like point types, achievements level, and created badges with achievements level with the simplest of ease.
 
 Here is a list of the complete features introduced in myCred v2.4:
+
 * Import or export user points
 * Export all or specific point types
 * Export setup settings for all point types
@@ -299,6 +300,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.1 =
+New features and Bug fixes.
+
 = 2.4 =
 New features and Bug fixes.
 
@@ -344,6 +348,17 @@ The banking module have been replaced by Central deposite module, and interest r
 
 == Changelog ==
 
+= 2.4.1 =
+- **NEW** - Added new attributes "streaming" and "duration" in mycred_video shortcode.
+- **NEW** - Added filter "mycred_transfer_notices". 
+- **NEW** - Added filter "mycred_cashcred_bank_transfer_title".
+- **TWEAK** - Users will be fetched when the user types in the "Exclude by User" dropdown.
+- **FIX** - Errors and warnings in mycred_video shortcode.
+- **FIX** - Ranks were not promoted when points were earned from login and referral hooks.
+- **FIX** - Undefined function array_key_last() in php 7.2 and below.
+- **FIX** - Facing errors in frontend user profile with some themes.
+- **FIX** - Resolve conflict with myCred Gutenberg Block addon.
+
 = 2.4 =
 - **NEW** - Introduced an Import/Export tool. 
 - **NEW** - Admin can assign "Badges" and "Manual Ranks" using coupons. 
@@ -372,7 +387,7 @@ The banking module have been replaced by Central deposite module, and interest r
 - **FIX** - Sometimes user's ranks were not updating automatically.
 - **FIX** - Membership page layout issues.
 - **FIX** - Points conversion not working when using arrows to increase or decrease the amount in [mycred_cashcred] shortcode.
-- **FIX** - buyCred payment dialog couldnâ€™t load on the subsite.
+- **FIX** - buyCred payment dialog couldn't load on the subsite.
 - **FIX** - After deleting the badge their data will keep existing on the user's meta.
 - **FIX** - "this-week" value not working in [mycred_leaderboard] timeframe attribute when the week starts other than "Monday" in your WordPress setting.
 

@@ -1,22 +1,47 @@
 <?php
+namespace MG_Blocks;
 
-add_action('enqueue_block_editor_assets', 'mycred_video');
+if ( ! defined('ABSPATH') ) exit;
 
-function mycred_video() {
+if ( ! class_exists('mycred_video_block') ) :
+    class mycred_video_block {
 
-    wp_enqueue_script(
-            'mycred-video', plugins_url('index.js', __FILE__), array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor')
-    );
-}
+        public function __construct() {
 
-register_block_type('mycred-blocks/mycred-video', array(
-    'render_callback' => 'mycred_video_callback'
-));
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
 
-function mycred_video_callback($attributes) {
+            register_block_type( 
+                'mycred-gb-blocks/mycred-video', 
+                array( 'render_callback' => array( $this, 'render_block' ) )
+            );
+        
+        }
 
-    if ($attributes['ctype'] == '')
-        $attributes['ctype'] = 'mycred_default';
+        public function register_assets() {
 
-    return "[mycred_video " . mycred_extract_attributes($attributes) . "]";
-}
+            wp_enqueue_script(
+                'mycred-video', 
+                plugins_url('index.js', __FILE__), 
+                array( 
+                    'wp-blocks', 
+                    'wp-element', 
+                    'wp-components', 
+                    'wp-editor'
+                )
+            );
+
+        }
+
+        public function render_block( $attributes, $content ) {
+            
+            if ( empty( $attributes['ctype'] ) )
+                $attributes['ctype'] = 'mycred_default';
+
+            return "[mycred_video " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+
+        }
+
+    }
+endif;
+
+new mycred_video_block();

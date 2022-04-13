@@ -625,7 +625,7 @@ if ( ! function_exists( 'mycred_get_users_of_rank' ) ) :
 			$users         = $wpdb->get_results( $wpdb->prepare( "
 				SELECT users.*, creds.meta_value AS balance 
 				FROM {$wpdb->users} users 
-					LEFT JOIN {$wpdb->usermeta} rank ON ( users.ID = rank.user_id AND rank.meta_key = %s ) 
+					LEFT JOIN {$wpdb->usermeta} mycredrank ON ( users.ID = mycredrank.user_id AND mycredrank.meta_key = %s ) 
 					LEFT JOIN {$wpdb->usermeta} creds ON ( users.ID = creds.user_id AND creds.meta_key = %s ) 
 				WHERE rank.meta_value = %d 
 				ORDER BY creds.meta_value+0 DESC LIMIT 25;", $rank_meta_key, $balance_key, $rank_id ) );
@@ -762,7 +762,8 @@ if( !function_exists( 'mycred_update_user_rank_id' ) ):
 
 		if( !empty( $rank_ids ) )
 		{
-			$previous_rank_id = array_key_last( $rank_ids );
+			end($rank_ids);
+			$previous_rank_id = key($rank_ids);
 
 			$previous_rank_id = $rank_ids[$previous_rank_id];
 

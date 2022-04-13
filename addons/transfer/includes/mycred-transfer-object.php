@@ -319,7 +319,6 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			), $request ) );
 
 			$sender_id                = absint( $sender_id );
-
 			$this->transfer_id        = $this->generate_new_transfer_id( $sender_id );
 			$this->sender_id          = $sender_id;
 			$this->reference          = sanitize_key( $reference );
@@ -379,10 +378,16 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 
 			$this->transfer_amount    = $requested_amount;
 
+			$transfer_notices = apply_filters( 'mycred_transfer_notices', array(
+				'excluded' => __( 'You do not have access to this point type.','mycred' ),
+				'minimum'  => __( 'You do not have enough points to make a transfer.','mycred' ),
+				'limit'    => __( 'You have reached your transfer limit.','mycred' )
+			) );
+
 			// We can't make a transfer
 			if ( empty( $this->transferable_types ) ) {
 
-				$this->errors['excluded'] = 'You do not have access to this point type.';
+				$this->errors['excluded'] = $transfer_notices['excluded'];
 
 				return false;
 
@@ -391,7 +396,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			// Enforce minimum requirements
 			if ( ! $this->user_can_transfer_minimum() ) {
 
-				$this->errors['minimum'] = __('You do not have enough points to make a transfer.','mycred');
+				$this->errors['minimum'] = $transfer_notices['minimum'];
 
 				return false;
 
@@ -400,7 +405,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			// Enforce limits (if used)
 			if ( $this->user_is_over_limit() ) {
 
-				$this->errors['limit'] = 'You have reached your transfer limit.';
+				$this->errors['limit'] = $transfer_notices['limit'];
 
 				return false;
 
@@ -694,10 +699,6 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 				$message       = substr( $message, 0, $this->settings['message'] );
 				$this->message = $message;
 			}
-
-		
-
-			
 
 			$this->transfer_id     = $this->generate_new_transfer_id( $this->sender_id, $this->recipient_id );
 			$this->data            = apply_filters( 'mycred_transfer_data', array(

@@ -345,9 +345,6 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 				if ( $this->ref_counts( $user_id, $IP, 'signup' ) ) {
 
-                    $hooks = mycred_get_option( 'mycred_pref_hooks', false );
-
-                    $active_hooks = $hooks['active'];
 
 					// Award when users account gets activated
 					if ( function_exists( 'buddypress' ) ) {
@@ -356,26 +353,17 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 						mycred_add_user_meta( $new_user_id, 'referred_by_type', '', $this->mycred_type, true );
 					}
 
-					if ( is_plugin_active( 'mycred-woocommerce-plus/mycred-woocommerce-plus.php' ) && in_array( 'affiliate', $active_hooks ) )
-                    {
-                        $user_log = array(
-                            'reference'     =>  'signup_referral',
-                            'referrer'      =>  $user_id,
-                            'creds'         =>  $this->prefs['signup']['creds'],
-                            'log'           =>  $this->prefs['signup']['log'],
-                            'referred'   =>  $new_user_id,
-                            'IP'            =>  $IP,
-                            'point_type'    =>  $this->mycred_type
-                        );
-
-                        do_action( 'mycred_after_signup_referred', $user_log );
-                    }
+				
 
 					// Award now
 					else {
 
+						$execute = apply_filters( 'mycred_signup_referral_execute_woo', true,  $user_id, $IP, $new_user_id , $this );
+
+
 						 if ( $this->core->has_entry( 'signup_referral', $new_user_id, $user_id, $IP, $this->mycred_type ) ) return;
 
+                      if ( $execute === true ) {
 						$this->core->add_creds(
 							'signup_referral',
 							$user_id,
@@ -385,6 +373,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 							$IP,
 							$this->mycred_type
 						);
+
+						}
 
 						do_action( 'mycred_signup_referral', $user_id, $IP, $new_user_id, $this );
 
@@ -655,8 +645,9 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 				<span class="description"><?php echo $this->available_template_tags( array( 'general' ), '%user_name%' ); ?></span>
 			</div>
 		</div>
-        <?php do_action( 'mycred_after_referring_signups', $this, $prefs ); ?>
     </div>
+	
+	<?php do_action( 'mycred_after_referring_signups', $this, $prefs ); ?>
 
 	<?php else : ?>
 

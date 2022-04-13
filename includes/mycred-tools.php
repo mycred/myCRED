@@ -15,6 +15,8 @@ class myCRED_Tools {
 
 		add_action( 'admin_menu', array( $this, 'tools_sub_menu' ) );
 
+		add_action( 'wp_ajax_mycred-tools-select-user', array( $this, 'tools_select_user' ) );
+
 		if( isset( $_GET['page'] ) && $_GET['page'] == 'mycred-tools' )
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		
@@ -384,6 +386,25 @@ class myCRED_Tools {
 		}
 
 		endif;
+	}
+
+	/**
+	 * Ajax Call-back
+	 * @since 2.4.1
+	 * @version 1.0
+	 */
+	public function tools_select_user()
+	{
+		if( isset( $_GET['action'] ) &&  $_GET['action'] == 'mycred-tools-select-user' )
+		{
+			$search = sanitize_text_field( $_GET['search'] );
+
+			$results = mycred_get_users_by_name_email( $search, 'user_email' );
+
+			echo json_encode( $results );
+
+			die;
+		}
 	}
 }
 endif;

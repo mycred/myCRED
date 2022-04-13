@@ -1,22 +1,48 @@
 <?php
+namespace MG_Blocks;
 
-add_action('enqueue_block_editor_assets', 'mycred_total_pts');
+if ( ! defined('ABSPATH') ) exit;
 
-function mycred_total_pts() {
+if ( ! class_exists('mycred_total_points_block') ) :
+    class mycred_total_points_block {
 
-    wp_enqueue_script(
-            'mycred-total-pts', plugins_url('index.js', __FILE__), array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor')
-    );
-}
+        public function __construct() {
 
-register_block_type('mycred-blocks/mycred-total-pts', array(
-    'render_callback' => 'mycred_total_pts_callback'
-));
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
 
-function mycred_total_pts_callback($attributes) {
+            register_block_type( 
+                'mycred-gb-blocks/mycred-total-pts', 
+                array( 'render_callback' => array( $this, 'render_block' ) )
+            );
+        
+        }
 
-    if ($attributes['type'] == '')
-        $attributes['type'] = 'mycred_default';
+        public function register_assets() {
 
-    return "[mycred_total_points " . mycred_extract_attributes($attributes) . "]";
-}
+            wp_enqueue_script(
+                'mycred-total-pts', 
+                plugins_url('index.js', __FILE__), 
+                array( 
+                    'wp-blocks', 
+                    'wp-element', 
+                    'wp-components', 
+                    'wp-editor', 
+                    'wp-rich-text' 
+                )
+            );
+
+        }
+
+        public function render_block( $attributes, $content ) {
+            
+            if ( empty( $attributes['type'] ) )
+                $attributes['type'] = 'mycred_default';
+
+            return "[mycred_total_points " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+
+        }
+
+    }
+endif;
+
+new mycred_total_points_block();

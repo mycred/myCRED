@@ -6,7 +6,7 @@
     var SelectControl = wp.components.SelectControl;
     var ToggleControl = wp.components.ToggleControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-hook-table', {
+    registerBlockType('mycred-gb-blocks/mycred-hook-table', {
         title: __('Hook Table', 'mycred'),
         category: 'mycred',
         attributes: {

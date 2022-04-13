@@ -11,7 +11,7 @@
     var TextControl = wp.components.TextControl;
     var __ = wp.i18n.__;
 
-    registerBlockType('mycred-blocks/mycred-affiliate-link', {
+    registerBlockType('mycred-gb-blocks/mycred-affiliate-link', {
         title: __('Affiliate Link', 'mycred'),
         category: 'mycred',
         attributes: {

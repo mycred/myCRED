@@ -1297,7 +1297,7 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			// Minimum Requirements: User id and amount can not be null
 			if ( $user_id === NULL || $amount === NULL || $amount == $this->zero() ) return $amount;
 
-			global $mycred_types, $mycred_current_account;
+			global $mycred_types, $mycred_current_account, $mycred_account;
 
 			// Point type
 			if ( $point_type === NULL || ! array_key_exists( $point_type, $mycred_types ) )
@@ -1317,6 +1317,9 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			// Update the current account object
 			if ( mycred_is_current_account( $user_id ) && $mycred_current_account->balance[ $point_type ] !== false )
 				$mycred_current_account->balance[ $point_type ]->set( 'current', $new_balance );
+
+			if ( mycred_is_account( $user_id ) && $mycred_account->balance[ $point_type ] !== false  )
+				$mycred_account->balance[ $point_type ]->set( 'current', $new_balance );
 
 			// Let others play
 			do_action( 'mycred_update_user_balance', $user_id, $current_balance, $amount, $point_type );
@@ -1340,7 +1343,7 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 			if ( ! MYCRED_ENABLE_TOTAL_BALANCE || ! MYCRED_ENABLE_LOGGING || $amount == 0 ) return $amount;
 
-			global $mycred_current_account;
+			global $mycred_current_account, $mycred_account;
 
 			if ( mycred_is_current_account( $user_id ) && $mycred_current_account->balance[ $point_type ] !== false )
 				$total_balance = $mycred_current_account->balance[ $point_type ]->get( 'accumulated' );
@@ -1358,6 +1361,9 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 			if ( mycred_is_current_account( $user_id ) && $mycred_current_account->balance[ $point_type ] !== false )
 				$mycred_current_account->balance[ $point_type ]->set( 'accumulated', $total_balance );
+				
+			if ( mycred_is_account( $user_id ) && $mycred_account->balance[ $point_type ] !== false  )
+				$mycred_account->balance[ $point_type ]->set( 'accumulated', $total_balance );
 
 			do_action( 'mycred_update_user_total_balance', $total_balance, $user_id, $point_type, $this );
 
@@ -4280,3 +4286,93 @@ function mycred_sanitize_array( $_array )
 	return $_array;
 }
 endif;
+
+/**
+ * Get encrypted values
+ * @since 2.4.1
+ * @since 1.0
+ */
+if ( ! function_exists( 'mycred_encode_values' ) ) :
+	function mycred_encode_values($value) {
+
+
+		if ( $value === '' ) {
+			return false;
+		}
+	
+		$key = sha1( AUTH_KEY );
+		$strLen = strlen($value);
+		$keyLen = strlen($key);
+		$j = 0;
+		$crypttext = '';
+	
+		for ($i = 0; $i < $strLen; $i++) {
+			$ordStr = ord(substr($value, $i, 1));
+			if ($j == $keyLen) {
+				$j = 0;
+			}
+			$ordKey = ord(substr($key, $j, 1));
+			$j++;
+			$crypttext .= strrev(base_convert(dechex($ordStr + $ordKey), 16, 36));
+		}
+
+		return $crypttext;
+	}
+endif;
+
+
+/**
+ * Get decrypted values
+ * @since 2.4.1
+ * @since 1.0
+ */
+if ( ! function_exists( 'mycred_decode_values' ) ) :	
+	function mycred_decode_values($value) {
+
+		if ( $value == '' ) {
+			return false;
+		}
+	
+		$key = sha1( AUTH_KEY );
+		$strLen = strlen($value);
+		$keyLen = strlen($key);
+		$j = 0;
+		$decrypttext = '';
+	
+		for ($i = 0; $i < $strLen; $i += 2) {
+			$ordStr = hexdec(base_convert(strrev(substr($value, $i, 2)), 36, 16));
+			if ($j == $keyLen) {
+				$j = 0;
+			}
+			$ordKey = ord(substr($key, $j, 1));
+			$j++;
+			$decrypttext .= chr($ordStr - $ordKey);
+		}
+
+		return $decrypttext;
+	}
+endif;
+
+/**
+ * @since 4.2.1
+ * @version 1.0
+ */
+function mycred_get_users_by_name_email( $query, $get = 'ID' )
+{
+	global $wpdb;
+
+	$results = array();
+
+	$query = "%{$query}%";
+
+	$results['results'] = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT {$get} as `id`, user_login as `text` FROM {$wpdb->users} WHERE user_login LIKE %s || user_email LIKE %s",
+			$query,
+			$query
+		),
+		ARRAY_A 
+	);
+
+	return $results;
+} 

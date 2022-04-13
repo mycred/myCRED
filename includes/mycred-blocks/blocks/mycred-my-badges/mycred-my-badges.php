@@ -1,17 +1,42 @@
 <?php
+namespace MG_Blocks;
 
-add_action('enqueue_block_editor_assets', 'mycred_my_badges');
+if ( ! defined('ABSPATH') ) exit;
 
-function mycred_my_badges() {
+if ( ! class_exists('mycred_my_badges_block') ) :
+    class mycred_my_badges_block {
 
-    wp_enqueue_script(
-            'mycred-my-badges', plugins_url('index.js', __FILE__), array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor')
-    );
-}
-    register_block_type('mycred-blocks/mycred-my-badges', array(
-    'render_callback' => 'mycred_my_badges_callback'
-));
+        public function __construct() {
 
-function mycred_my_badges_callback($attributes) {
-    return "[mycred_my_badges " . mycred_extract_attributes($attributes) . "]";
-}
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
+
+            register_block_type( 
+                'mycred-gb-blocks/mycred-my-badges', 
+                array( 'render_callback' => array( $this, 'render_block' ) )
+            );
+        
+        }
+
+        public function register_assets() {
+
+            wp_enqueue_script(
+                'mycred-my-badges', 
+                plugins_url('index.js', __FILE__), 
+                array( 
+                    'wp-blocks', 
+                    'wp-element', 
+                    'wp-components', 
+                    'wp-editor'
+                )
+            );
+
+        }
+
+        public function render_block( $attributes, $content ) {
+            return "[mycred_my_badges " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+        }
+
+    }
+endif;
+
+new mycred_my_badges_block();

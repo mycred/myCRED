@@ -6,7 +6,7 @@
     var ToggleControl = wp.components.ToggleControl;
     var SelectControl = wp.components.SelectControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-my-ranks', {
+    registerBlockType('mycred-gb-blocks/mycred-my-ranks', {
         title: __('My Ranks', 'mycred'),
         description: __('This Block allows you to show all ranks a user currently has. Note that this is only usable when you have ranks for multiple point types.', 'mycred'),
         category: 'mycred',

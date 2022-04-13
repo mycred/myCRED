@@ -5,7 +5,7 @@
     var TextControl = wp.components.TextControl;
 
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-email-subsc', {
+    registerBlockType('mycred-gb-blocks/mycred-email-subsc', {
         title: __('Email Subscriptions', 'mycred'),
         category: 'mycred',
         attributes: {

@@ -14,7 +14,7 @@
     var __ = wp.i18n.__;
 
 
-    registerBlockType('mycred-blocks/mycred-best-user', {
+    registerBlockType('mycred-gb-blocks/mycred-best-user', {
         title: __('Best User', 'mycred'),
         category: 'mycred',
         attributes: {

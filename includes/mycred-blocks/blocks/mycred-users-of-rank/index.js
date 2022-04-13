@@ -6,7 +6,7 @@
     var SelectControl = wp.components.SelectControl;
     var __ = wp.i18n.__;
 
-    registerBlockType('mycred-blocks/mycred-users-of-rank', {
+    registerBlockType('mycred-gb-blocks/mycred-users-of-rank', {
         title: __('Users of rank', 'mycred'),
         category: 'mycred',
         attributes: {

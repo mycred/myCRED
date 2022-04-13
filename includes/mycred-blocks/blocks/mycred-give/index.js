@@ -12,7 +12,7 @@
     var TextareaControl = wp.components.TextareaControl;
     var __ = wp.i18n.__;
 
-    registerBlockType('mycred-blocks/mycred-give', {
+    registerBlockType('mycred-gb-blocks/mycred-give', {
         title: __('Give'),
         category: 'mycred',
         attributes: {

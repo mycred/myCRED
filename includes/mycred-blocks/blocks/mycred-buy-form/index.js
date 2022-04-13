@@ -6,7 +6,7 @@
     var SelectControl = wp.components.SelectControl;
     var ToggleControl = wp.components.ToggleControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-buy-form', {
+    registerBlockType('mycred-gb-blocks/mycred-buy-form', {
         title: __('Buy Form', 'mycred'),
         category: 'mycred',
         attributes: {

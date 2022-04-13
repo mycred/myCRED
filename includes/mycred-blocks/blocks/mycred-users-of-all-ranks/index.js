@@ -6,7 +6,7 @@
     var ToggleControl = wp.components.ToggleControl;
     var SelectControl = wp.components.SelectControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-users-of-all-ranks', {
+    registerBlockType('mycred-gb-blocks/mycred-users-of-all-ranks', {
         title: __('Users of all ranks', 'mycred'),
         category: 'mycred',
         attributes: {

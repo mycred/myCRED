@@ -7,7 +7,7 @@
     var TextareaControl = wp.components.TextareaControl;
 
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-transfers', {
+    registerBlockType('mycred-gb-blocks/mycred-transfers', {
         title: __('Transfer', 'mycred'),
         category: 'mycred',
         attributes: {

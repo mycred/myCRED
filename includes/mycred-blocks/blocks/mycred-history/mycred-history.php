@@ -1,22 +1,50 @@
 <?php
+namespace MG_Blocks;
 
-add_action('enqueue_block_editor_assets', 'mycred_history');
+if ( ! defined('ABSPATH') ) exit;
 
-function mycred_history() {
+if ( ! class_exists('mycred_history_block') ) :
 
-    wp_enqueue_script(
-            'mycred-history', plugins_url('index.js', __FILE__), array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor')
-    );
-}
+    class mycred_history_block {
 
-register_block_type('mycred-blocks/mycred-history', array(
-    'render_callback' => 'mycred_history_callback'
-));
+        public function __construct() {
 
-function mycred_history_callback($attributes) {
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
 
-    if ($attributes['type'] == '')
-        $attributes['type'] = 'mycred_default';
+            register_block_type( 
+                'mycred-gb-blocks/mycred-history', 
+                array( 'render_callback' => array( $this, 'render_block' ) )
+            );
+        
+        }
 
-    return "[mycred_history " . mycred_extract_attributes($attributes) . "]";
-}
+        public function register_assets() {
+
+            wp_enqueue_script(
+                'mycred-history', 
+                plugins_url('index.js', __FILE__), 
+                array( 
+                    'wp-blocks', 
+                    'wp-element', 
+                    'wp-components', 
+                    'wp-editor', 
+                    'wp-rich-text' 
+                )
+            );
+
+        }
+
+        public function render_block( $attributes, $content ) {
+            
+            if ( empty( $attributes['type'] ) )
+                $attributes['type'] = 'mycred_default';
+
+            return "[mycred_history " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+            
+        }
+
+    }
+
+endif;
+
+new mycred_history_block();

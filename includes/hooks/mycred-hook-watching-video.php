@@ -82,11 +82,13 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 			$interval = abs( floatval( $interval ) / 1000 );
 
 			// Get playback details
-			$actions  = sanitize_text_field( $_POST['video_a'] );
-			$seconds  = absint( $_POST['video_b'] );
-			$duration = absint( $_POST['video_c'] );
-			$state    = absint( $_POST['video_d'] );
-
+			$actions  				= sanitize_text_field( $_POST['video_a'] );
+			$seconds  				= absint( $_POST['video_b'] );
+			$duration 				= absint( $_POST['video_c'] );
+			$state    				= absint( $_POST['video_d'] );
+			$streaming 				= sanitize_text_field( mycred_decode_values( $_POST['video_e'] ) );
+			$stream_live_duration 	= absint( mycred_decode_values( $_POST['video_f'] ) );
+			
 			// Apply Leniency
 			$leniency = $duration * ( $this->prefs['leniency'] / 100 );
 			$leniency = floor( $leniency );
@@ -164,6 +166,10 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 				// Award points in intervals
 				case 'interval' :
 
+					if ( $streaming == 'on' ) {
+						$duration = $stream_live_duration;
+					}
+
 					// The maximum points a video can earn you
 					$num_intervals = floor( $duration / $interval );
 					$max           = abs( $num_intervals * $amount );
@@ -171,6 +177,7 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 
 					// Execution Override
 					// Allows us to stop an execution. 
+					$video_data = array( $num_intervals, $max, $users_log );
 					$execute       = apply_filters( 'mycred_video_interval', true, $video_data, false );
 
 					if ( $execute ) {
@@ -479,6 +486,7 @@ if ( ! function_exists( 'mycred_video_detect_views' ) ) :
 				foreach ( explode( ',', $setup[5] ) as $type_key ) {
 
 					$type_key = sanitize_key( $type_key );
+
 					if ( mycred_point_type_exists( $type_key ) && ! in_array( $type_key, $types ) )
 						$types[] = $type_key;
 

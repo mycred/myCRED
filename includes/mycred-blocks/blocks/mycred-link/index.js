@@ -7,7 +7,7 @@
     var TextareaControl = wp.components.TextareaControl;
 
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-link', {
+    registerBlockType('mycred-gb-blocks/mycred-link', {
         title: __('Link', 'mycred'),
         category: 'mycred',
         attributes: {

@@ -49,7 +49,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			add_action( 'wp_ajax_mycred-action-export-balances', array( $this, 'action_export_balances' ) );
 			add_action( 'wp_ajax_mycred-action-generate-key',    array( $this, 'action_generate_key' ) );
 			add_action( 'wp_ajax_mycred-action-max-decimals',    array( $this, 'action_update_log_cred_format' ) );
-
+			add_action( 'wp_ajax_mycred-get-users-to-exclude', array( $this, 'get_users' ) );
 		}
 
 		/**
@@ -479,7 +479,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 					'export_close'  	 => esc_attr__( 'Close', 'mycred' ),
 					'export_title' 		 => $mycred->template_tags_general( esc_attr__( 'Export %singular% Balances', 'mycred' ) ),
 					'decimals'      	 => esc_attr__( 'In order to adjust the number of decimal places you want to use we must update your log. It is highly recommended that you backup your current log before continuing!', 'mycred' ),
-					'fieldName'		 	 => $this->field_name()
+					'fieldName'		 	 => $this->field_name(),
+					'excludedUsers'		 => $this->get_excluded_users()
 					)
 			);
 			wp_enqueue_script( 'mycred-type-management' );
@@ -572,8 +573,9 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			$social[]    = '<a href="https://twitter.com/my_cred" class="twitter" target="_blank">Twitter</a>';
 			
 			// Exclude Users by ID
-			$excluded_ids = explode( ',', esc_attr( $this->core->exclude['list'] ) );
-			$all_users = $this->get_all_users();
+			$all_users = array();
+			$excluded_ids = array();
+			
 			$excluded_ids_args = array(
 				'name'		=>	$this->field_name( array( 'exclude' => 'list' ) ) . '[]',
 				'id'		=>	$this->field_id( array( 'exclude' => 'list' ) ),
@@ -1203,22 +1205,6 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * @since 2.3
 		 * @version 1.0
 		 */
-		public function get_all_users()
-		{
-			$users = array();
-	
-			$wp_users = get_users();
-	
-			foreach( $wp_users as $user )
-				$users[$user->ID] = $user->display_name;
-	
-			return $users;
-		} 
-
-		/**
-		 * @since 2.3
-		 * @version 1.0
-		 */
 		public function get_users_by_role( $roles )
 		{
 			$user_ids = array();
@@ -1241,6 +1227,45 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			return $user_ids;
 		}
 
+		/**
+		 * Get users by username/ email ajax callback
+		 * @since 2.4.1
+		 * @version 1.0
+		 */
+		public function get_users()
+		{
+			if( isset( $_GET['action'] ) && $_GET['action'] == 'mycred-get-users-to-exclude' )
+			{
+				$search = sanitize_text_field( $_GET['search'] );
+
+				$results = mycred_get_users_by_name_email( $search );
+
+				echo json_encode( $results );
+
+				die;
+			}
+		}
+
+		public function get_excluded_users()
+		{
+			$users = array();
+
+			$user_ids = explode( ',', esc_attr( $this->core->exclude['list'] ) );
+
+			if( $user_ids[0] != '' )
+			{
+				foreach( $user_ids as $key => $user_id )
+				{
+					$user_data = get_userdata( $user_id );
+
+					$users[$key]['id'] = $user_data->ID;
+					$users[$key]['text'] = $user_data->user_login;
+					$users[$key]['selected'] = true;
+				}
+			}
+
+			return empty( $users ) ? false : $users;
+		}
 	}
 endif;
 

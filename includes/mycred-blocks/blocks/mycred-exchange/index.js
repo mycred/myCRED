@@ -11,7 +11,7 @@
     var SelectControl = wp.components.SelectControl;
     var TextControl = wp.components.TextControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-exchange', {
+    registerBlockType('mycred-gb-blocks/mycred-exchange', {
         title: __('Exchange', 'mycred'),
         category: 'mycred',
         attributes: {

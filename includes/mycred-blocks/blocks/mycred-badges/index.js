@@ -5,7 +5,7 @@
     var TextControl = wp.components.TextControl;
 
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-badges', {
+    registerBlockType('mycred-gb-blocks/mycred-badges', {
         title: __('Badges', 'mycred'),
         category: 'mycred',
         attributes: {

@@ -10,7 +10,7 @@
     var SelectControl = wp.components.SelectControl;
     var __ = wp.i18n.__;
 
-    registerBlockType('mycred-blocks/mycred-affiliate-id', {
+    registerBlockType('mycred-gb-blocks/mycred-affiliate-id', {
         title: __('Affiliate ID', 'mycred'),
         category: 'mycred',
         attributes: {

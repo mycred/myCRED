@@ -887,7 +887,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		public function get_cost( $amount = 0, $point_type = MYCRED_DEFAULT_TYPE_KEY, $raw = false, $custom_rate = 0 ) {
 
 			if(isset($_REQUEST['er_random']) && !empty($_REQUEST['er_random'])){
-				$custom_rate=mycred_buycred_decode($_REQUEST['er_random']);
+				$custom_rate=mycred_decode_values($_REQUEST['er_random']);
 			}
 
 			$setup = mycred_get_buycred_sale_setup( $point_type );

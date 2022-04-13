@@ -6,7 +6,7 @@
     var SelectControl = wp.components.SelectControl;
 
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-my-badges', {
+    registerBlockType('mycred-gb-blocks/mycred-my-badges', {
         title: __('My Badges', 'mycred'),
         category: 'mycred',
         attributes: {

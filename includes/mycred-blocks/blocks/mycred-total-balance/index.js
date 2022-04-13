@@ -7,7 +7,7 @@
     var TextareaControl = wp.components.TextareaControl;
 
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-total-balance', {
+    registerBlockType('mycred-gb-blocks/mycred-total-balance', {
         title: __('Total Balance', 'mycred'),
         category: 'mycred',
         attributes: {

@@ -6,7 +6,7 @@
     var SelectControl = wp.components.SelectControl;
 
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-video', {
+    registerBlockType('mycred-gb-blocks/mycred-video', {
         title: __('Video', 'mycred'),
         category: 'mycred',
         attributes: {

@@ -63,8 +63,28 @@ jQuery(document).ready(function() {
     });
 
     //Users
-    $selector = jQuery('.bulk-users');
-    $selector.select2();
+    jQuery('.bulk-users').select2({
+
+        ajax: {
+            url: ajaxurl,
+            dataType: 'json',
+            data: function(params) {
+                var query = {
+                    search: params.term,
+                    action: 'mycred-tools-select-user'
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            }
+        },
+        processResults: function(data, params) {
+            return {
+                results: data.results
+            };
+        },
+        minimumInputLength: 3
+    });
 
     var $awardToAll = jQuery('.award-to-all').is(':checked');
 

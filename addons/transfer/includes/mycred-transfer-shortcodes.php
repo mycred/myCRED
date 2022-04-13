@@ -43,7 +43,7 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 		// Visitors can't do much
 		if ( ! is_user_logged_in() ) {
 
-			$output = do_shortcode( $transfer->get_error_message( 'login' ) );
+			$output = do_shortcode( $transfer->settings['templates']['login'] );
 
 		}
 

@@ -5,7 +5,7 @@
     var TextControl = wp.components.TextControl;
 
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-load-coupon', {
+    registerBlockType('mycred-gb-blocks/mycred-load-coupon', {
         title: __('Load Coupon', 'mycred'),
         category: 'mycred',
         attributes: {

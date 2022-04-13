@@ -5,7 +5,7 @@
     var TextControl = wp.components.TextControl;
     var SelectControl = wp.components.SelectControl;
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-my-balance-converted', {
+    registerBlockType('mycred-gb-blocks/mycred-my-balance-converted', {
         title: __('My Balance Converted', 'mycred'),
         category: 'mycred',
         attributes: {

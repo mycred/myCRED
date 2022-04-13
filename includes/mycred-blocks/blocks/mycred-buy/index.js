@@ -6,7 +6,7 @@
     var SelectControl = wp.components.SelectControl;
 
     var __ = wp.i18n.__;
-    registerBlockType('mycred-blocks/mycred-buy', {
+    registerBlockType('mycred-gb-blocks/mycred-buy', {
         title: __('Buy', 'mycred'),
         category: 'mycred',
         attributes: {
