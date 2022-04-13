@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 5.9
-Stable tag: 2.4.3
+Tested up to: 5.9.1
+Stable tag: 2.4.3.1
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -300,6 +300,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.3.1 =
+Code improvement.
+
 = 2.4.3 =
 Code improvement.
 
@@ -354,11 +357,14 @@ The banking module have been replaced by Central deposite module, and interest r
 
 == Changelog ==
 
+= 2.4.3.1 = 
+- **TWAEK** - Code improvement.
+
 = 2.4.3 = 
 - **TWAEK** - Improve license system.
 
 = 2.4.2 = 
-- **TWEAK** - SQL query optimization
+- **TWEAK** - SQL query optimization.
 
 = 2.4.1 =
 - **NEW** - Added new attributes "streaming" and "duration" in mycred_video shortcode.
