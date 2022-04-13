@@ -154,7 +154,7 @@ if ( ! class_exists( 'myCRED_License' ) ) :
 
 			$plugin_info = $this->get_plugin_detail();
 
-			if ( empty( $plugin_info->package ) && empty( $plugin_info->expiry ) ) {
+			if ( empty( $plugin_info->package ) && ( empty( $plugin_info->expiry ) || empty( $plugin_info->expiry->expiration_date ) ) ) {
 				
 				$message = 'License not found.';
 
@@ -167,7 +167,7 @@ if ( ! class_exists( 'myCRED_License' ) ) :
 			}
 			else {
 
-				$plugin_meta[] = '<strong style="color:green;">Expires in ' . $this->calculate_license_expiry( $plugin_info->expiry ) . '</strong>';
+				$plugin_meta[] = '<strong style="color:green;">Expires in ' . $this->calculate_license_expiry( $plugin_info->expiry->expiration_date ) . '</strong>';
 
 			}
 
