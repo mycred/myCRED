@@ -542,14 +542,14 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 			<div class="form-group">
 				<label for="mycred-coupon-global"><?php _e( 'Global Maximum', 'mycred' ); ?></label>
 				<input type="text" name="mycred_coupon[global]" class="form-control" id="mycred-coupon-global" value="<?php echo absint( $coupon->max_global ); ?>" />
-				<span class="description"><?php _e( 'The maximum number of times this coupon can be used in total. Once this is reached, the coupon is automatically trashed.', 'mycred' ); ?></span>
+				<span class="description"><?php _e( 'The maximum number of times this coupon can be used in total. Once this is reached, the coupon is automatically trashed. If 0 is selected then the coupon will not work and will automatically expire. For more info please read the <a href="https://codex.mycred.me/chapter-iii/coupons/creating-coupons/">Description</a>', 'mycred' ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="mycred-coupon-user"><?php _e( 'User Maximum', 'mycred' ); ?></label>
 				<input type="text" name="mycred_coupon[user]" class="form-control" id="mycred-coupon-user" value="<?php echo absint( $coupon->max_user ); ?>" />
-				<span class="description"><?php _e( 'The maximum number of times this coupon can be used by a user.', 'mycred' ); ?></span>
+				<span class="description"><?php _e( 'The maximum number of times this coupon can be used by a user. If 0 is selected then the coupon will not work.', 'mycred' ); ?></span>
 			</div>
 		</div>
 	</div>

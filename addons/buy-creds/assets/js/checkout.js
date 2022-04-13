@@ -190,6 +190,13 @@ console.log( formdata );
 
 		});
 
+		$( document ).on( 'change', '.mycred-change-pointtypes', function(){
+			
+			var value = $(this).find('option:selected').text();
+			var label = $('.mycred-point-type').html(value);
+
+		});
+
 	});
 
 });

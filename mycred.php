@@ -3,7 +3,7 @@
  * Plugin Name: myCred
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 2.2
+ * Version: 2.3
  * Tags: point, credit, loyalty program, engagement, reward, woocommerce rewards
  * Author: myCred
  * Author URI: https://mycred.me
@@ -20,7 +20,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '2.2';
+		public $version             = '2.3';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -54,14 +54,14 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.2' ); }
+		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.3' ); }
 
 		/**
 		 * Not allowed
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.2' ); }
+		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.3' ); }
 
 		/**
 		 * Get
@@ -250,6 +250,8 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-protect.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-about.php' );
 				$this->file( myCRED_INCLUDES_DIR . 'mycred-nav-menu.php' );
+				$this->file( myCRED_INCLUDES_DIR . 'mycred-tools.php' );
+				$this->file( myCRED_INCLUDES_DIR . 'mycred-tools-bulk-assign.php' );
 
 				if( isset ( $_GET['mycred_tour_guide'] ) ){
 
@@ -530,7 +532,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 				// These shortcodes will not work if hooks are disabled
 				if ( MYCRED_ENABLE_HOOKS ) {
 					
-					$this->file( myCRED_SHORTCODES_DIR . 'mycred_referal_stats.php' );
+					$this->file( myCRED_SHORTCODES_DIR . 'mycred_referral_stats.php' );
 					$this->file( myCRED_SHORTCODES_DIR . 'mycred_affiliate_id.php' );
 					$this->file( myCRED_SHORTCODES_DIR . 'mycred_affiliate_link.php' );
 					$this->file( myCRED_SHORTCODES_DIR . 'mycred_link.php' );
@@ -625,6 +627,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			// Styles
 			wp_register_style( 'mycred-front',           plugins_url( 'assets/css/mycred-front.css', myCRED_THIS ),        array(), $this->version, 'all' );
 			wp_register_style( 'mycred-admin',           plugins_url( 'assets/css/mycred-admin.css', myCRED_THIS ),        array(), $this->version, 'all' );
+			wp_register_style( 'mycred-buttons',           plugins_url( 'assets/css/mycred-buttons.css', myCRED_THIS ),        array(), $this->version, 'all' );
 			wp_register_style( 'mycred-edit-balance',    plugins_url( 'assets/css/mycred-edit-balance.css', myCRED_THIS ), array(), $this->version, 'all' );
 			wp_register_style( 'mycred-edit-log',        plugins_url( 'assets/css/mycred-edit-log.css', myCRED_THIS ),     array(), $this->version, 'all' );
 			wp_register_style( 'mycred-bootstrap-grid',  plugins_url( 'assets/css/bootstrap-grid.css', myCRED_THIS ),      array(), $this->version, 'all' );

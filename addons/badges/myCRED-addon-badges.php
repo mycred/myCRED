@@ -399,7 +399,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
          */
         public function delete_badge( $post_id ) {
 
-            if ( get_post_status( $post_id ) != MYCRED_BADGE_KEY ) return $post_id;
+            if ( get_post_type( $post_id ) != MYCRED_BADGE_KEY ) return $post_id;
 
             // Delete reference list to force a new query
             foreach ( $this->point_types as $type_id => $label )
@@ -408,11 +408,28 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
             global $wpdb;
 
             // Delete connections to keep usermeta table clean
-            $wpdb->delete(
-                $wpdb->usermeta,
-                array( 'meta_key' => MYCRED_BADGE_KEY . $post_id ),
-                array( '%s' )
+            $query = $wpdb->get_results( 
+                $wpdb->prepare( 
+                    "SELECT * FROM {$wpdb->usermeta} WHERE meta_key LIKE %s", 
+                    mycred_get_meta_key( MYCRED_BADGE_KEY ) . $post_id 
+                ) 
             );
+
+            foreach ( $query as $user_meta ) {
+
+                mycred_delete_user_meta( $user_meta->user_id, $user_meta->meta_key );
+                mycred_delete_user_meta( $user_meta->user_id, $user_meta->meta_key, '_issued_on' );
+
+                $badge_ids = mycred_get_user_meta( $user_meta->user_id, MYCRED_BADGE_KEY . '_ids', '', true );
+                
+                if ( isset( $badge_ids[ $post_id ] ) ) {
+
+                    unset( $badge_ids[ $post_id ] );
+                    mycred_update_user_meta( $user_meta->user_id, MYCRED_BADGE_KEY . '_ids', '', $badge_ids );
+                    
+                }
+            
+            }
 
         }
 
@@ -1800,7 +1817,7 @@ th#badge-users { width: 10%; }
                                     $level = absint( $data['level'] );
 
                                 $badge->assign( $user_id, $level );
-
+                                
                                 $added ++;
 
                             }

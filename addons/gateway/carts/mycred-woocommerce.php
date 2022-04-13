@@ -512,7 +512,8 @@ add_filter( 'woocommerce_payment_gateways', 'mycred_register_woo_gateway' );
  * - Users balance is too low
  *
  * @since 0.1
- * @version 1.3
+ * @since 2.3 Return existing gateways atleast
+ * @version 1.4
  */
 if ( ! function_exists( 'mycred_woo_available_gateways' ) ) :
 	function mycred_woo_available_gateways( $gateways ) {
@@ -552,7 +553,15 @@ if ( ! function_exists( 'mycred_woo_available_gateways' ) ) :
 
 		// Calculate cost in CREDs
 		$currency   = get_woocommerce_currency();
-		if( ! is_object( $woocommerce ) || empty( $woocommerce->cart ) ) return;
+
+		//Return existing gateways atleast
+		if( ! is_object( $woocommerce ) || empty( $woocommerce->cart ) )
+		{
+			unset( $gateways['mycred'] );
+
+			return $gateways;
+		}
+
 		$cost       = $woocommerce->cart->total;
 		if ( ! mycred_point_type_exists( $currency ) && $currency != 'MYC' )
 			$cost = $mycred->number( ( $woocommerce->cart->total / $gateways['mycred']->get_option( 'exchange_rate' ) ) );

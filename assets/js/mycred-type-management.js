@@ -426,4 +426,13 @@ jQuery(function($) {
 
 	});
 
+	/**
+	 * Select2 Exclude User by ID and Roles
+	 * @since 2.3
+	 */
+	jQuery( '#generalexcludelist' ).select2();
+	jQuery( '#generalexcludebyroles' ).select2();
+
 });
+
+

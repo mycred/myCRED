@@ -215,7 +215,7 @@ if ( ! function_exists( 'mycred_count_users_with_rank' ) ) :
 
 		$user_count = mycred_get_post_meta( $rank_id, 'mycred_rank_users', true );
 
-		if ( $user_count == '' ) {
+		if ( empty($user_count) ) {
 
 			$point_type = mycred_get_post_meta( $rank_id, 'ctype', true );
 			if ( $point_type == '' ) return 0;
@@ -288,14 +288,34 @@ if ( ! function_exists( 'mycred_save_users_rank' ) ) :
 		$rank_id        = absint( $rank_id );
 		$point_type     = sanitize_key( $point_type );
 
-		global $mycred_current_account;
+		$current_rank   = mycred_get_users_current_rank_id( $user_id, $point_type );
 
-		mycred_update_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ), $rank_id );
+		if ( !$current_rank || $current_rank != $rank_id ) {
+			
+			global $mycred_current_account;
 
-		mycred_update_user_rank_id( $user_id, $rank_id );
+			//Divest Old Rank
+			if ( ! empty( $current_rank ) )
+			{
+				$old_rank = new myCRED_Rank( $current_rank );
 
-		if ( isset( $mycred_current_account->ranks ) && $mycred_current_account->balance[ $point_type ] !== false )
-			$mycred_current_account->balance[ $point_type ]->rank = new myCRED_Rank( $rank_id );
+				$old_rank->divest( $user_id );
+			}
+
+			mycred_update_user_rank_id( $user_id, $rank_id );
+
+			$new_rank = new myCRED_Rank( $rank_id );
+			$new_rank->assign( $user_id );
+
+			if ( 
+				isset( $mycred_current_account->user_id ) &&
+				$mycred_current_account->user_id == $user_id && 
+				isset( $mycred_current_account->ranks ) && 
+				$mycred_current_account->balance[ $point_type ] !== false 
+			) 
+			$mycred_current_account->balance[ $point_type ]->rank = $new_rank;
+
+		}
 
 		return true;
 
@@ -791,4 +811,23 @@ if( !function_exists( 'mycred_update_user_rank_id' ) ):
 			mycred_update_user_meta( $user_id, 'mycred_promoted_rank_ids', '', array( $current_rank_id ) );
 		}
 	}
+endif;
+
+/**
+ * Returns users current rank id
+ * @since 2.3
+ * @version 1.0
+ */
+if( !function_exists( 'mycred_get_users_current_rank_id' ) ):
+function mycred_get_users_current_rank_id( $user_id, $point_type = MYCRED_DEFAULT_TYPE_KEY )
+{
+	$point_type = $point_type == MYCRED_DEFAULT_TYPE_KEY ? '' : $point_type;
+
+	$rank_id = mycred_get_user_meta( $user_id, MYCRED_RANK_KEY, $point_type, true );
+
+	if( !empty ( $rank_id ) )
+		return $rank_id;
+
+	return false;
+}
 endif;

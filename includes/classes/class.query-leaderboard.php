@@ -734,25 +734,29 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			global $wpdb;
 
-			// Start of the week based of our settings
-			$week_starts = get_option( 'start_of_week' );
-			if ( $week_starts == 0 )
-				$week_starts = 'sunday';
-			else
-				$week_starts = 'monday';
-
 			// Filter: Daily
-			if ( $this->args['timeframe'] == 'today' )
+			if ( $this->args['timeframe'] == 'today' ) {
 				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( 'today midnight', $this->now ), $this->args['now'] );
-
+			}
 			// Filter: Weekly
-			elseif ( $this->args['timeframe'] == 'this-week' )
-				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( $week_starts . ' this week', $this->now ), $this->args['now'] );
+			elseif ( $this->args['timeframe'] == 'this-week' ) {
 
+				// Start of the week based of our settings
+				$days = array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
+
+				$week_starts = get_option( 'start_of_week' );
+
+				if ( $days[ $week_starts ] == date('l') )
+					$week_starts = 'today midnight';
+				else
+					$week_starts = 'last ' . $days[ $week_starts ];
+
+				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( $week_starts, $this->now ), $this->args['now'] );
+			}
 			// Filter: Monthly
-			elseif ( $this->args['timeframe'] == 'this-month' )
+			elseif ( $this->args['timeframe'] == 'this-month' ) {
 				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( date( 'Y-m-01', $this->now ) ), $this->args['now'] );
-
+			}
 			else {
 
 				$start_from = strtotime( $this->args['timeframe'], $this->now );

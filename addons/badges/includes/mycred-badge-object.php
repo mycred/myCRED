@@ -351,6 +351,7 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 		/**
 		 * Assign Badge to User
 		 * @since 1.0
+		 * @since 2.3 Added functions `mycred_update_user_meta`, `mycred_get_user_meta` with `mycred_badge_ids`
 		 * @version 1.0
 		 */
 		public function assign( $user_id = false, $level_id = 0 ) {
@@ -383,6 +384,15 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 
 				mycred_update_user_meta( $user_id, $this->user_meta_key, '', $new_level );
 				mycred_update_user_meta( $user_id, $this->user_meta_key, '_issued_on', time() );
+				
+				$badge_ids = mycred_get_user_meta( $user_id, 'mycred_badge_ids', '', true );
+				 
+				if ( ! empty( $badge_ids ) && is_array( $badge_ids ) )
+					$badge_ids[ $this->post_id ] = 0;
+				else
+					$badge_ids = array( $this->post_id => 0 );
+				
+				mycred_update_user_meta( $user_id, 'mycred_badge_ids', '', $badge_ids );
 
 				// Need to update counter with new assignments
 				if ( $new_level == 0 ) {
@@ -642,6 +652,7 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 		/**
 		 * Divest Badge from user
 		 * @since 1.0
+		 * @since 2.3 Added functions `mycred_update_user_meta` with `mycred_badge_ids`
 		 * @version 1.0
 		 */
 		public function divest( $user_id = false ) {
@@ -650,14 +661,16 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 
 			mycred_delete_user_meta( $user_id, $this->user_meta_key );
 			mycred_delete_user_meta( $user_id, $this->user_meta_key . '_issued_on' );
-			$usermeta = mycred_get_user_meta( $user_id, 'mycred_badge_ids', true );
-			unset( $usermeta[$this->post_id] );
+			$usermeta = mycred_get_user_meta( $user_id, 'mycred_badge_ids', '', true );
+
+			if ( isset( $usermeta[$this->post_id] ) )
+				unset( $usermeta[$this->post_id] );
 
 			$this->earnedby --;
 			if ( $this->earnedby < 0 ) $this->earnedby = 0;
 
 			mycred_update_post_meta( $this->post_id, 'total-users-with-badge', $this->earnedby );
-			mycred_update_user_meta( $this->post_id, 'mycred_badge_ids', $this->earnedby );
+			mycred_update_user_meta( $user_id, 'mycred_badge_ids', '', $usermeta );
 
 			return true;
 

@@ -448,6 +448,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		 * Get Ref ID
 		 * Returns a given users referral ID.
 		 * @since 1.4
+		 * @since 2.3 Filter `mycred_affiliate_user_id` added
 		 * @version 1.1
 		 */
 		public function get_ref_id( $user_id ) {
@@ -473,13 +474,20 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 						$number  = $counter+1;
 
 						mycred_update_option( 'mycred_affiliate_counter', $number );
+
+						$number = apply_filters( 'mycred_affiliate_user_id', $number );
+
 						mycred_update_user_meta( $user_id, 'mycred_affiliate_link', '', $number );
 
 						$ref_id = $number;
 
 					}
 					else {
+
+						$id = apply_filters( 'mycred_affiliate_user_id', $id );
+
 						$ref_id = $id;
+						
 					}
 
 				break;
@@ -493,9 +501,13 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		/**
 		 * Get User ID from Ref ID
 		 * @since 1.4
+		 * @since 2.3 @filter added `mycred_affiliate_by_user_id`
 		 * @version 1.0.1
 		 */
 		public function get_user_id_from_ref_id( $string = '' ) {
+
+			if( apply_filters( 'mycred_affiliate_by_user_id', false ) )
+				return $string;
 
 			global $wpdb;
 
@@ -526,6 +538,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			if ( $user_id !== NULL && $this->core->exclude_user( $user_id ) )
 				$user_id = NULL;
 
+				
 			return apply_filters( 'mycred_affiliate_get_user_id', $user_id, $string, $this );
 
 		}

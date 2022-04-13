@@ -2754,14 +2754,15 @@ endif;
 /**
  * Get Search Args
  * Converts URL arguments into an array of log query friendly arguments.
- * @since 1.7
+ * @since 1.8
+ * @since 2.3 Added `fields` in exclude array to prevent SQL Injection
  * @version 1.0.3
  */
 if ( ! function_exists( 'mycred_get_search_args' ) ) :
 	function mycred_get_search_args( $exclude = NULL ) {
 
 		if ( $exclude === NULL )
-			$exclude = array( 'page', 'mycred-export', 'mycred-action', 'action', 'set', '_token' );
+			$exclude = array( 'page', 'mycred-export', 'mycred-action', 'action', 'set', '_token', 'fields' );
 
 		$search_args = array();
 		if ( ! empty( $_GET ) ) {

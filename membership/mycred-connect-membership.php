@@ -360,8 +360,8 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-1 col-md-1 hidden-sm hidden-xs"></div>
-                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 mmc_table_column border-right">
+                <div class="mmc-packages">
+                    <div class="mmc_table_column border-right">
                         <div class="mmc_table_plan">AGENCY</div>
                     
                         <div class="mmc_table_pricing">
@@ -390,7 +390,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                     </div>
 
 
-                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 mmc_table_column border-right">
+                    <div class="mmc_table_column border-right">
                         <div class="mmc_table_plan">BUSINESS</div>
                     
                         <div class="mmc_table_pricing">
@@ -419,7 +419,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                     </div>
 
 
-                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 mmc_table_column border-right">
+                    <div class="mmc_table_column border-right most-popular">
                         <div class="mmc_table_most_popular">Most Popular</div>
                         <div class="mmc_table_plan">PROFESSIONAL</div>
                     
@@ -449,7 +449,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                     </div>
 
 
-                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 mmc_table_column">
+                    <div class="mmc_table_column">
                         <div class="mmc_table_plan">STARTER</div>
                     
                         <div class="mmc_table_pricing">
@@ -478,6 +478,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                     </div>
                     <div class="col-lg-1 col-md-1 hidden-sm hidden-xs"></div>
                 </div>
+                </div>
                 <?php
             }
         }
@@ -490,7 +491,6 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
 /*.theme-browser .theme:focus, .theme-browser .theme:hover { cursor: default !important; }*/
 /*.theme-browser .theme:hover .more-details { opacity: 1; }*/
 .theme-browser .theme:hover a.more-details, .theme-browser .theme:hover a.more-details:hover { text-decoration: none; }
-.theme-browser .theme .theme-screenshot img { height: 100%; }
 
 .theme-browser .theme .theme-screenshot1 img { height: 100%; }
 
@@ -651,7 +651,9 @@ p.mycred-activate {
                             <?php if ( $screenshot != '' ) : ?>
 
                             <div class="theme-screenshot">
-                                <img src="<?php echo $screenshot; ?>" alt="" />
+                                <div class="theme-screenshot-item">
+                                    <img src="<?php echo $screenshot; ?>" alt="" />
+                                </div>
                             </div>
 
                             <?php else : ?>
@@ -755,7 +757,7 @@ p.mycred-activate {
             /* need to do this for multisite as well */
 
             $link_url  = $this->get_membership_addon_action_url( $addon_folder, 'install' );
-            $link_text = __( 'Install', 'mycred' );
+            $link_text = __( 'Download', 'mycred' );
             $network_active = false;
 
             if(is_multisite() && $this->is_addon_network_active( $addon_folder )){
@@ -869,13 +871,15 @@ p.mycred-activate {
                 $plugin_directory = ABSPATH.'wp-content/plugins/'.$addon_folder.'.zip';
                
                 $data = wp_remote_get($url);
-
+                
                 if ( is_array( $data ) && ! is_wp_error( $data ) ) {
 
-                    if ( file_put_contents($plugin_directory, $data['body'] ) ) {
+                    header('Content-Disposition: attachment; filename="'.$addon_folder.'.zip"');
+                    header("Content-Type: application/zip");
+                    echo ($data['body']);
+                    unlink($data['body']);
+                    if( $data['body'] )
                         return true;
-                    }
-                        
                 }
                
             }

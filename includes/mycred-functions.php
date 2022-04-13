@@ -112,7 +112,8 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		/**
 		 * Default Settings
 		 * @since 1.3
-		 * @version 1.1
+		 * @since 2.3 Added `by_roles` in exclude
+		 * @version 1.2
 		 */
 		public function defaults() {
 
@@ -140,7 +141,8 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 				'exclude'     => array(
 					'plugin_editors' => 0,
 					'cred_editors'   => 0,
-					'list'           => ''
+					'list'           => '',
+					'by_roles'		 => ''
 				),
 				'frequency'   => array(
 					'rate'        => 'always',
@@ -1010,7 +1012,8 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		 * Check if user id is in exclude list
 		 * @return true or false
 		 * @since 0.1
-		 * @version 1.1
+		 * @since 2.3 Added to check is user is excluded by role
+		 * @version 1.2
 		 */
 		public function in_exclude_list( $user_id = '' ) {
 
@@ -1026,6 +1029,26 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			$list = wp_parse_id_list( $this->exclude['list'] );
 			if ( in_array( $user_id, $list ) )
 				$result = true;
+
+			//Check if Excluded by Role
+			if( !$result && !empty( $this->exclude['by_roles'] ) )
+			{
+				$roles = explode( ',', $this->exclude['by_roles'] );
+
+				$user = get_user_by(  'id', $user_id );
+
+				$user_roles = $user->roles;
+
+				foreach( $roles as $role )
+				{
+					if( in_array( $role, $user_roles ) )
+					{
+						$result = true;
+						break;
+					}
+				}
+
+			}
 
 			return apply_filters( 'mycred_is_excluded_list', $result, $user_id );
 
@@ -1348,14 +1371,15 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 		 * @param $user_id (int), required user id
 		 * @param $new_balance (int|float), amount to add/deduct from users balance. This value must be pre-formated.
 		 * @returns (bool) true on success or false on fail.
+		 * @since 2.3 `$results` and do_action `mycred_finish_without_log_entry` added, to update users' rank when updating from profile page manually.
 		 * @since 1.7.3
-		 * @version 1.1
+		 * @version 1.2
 		 */
 		public function set_users_balance( $user_id = NULL, $new_balance = NULL ) {
 
 			// Minimum Requirements: User id and amount can not be null
 			if ( $user_id === NULL || $new_balance === NULL ) return false;
-
+			
 			global $mycred_current_account;
 
 			$point_type  = $this->get_point_type_key();
@@ -1369,6 +1393,15 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 			// Clear caches
 			mycred_delete_option( 'mycred-cache-total-' . $point_type );
+
+			$result = array(
+				'current'	=>	$new_balance,
+				'user_id' 	=>	$user_id,
+				'reference' =>	'manual',
+				'type' 		=>	$point_type
+			);
+
+			do_action( 'mycred_finish_without_log_entry', $result );
 
 			// Let others play
 			do_action( 'mycred_set_user_balance', $user_id, $new_balance, $this );
@@ -1910,7 +1943,7 @@ if ( ! function_exists( 'mycred_get_addon_settings' ) ) :
 			if ( isset( $mycred->$addon ) )
 				$settings = $mycred->$addon;
 
-			if ( $settings === false && isset( $main_type->$addon ) )
+			if ( $settings === false && isset( $main_type->$addon ) && $point_type == MYCRED_DEFAULT_TYPE_KEY )
 				$settings = $main_type->$addon;
 
 			if ( empty( $settings ) )
@@ -2629,7 +2662,7 @@ if ( ! function_exists( 'mycred_types_select_from_checkboxes' ) ) :
 
 				$id .= '-' . $type;
 
-				$output .= '<label for="' . $id . '"><input type="checkbox" name="' . $name . '" id="' . $id . '" value="' . $type . '"' . $selected . ' /> ' . $label . '</label>';
+				$output .= '<div class="mycred-notify-pt-wrapper"><label for="' . $id . '"><input type="checkbox" name="' . $name . '" id="' . $id . '" value="' . $type . '"' . $selected . ' /> ' . $label . '</label></div>';
 			}
 		}
 
@@ -4106,4 +4139,117 @@ function mycred_get_default_point_image_id()
 	
 	return $image_id;
 }
+endif;
+
+/**
+ * Creates select2
+ * @since 2.3
+ * @version 1.0
+ */
+if( !function_exists( 'mycred_create_select2' ) ):
+function mycred_create_select2( $options = '', $attributes = array(), $selected = array() )
+{
+	$content = '';
+	$is_selected = false;
+	$content .= "<select ";
+
+	if( !empty( $attributes ) )
+		foreach( $attributes as $attr => $value )
+			$content .= "{$attr}='{$value}'";
+
+	$content .= "style='width: 168px;'>";
+
+	if( !empty( $options ) )
+	{
+		foreach( $options as $key => $value )
+		{
+			foreach( $selected as $s_key )
+			{
+				if( $s_key == $key )
+				{
+					$content .= "<option selected='selected' value='{$key}'>{$value}</option>";	
+					$is_selected = true;
+				}
+			}
+			if( $is_selected )
+			{
+				$is_selected = false;
+				continue;	
+			}
+			$content .= "<option value='{$key}'>{$value}</option>";
+		}
+	}										
+
+	$content .= "</select>";
+
+	return $content;
+}
+endif;
+
+/**
+ * Get Ranks Point type 
+ * @var int $rank_id
+ * @since 2.3
+ * @version 1.0
+ * @return bool|string
+ */
+if ( !function_exists( 'mycred_get_rank_pt' ) ):
+function mycred_get_rank_pt( $rank_id )
+{
+	$pt = get_post_meta( $rank_id, 'ctype', true );
+
+	if( $pt )
+		return $pt;
+	else
+		return false;
+}
+endif;
+
+/**
+ * Get Email Notice Instances
+ * Returns an array of supported instances where an email can be sent by this add-on.
+ * @since 1.8
+ * @since 2.3 Moved from Email Norification
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_email_instances' ) ) :
+	function mycred_get_email_instances( $none = true ) {
+
+		$instances = array();
+
+		if ( $none ) $instances[''] = __( 'Select', 'mycred' );
+
+		$instances['any']      = __( 'users balance changes', 'mycred' );
+		$instances['positive'] = __( 'users balance increases', 'mycred' );
+		$instances['negative'] = __( 'users balance decreases', 'mycred' );
+		$instances['zero']     = __( 'users balance reaches zero', 'mycred' );
+		$instances['minus']    = __( 'users balance goes negative', 'mycred' );
+
+		if ( class_exists( 'myCRED_Badge_Module' ) ) {
+			$instances['badge_new'] = __( 'user gains a badge', 'mycred' );
+			$instances['badge_level'] = __( 'user gains a new badge level', 'mycred' );
+		}
+
+		if ( class_exists( 'myCRED_Ranks_Module' ) ) {
+			$instances['rank_up']   = __( 'user is promoted to a higher rank', 'mycred' );
+			$instances['rank_down'] = __( 'user is demoted to a lower rank', 'mycred' );
+		}
+
+		if ( class_exists( 'myCRED_Transfer_Module' ) ) {
+			$instances['transfer_out'] = __( 'user sends a transfer', 'mycred' );
+			$instances['transfer_in']  = __( 'user receives a transfer', 'mycred' );
+		}
+
+		if ( class_exists( 'myCRED_cashCRED_Module' ) ) {
+			$instances['cashcred_approved'] = __( 'cashcred withdraw approval', 'mycred' );
+			$instances['cashcred_pending']  = __( 'cashcred withdraw pending', 'mycred' );
+			$instances['cashcred_cancel']  = __( 'cashcred cancel', 'mycred' );
+		}
+		
+		
+		$instances['custom']  = __( 'a custom event occurs', 'mycred' );
+
+		return apply_filters( 'mycred_email_instances', $instances );
+
+	}
 endif;

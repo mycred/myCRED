@@ -64,7 +64,7 @@
 		var transferform = $(this);
 		var formrefid    = transferform.data( 'ref' );
 		var formid       = '#mycred-transfer-form-' + formrefid;
-		var submitbutton = $( formid + ' input.mycred-submit-transfer' );
+		var submitbutton = $( formid + ' button.mycred-submit-transfer' );
 		var buttonlabel  = submitbutton.val();
 
 		e.preventDefault();

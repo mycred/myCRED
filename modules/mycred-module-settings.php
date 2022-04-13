@@ -379,7 +379,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Scripts & Styles
 		 * @since 1.7
-		 * @version 1.0
+		 * @version 1.1
 		 */
 		public function scripts_and_styles() {
 
@@ -392,6 +392,10 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				array( 'jquery', 'jquery-ui-core', 'jquery-ui-dialog', 'jquery-effects-core', 'jquery-effects-slide' ),
 				myCRED_VERSION . '.1'
 			);
+
+			wp_enqueue_style( MYCRED_SLUG . '-select2-style' );
+
+			wp_enqueue_script( MYCRED_SLUG . '-select2-script' );
 
 		}
 
@@ -547,7 +551,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		/**
 		 * Admin Page
 		 * @since 0.1
-		 * @version 1.5
+		 * @since 2.3 Added select2, Exclude User by ID and Role 
+		 * @version 1.6
 		 */
 		public function admin_page() {
 
@@ -565,6 +570,29 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			$social[]    = '<a href="https://www.facebook.com/myCRED" class="facebook" target="_blank">Facebook</a>';
 			$social[]    = '<a href="https://plus.google.com/+MycredMe/posts" class="googleplus" target="_blank">Google+</a>';
 			$social[]    = '<a href="https://twitter.com/my_cred" class="twitter" target="_blank">Twitter</a>';
+			
+			// Exclude Users by ID
+			$excluded_ids = explode( ',', esc_attr( $this->core->exclude['list'] ) );
+			$all_users = $this->get_all_users();
+			$excluded_ids_args = array(
+				'name'		=>	$this->field_name( array( 'exclude' => 'list' ) ) . '[]',
+				'id'		=>	$this->field_id( array( 'exclude' => 'list' ) ),
+				'class'		=>	'form-control',
+				'multiple'	=>	'multiple'
+			);
+
+			//Exclude Users by Role
+			$excluded_roles = explode( ',', esc_attr( $this->core->exclude['by_roles'] ) );
+			$wp_roles = wp_roles();
+			$roles = array();
+			foreach( $wp_roles->roles as $role => $name )
+				$roles[$role] = $name['name'];
+			$roles_args = array(
+				'name'		=>	$this->field_name( array( 'exclude' => 'by_roles' ) ) . '[]',
+				'id'		=>	$this->field_id( array( 'exclude' => 'by_roles' ) ),
+				'class'		=>	'form-control',
+				'multiple'	=>	'multiple'
+			);
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
@@ -666,11 +694,10 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 									<p><span class="description"><?php _e( 'The maximum amount allowed to be paid out in a single instance.', 'mycred' ); ?></span></p>
 								</div>
 							</div>
-							<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 								<div class="form-group">
-									<label for="<?php echo $this->field_id( array( 'exclude' => 'list' ) ); ?>"><?php _e( 'Exclude by User ID', 'mycred' ); ?></label>
-									<input type="text" name="<?php echo $this->field_name( array( 'exclude' => 'list' ) ); ?>" id="<?php echo $this->field_id( array( 'exclude' => 'list' ) ); ?>" placeholder="<?php _e( 'Optional', 'mycred' ); ?>" class="form-control" value="<?php echo esc_attr( $this->core->exclude['list'] ); ?>" />
-									<p><span class="description"><?php _e( 'Comma separated list of user IDs to exclude from using this point type.', 'mycred' ); ?></span></p>
+									<label for="<?php echo $excluded_ids_args['id']; ?>"><?php _e( 'Exclude by User ID', 'mycred' ); ?></label>
+									<?php echo mycred_create_select2( $all_users, $excluded_ids_args, $excluded_ids ); ?>
 								</div>
 								<div class="form-group">
 									<div class="checkbox">
@@ -679,6 +706,12 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 									<div class="checkbox">
 										<label for="<?php echo $this->field_id( array( 'exclude' => 'plugin_editors' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'exclude' => 'plugin_editors' ) ); ?>" id="<?php echo $this->field_id( array( 'exclude' => 'plugin_editors' ) ); ?>"<?php checked( $this->core->exclude['plugin_editors'], 1 ); ?> value="1" /> <?php _e( 'Exclude point administrators', 'mycred' ); ?></label>
 									</div>
+								</div>
+							</div>
+							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+								<div class="form-group">
+									<label for="<?php echo $roles_args['id']; ?>"><?php _e( 'Exclude by User Role', 'mycred' ); ?></label>
+									<?php echo mycred_create_select2( $roles, $roles_args, $excluded_roles ); ?>
 								</div>
 							</div>
 						</div>
@@ -993,7 +1026,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * Sanititze Settings
 		 * @filter 'mycred_save_core_prefs'
 		 * @since 0.1
-		 * @version 1.5.1
+		 * @since 2.3 Added `by_role` Exclude user by role
+		 * @version 1.5.2
 		 */
 		public function sanitize_settings( $post ) {
 
@@ -1108,17 +1142,34 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			if ( in_array( $new_data['caps']['plugin'], array( 'create_users', 'delete_themes', 'edit_plugins', 'edit_themes', 'edit_users' ) ) && is_multisite() )
 				$new_data['caps']['plugin'] = 'edit_theme_options';
 
+			//Exclude Users by roles and ID
+			$sanitized_exclude_ids = !empty( $post['exclude']['list'] ) ? sanitize_text_field( implode( ',', $post['exclude']['list'] ) ) : '';
+			$sanitized_exclude_roles = !empty( $post['exclude']['by_roles'] ) ? sanitize_text_field( implode( ',', $post['exclude']['by_roles'] ) ) : '';
+
 			// Excludes
 			$new_data['exclude'] = array(
-				'plugin_editors'    => ( isset( $post['exclude']['plugin_editors'] ) ) ? $post['exclude']['plugin_editors'] : 0,
-				'cred_editors'      => ( isset( $post['exclude']['cred_editors'] ) ) ? $post['exclude']['cred_editors'] : 0,
-				'list'              => sanitize_text_field( $post['exclude']['list'] )
+				'plugin_editors'    =>	( isset( $post['exclude']['plugin_editors'] ) ) ? $post['exclude']['plugin_editors'] : 0,
+				'cred_editors'      =>	( isset( $post['exclude']['cred_editors'] ) ) ? $post['exclude']['cred_editors'] : 0,
+				'list'              =>	$sanitized_exclude_ids,
+				'by_roles'			=>	$sanitized_exclude_roles
 			);
 
 			// Remove Exclude users balances
-			if ( $new_data['exclude']['list'] != '' ) {
+			if ( $new_data['exclude']['list'] != '' || $new_data['exclude']['by_roles'] != '' ) {
 
 				$excluded_ids = wp_parse_id_list( $new_data['exclude']['list'] );
+
+				//Exclude by User Role
+				$excluded_roles = $post['exclude']['by_roles'];
+
+				if( !empty( $excluded_roles ) )
+				{
+					$users_by_role = $this->get_users_by_role( $excluded_roles );
+					$excluded_ids = array_merge( $excluded_ids, $users_by_role );
+					$excluded_ids = array_unique( $excluded_ids );
+				}
+
+	
 				if ( ! empty( $excluded_ids ) ) {
 					foreach ( $excluded_ids as $user_id ) {
 
@@ -1146,6 +1197,48 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 			return apply_filters( 'mycred_save_core_prefs' . $action_hook, $new_data, $post, $this );
 
+		}
+
+		/**
+		 * @since 2.3
+		 * @version 1.0
+		 */
+		public function get_all_users()
+		{
+			$users = array();
+	
+			$wp_users = get_users();
+	
+			foreach( $wp_users as $user )
+				$users[$user->ID] = $user->display_name;
+	
+			return $users;
+		} 
+
+		/**
+		 * @since 2.3
+		 * @version 1.0
+		 */
+		public function get_users_by_role( $roles )
+		{
+			$user_ids = array();
+
+			foreach( $roles as $role )
+			{
+				$args = array(
+					'role'	=>	$role
+				);
+
+				$user_query = new WP_User_Query( $args );
+
+				if ( ! empty( $user_query->get_results() ) ) 
+				{
+					foreach ( $user_query->get_results() as $user ) 
+						$user_ids[] = $user->ID;
+				}
+			}
+
+			return $user_ids;
 		}
 
 	}

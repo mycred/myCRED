@@ -338,9 +338,13 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 		 * Handles content sales by replacing the posts content with the appropriate template
 		 * for those who have not paid. Admins and authors are excluded.
 		 * @since 0.1
-		 * @version 1.2.2
+		 * @since 2.3 Added function `mycred_sc_is_points_enable` If points are disabled just return the content
+		 * @version 1.2.3
 		 */
 		public function the_content( $content ) {
+
+			if( !mycred_sc_is_points_enable() )
+				return $content;
 
 			global $mycred_partial_content_sale, $mycred_sell_this;
 

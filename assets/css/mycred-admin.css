@@ -195,3 +195,10 @@ body.version-3-8 #myCRED-wrap #accordion .ui-accordion-content { border-top: 1px
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .mycred-after-core-prefs, .mycred-type-prefs {margin: 0px !important;padding: 0px !important;}
+.buycred-cashcred-more-tab-btn .additional-text { font-size: 10px;color: #fff;background: #808080;padding: 4px 5px;border-radius: 3px;margin: 0px 8px;}
+body #myCRED-wrap #accordion .ui-accordion-header.buycred-cashcred-more-tab-btn.disabled-tab, #myCRED-wrap #accordion h4.disabled-tab .dashicons.static {
+    color: #929292;
+}
+h4.buycred-cashcred-more-tab-btn.ui-accordion-header.ui-state-active:before, h4.buycred-cashcred-more-tab-btn.ui-accordion-header:before {
+    content: '';
+}

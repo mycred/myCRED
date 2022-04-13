@@ -101,7 +101,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 		extract( shortcode_atts( array(
 			'button'   => __( 'Buy Now', 'mycred' ),
 			'gateway'  => '',
-			'ctype'    => MYCRED_DEFAULT_TYPE_KEY,
+			'ctype'    => '',
 			'amount'   => '',
 			'excluded' => '',
 			'maxed'    => '',
@@ -122,7 +122,27 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 		$classes      = array( 'myCRED-buy-form' );
 		$amounts      = array();
 		$gifting      = false;
+		$point_types  = array();
 
+		$type_keys = $settings['types'];
+
+		if ( ! empty( $atts['ctype'] ) ) {
+			$given_types = explode( ',' , $atts['ctype'] );
+			$type_keys = array_intersect( $settings['types'], $given_types );
+			
+		}
+
+		if( !empty( $type_keys ) && empty( $atts['ctype'] ) ) {
+			$type_keys[] = $settings['types'][0];
+
+		}
+
+		foreach( $type_keys as $type_key ){
+			$point_types[] = array( $type_key ,mycred_get_point_type_name( $type_key, false ) );
+			if( !empty( $type_keys ) && empty( $atts['ctype'] ) )
+				break;
+		}
+			
 		// Make sure we have a gateway we can use
 		if ( ( ! empty( $gateway ) && ! mycred_buycred_gateway_is_usable( $gateway ) ) || ( empty( $gateway ) && empty( $buycred_instance->active ) ) )
 			return 'No gateway available.';
@@ -191,14 +211,23 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 	<div class="col-xs-12">
 		<form method="post" class="form<?php if ( $inline == 1 ) echo '-inline'; ?> <?php echo implode( ' ', $classes ); ?>" action="">
 			<input type="hidden" name="token" value="<?php echo wp_create_nonce( 'mycred-buy-creds' ); ?>" />
-			<input type="hidden" name="ctype" value="<?php echo esc_attr( $ctype ); ?>" />
-			<?php if( isset($e_rate) && !empty($e_rate)){ 
-				$e_rate=mycred_buycred_encode($e_rate);
+				<?php
+				if( count( $point_types ) > 1 ){ ?>
+					<select name="ctype" class="mycred-change-pointtypes">
+						<?php foreach ( $point_types as $key => $value ) :?>
+							<option value="<?php echo $value[0]; ?>"><?php echo $value[1]; ?></option><?php endforeach;?>
+					</select><?php 
+				}else{ ?>
+					<input type="hidden" name="ctype" value="<?php echo esc_attr( $point_types[0][0] ); ?>" /><?php 
+				} 
+
+				if( isset($e_rate) && !empty($e_rate)){ 
+					$e_rate=mycred_buycred_encode($e_rate);
 				?>
 			<input type="hidden" name="er_random" value="<?php echo esc_attr($e_rate); ?>" />
 			<?php } ?>			
 			<div class="form-group">
-				<label><?php echo $mycred->plural(); ?></label>
+				<label class="mycred-point-type"><?php echo $point_types[0][1]; ?></label>
 <?php
 
 		// No amount given - user must nominate the amount
@@ -375,7 +404,10 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 				<td class="column-cost"><?php echo $buycred->adjust_column_content( 'cost', $entry->payment_id ); ?></td>
 				<td class="column-ctype"><?php echo mycred_get_point_type_name( $entry->point_type, false ); ?></td>
 				<td class="column-actions">
-					<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo $pay_now; ?></a> &bull; <a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo $cancel; ?></a>
+					<?php if( $entry->gateway_id != 'bank' ):?>
+						<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo $pay_now; ?></a> &bull; 
+					<?php endif; ?>
+					<a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo $cancel; ?></a>
 				</td>
 			</tr>
 <?php
@@ -398,7 +430,10 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 				<td class="column-amount"><?php echo $buycred->adjust_column_content( 'amount', $entry->payment_id ); ?></td>
 				<td class="column-cost"><?php echo $buycred->adjust_column_content( 'cost', $entry->payment_id ); ?></td>
 				<td class="column-actions">
-					<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo $pay_now; ?></a> &bull; <a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo $cancel; ?></a>
+					<?php if( $entry->gateway_id != 'bank' ):?>
+						<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo $pay_now; ?></a> &bull; 
+					<?php endif; ?>
+					<a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo $cancel; ?></a>
 				</td>
 			</tr>
 <?php

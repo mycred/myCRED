@@ -167,6 +167,8 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			add_action( 'manage_' . MYCRED_RANK_KEY . '_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
 			add_action( 'save_post_' . MYCRED_RANK_KEY,                       array( $this, 'save_rank' ), 10, 2 );
 			add_filter( 'views_edit-mycred_rank', array( $this, 'modify_ranks_views_links' ) );
+
+			add_action( 'delete_user', array( $this, 'delete_user_rank_data' ) );
 		}
 
 		/**
@@ -1061,27 +1063,23 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				if ( $this->is_manual_mode( $type_key ) ) {
 
 					if ( isset( $_POST[ 'rank-' . $type_key ] ) && mycred_is_admin( NULL, $type_key ) ) {
-
-						// Get users current rank for comparison
-						$users_rank = mycred_get_users_rank( $user_id, $type_key );
-
-						$rank       = false;
+						
+						$rank = false;
 
 						if ( $_POST[ 'rank-' . $type_key ] != '' )
 							$rank = absint( $_POST[ 'rank-' . $type_key ] );
 
 						// Save users rank if a valid rank id is provided and it differs from the users current one
-						if ( $rank !== false && $rank > 0 && $users_rank->rank_id != $rank )
+						if ( $rank !== false && $rank > 0 && $users_rank->post_id != $rank ){
 							mycred_save_users_rank( $user_id, $rank, $type_key );
-						
+						}
 						// Delete users rank
 						elseif ( $rank === false ) {
 
-							$end     = '';
-							if ( $type_key != MYCRED_DEFAULT_TYPE_KEY )
-								$end = $type_key;
+							$users_rank = mycred_get_users_rank( $user_id, $type_key );
 
-							mycred_delete_user_meta( $user_id, MYCRED_RANK_KEY, $end );
+							if ( ! empty( $users_rank->post_id ) )
+								$users_rank->divest( $user_id );
 
 						}
 
@@ -2020,6 +2018,12 @@ jQuery(function($){
 				$view['draft'] = '<a href="edit.php?post_status=draft&amp;post_type=mycred_rank&ctype='.$current_point_type.'" '.$this->active_current_view( 'draft' ).'>Drafts</a>';
 
 			return $view;
+		}
+
+		public function delete_user_rank_data( $user_id ) 
+		{	
+			$current_assign_rank = mycred_get_users_rank($user_id);
+			mycred_update_post_meta( $current_assign_rank->post_id, 'mycred_rank_users', mycred_count_users_with_rank( $current_assign_rank->post_id ) - 1 );		
 		}
 
 	}

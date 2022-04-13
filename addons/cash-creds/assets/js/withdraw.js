@@ -7,6 +7,8 @@ jQuery(function($){
 
 	$(document).ready(function() {
 
+
+
 		if ( $( "#cashcred_pay_method" ).length ) {
 			exchange_calculation();
 			display_cashcred_gateway_notice();
@@ -20,12 +22,18 @@ jQuery(function($){
 			exchange_calculation();
 			display_cashcred_gateway_notice();
 		});
-		
-		$( "#withdraw_points" ).keyup(function() {
-			exchange_calculation();
+
+		$( '.mycred-cashcred-form' ).on( 'keyup change', '#withdraw_points', function( e ){
+  
+  			exchange_calculation();
+			
 		});
-	
+
+		
 		$( 'body' ).on( 'submit', '.mycred-cashcred-form', function( e ){
+
+	
+
 			withdraw_points = $( "#withdraw_points" ).val();
 			if( parseFloat( withdraw_points ) <= 0 ) {
 				e.preventDefault();
@@ -97,7 +105,12 @@ jQuery(function($){
 		
 	}
 
+
+
+
+
 });
+
 
 
 

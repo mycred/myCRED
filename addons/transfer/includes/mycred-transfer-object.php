@@ -843,6 +843,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 		 * Get Transfer Form
 		 * Renders the transfer form based on our setup.
 		 * @since 1.8
+		 * @since 2.3 Changed submit input tag with button tag to make compatible with modern UI
 		 * @version 1.0
 		 */
 		public function get_transfer_form( $args = array() ) {
@@ -896,7 +897,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 				<input type="hidden" name="mycred_new_transfer[token]" value="<?php echo wp_create_nonce( 'mycred-new-transfer-' . $this->reference ); ?>" />
 				<input type="hidden" name="mycred_new_transfer[reference]" value="<?php echo esc_attr( $this->reference ); ?>" />
 				<input type="hidden" name="mycred_new_transfer[transfered_attributes]" value="<?php echo esc_attr( $this->encode( $this->shortcode_attr ) ); ?>" />
-				<input type="submit" class="mycred-submit-transfer<?php echo ' ' . esc_attr( $this->args['button_class'] ); ?>" value="<?php echo esc_attr( $this->args['button'] ); ?>" />
+				<button class="mycred-submit-transfer<?php echo ' ' . esc_attr( $this->args['button_class'] ); ?>"><?php echo esc_attr( $this->args['button'] ); ?></button>
 			</div>
 
 		</div>

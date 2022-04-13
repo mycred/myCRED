@@ -646,6 +646,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 		/**
 		 * Payment Gateways Page
 		 * @since 0.1
+		 * @since 2.3 Added paid gateway tabs `mycred_cashcred_more_gateways_tab` 
 		 * @version 1.2.2
 		 */
 		public function admin_page() {
@@ -729,12 +730,77 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				}
 			}
 
+			$more_gateways_tab = array();
+
+			$more_gateways_tab[] = array(
+				'icon'				=>	'dashicons dashicons-admin-generic static',
+				'text'				=>	'Paypal',
+				'additional_text'	=>	'Paid',
+				'url'				=>	'https://mycred.me/store/cashcred-paypal/',
+				'status'			=>	'disabled',
+				'plugin'			=>	'mycred-cashcred-paypal/mycred-cashcred-paypal.php'
+			);
+
+			$more_gateways_tab[] = array(
+				'icon'				=>	'dashicons dashicons-admin-generic static',
+				'text'				=>	'Stripe',
+				'additional_text'	=>	'Paid',
+				'url'				=>	'https://mycred.me/store/cashcred-stripe/',
+				'status'			=>	'disabled',
+				'plugin'			=>	'mycred-cashcred-stripe/mycred-cashcred-stripe.php'
+			);
+
+			$more_gateways_tab[] = array(
+				'icon'				=>	'dashicons dashicons-admin-generic static',
+				'text'				=>	'More Gateways',
+				'url'				=>	'https://mycred.me/product-category/cashcred-gateways/',
+			);
+
+			$more_gateways_tab = apply_filters( 'mycred_cashcred_more_gateways_tab', $more_gateways_tab );
+
+			$counter = 0;
+
+			if( MYCRED_SHOW_PREMIUM_ADDONS )
+			{
+				include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+				foreach( $more_gateways_tab as $key => $gateway )
+				{
+					if ( isset( $gateway['plugin'] ) && is_plugin_active( $gateway['plugin'] ) )
+					{
+						$counter++;
+						continue;
+					}
+					
+					//If all gateways are active, don't show more gateways
+					if( $counter == count( $more_gateways_tab )-1 )
+						break;
+
+					$disabled_class = ( isset( $gateway['status'] ) && $gateway['status'] == 'disabled' )  ? 'disabled-tab' : '';
+
+					$content = "
+					<h4 class='ui-accordion-header ui-corner-top ui-accordion-header-collapsed ui-corner-all ui-state-default ui-accordion-icons buycred-cashcred-more-tab-btn {$disabled_class}' data-url='{$gateway['url']}'>
+						<span class='ui-accordion-header-icon ui-icon ui-icon-triangle-1-e'></span>
+						<span class='{$gateway['icon']}'></span>
+								{$gateway['text']}";
+
+						if( array_key_exists( 'additional_text', $gateway )  && !empty( $gateway['additional_text'] ) )
+							$content .= "<span class='additional-text'>{$gateway['additional_text']}</span>";
+					
+					$content .= "</h4>
+						<div class='body' style='display:none; padding: 0px; border: none;'>
+					</div>";
+
+					echo $content;
+				}
+			}
+
 ?>
 		</div>
 
 		<?php do_action( 'mycred_after_cashcred_page', $this ); ?>
 
-		<p><?php submit_button( __( 'Update Settings', 'mycred' ), 'primary large', 'submit', false ); ?> <?php if ( MYCRED_SHOW_PREMIUM_ADDONS ) : ?><a href="https://mycred.me/product-category/buycred-gateways/" class="button button-secondary button-large" target="_blank">More Gateways</a><?php endif; ?></p>
+		<p><?php submit_button( __( 'Update Settings', 'mycred' ), 'primary large', 'submit', false ); ?> </p>
 
 	</form>
 

@@ -147,6 +147,7 @@ if ( ! class_exists( 'myCRED_Rank' ) ) :
 		/**
 		 * Assign Rank to User
 		 * @since 1.8
+		 * @since 2.3 Added `mycred_count_users_with_rank` for better counting
 		 * @version 1.0
 		 */
 		public function assign( $user_id = false ) {
@@ -161,7 +162,13 @@ if ( ! class_exists( 'myCRED_Rank' ) ) :
 
 			$value      = apply_filters( 'mycred_rank_user_value', $this->post_id, $user_id, $this );
 
-			return mycred_update_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $point_type != MYCRED_DEFAULT_TYPE_KEY ) ? $point_type : '' ), $value );
+			$this->count = mycred_count_users_with_rank( $this->post_id );
+
+			$this->count++;
+
+			mycred_update_post_meta( $this->post_id, 'mycred_rank_users', $this->count );
+
+			return mycred_update_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $post_type != MYCRED_DEFAULT_TYPE_KEY ) ? $post_type : '' ), $value );
 
 		}
 
@@ -205,6 +212,7 @@ if ( ! class_exists( 'myCRED_Rank' ) ) :
 		/**
 		 * Divest User
 		 * @since 1.8
+		 * @since 2.3 Added `mycred_count_users_with_rank` for better counting
 		 * @version 1.0
 		 */
 		public function divest( $user_id = false ) {
@@ -220,6 +228,8 @@ if ( ! class_exists( 'myCRED_Rank' ) ) :
 			if ( $users_rank != '' ) {
 
 				$results = mycred_delete_user_meta( $user_id, MYCRED_RANK_KEY, ( ( $post_type != MYCRED_DEFAULT_TYPE_KEY ) ? $post_type : '' ) );
+
+				$this->count = mycred_count_users_with_rank( $this->post_id );
 
 				$this->count--;
 

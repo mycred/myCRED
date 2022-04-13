@@ -535,23 +535,15 @@ function mycred_about_page() {
 				<div class="block">
 					<h2>Change Log</h2>
 					<ul>
-						<li><strong>NEW</strong> - Moved general settings and menus into the newly introduced "myCred" main menu.</li>
-						<li><strong>NEW</strong> - On plugin activation, the default point type will be created automatically.</li>
-						<li><strong>NEW</strong> - Now user can upload a Point type image.</li>
-						<li><strong>NEW</strong> - Introduced an image attribute in mycred_my_balance shortcode.</li>
-						<li><strong>NEW</strong> - Introduced an image attribute in mycred_leaderboard shortcode.</li>
-						<li><strong>NEW</strong> - Introduced Single badge page layout setting.</li>
-						<li><strong>NEW</strong> - Introduced a enable/disable all addons button.</li>
-						<li><strong>NEW</strong> - Added new template tags in email notification for transfer events.</li>
-						<li><strong>NEW</strong> - Users can share their achieved Badges on social media.</li>
-						<li><strong>FIX</strong> - Backend logs are not being exported whether the export raw/formatted log option is set.</li>
-						<li><strong>FIX</strong> - Incorrect achieved badge level image in [mycred_badges] shortcode.</li>
-						<li><strong>FIX</strong> - In the Ranks list page All/Published/Trash links not working properly.</li>
-						<li><strong>FIX</strong> - Unable to revoke badge from the User profile page. FIX – Added some security validations in the transfer form.</li>
-						<li><strong>FIX</strong> - MYSQL 8 syntax error in the leaderboard shortcode.</li>
-						<li><strong>FIX</strong> - Added compatibility with BuddyPress version 8.0.</li>
-						<li><strong>TWEAK</strong> - When a user deletes the log of buy_content, the sales count does not get updated. So, we have Introduced the "Update Sales Count" button in the settings.</li>
-						<li><strong>TWEAK</strong> - Improve new point type creation form setting.</li>
+						<li><strong>NEW</strong> - Introduced a "Bulk Assign" tool for awarding/revoking points, badges, and ranks.</li>
+						<li><strong>NEW</strong> - Introduced a new feature "Exclude by user role" admin can exclude any user role from the specific point type.</li>
+						<li><strong>NEW</strong> - Introduced a timeframe attribute in [mycred_my_balance_converted] shortcode. Now you can show users converted balance of a given timeframe today, yesterday, this week, this month, last month.</li>
+						<li><strong>FIX</strong> - Sometimes user's ranks were not updating automatically.</li>
+						<li><strong>FIX</strong> - Membership page layout issues.</li>
+						<li><strong>FIX</strong> - Points conversion not working when using arrows to increase or decrease the amount in [mycred_cashcred] shortcode.</li>
+						<li><strong>FIX</strong> - buyCred payment dialog couldn’t load on the subsite.</li>
+						<li><strong>FIX</strong> - After deleting the badge their data will keep existing on the user's meta.</li>
+						<li><strong>FIX</strong> - "this-week" value not working in [mycred_leaderboard] timeframe attribute when the week starts other than "Monday" in your WordPress setting.</li>
 					</ul>
 				</div>
 			</div><!-- /.mycred-change-log -->

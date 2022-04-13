@@ -88,8 +88,20 @@ p {
 }
 
 /** myCred Membership Table **/
-.mmc_table{/* background-color:#FFF; */ padding: 0 20px 0 20px;}
-.mmc_table_column{background-color:#FFF;}
+.mmc_table{
+    /* background-color:#FFF; */ padding: 0 20px 0 20px;
+}
+.mmc-packages {
+    display: table;
+    margin: 0 auto;
+}
+.most-popular{
+    position: relative;
+}
+.mmc_table_column{
+    background-color:#FFF;
+    display: table-cell;
+}
 .mmc_table .mmc_table_plan {
     font-size: 18px;
     font-weight: bold;
@@ -192,6 +204,8 @@ p {
     margin: 10% 0 0 0;
      display: block; 
     padding: 10px 40px;
+    width: 100px;
+    margin: 0 auto;
 }
 
 .mmc_table .border-right{
@@ -229,8 +243,8 @@ div#tabs_package_1 {
     line-height: 42px;
     color: #000;
     text-decoration: none;
-	text-transform: uppercase;
-	position: relative;
+    text-transform: uppercase;
+    position: relative;
 }
 
 #tabs_package_1 a sup {
@@ -328,10 +342,10 @@ line-height:34px;
   border-radius: 50%;
 }
 .show_cont{
-	display:block!important;
+    display:block!important;
 }
 .hide_cont{
-	display:none!important;
+    display:none!important;
 }
 .row.mycred-money-back {
     display: none;
@@ -395,10 +409,10 @@ line-height:34px;
 }
 @media (max-width: 440px) {
 #tabs_package_1 a sup{
-	margin: 0px;
-	width:80px;
-	padding:3px 1px;
-}	
+    margin: 0px;
+    width:80px;
+    padding:3px 1px;
+}   
 
     #tabs_package_1 a{
         display: block;    
@@ -470,6 +484,8 @@ line-height:34px;
     display: block;
     float: none;
     position: relative!important;
+    height: 262.19px;
+    width: 262.19px;
 }
 
 #myCRED-wrap h1{
@@ -551,4 +567,30 @@ line-height:34px;
 
 .mycred-treasure-pack .theme-id-container .theme-actions {
     padding: 14px 20px !important;
+}
+.mycred-tools-ba-award-table p{
+    margin: 0px;
+}
+
+.mycred-tools-ba-award-table tr td:first-child {
+    min-width: 200px;
+    max-width: 200px;
+}
+.mycred-tools-ba-award-table .tb-zero-padding{
+    padding-top: 0px!important;
+    padding-bottom: 0px!important;
+}
+
+.theme-screenshot-item {
+    width: 278px;
+    height: 278px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-screenshot .theme-screenshot-item img {
+    height: unset !important;
+    width: 100% !important;
 }
