@@ -63,12 +63,18 @@ class myCRED_Tools {
 
 	/**
 	 * Register tools menu
+	 * 
+	 * @since 2.4.4.1 `$capability` check added
 	 */
 	public function tools_sub_menu() {
+
+		$mycred = new myCRED_Settings();
+		$capability = $mycred->get_point_admin_capability();
+
 		mycred_add_main_submenu( 
 			'Tools', 
 			'Tools', 
-			'manage_options', 
+			$capability, 
 			'mycred-tools',
 			array( $this, 'tools_page' ),
 			2
@@ -444,11 +450,20 @@ class myCRED_Tools {
 	/**
 	 * Ajax Call-back
 	 * @since 2.4.1
+	 * @since 2.4.4.1 `current_user_can` security added
 	 * @version 1.0
 	 */
 	public function tools_select_user()
 	{
+
 		check_ajax_referer( 'mycred-tools', 'token' );
+
+		$mycred = new myCRED_Settings();
+		$capability = $mycred->get_point_admin_capability();
+
+		if( !current_user_can( $capability ) ) {
+			die( '-1' );
+		}
 		
 		if( isset( $_GET['action'] ) &&  $_GET['action'] == 'mycred-tools-select-user' )
 		{

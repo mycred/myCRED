@@ -1070,6 +1070,19 @@ th#badge-users { width: 10%; }
          * @version 1.2
          */
         public function metabox_badge_setup( $post ) {
+        
+                ?>
+
+            <style>
+
+                button.button.button-seconary.button-small.remove-badge-level {
+                    margin-bottom: 5px !important;
+                    margin-left: 94% !important;
+                }
+
+            </style>
+
+            <?php
 
             $badge       = mycred_get_badge( $post->ID );
             $references  = mycred_get_all_references();
@@ -1105,8 +1118,8 @@ th#badge-users { width: 10%; }
 
                     $level        = $level_counter;
 
-                    $add_level    = '<button type="button" class="button button-seconary button-small top-right-corner" id="badges-add-new-level">' . esc_js( __( 'Add Level', 'mycred' ) ) . '</button>';
-                    $remove_level = '<button type="button" class="button button-seconary button-small top-right-corner remove-badge-level" data-level="{{level}}">' . esc_js( __( 'Remove Level', 'mycred' ) ) . '</button>';
+                    $add_level    = '<button type="button" class="button button-seconary button-small top-right-corner mt-2" id="badges-add-new-level">' . esc_js( __( 'Add Level', 'mycred' ) ) . '</button>';
+                    $remove_level = '<button type="button" class="button button-seconary button-small  remove-badge-level" data-level="{{level}}">' . esc_js( __( 'Remove Level', 'mycred' ) ) . '</button>';
 
                     $level_image  = $this->get_level_image( $setup, $level );
                     $empty_level  = 'empty dashicons';
