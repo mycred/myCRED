@@ -1,18 +1,15 @@
-=== myCred - Points, Rewards, Gamification, Ranks, Badges & Loyalty Plugin ===
-Contributors: mycred,wpexpertsio
-Tags: badges, gamification, loyalty, points, rewards
-Requires at least: 4.8
-Tested up to: 5.9.2
-Stable tag: 2.4.4.1
-Requires PHP: 7.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+<p align="center"><a href="https://woocommerce.com/"><img src="https://mycred.me/wp-content/uploads/2022/03/mycred-wordpress-loyality-system.svg" width="360" alt="WooCommerce"></a></p>
 
-An adaptive and powerful points management system for WordPress powered websites.
+<p align="center">
+<a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"></a> 
+<img src="https://img.shields.io/wordpress/plugin/v/mycred" alt="WordPress.org version">
+<img src="https://img.shields.io/wordpress/plugin/dt/mycred" alt="WordPress.org downloads">
+<img src="https://img.shields.io/wordpress/plugin/rating/mycred" alt="WordPress.org rating">
+<img src="https://img.shields.io/wordpress/plugin/tested/mycred" alt="WordPress.org rating">
+<img src="https://img.shields.io/wordpress/plugin/last-updated/mycred" alt="WordPress.org rating">
+</p>
 
-== Description ==
-
-myCred is an intelligent and adaptive **points management system** that allows you to build and manage a broad range of digital rewards including points, ranks and, badges on your WordPress/WooCommerce powered website. 
+myCred is an intelligent and adaptive points management system that allows you to build and manage a broad range of digital rewards including points, ranks and, badges on your WordPress/WooCommerce powered website.
 
 [youtube https://www.youtube.com/watch?v=-M19tzYo1jo]
 
