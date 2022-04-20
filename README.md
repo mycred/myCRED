@@ -1,4 +1,4 @@
-<p align="center"><a href="https://woocommerce.com/"><img src="https://mycred.me/wp-content/uploads/2022/03/mycred-wordpress-loyality-system.svg" width="360" alt="WooCommerce"></a></p>
+<p align="center"><a href="https://mycred.me"><img src="https://mycred.me/wp-content/uploads/2022/03/mycred-wordpress-loyality-system.svg" width="360" alt="WooCommerce"></a></p>
 
 <p align="center">
 <a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"></a> 
