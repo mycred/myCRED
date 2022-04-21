@@ -14,9 +14,7 @@
 myCred allows THREE different ways through which you can award your users:
 
 * **Points -** Set events and triggers to allow real-time tracking and automatically award your users with points. 
-
 * **Ranks -** Set ranks within your leaderboards and reward your users with significant perks after they reach a certain milestone.
-
 * **Badges -** Boost your users' participation by rewarding them for their exceptional performance.
 
 ## Documentation
