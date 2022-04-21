@@ -27,7 +27,7 @@ You can find extensive documentation on myCred add-ons in the <a href="http://co
 * <a href="http://codex.mycred.me/chapter-iii">Chapter III - Add-ons</a>
 * <a href="http://codex.mycred.me/chapter-iv">Chapter IV - Premium Add-ons</a>
 * <a href="http://codex.mycred.me/chapter-v">Chapter V - For Developers</a> 
-* <a href="http://codex.mycred.me/chapter-v">Chapter VI - Reference Guides</a> 
+* <a href="http://codex.mycred.me/chapter-vi">Chapter VI - Reference Guides</a> 
 
 ## Support
 This repository is not suitable for support. Please don't use our issue tracker for support requests, but for core myCred issues only. Support can take place through the appropriate channels:
