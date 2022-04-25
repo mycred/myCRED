@@ -8,6 +8,7 @@ namespace Bitpay;
 
 /**
  * Class Payout
+ *
  * @package Bitpay
  */
 class Payout implements PayoutInterface
@@ -102,7 +103,7 @@ class Payout implements PayoutInterface
     /**
      * Set the batch ID as assigned from bitpay.
      *
-     * @param $id
+     * @param  $id
      * @return $this
      */
     public function setId($id)
@@ -125,7 +126,7 @@ class Payout implements PayoutInterface
     /**
      * Set Account Id - Bitpays account ID for the payout.
      *
-     * @param $id
+     * @param  $id
      * @return $this
      */
     public function setAccountId($id)
@@ -147,7 +148,8 @@ class Payout implements PayoutInterface
 
     /**
      * Sets the amount for this payout.
-     * @param $amount
+     *
+     * @param  $amount
      * @return $this
      */
     public function setAmount($amount)
@@ -169,7 +171,8 @@ class Payout implements PayoutInterface
 
     /**
      * Set Currency
-     * @param CurrencyInterface $currency
+     *
+     * @param  CurrencyInterface $currency
      * @return $this
      */
     public function setCurrency(CurrencyInterface $currency)
@@ -191,7 +194,8 @@ class Payout implements PayoutInterface
 
     /**
      * Set Effective date - date payout should be given to employees.
-     * @param $effectiveDate
+     *
+     * @param  $effectiveDate
      * @return $this
      */
     public function setEffectiveDate($effectiveDate)
@@ -213,7 +217,8 @@ class Payout implements PayoutInterface
 
     /**
      * Set the rate in bitcoin for the payouts of this transaction.
-     * @param $rate
+     *
+     * @param  $rate
      * @return $this
      */
     public function setRate($rate)
@@ -235,7 +240,8 @@ class Payout implements PayoutInterface
 
     /**
      * Set the Bitcoin amount for this payout, once set by Bitpay.
-     * @param $amount
+     *
+     * @param  $amount
      * @return $this
      */
     public function setBtcAmount($amount)
@@ -278,7 +284,7 @@ class Payout implements PayoutInterface
      * Add Instruction of PayoutInstructionInterface type
      * Increases $this->amount by value.
      *
-     * @param PayoutInstructionInterface $instruction
+     * @param  PayoutInstructionInterface $instruction
      * @return $this
      */
     public function addInstruction(PayoutInstructionInterface $instruction)
@@ -294,9 +300,9 @@ class Payout implements PayoutInterface
      * Update Instruction - Supply an index of the instruction to update,
      * plus the function and single argument, to do something to an instruction.
      *
-     * @param $index
-     * @param $function
-     * @param $argument
+     * @param  $index
+     * @param  $function
+     * @param  $argument
      * @return $this
      */
     public function updateInstruction($index, $function, $argument)
@@ -318,7 +324,8 @@ class Payout implements PayoutInterface
 
     /**
      * Sets the status for the current payout request
-     * @param $status
+     *
+     * @param  $status
      * @return $this
      */
     public function setStatus($status)
@@ -340,7 +347,8 @@ class Payout implements PayoutInterface
 
     /**
      * Set the token to authorize this request.
-     * @param TokenInterface $token
+     *
+     * @param  TokenInterface $token
      * @return $this
      */
     public function setToken(TokenInterface $token)
@@ -362,7 +370,7 @@ class Payout implements PayoutInterface
     /**
      * Set Response Token - returned by Bitpay when payout request is created
      *
-     * @param $responseToken
+     * @param  $responseToken
      * @return $this
      */
     public function setResponseToken($responseToken)
@@ -383,7 +391,8 @@ class Payout implements PayoutInterface
 
     /**
      * Set the pricing method for this payout request
-     * @param $pricingMethod
+     *
+     * @param  $pricingMethod
      * @return $this
      */
     public function setPricingMethod($pricingMethod)
@@ -406,7 +415,7 @@ class Payout implements PayoutInterface
     /**
      * Set the payroll providers reference for this payout
      *
-     * @param $reference
+     * @param  $reference
      * @return $this
      */
     public function setReference($reference)
@@ -429,7 +438,7 @@ class Payout implements PayoutInterface
     /**
      * Set an email address where updates to payout status should be sent.
      *
-     * @param $notificationEmail
+     * @param  $notificationEmail
      * @return $this
      */
     public function setNotificationEmail($notificationEmail)
@@ -452,7 +461,7 @@ class Payout implements PayoutInterface
     /**
      * Set a notification url - where updated Payout objects will be sent
      *
-     * @param $notificationUrl
+     * @param  $notificationUrl
      * @return $this
      */
     public function setNotificationUrl($notificationUrl)

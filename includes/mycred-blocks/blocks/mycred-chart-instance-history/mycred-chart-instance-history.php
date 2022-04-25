@@ -1,14 +1,17 @@
 <?php
 namespace MG_Blocks;
 
-if ( ! defined('ABSPATH') ) exit;
+if (! defined('ABSPATH') ) { exit;
+}
 
-if ( ! class_exists('mycred_chart_instance_block') ) :
-    class mycred_chart_instance_block {
+if (! class_exists('mycred_chart_instance_block') ) :
+    class mycred_chart_instance_block
+    {
 
-        public function __construct() {
+        public function __construct()
+        {
 
-            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ));
 
             register_block_type( 
                 'mycred-gb-blocks/mycred-instance-history', 
@@ -17,7 +20,8 @@ if ( ! class_exists('mycred_chart_instance_block') ) :
         
         }
 
-        public function register_assets() {
+        public function register_assets()
+        {
 
             wp_enqueue_script(
                 'mycred-chart-instance-history', 
@@ -33,8 +37,9 @@ if ( ! class_exists('mycred_chart_instance_block') ) :
 
         }
 
-        public function render_block( $attributes, $content ) {
-            return "[mycred_chart_instance_history " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+        public function render_block( $attributes, $content )
+        {
+            return "[mycred_chart_instance_history " . mycred_blocks_functions::mycred_extract_attributes($attributes) . "]";
         }
 
     }

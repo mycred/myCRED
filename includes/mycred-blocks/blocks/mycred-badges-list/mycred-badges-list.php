@@ -1,14 +1,17 @@
 <?php
 namespace MG_Blocks;
 
-if ( ! defined('ABSPATH') ) exit;
+if (! defined('ABSPATH') ) { exit;
+}
 
-if ( ! class_exists('mycred_badges_list_block') ) :
-    class mycred_badges_list_block {
+if (! class_exists('mycred_badges_list_block') ) :
+    class mycred_badges_list_block
+    {
 
-        public function __construct() {
+        public function __construct()
+        {
 
-            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ));
 
             register_block_type( 
                 'mycred-gb-blocks/mycred-badges-list', 
@@ -17,7 +20,8 @@ if ( ! class_exists('mycred_badges_list_block') ) :
         
         }
 
-        public function register_assets() {
+        public function register_assets()
+        {
 
             wp_enqueue_script(
                 'mycred-badges-list', 
@@ -33,8 +37,9 @@ if ( ! class_exists('mycred_badges_list_block') ) :
 
         }
 
-        public function render_block( $attributes, $content ) {
-            return "[mycred_badges_list " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+        public function render_block( $attributes, $content )
+        {
+            return "[mycred_badges_list " . mycred_blocks_functions::mycred_extract_attributes($attributes) . "]";
         }
 
     }

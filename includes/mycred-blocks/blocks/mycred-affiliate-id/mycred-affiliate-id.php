@@ -1,14 +1,17 @@
 <?php
 namespace MG_Blocks;
 
-if ( ! defined('ABSPATH') ) exit;
+if (! defined('ABSPATH') ) { exit;
+}
 
-if ( ! class_exists('mycred_affiliate_id_block') ) :
-    class mycred_affiliate_id_block {
+if (! class_exists('mycred_affiliate_id_block') ) :
+    class mycred_affiliate_id_block
+    {
 
-        public function __construct() {
+        public function __construct()
+        {
 
-            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ));
 
             register_block_type( 
                 'mycred-gb-blocks/mycred-affiliate-id', 
@@ -17,7 +20,8 @@ if ( ! class_exists('mycred_affiliate_id_block') ) :
         
         }
 
-        public function register_assets() {
+        public function register_assets()
+        {
 
             wp_enqueue_script(
                 'mycred-affiliate-id', 
@@ -32,17 +36,19 @@ if ( ! class_exists('mycred_affiliate_id_block') ) :
             );
 
             $mycred_types = mycred_get_types(true);
-            $mycred_types = array_merge( array( '' => __('Select point type', 'mycred') ), $mycred_types );
+            $mycred_types = array_merge(array( '' => __('Select point type', 'mycred') ), $mycred_types);
             wp_localize_script('mycred-affiliate-id', 'mycred_types', $mycred_types);
 
         }
 
-        public function render_block( $attributes, $content ) {
+        public function render_block( $attributes, $content )
+        {
             
-            if ( empty( $attributes['type'] ) )
+            if (empty($attributes['type']) ) {
                 $attributes['type'] = 'mycred_default';
+            }
 
-            return "[mycred_affiliate_id " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+            return "[mycred_affiliate_id " . mycred_blocks_functions::mycred_extract_attributes($attributes) . "]";
         }
 
     }

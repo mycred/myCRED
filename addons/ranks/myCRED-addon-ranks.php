@@ -1211,7 +1211,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 					$query->set( 'meta_query', array(
 						array(
 							'key'     => 'ctype',
-							'value'   => $_GET['ctype'],
+							'value'   => sanitize_key( $_GET['ctype'] ),
 							'compare' => '='
 						)
 					) );

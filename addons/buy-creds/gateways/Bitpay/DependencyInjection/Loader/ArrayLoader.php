@@ -40,12 +40,14 @@ class ArrayLoader extends Loader
                         $this->container->getExtensions()
                     )
                 );
-                throw new InvalidArgumentException(sprintf(
-                    'There is no extension able to load the configuration for "%s". Looked for namespace "%s", found %s',
-                    $namespace,
-                    $namespace,
-                    $extensionNamespaces ? sprintf('"%s"', implode('", "', $extensionNamespaces)) : 'none'
-                ));
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'There is no extension able to load the configuration for "%s". Looked for namespace "%s", found %s',
+                        $namespace,
+                        $namespace,
+                        $extensionNamespaces ? sprintf('"%s"', implode('", "', $extensionNamespaces)) : 'none'
+                    )
+                );
             }
         }
 

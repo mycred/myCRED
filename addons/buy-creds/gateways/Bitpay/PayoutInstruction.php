@@ -8,6 +8,7 @@ namespace Bitpay;
 
 /**
  * Class PayoutInstruction
+ *
  * @package Bitpay
  */
 class PayoutInstruction implements PayoutInstructionInterface
@@ -74,7 +75,7 @@ class PayoutInstruction implements PayoutInstructionInterface
     /**
      * Set the Bitpay ID for this payout instruction
      *
-     * @param $id
+     * @param  $id
      * @return $this
      */
     public function setId($id)
@@ -95,7 +96,8 @@ class PayoutInstruction implements PayoutInstructionInterface
 
     /**
      * Set the employers label for this instruction.
-     * @param $label
+     *
+     * @param  $label
      * @return $this
      */
     public function setLabel($label)
@@ -117,7 +119,8 @@ class PayoutInstruction implements PayoutInstructionInterface
 
     /**
      * Set the bitcoin address for this instruction.
-     * @param $address
+     *
+     * @param  $address
      * @return $this
      */
     public function setAddress($address)
@@ -139,7 +142,8 @@ class PayoutInstruction implements PayoutInstructionInterface
 
     /**
      * Set the amount for this instruction.
-     * @param $amount
+     *
+     * @param  $amount
      * @return $this
      */
     public function setAmount($amount)
@@ -161,7 +165,8 @@ class PayoutInstruction implements PayoutInstructionInterface
 
     /**
      * Set BTC array (available once rates are set)
-     * @param $btc
+     *
+     * @param  $btc
      * @return $this
      */
     public function setBtc($btc)
@@ -183,7 +188,8 @@ class PayoutInstruction implements PayoutInstructionInterface
 
     /**
      * Set the status for this instruction
-     * @param $status
+     *
+     * @param  $status
      * @return $this
      */
     public function setStatus($status)
@@ -205,7 +211,8 @@ class PayoutInstruction implements PayoutInstructionInterface
 
     /**
      * Add payout transaction to the
-     * @param PayoutTransactionInterface $transaction
+     *
+     * @param  PayoutTransactionInterface $transaction
      * @return $this
      */
     public function addTransaction(PayoutTransactionInterface $transaction)

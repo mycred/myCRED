@@ -58,8 +58,8 @@ class BcEngine implements EngineInterface
      * Finds inverse number $inv for $num by modulus $mod, such as:
      *     $inv * $num = 1 (mod $mod)
      *
-     * @param string $num
-     * @param string $mod
+     * @param  string $num
+     * @param  string $mod
      * @return string
      * @access public
      */

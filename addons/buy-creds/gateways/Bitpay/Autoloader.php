@@ -47,7 +47,7 @@ class Autoloader
             $file = __DIR__.DIRECTORY_SEPARATOR.str_replace('\\', DIRECTORY_SEPARATOR, $classname).'.php';
 
             if (is_file($file) && is_readable($file)) {
-                require_once $file;
+                include_once $file;
 
                 return true;
             }

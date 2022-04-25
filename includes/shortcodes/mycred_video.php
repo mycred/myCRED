@@ -1,119 +1,138 @@
 <?php
-if ( ! defined( 'myCRED_VERSION' ) ) exit;
+if (! defined('myCRED_VERSION') ) { exit;
+}
 
 /**
  * myCRED Shortcode: mycred_video
  * This shortcode allows points to be given to the current user
  * for watchinga YouTube video.
- * @see http://codex.mycred.me/shortcodes/mycred_video/
- * @since 1.2
- * @since 2.4 Removed logic, Interval greater than 3 was not working
+ *
+ * @see     http://codex.mycred.me/shortcodes/mycred_video/
+ * @since   1.2
+ * @since   2.4 Removed logic, Interval greater than 3 was not working
  * @version 1.2.2
  */
-if ( ! function_exists( 'mycred_render_shortcode_video' ) ) :
-	function mycred_render_shortcode_video( $atts ) {
+if (! function_exists('mycred_render_shortcode_video') ) :
+    function mycred_render_shortcode_video( $atts )
+    {
 
-		global $mycred_video_points;
+        global $mycred_video_points;
 
-		extract( shortcode_atts( array(
-			'id'       	=> NULL,
-			'width'    	=> 560,
-			'height'  	=> 315,
-			'amount'   	=> '',
-			'logic'    	=> '',
-			'interval' 	=> '',
-			'streaming'	=> '',
-			'duration'	=> '',
-			'ctype'    	=> MYCRED_DEFAULT_TYPE_KEY
-		), $atts, MYCRED_SLUG . '_video' ) );
+        extract(
+            shortcode_atts(
+                array(
+                'id'        => null,
+                'width'     => 560,
+                'height'    => 315,
+                'amount'    => '',
+                'logic'     => '',
+                'interval'  => '',
+                'streaming' => '',
+                'duration'  => '',
+                'ctype'     => MYCRED_DEFAULT_TYPE_KEY
+                ), $atts, MYCRED_SLUG . '_video' 
+            ) 
+        );
 
-		$prf_hook = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
-		$hooks    = mycred_get_option( $prf_hook, false );
-		if ( $ctype != MYCRED_DEFAULT_TYPE_KEY )
-			$hooks = mycred_get_option( 'mycred_pref_hooks_' . sanitize_key( $ctype ), false );
-
-		if ( $hooks === false || ! is_array( $hooks ) || ! array_key_exists( 'video_view', $hooks['hook_prefs'] ) ) return;
-		$prefs    = $hooks['hook_prefs']['video_view'];
-
-		if ( $amount == '' )
-			$amount = $prefs['creds'];
-
-		if ( $logic == '' )
-			$logic = $prefs['logic'];
-
-		if ( $interval == '' )
-			$interval = $prefs['interval'];
-
-		if ( $streaming == '' )
-			$streaming = 'off';
-
-		if ( $duration == '' )
-			$duration = 300;
-
-		// ID is required
-		if ( $id === NULL || empty( $id ) ) return __( 'A video ID is required for this shortcode', 'mycred' );
-
-		// Interval
-		if ( $interval ) {
-		   $interval = (float) $interval;
-           $interval = abs( $interval * 1000 );
+        $prf_hook = apply_filters('mycred_option_id', 'mycred_pref_hooks');
+        $hooks    = mycred_get_option($prf_hook, false);
+        if ($ctype != MYCRED_DEFAULT_TYPE_KEY ) {
+            $hooks = mycred_get_option('mycred_pref_hooks_' . sanitize_key($ctype), false);
         }
 
-		// Video ID
-		$video_id = str_replace( '-', '__', $id );
+        if ($hooks === false || ! is_array($hooks) || ! array_key_exists('video_view', $hooks['hook_prefs']) ) { return;
+        }
+        $prefs    = $hooks['hook_prefs']['video_view'];
 
-		// Create key
-		$key      = mycred_create_token( array( 'youtube', $video_id, $amount, $logic, $interval, $ctype ) );
+        if ($amount == '' ) {
+            $amount = $prefs['creds'];
+        }
 
-		if ( ! isset( $mycred_video_points ) || ! is_array( $mycred_video_points ) )
-			$mycred_video_points = array();
+        if ($logic == '' ) {
+            $logic = $prefs['logic'];
+        }
 
-		// Construct YouTube Query
-		$query    = apply_filters( 'mycred_video_query_youtube', array(
-			'enablejsapi' => 1,
-			'version'     => 3,
-			'playerapiid' => 'mycred_vvideo_v' . $video_id,
-			'rel'         => 0,
-			'controls'    => 1,
-			'showinfo'    => 0
-		), $atts, $video_id );
+        if ($interval == '' ) {
+            $interval = $prefs['interval'];
+        }
 
-		if ( ! is_user_logged_in() )
-			unset( $query['playerapiid'] );
+        if ($streaming == '' ) {
+            $streaming = 'off';
+        }
 
-		// Construct Youtube Query Address
-		$url      = 'https://www.youtube.com/embed/' . $id;
-		$url      = add_query_arg( $query, $url );
+        if ($duration == '' ) {
+            $duration = 300;
+        }
 
-		$mycred_video_points[] = 'youtube';
+        // ID is required
+        if ($id === null || empty($id) ) { return __('A video ID is required for this shortcode', 'mycred');
+        }
 
-		// Make sure video source ids are unique
-		$mycred_video_points   = array_unique( $mycred_video_points );
+        // Interval
+        if ($interval ) {
+              $interval = (float) $interval;
+                 $interval = abs($interval * 1000);
+        }
 
-		ob_start();
+        // Video ID
+        $video_id = str_replace('-', '__', $id);
 
-?>
+        // Create key
+        $key      = mycred_create_token(array( 'youtube', $video_id, $amount, $logic, $interval, $ctype ));
+
+        if (! isset($mycred_video_points) || ! is_array($mycred_video_points) ) {
+            $mycred_video_points = array();
+        }
+
+        // Construct YouTube Query
+        $query    = apply_filters(
+            'mycred_video_query_youtube', array(
+            'enablejsapi' => 1,
+            'version'     => 3,
+            'playerapiid' => 'mycred_vvideo_v' . $video_id,
+            'rel'         => 0,
+            'controls'    => 1,
+            'showinfo'    => 0
+            ), $atts, $video_id 
+        );
+
+        if (! is_user_logged_in() ) {
+            unset($query['playerapiid']);
+        }
+
+        // Construct Youtube Query Address
+        $url      = 'https://www.youtube.com/embed/' . $id;
+        $url      = add_query_arg($query, $url);
+
+        $mycred_video_points[] = 'youtube';
+
+        // Make sure video source ids are unique
+        $mycred_video_points   = array_unique($mycred_video_points);
+
+        ob_start();
+
+        ?>
 <div class="row mycred-video-wrapper youtube-video">
-	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-		<iframe id="mycred_vvideo_v<?php echo $video_id; ?>" class="mycred-video mycred-youtube-video" data-vid="<?php echo $video_id; ?>" src="<?php echo esc_url( $url ); ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-	</div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <iframe id="mycred_vvideo_v<?php echo esc_attr($video_id); ?>" class="mycred-video mycred-youtube-video" data-vid="<?php echo esc_attr($video_id); ?>" src="<?php echo esc_url($url); ?>" width="<?php echo esc_attr($width); ?>" height="<?php echo esc_attr($height); ?>" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    </div>
 </div>
-<?php
+        <?php
 
-		if ( is_user_logged_in() ) :
+        if (is_user_logged_in() ) :
 
-?>
+            ?>
 <script type="text/javascript">function mycred_vvideo_v<?php echo $video_id; ?>( state ) { duration[ "<?php echo $video_id; ?>" ] = state.target.getDuration(); mycred_view_video( "<?php echo $video_id; ?>", state.data, "<?php echo $logic; ?>", "<?php echo $interval; ?>", "<?php echo $key; ?>", "<?php echo $ctype; ?>" , "<?php echo mycred_encode_values($streaming); ?>" , "<?php echo mycred_encode_values($duration); ?>" );  }</script>
-<?php
+            <?php
 
-		endif;
+        endif;
 
-		$output = ob_get_contents();
-		ob_end_clean();
+        $output = ob_get_contents();
+        ob_end_clean();
 
-		// Return the shortcode output
-		return apply_filters( 'mycred_video_output', $output, $atts );
+        // Return the shortcode output
+        return apply_filters('mycred_video_output', $output, $atts);
 
-	}
+    }
 endif;
-add_shortcode( MYCRED_SLUG . '_video', 'mycred_render_shortcode_video' );
+add_shortcode(MYCRED_SLUG . '_video', 'mycred_render_shortcode_video');

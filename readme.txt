@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 5.9.2
-Stable tag: 2.4.4.1
+Tested up to: 5.9.3
+Stable tag: 2.4.4.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -30,25 +30,9 @@ myCred allows **THREE different ways** through which you can award your users:
 
 * **Badges -** Boost your users' participation by rewarding them for their exceptional performance.
 
-**Latest update - myCred v2.4.4**
+**Latest update - myCred v2.4**
 
-**myCred v2.4.4** includes several new features and enhancements. The most prominent addition is the ability to set a transfer fee when exchanging points between members. Other new features include Gutenberg block support and the ability to set a range for minimum and maximum fees. Version 2.4.4 is available now from the WordPress Plugin Directory.
-
-Here is a list of the complete features introduced in myCred v2.4.4:
-
-* Gutenberg block support for the following shortcodes: mycred_cashcred, mycred_badges_list, mycred_buy_pending, mycred_chart_circulation, mycred_chart_gain_loss, mycred_chart_history, mycred_chart_balance_history, mycred_chart_top_balance, mycred_chart_instance_history and mycred_chart_top_instance.
-* cashCred points transfer between users.
-* Setup Numerical Difference (set a range for Minimum and Maximum fee).
-* Setup Parameters (fees can be set up using points or percentage).
-* All registered references will be listed on the support page.
-* Import or export user points.
-* Import or export setup settings in JSON format.
-* Select specific users fields for export.
-* Assign Badges/Ranks using coupons.
-
-**Recent update - myCred v2.4**
-
-**myCred v2.4** focuses on expanding the plugins ability to import and export points, ranks, and badges from and to other sites. What's better is that you can choose to export or import complete setup settings like point types, achievements level, and created badges with achievements level with the simplest of ease.
+**myCred v2.4** focuses on expanding the plugin’s ability to import and export points, ranks, and badges from and to other sites. What’s better is that you can choose to export or import complete setup settings like point types, achievements level, and created badges with achievements level with the simplest of ease.
 
 Here is a list of the complete features introduced in myCred v2.4:
 
@@ -64,6 +48,27 @@ Here is a list of the complete features introduced in myCred v2.4:
 * Select users fields in the exported file
 * Assign Badges/Ranks using coupons
 * Merged myCred Gutenberg to myCred Core
+
+**Latest update - myCred v2.3**
+
+**myCred v2.3** is a core update that helps the admin award points, badges and ranks to users in bulk. Similarly, the admin can also choose to revoke these award types from multiple users simultaneously.
+
+Here are some of the most prominent features of the latest update:
+
+* A "Bulk Assign" tool for awarding/revoking points, badges, and ranks in bulk.
+* The admin can exclude any user role from receiving points. Previously, the admin could only exclude users using user ID only.
+* A timeframe attribute in [mycred_my_balance_converted] shortcode - users can see their converted point balance in a given timeframe using predefined filters (Yesterday, Today, this week, this month, last month).
+
+**Recent update - myCred v2.2**
+
+**myCred v2.2** focuses on improving the overall user interface, single badge page layout, point-type image, and social media sharing for a better user experience and operational efficiency.
+
+* **New UI design of the main menu** - A fresh new look of our main menu allows users to easily navigate between logs, hooks, and general settings.
+* **Upload Point-type image** - Give your point type a unique identity by assigning them an image.
+* **Enable/Disable add-ons** - Save time and use toggle buttons for enabling or disabling add-ons. 
+* **Social share setting** - Allow users to share their achieved badges on their social profiles.
+* **Treasures** - A brand new collection of attractive graphical images that can be used for ranks and badges.
+* **Suggestions** - Submit your ideas and suggestions on the new suggestion page.
 
 = BECOME A VIP MEMBER OF THE MYCRED MEMBERSHIP CLUB =
 
@@ -88,7 +93,6 @@ Empower your WordPress website users by rewarding them points - each user has th
 **- Multiple Point Types**: Create multiple point types through the admin area to manage things easily. There is no limit to the number of point types you can have at your disposal.
 **- Buy Points**: The buyCred add-on allows your users to purchase points using real money using some of the most popular payment gateways available in the market today.
 **- Store Payments**: myCred supports some of the most popular store plugins for WordPress, allowing your users to pay for orders/tickets using their point balance instead of real money.
-**- Upload Point-type image**: Give your point type a unique identity by assigning them an image.
 
 = Badges =
 
@@ -100,7 +104,6 @@ Empower your WordPress website users by rewarding them points - each user has th
 **-  Evidence Shortcode** - Technical support for badge verification purposes.
 **-  Badge Evidence Download Button** - Access Open Badges of any users on the website. The admin can also download any given badge images.
 **-  The "Quick Edit" badge option** will allow you to modify the information of any particular badge.
-**-  Social share setting** - Allow users to share their achieved badges on their social profiles.
 
 = cashCred =
 **GIVE USERS THE POWER TO CONVERT THEIR MYCRED POINTS INTO REAL MONEY.**
@@ -160,12 +163,6 @@ You can achieve the following features by using a dedicated log for your points 
 **-  Bootstrap Ready**: myCred comes with minimal CSS styling to give you the freedom to style everything according to your needs.
 **-  Translation Ready**: You can add your own language translation or adjust the built-in translation support.
 **-  Back-up of your data** - Remove all/specific data upon plugin deletion from the database or keep it as a backup.
-**-  A timeframe attribute** in [mycred_my_balance_converted] shortcode - users can see their converted point balance in a given timeframe using predefined filters (Yesterday, Today, this week, this month, last month).
-**-  A "Bulk Assign" tool** for awarding/revoking points, badges, and ranks in bulk.
-**-  Exclude user roles** - The admin can exclude any user role from receiving points. Previously, the admin could only exclude users using user ID only.
-**-  Enable/Disable add-ons** - Save time and use toggle buttons for enabling or disabling add-ons. 
-**-  Treasures** - A brand new collection of attractive graphical images that can be used for ranks and badges.
-**-  Suggestions** - Submit your ideas and suggestions on the new suggestion page.
 
 = BUILT-IN ADD-ONS =
 
@@ -303,8 +300,11 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.4.2 =
+* Code Improvements
+
 = 2.4.4.1 =
-Improvement and Bug fixes.
+* Code Improvements
 
 = 2.4.4 =
 New features and Bug fixes.
@@ -363,13 +363,16 @@ The banking module have been replaced by Central deposite module, and interest r
 
 == Changelog ==
 
+= 2.4.4.2 =
+* **TWEAK** - Patched security vulnerability.
+
 = 2.4.4.1 =
-* **Improvement** - Patched security vulnerability.
-* **Improvement** - Badge UI Fix.
+* **TWEAK** - Patched security vulnerability.
+* **FIX** - Badge UI Fix.
 
 = 2.4.4 = 
 - **NEW** - All registered references will be listed on the support page. 
-- **NEW** - Added Gutenberg blocks for the following shortcodes mycred_cashcred, mycred_badges_list, mycred_buy_pending, mycred_chart_circulation, mycred_chart_gain_loss, mycred_chart_history, mycred_chart_balance_history, mycred_chart_top_balance, mycred_chart_instance_history and mycred_chart_top_instance.
+- **NEW** - Added Gutenberg blocks for the following shortcodes mycred_cahcred, mycred_badges_list, mycred_buy_pending, mycred_chart_circulation, mycred_chart_gain_loss, mycred_chart_history, mycred_chart_balance_history, mycred_chart_top_balance, mycred_chart_instance_history and mycred_chart_top_instance.
 - **NEW** - Added fee feature in cashCred.
 - **TWEAK** - Code improvements for tools.
 - **FIX** - Resolved depreciated warnings for PHP 8.

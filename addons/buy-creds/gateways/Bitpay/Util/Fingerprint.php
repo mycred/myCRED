@@ -19,7 +19,7 @@ class Fingerprint
      * takes the hash of that value to use as the env
      * fingerprint.
      *
-     * @param void
+     * @param  void
      * @return string
      */
     final public static function generate()

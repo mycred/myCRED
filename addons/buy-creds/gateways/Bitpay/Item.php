@@ -156,7 +156,7 @@ class Item implements ItemInterface
      * Checks the new price to include BTC
      * values with more than 6 decimals.
      *
-     * @param string $price The price value to check
+     * @param  string $price The price value to check
      * @throws \Exception
      */
     protected function checkPriceFormat($price)

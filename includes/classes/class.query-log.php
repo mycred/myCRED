@@ -1286,7 +1286,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 			$removable_query_args = wp_removable_query_args();
 
-			$current_url          = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+			$current_url          = set_url_scheme( sanitize_url('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) );
 			$current_url          = remove_query_arg( $removable_query_args, $current_url );
 			$current_url          = str_replace( '/' . $current . '/', '/', $current_url );
 			$current_url          = apply_filters( 'mycred_log_front_nav_url', $current_url, $this );
@@ -1383,7 +1383,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$output             = '';
 			$total_pages        = $this->max_num_pages;
 			$current            = $this->get_pagenum();
-			$current_url        = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+			$current_url        = set_url_scheme( sanitize_url('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) );
 
 			if ( ! $this->is_admin )
 				$current_url = str_replace( '/page/' . $current . '/', '/', $current_url );

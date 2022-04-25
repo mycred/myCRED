@@ -2,15 +2,18 @@
 
 namespace MG_Blocks;
 
-if ( ! defined('ABSPATH') ) exit;
+if (! defined('ABSPATH') ) { exit;
+}
 
-if ( ! class_exists('mycred_best_user_block') ) :
+if (! class_exists('mycred_best_user_block') ) :
 
-    class mycred_best_user_block {
+    class mycred_best_user_block
+    {
 
-        public function __construct() {
+        public function __construct()
+        {
 
-            add_action( 'enqueue_block_editor_assets', array( $this, 'register_assets' ) );
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ));
 
             register_block_type( 
                 'mycred-gb-blocks/mycred-best-user', 
@@ -19,7 +22,8 @@ if ( ! class_exists('mycred_best_user_block') ) :
         
         }
 
-        public function register_assets() {
+        public function register_assets()
+        {
 
             wp_enqueue_script(
                 'mycred-best-user', 
@@ -34,16 +38,18 @@ if ( ! class_exists('mycred_best_user_block') ) :
 
         }
 
-        public function render_block( $attributes, $content ) {
+        public function render_block( $attributes, $content )
+        {
             
             $content = "";
 
-            if ( isset( $attributes['content'] ) )
+            if (isset($attributes['content']) ) {
                 $content = $attributes['content'];
+            }
             
-            unset( $attributes['content'] );
+            unset($attributes['content']);
 
-            return "[mycred_best_user " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]" . $content . "[/mycred_best_user]";
+            return "[mycred_best_user " . mycred_blocks_functions::mycred_extract_attributes($attributes) . "]" . $content . "[/mycred_best_user]";
 
         }
 

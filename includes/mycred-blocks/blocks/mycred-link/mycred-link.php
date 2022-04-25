@@ -1,14 +1,17 @@
 <?php
 namespace MG_Blocks;
 
-if ( ! defined('ABSPATH') ) exit;
+if (! defined('ABSPATH') ) { exit;
+}
 
-if ( ! class_exists('mycred_link_block') ) :
-    class mycred_link_block {
+if (! class_exists('mycred_link_block') ) :
+    class mycred_link_block
+    {
 
-        public function __construct() {
+        public function __construct()
+        {
 
-            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ));
 
             register_block_type( 
                 'mycred-gb-blocks/mycred-link', 
@@ -17,7 +20,8 @@ if ( ! class_exists('mycred_link_block') ) :
         
         }
 
-        public function register_assets() {
+        public function register_assets()
+        {
 
             wp_enqueue_script(
                 'mycred-link', 
@@ -32,24 +36,26 @@ if ( ! class_exists('mycred_link_block') ) :
 
         }
 
-        public function render_block( $attributes, $content ) {
+        public function render_block( $attributes, $content )
+        {
 
             $content = '';
             
-            if ( empty( $attributes['ctype'] ) )
+            if (empty($attributes['ctype']) ) {
                 $attributes['ctype'] = 'mycred_default';
+            }
 
-            if ( isset( $attributes['clss'] ) ) {
+            if (isset($attributes['clss']) ) {
                 $attributes['class'] = $attributes['clss'];
                 unset($attributes['clss']);
             }
 
-            if ( ! empty( $attributes['content'] ) ) {
+            if (! empty($attributes['content']) ) {
                 $content = $attributes['content'];
-                unset( $attributes['content'] );    
+                unset($attributes['content']);    
             }
 
-            return "[mycred_link " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]" . $content . "[/mycred_link]";
+            return "[mycred_link " . mycred_blocks_functions::mycred_extract_attributes($attributes) . "]" . $content . "[/mycred_link]";
 
         }
 

@@ -666,7 +666,7 @@ class Invoice implements InvoiceInterface
     }
 
     /**
-     * @param void
+     * @param  void
      * @return
      */
     public function getBtcPaid()
@@ -688,7 +688,7 @@ class Invoice implements InvoiceInterface
     }
 
     /**
-     * @param void
+     * @param  void
      * @return Invoice
      */
     public function getRate()
@@ -717,7 +717,7 @@ class Invoice implements InvoiceInterface
         return $this->token;
     }
     /**
-     * @param TokenInterface $token
+     * @param  TokenInterface $token
      * @return InvoiceInterface
      */
     public function setToken(TokenInterface $token)

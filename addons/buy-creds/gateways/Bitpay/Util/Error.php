@@ -15,9 +15,9 @@ class Error
      * and args.
      * (PHP 4 >= 4.3.0, PHP 5)
      *
-     * @param bool
-     * @param bool
-     * @param int
+     * @param  bool
+     * @param  bool
+     * @param  int
      * @return array|void
      */
     final public function backtrace($print = false, $options = false, $limit = 0)
@@ -37,7 +37,7 @@ class Error
      * Returns NULL if there hasn't been an error yet.
      * (PHP 5 >= 5.2.0)
      *
-     * @param void
+     * @param  void
      * @return array
      */
     final public function last()
@@ -69,7 +69,7 @@ class Error
      * parameter is given.
      * (PHP 4, PHP 5)
      *
-     * @param bool
+     * @param  bool
      * @return int
      */
     final public function reporting($level = false)
@@ -98,32 +98,32 @@ class Error
             $error_types = E_ALL | E_STRICT;
         }
         switch (strtolower($type)) {
-            case 'error':
-                switch (strtolower($action)) {
-                    case 'restore':
-                        return restore_error_handler();
-                        break;
-                    case 'set':
-                        return set_error_handler($callable_handler, $error_types);
-                        break;
-                    default:
-                        return false;
-                }
-                break;
-            case 'exception':
-                switch (strtolower($action)) {
-                    case 'restore':
-                        return restore_exception_handler();
-                        break;
-                    case 'set':
-                        return set_exception_handler($callable_handler);
-                        break;
-                    default:
-                        return false;
-                }
-                break;
+        case 'error':
+            switch (strtolower($action)) {
+            case 'restore':
+                return restore_error_handler();
+                    break;
+            case 'set':
+                return set_error_handler($callable_handler, $error_types);
+                    break;
             default:
                 return false;
+            }
+            break;
+        case 'exception':
+            switch (strtolower($action)) {
+            case 'restore':
+                return restore_exception_handler();
+                    break;
+            case 'set':
+                return set_exception_handler($callable_handler);
+                    break;
+            default:
+                return false;
+            }
+            break;
+        default:
+            return false;
         }
     }
 
@@ -134,8 +134,8 @@ class Error
      * limited to 1024 bytes.
      * (PHP 4 >= 4.0.1, PHP 5)
      *
-     * @param string
-     * @param int
+     * @param  string
+     * @param  int
      * @return bool
      */
     final public function raise($error_msg, $error_type = E_USER_NOTICE)

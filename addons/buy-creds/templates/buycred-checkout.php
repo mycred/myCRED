@@ -1,25 +1,25 @@
 <?php get_header(); ?>
 
 <div id="buycred-checkout-page">
-	<div class="checkout-header">
+    <div class="checkout-header">
 
-		<?php buycred_checkout_title(); ?>
+        <?php buycred_checkout_title(); ?>
 
-	</div>
-	<div class="checkout-order">
+    </div>
+    <div class="checkout-order">
 
-		<form method="post" action="" id="buycred-checkout-form">
+        <form method="post" action="" id="buycred-checkout-form">
 
-			<?php buycred_checkout_body(); ?>
+            <?php buycred_checkout_body(); ?>
 
-		</form>
+        </form>
 
-	</div>
-	<div class="checkout-footer">
+    </div>
+    <div class="checkout-footer">
 
-		<?php buycred_checkout_footer(); ?>
+        <?php buycred_checkout_footer(); ?>
 
-	</div>
+    </div>
 </div>
 
 <?php get_footer(); ?>

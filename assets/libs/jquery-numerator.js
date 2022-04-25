@@ -37,15 +37,16 @@
         toValue: undefined,
         fromValue: undefined,
         queue: false,
-        onStart: function(){},
-        onStep: function(){},
-        onProgress: function(){},
-        onComplete: function(){}
+        onStart: function (){},
+        onStep: function (){},
+        onProgress: function (){},
+        onComplete: function (){}
     };
 
-    function Plugin ( element, options ) {
+    function Plugin( element, options )
+    {
         this.element = element;
-        this.settings = $.extend( {}, defaults, options );
+        this.settings = $.extend({}, defaults, options);
         this._defaults = defaults;
         this._name = pluginName;
         this.init();
@@ -64,37 +65,39 @@
             this.settings.fromValue = this.settings.fromValue || this.format(elText);
         },
 
-        setValue: function() {
+        setValue: function () {
             var self = this;
 
-            $({value: self.settings.fromValue}).animate({value: self.settings.toValue}, {
+            $({value: self.settings.fromValue}).animate(
+                {value: self.settings.toValue}, {
 
-                duration: parseInt(self.settings.duration, 10),
+                    duration: parseInt(self.settings.duration, 10),
 
-                easing: self.settings.easing,
+                    easing: self.settings.easing,
 
-                start: self.settings.onStart,
+                    start: self.settings.onStart,
 
-                step: function(now, fx) {
-                    $(self.element).text(self.format(now));
-                    // accepts two params - (now, fx)
-                    self.settings.onStep(now, fx);
-                },
+                    step: function (now, fx) {
+                        $(self.element).text(self.format(now));
+                        // accepts two params - (now, fx)
+                        self.settings.onStep(now, fx);
+                    },
 
-                // accepts three params - (animation object, progress ratio, time remaining(ms))
-                progress: self.settings.onProgress,
+                    // accepts three params - (animation object, progress ratio, time remaining(ms))
+                    progress: self.settings.onProgress,
 
-                complete: self.settings.onComplete
-            });
+                    complete: self.settings.onComplete
+                }
+            );
         },
 
-        format: function(value){
+        format: function (value) {
             var self = this;
 
-            if ( parseInt(this.settings.rounding ) < 1) {
+            if (parseInt(this.settings.rounding) < 1) {
                 value = parseInt(value, 10);
             } else {
-                value = parseFloat(value).toFixed( parseInt(this.settings.rounding) );
+                value = parseFloat(value).toFixed(parseInt(this.settings.rounding));
             }
 
             if (self.settings.delimiter) {
@@ -105,14 +108,14 @@
         },
 
         // TODO: Add comments to this function
-        delimit: function(value){
+        delimit: function (value) {
             var self = this;
 
             value = value.toString();
 
             if (self.settings.rounding && parseInt(self.settings.rounding, 10) > 0) {
-                var decimals = value.substring( (value.length - (self.settings.rounding + 1)), value.length ),
-                    wholeValue = value.substring( 0, (value.length - (self.settings.rounding + 1)));
+                var decimals = value.substring((value.length - (self.settings.rounding + 1)), value.length),
+                    wholeValue = value.substring(0, (value.length - (self.settings.rounding + 1)));
 
                 return self.addDelimiter(wholeValue) + decimals;
             } else {
@@ -120,18 +123,20 @@
             }
         },
 
-        addDelimiter: function(value){
+        addDelimiter: function (value) {
             return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, this.settings.delimiter);
         }
     };
 
     $.fn[ pluginName ] = function ( options ) {
-        return this.each(function() {
-            if ( $.data( this, "plugin_" + pluginName ) ) {
-                $.data(this, 'plugin_' + pluginName, null);
+        return this.each(
+            function () {
+                if ($.data(this, "plugin_" + pluginName) ) {
+                    $.data(this, 'plugin_' + pluginName, null);
+                }
+                $.data(this, "plugin_" + pluginName, new Plugin(this, options));
             }
-            $.data( this, "plugin_" + pluginName, new Plugin( this, options ) );
-        });
+        );
     };
 
 }));

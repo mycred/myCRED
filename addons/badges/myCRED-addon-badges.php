@@ -502,7 +502,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             }
 
-            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BADGE_KEY ) {
+            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( sanitize_key( $_GET['post'] ) ) == MYCRED_BADGE_KEY ) {
 
                 return MYCRED_MAIN_SLUG;
 
@@ -534,7 +534,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             }
 
-            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BADGE_KEY ) {
+            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( sanitize_key( $_GET['post'] ) ) == MYCRED_BADGE_KEY ) {
 
                 return 'edit.php?post_type=' . MYCRED_BADGE_KEY;
 
@@ -624,7 +624,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
                     echo '-';
 
                 elseif ( $badge->main_image !== false )
-                    echo $badge->main_image;
+                    echo wp_kses_post($badge->main_image);
 
             }
 
@@ -636,14 +636,14 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
                 if ( $badge->open_badge || $image === false )
                     echo '-';
                 else
-                    echo $image;
+                    echo wp_kses_post($image);
 
             }
 
             // Badge Requirements
             elseif ( $column_name == 'badge-reqs' ) {
 
-                echo mycred_display_badge_requirements( $badge_id );
+                echo wp_kses_post( mycred_display_badge_requirements( $badge_id ) );
 
             }
 
@@ -655,7 +655,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
                     echo 0;
 
                 else
-                    echo $badge->earnedby;
+                    echo esc_html( $badge->earnedby );
 
             }
 
@@ -664,7 +664,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
                 $badge = mycred_get_badge_type( $badge_id );
 
-                echo $badge == false ? 'No Acheivement Type' : $badge;
+                echo esc_html( $badge == false ? 'No Acheivement Type' : $badge );
 
             }
 
@@ -929,9 +929,9 @@ th#badge-users { width: 10%; }
 
                 <?php do_action( 'mycred_edit_badge_before_actions', $post ); ?>
 
-                <input type="hidden" name="mycred-badge-edit" value="<?php echo wp_create_nonce( 'edit-mycred-badge' ); ?>" />
-                <input type="button" id="mycred-assign-badge-connections"<?php if ( $manual_badge || $post->post_status != 'publish' ) echo ' disabled="disabled"'; ?> value="<?php _e( 'Assign Badge', 'mycred' ); ?>" class="button button-secondary mycred-badge-action-button" data-action="mycred-assign-badge" data-token="<?php echo wp_create_nonce( 'mycred-assign-badge' ); ?>" />
-                <input type="button" id="mycred-remove-badge-connections"<?php if ( $post->post_status != 'publish' ) echo ' disabled="disabled"'; ?> value="<?php _e( 'Remove Connections', 'mycred' ); ?>" class="button button-secondary mycred-badge-action-button" data-action="mycred-remove-connections" data-token="<?php echo wp_create_nonce( 'mycred-remove-badge-connection' ); ?>" />
+                <input type="hidden" name="mycred-badge-edit" value="<?php echo esc_attr( wp_create_nonce( 'edit-mycred-badge' ) ); ?>" />
+                <input type="button" id="mycred-assign-badge-connections"<?php if ( $manual_badge || $post->post_status != 'publish' ) echo ' disabled="disabled"'; ?> value="<?php esc_attr_e( 'Assign Badge', 'mycred' ); ?>" class="button button-secondary mycred-badge-action-button" data-action="mycred-assign-badge" data-token="<?php echo esc_attr( wp_create_nonce( 'mycred-assign-badge' ) ); ?>" />
+                <input type="button" id="mycred-remove-badge-connections"<?php if ( $post->post_status != 'publish' ) echo ' disabled="disabled"'; ?> value="<?php esc_attr_e( 'Remove Connections', 'mycred' ); ?>" class="button button-secondary mycred-badge-action-button" data-action="mycred-remove-connections" data-token="<?php echo esc_attr( wp_create_nonce( 'mycred-remove-badge-connection' ) ); ?>" />
 
                 <?php do_action( 'mycred_edit_badge_after_actions', $post ); ?>
 
@@ -947,7 +947,7 @@ th#badge-users { width: 10%; }
                                 data : {
                                     action   : button.attr( 'data-action' ),
                                     token    : button.attr( 'data-token' ),
-                                    badge_id : <?php echo $post->ID; ?>
+                                    badge_id : <?php echo esc_js( $post->ID ); ?>
                                 },
                                 dataType : "JSON",
                                 url : ajaxurl,
@@ -970,7 +970,7 @@ th#badge-users { width: 10%; }
 
             </div>
             <div id="mycred-manual-badge" class="seperate-bottom">
-                <label for="mycred-badge-is-manual"><input type="checkbox" name="mycred_badge[manual]" id="mycred-badge-is-manual"<?php if ( $manual_badge ) echo ' checked="checked"'; ?> value="1" /> <?php _e( 'This badge is manually awarded.', 'mycred' ); ?></label>
+                <label for="mycred-badge-is-manual"><input type="checkbox" name="mycred_badge[manual]" id="mycred-badge-is-manual" <?php checked( $manual_badge );?> value="1" /> <?php esc_html_e( 'This badge is manually awarded.', 'mycred' ); ?></label>
             </div>
             <?php
 
@@ -998,16 +998,16 @@ th#badge-users { width: 10%; }
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="default-image text-center seperate-bottom">
                         <div class="default-image-wrapper image-wrapper<?php if ( $default_image == '' ) echo ' empty dashicons'; ?>">
-                            <?php echo $default_image; ?>
+                            <?php echo wp_kses_post($default_image); ?>
                             <input type="hidden" name="mycred_badge[main_image]" id="badge-main-image-id" value="<?php if ( $attachment ) echo esc_attr( $di ); ?>" />
                             <input type="hidden" name="mycred_badge[main_image_url]" id="badge-main-image-url" value="<?php if ( $di != '' && strpos( '://', $di ) !== false ) echo esc_attr( $default_image ); ?>" />
                         </div>
                         <div class="level-image-actions">
-                            <button type="button" class="button button-secondary" id="badges-change-default-image" data-do="<?php if ( $default_image == '' ) echo 'set'; else echo 'change'; ?>"><?php if ( $default_image == '' ) _e( 'Set Image', 'mycred' ); else _e( 'Change Image', 'mycred' ); ?></button>
-                            <button type="button" class="button button-secondary <?php echo ( ( ! $attachment ) ? 'hidden' : '' ); ?>" id="badges-remove-default-image"><?php _e( 'Remove Image', 'mycred' ); ?></button>
+                            <button type="button" class="button button-secondary" id="badges-change-default-image" data-do="<?php if ( $default_image == '' ) echo 'set'; else echo 'change'; ?>"><?php if ( $default_image == '' ) esc_html_e( 'Set Image', 'mycred' ); else esc_html_e( 'Change Image', 'mycred' ); ?></button>
+                            <button type="button" class="button button-secondary <?php echo ( ( ! $attachment ) ? 'hidden' : '' ); ?>" id="badges-remove-default-image"><?php esc_html_e( 'Remove Image', 'mycred' ); ?></button>
                         </div>
                     </div>
-                    <span class="description"><?php _e( 'Optional image to show when a user has not earned this badge.', 'mycred' ); ?></span>
+                    <span class="description"><?php esc_html_e( 'Optional image to show when a user has not earned this badge.', 'mycred' ); ?></span>
                 </div>
             </div>
             <?php
@@ -1070,19 +1070,6 @@ th#badge-users { width: 10%; }
          * @version 1.2
          */
         public function metabox_badge_setup( $post ) {
-        
-                ?>
-
-            <style>
-
-                button.button.button-seconary.button-small.remove-badge-level {
-                    margin-bottom: 5px !important;
-                    margin-left: 94% !important;
-                }
-
-            </style>
-
-            <?php
 
             $badge       = mycred_get_badge( $post->ID );
             $references  = mycred_get_all_references();
@@ -1118,8 +1105,8 @@ th#badge-users { width: 10%; }
 
                     $level        = $level_counter;
 
-                    $add_level    = '<button type="button" class="button button-seconary button-small top-right-corner mt-2" id="badges-add-new-level">' . esc_js( __( 'Add Level', 'mycred' ) ) . '</button>';
-                    $remove_level = '<button type="button" class="button button-seconary button-small  remove-badge-level" data-level="{{level}}">' . esc_js( __( 'Remove Level', 'mycred' ) ) . '</button>';
+                    $add_level    = '<button type="button" class="button button-seconary button-small top-right-corner" id="badges-add-new-level">' . esc_js( __( 'Add Level', 'mycred' ) ) . '</button>';
+                    $remove_level = '<button type="button" class="button button-seconary button-small top-right-corner remove-badge-level" data-level="{{level}}">' . esc_js( __( 'Remove Level', 'mycred' ) ) . '</button>';
 
                     $level_image  = $this->get_level_image( $setup, $level );
                     $empty_level  = 'empty dashicons';

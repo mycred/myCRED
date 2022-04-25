@@ -34,8 +34,8 @@ class OpenSSLExtension implements CryptoInterface
      * used for point derivation or for generating signatures.
      * Only used for assymetric data encryption, as needed.
      *
-     * @param int
-     * @param string
+     * @param  int
+     * @param  string
      * @return array|boolean array of keys on success, boolean false on failure
      */
     final public function generateKeypair($keybits = 512, $digest_alg = 'sha512')
@@ -113,7 +113,7 @@ class OpenSSLExtension implements CryptoInterface
      * Generates a high-quality random number suitable for
      * use in cryptographic functions and returns hex value.
      *
-     * @param int
+     * @param  int
      * @return string|bool
      */
     final public function randomNumber($bytes = 32)
@@ -131,7 +131,7 @@ class OpenSSLExtension implements CryptoInterface
      * Returns the cipher length on success, or FALSE
      * on failure.  (PHP 5 >= PHP 5.3.3)
      *
-     * @param string
+     * @param  string
      * @return int|bool
      */
     final public function cypherIVLength($cypher = '')
@@ -145,9 +145,9 @@ class OpenSSLExtension implements CryptoInterface
      * the file named by $outfilename.
      * (PHP 4 >= 4.2.0, PHP 5)
      *
-     * @param resource
-     * @param string
-     * @param bool
+     * @param  resource
+     * @param  string
+     * @param  bool
      * @return bool
      */
     final public function saveCSRtoFile($csr, $outfilename, $notext = true)
@@ -165,9 +165,9 @@ class OpenSSLExtension implements CryptoInterface
      * $out, which is passed by reference.
      * (PHP 4 >= 4.2.0, PHP 5)
      *
-     * @param resource
-     * @param string
-     * @param bool
+     * @param  resource
+     * @param  string
+     * @param  bool
      * @return bool
      */
     final public function saveCSRtoString($csr, $out, $notext = true)
@@ -179,22 +179,21 @@ class OpenSSLExtension implements CryptoInterface
         return openssl_csr_export($csr, $out, $notext);
     }
      /**
-     *
-     * Encrypts $text based on your $key and $iv.  The returned text is
-     * base-64 encoded to make it easier to work with in various scenarios.
-     * Default cipher is AES-256-CBC but you can substitute depending
-     * on your specific encryption needs.
-     *
-     * @param  string    $text
-     * @param  string    $key
-     * @param  string    $iv
-     * @param  int       $bit_check
-     * @param  string    $cipher_type
-     * @return string    $text
-     * @throws Exception $e
-     *
-     */
-    public function encrypt($text, $key = '', $iv = '', $bit_check = 8, $cipher_type = 'AES-256-CBC') {
+      * Encrypts $text based on your $key and $iv.  The returned text is
+      * base-64 encoded to make it easier to work with in various scenarios.
+      * Default cipher is AES-256-CBC but you can substitute depending
+      * on your specific encryption needs.
+      *
+      * @param  string $text
+      * @param  string $key
+      * @param  string $iv
+      * @param  int    $bit_check
+      * @param  string $cipher_type
+      * @return string    $text
+      * @throws Exception $e
+      */
+    public function encrypt($text, $key = '', $iv = '', $bit_check = 8, $cipher_type = 'AES-256-CBC')
+    {
         try {
             if (function_exists('openssl_pkey_new')) {
                 /* Ensure the key & IV is the same for both encrypt & decrypt. */
@@ -221,22 +220,21 @@ class OpenSSLExtension implements CryptoInterface
     }
 
     /**
-     *
      * Decrypts $text based on your $key and $iv.  Make sure you use the same key
      * and initialization vector that you used when encrypting the $text. Default
      * cipher is AES-256-CBC but you can substitute depending on the cipher
      * used for encrypting the text - very important.
      *
-     * @param  string    $encrypted_text
-     * @param  string    $key
-     * @param  string    $iv
-     * @param  int       $bit_check
-     * @param  string    $cipher_type
+     * @param  string $encrypted_text
+     * @param  string $key
+     * @param  string $iv
+     * @param  int    $bit_check
+     * @param  string $cipher_type
      * @return string    $text
      * @throws Exception $e
-     *
      */
-    public function decrypt($encrypted_text, $key = '', $iv = '', $bit_check = 8, $cipher_type = 'AES-256-CBC') {
+    public function decrypt($encrypted_text, $key = '', $iv = '', $bit_check = 8, $cipher_type = 'AES-256-CBC')
+    {
         try {
             /* Ensure the key & IV is the same for both encrypt & decrypt. */
             if (!empty($encrypted_text)) {
