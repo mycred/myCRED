@@ -65,21 +65,21 @@ p.mycred-p { margin: 12px 0 0 0; }
 
 @media screen and (max-width: 782px) {
 
-	.balance-row { display: block; height: auto; line-height: 1.5em; font-size: 18px; }
-	.balance-row > div { height: auto; line-height: 42px; font-size: inherit; vertical-align: top; }
+    .balance-row { display: block; height: auto; line-height: 1.5em; font-size: 18px; }
+    .balance-row > div { height: auto; line-height: 42px; font-size: inherit; vertical-align: top; }
 
 }
 
 @media screen and (max-width: 520px) {
 
-	.mycred-wrapper.color-option { width: 100%; }
+    .mycred-wrapper.color-option { width: 100%; }
 
 
 }
 
 @media screen and (min-width: 1400px) {
 
-	.mycred-wrapper.color-option { width: 24% !important; }
+    .mycred-wrapper.color-option { width: 24% !important; }
 
 
 }

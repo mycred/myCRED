@@ -11,7 +11,7 @@ use Bitpay\Client;
 /**
  * For the most part this should conform to ISO 4217
  *
- * @see http://en.wikipedia.org/wiki/ISO_4217
+ * @see     http://en.wikipedia.org/wiki/ISO_4217
  * @package Bitpay
  */
 class Currency implements CurrencyInterface
@@ -86,7 +86,7 @@ class Currency implements CurrencyInterface
     protected $payoutFields;
 
     /**
-     * @param  string    $code The Currency Code to use, ie USD
+     * @param  string $code The Currency Code to use, ie USD
      * @throws Exception       Throws an exception if the Currency Code is not supported
      */
     public function __construct($code = null)
@@ -110,7 +110,7 @@ class Currency implements CurrencyInterface
     /**
      * This will change the $code to all uppercase
      *
-     * @param  string            $code The Currency Code to use, ie USD
+     * @param  string $code The Currency Code to use, ie USD
      * @throws Exception               Throws an exception if the Currency Code is not supported
      * @return CurrencyInterface
      */

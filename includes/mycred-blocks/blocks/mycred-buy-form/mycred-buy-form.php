@@ -1,14 +1,17 @@
 <?php
 namespace MG_Blocks;
 
-if ( ! defined('ABSPATH') ) exit;
+if (! defined('ABSPATH') ) { exit;
+}
 
-if ( ! class_exists('mycred_buy_form_block') ) :
-    class mycred_buy_form_block {
+if (! class_exists('mycred_buy_form_block') ) :
+    class mycred_buy_form_block
+    {
 
-        public function __construct() {
+        public function __construct()
+        {
 
-            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ));
 
             register_block_type( 
                 'mycred-gb-blocks/mycred-buy-form', 
@@ -17,7 +20,8 @@ if ( ! class_exists('mycred_buy_form_block') ) :
         
         }
 
-        public function register_assets() {
+        public function register_assets()
+        {
 
             wp_enqueue_script(
                 'mycred-buy-form', 
@@ -32,9 +36,10 @@ if ( ! class_exists('mycred_buy_form_block') ) :
 
         }
 
-        public function render_block( $attributes, $content ) {
+        public function render_block( $attributes, $content )
+        {
 
-            return "[mycred_buy_form " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]";
+            return "[mycred_buy_form " . mycred_blocks_functions::mycred_extract_attributes($attributes) . "]";
 
         }
 

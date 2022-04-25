@@ -35,7 +35,7 @@ class McryptExtension implements CryptoInterface
      * on failure.  If no IV is needed for the cipher type and mode,
      * a zero is returned.
      *
-     * @param  string   $cipher_type
+     * @param  string $cipher_type
      * @return int|bool
      */
     public function getIVSize($cipher_type = MCRYPT_TRIPLEDES)
@@ -73,7 +73,7 @@ class McryptExtension implements CryptoInterface
      * returns either boolean true/false depending on if the self-test passed
      * or failed.
      *
-     * @param  string  $cipher_type
+     * @param  string $cipher_type
      * @return boolean
      */
     public function algoSelfTest($cipher_type = MCRYPT_TRIPLEDES)
@@ -82,20 +82,18 @@ class McryptExtension implements CryptoInterface
     }
 
     /**
-     *
      * Encrypts $text based on your $key and $iv.  The returned text is
      * base-64 encoded to make it easier to work with in various scenarios.
      * Default cipher is MCRYPT_TRIPLEDES but you can substitute depending
      * on your specific encryption needs.
      *
-     * @param  string    $text
-     * @param  string    $key
-     * @param  string    $iv
-     * @param  int       $bit_check
-     * @param  string    $cipher_type
+     * @param  string $text
+     * @param  string $key
+     * @param  string $iv
+     * @param  int    $bit_check
+     * @param  string $cipher_type
      * @return string    $text
      * @throws Exception $e
-     *
      */
     public function encrypt($text, $key = '', $iv = '', $bit_check = 8, $cipher_type = MCRYPT_TRIPLEDES)
     {
@@ -127,20 +125,18 @@ class McryptExtension implements CryptoInterface
     }
 
     /**
-     *
      * Decrypts $text based on your $key and $iv.  Make sure you use the same key
      * and initialization vector that you used when encrypting the $text. Default
      * cipher is MCRYPT_TRIPLEDES but you can substitute depending on the cipher
      * used for encrypting the text - very important.
      *
-     * @param  string    $encrypted_text
-     * @param  string    $key
-     * @param  string    $iv
-     * @param  int       $bit_check
-     * @param  string    $cipher_type
+     * @param  string $encrypted_text
+     * @param  string $key
+     * @param  string $iv
+     * @param  int    $bit_check
+     * @param  string $cipher_type
      * @return string    $text
      * @throws Exception $e
-     *
      */
     public function decrypt($encrypted_text, $key = '', $iv = '', $bit_check = 8, $cipher_type = MCRYPT_TRIPLEDES)
     {

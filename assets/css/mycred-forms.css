@@ -29,7 +29,7 @@
 .mycred-metabox .top-right-corner { position: absolute; top: 0; right: 12px; }
 .seperate-bottom { padding-bottom: 12px; border-bottom: 1px solid #ddd; margin-bottom: 12px; }
 .mycred-metabox .padd-bottom { padding-bottom: 12px; }
-.mycred-metabox .badge-level { padding-bottom: 12px; border-bottom: 1px solid #ddd; margin-bottom: 12px; }
+.mycred-metabox .badge-level { padding-bottom: 12px; border-bottom: 1px solid #ddd; margin-bottom: 12px; position: relative; }
 .mycred-metabox .badge-level:last-child { padding-bottom: 0; border-bottom: none; margin-bottom: 0; }
 .mycred-metabox .image-wrapper { width: 100%; min-height: 114px; padding-bottom: 12px; }
 .mycred-metabox .image-wrapper.empty:before { display: block; margin: 0 auto; width: 90%; height: 100px; line-height: 100px; text-align: center; border: 2px dashed #ddd; color: #ddd; content: "\f128"; }
@@ -65,7 +65,7 @@
 }
 .mycred-align-option .mycred-radio-list li{
     display: inline-block;
-    padding-right: 25px;
+    padding-right: 20px;
 }
 .mycred-align-option .mycred-radio-list input:checked+label svg {
     border-color: #1e8cbe;
@@ -86,7 +86,7 @@
 }
 .mycred-layout-option .mycred-radio-list li{
     display: inline-block;
-    padding-right: 25px;
+    padding-right: 20px;
 }
 .mycred-layout-option .mycred-radio-list input:checked+label svg {
     border-color: #1e8cbe;

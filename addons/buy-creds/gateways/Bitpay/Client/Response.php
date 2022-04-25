@@ -52,7 +52,7 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @param string $rawResponse
+     * @param  string $rawResponse
      * @return Response
      */
     public static function createFromRawResponse($rawResponse)

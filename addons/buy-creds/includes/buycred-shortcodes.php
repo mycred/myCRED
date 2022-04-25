@@ -77,7 +77,7 @@ if ( ! function_exists( 'mycred_render_buy_points' ) ) :
 		if ( empty( $classes ) || ! in_array( 'mycred-buy-link', $classes ) )
 			$classes[] = 'mycred-buy-link';
 
-		$current_url        = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+		$current_url        = set_url_scheme( sanitize_url('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) );
 		if ( is_ssl() )
 			$current_url = str_replace( 'http://', 'https://', $current_url );
 

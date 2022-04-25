@@ -8,7 +8,7 @@ namespace Bitpay\Storage;
 
 /**
  * @codeCoverageIgnore
- * @package Bitcore
+ * @package            Bitcore
  */
 class MockStorage implements StorageInterface
 {

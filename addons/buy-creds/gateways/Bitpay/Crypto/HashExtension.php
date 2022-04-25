@@ -36,7 +36,7 @@ class HashExtension implements CryptoInterface
      * Copy a hashing context.
      * (PHP 5 >= 5.3.0)
      *
-     * @param resource
+     * @param  resource
      * @return resource
      */
     final public function copy($context)
@@ -77,9 +77,9 @@ class HashExtension implements CryptoInterface
      * the message digest is returned.
      * (PHP 5 >= 5.1.2, PECL hash >= 1.1)
      *
-     * @param string
-     * @param string
-     * @param bool
+     * @param  string
+     * @param  string
+     * @param  bool
      * @return string
      */
     public function file($algorithm, $filename, $raw_output = false)
@@ -92,8 +92,8 @@ class HashExtension implements CryptoInterface
      * resulting digest.
      * (PHP 5 >= 5.1.2, PECL hash >= 1.1)
      *
-     * @param resource
-     * @param bool
+     * @param  resource
+     * @param  bool
      * @return string
      */
     public function finalize($context, $raw_output = false)
@@ -110,10 +110,10 @@ class HashExtension implements CryptoInterface
      * method and the contents of a given file.
      * (PHP 5 >= 5.1.2, PECL hash >= 1.1)
      *
-     * @param string
-     * @param string
-     * @param string
-     * @param bool
+     * @param  string
+     * @param  string
+     * @param  string
+     * @param  bool
      * @return string
      */
     public function hmacFile($algorithm, $filename, $key, $raw_output = false)
@@ -126,10 +126,10 @@ class HashExtension implements CryptoInterface
      * method and the message passed via $data.
      * (PHP 5 >= 5.1.2, PECL hash >= 1.1)
      *
-     * @param string
-     * @param string
-     * @param string
-     * @param bool
+     * @param  string
+     * @param  string
+     * @param  string
+     * @param  bool
      * @return string
      */
     public function hmac($algo, $data, $key, $raw_output = false)
@@ -146,9 +146,9 @@ class HashExtension implements CryptoInterface
      * this is specified, the key *must* be used as well.
      * (PHP 5 >= 5.1.2, PECL hash >= 1.1)
      *
-     * @param string
-     * @param int
-     * @param string
+     * @param  string
+     * @param  int
+     * @param  string
      * @return resource
      */
     public function init($algorithm, $options = 0, $key = null)
@@ -166,12 +166,12 @@ class HashExtension implements CryptoInterface
      * randomly with openssl_ramdom_pseudo_bytes().
      * (PHP 5 >= 5.5.0)
      *
-     * @param string
-     * @param string
-     * @param string
-     * @param int
-     * @param int
-     * @param bool
+     * @param  string
+     * @param  string
+     * @param  string
+     * @param  int
+     * @param  int
+     * @param  bool
      * @return string
      */
     public function pbkdf2($algo, $password, $salt, $iterations, $length = 0, $raw_output = false)
@@ -185,9 +185,9 @@ class HashExtension implements CryptoInterface
      * FALSE on failure.
      * (PHP 5 >= 5.1.2, PECL hash >= 1.1)
      *
-     * @param resource
-     * @param string
-     * @param resource
+     * @param  resource
+     * @param  string
+     * @param  resource
      * @return bool
      */
     public function updateFile($hcontext, $filename, $scontext = null)
@@ -206,9 +206,9 @@ class HashExtension implements CryptoInterface
      * context from handle.
      * (PHP 5 >= 5.1.2, PECL hash >= 1.1)
      *
-     * @param resource
-     * @param resource
-     * @param int
+     * @param  resource
+     * @param  resource
+     * @param  int
      * @return int
      */
     public function updateStream($context, $handle, $length = -1)
@@ -225,8 +225,8 @@ class HashExtension implements CryptoInterface
      * The PHP function itself only returns true.
      * (PHP 5 >= 5.1.2, PECL hash >= 1.1)
      *
-     * @param resource
-     * @param string
+     * @param  resource
+     * @param  string
      * @return bool
      */
     public function update($context, $data)
@@ -245,9 +245,9 @@ class HashExtension implements CryptoInterface
      * $raw_output param is set to true.
      * (PHP 5 >= 5.1.2, PECL hash >= 1.1)
      *
-     * @param string
-     * @param string
-     * @param bool
+     * @param  string
+     * @param  string
+     * @param  bool
      * @return string
      */
     public function generate($algo, $data, $raw_output = false)

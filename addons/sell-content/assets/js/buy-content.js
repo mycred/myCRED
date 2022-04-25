@@ -1,73 +1,82 @@
 /**
  * myCRED Sell Content
- * @since 1.1
+ *
+ * @since   1.1
  * @version 1.2
  */
-(function($) {
+(function ($) {
 
-	var buying = false;
+    var buying = false;
 
-	$( '.mycred-sell-this-wrapper' ).on( 'click', '.mycred-buy-this-content-button', function(){
+    $('.mycred-sell-this-wrapper').on(
+        'click', '.mycred-buy-this-content-button', function () {
 
-		if ( buying === true ) return false;
+            if (buying === true ) { return false;
+            }
 
-		buying = true;
+            buying = true;
 
-		var button      = $(this);
-		var post_id     = button.data( 'pid' );
-		var point_type  = button.data( 'type' );
-		var buttonlabel = button.html();
-		var content_for_sale = $( '#mycred-buy-content' + post_id );
+            var button      = $(this);
+            var post_id     = button.data('pid');
+            var point_type  = button.data('type');
+            var buttonlabel = button.html();
+            var content_for_sale = $('#mycred-buy-content' + post_id);
 
-		$.ajax({
-			type : "POST",
-			data : {
-				action    : 'mycred-buy-content',
-				token     : myCREDBuyContent.token,
-				postid    : post_id,
-				ctype     : point_type
-			},
-			dataType   : "JSON",
-			url        : myCREDBuyContent.ajaxurl,
-			beforeSend : function() {
+            $.ajax(
+                {
+                    type : "POST",
+                    data : {
+                        action    : 'mycred-buy-content',
+                        token     : myCREDBuyContent.token,
+                        postid    : post_id,
+                        ctype     : point_type
+                    },
+                    dataType   : "JSON",
+                    url        : myCREDBuyContent.ajaxurl,
+                    beforeSend : function () {
 
-				button.attr( 'disabled', 'disabled' ).html( myCREDBuyContent.working );
+                          button.attr('disabled', 'disabled').html(myCREDBuyContent.working);
 
-			},
-			success    : function( response ) {
+                    },
+                    success    : function ( response ) {
 
-				if ( response.success === undefined || ( response.success === true && myCREDBuyContent.reload === '1' ) )
-					location.reload();
+                        if (response.success === undefined || ( response.success === true && myCREDBuyContent.reload === '1' ) ) {
+                            location.reload();
 
-				else {
+                        } else {
 
-					if ( response.success ) {
-						content_for_sale.fadeOut(function(){
-							content_for_sale.removeClass( 'mycred-sell-this-wrapper mycred-sell-entire-content mycred-sell-partial-content' ).empty().append( response.data ).fadeIn();
-						});
-					}
+                            if (response.success ) {
+                                content_for_sale.fadeOut(
+                                    function () {
+                                        content_for_sale.removeClass('mycred-sell-this-wrapper mycred-sell-entire-content mycred-sell-partial-content').empty().append(response.data).fadeIn();
+                                    }
+                                );
+                            }
 
-					else {
+                            else {
 
-						button.removeAttr( 'disabled' ).html( buttonlabel );
+                                button.removeAttr('disabled').html(buttonlabel);
 
-						if ( response.data != '' )
-							alert( response.data );
+                                if (response.data != '' ) {
+                                    alert(response.data);
+                                }
 
-					}
+                            }
 
-				}
+                        }
 
-				console.log( response );
+                        console.log(response);
 
-			},
-			complete : function(){
+                    },
+                    complete : function () {
 
-				buying = false;
+                        buying = false;
 
-			}
-		});
+                    }
+                }
+            );
 
-	});
+        }
+    );
 
-})( jQuery );
+})(jQuery);

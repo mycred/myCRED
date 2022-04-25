@@ -13,7 +13,7 @@ use Bitpay\Math\Math;
 
 /**
  * @package Bitcore
- * @see https://en.bitcoin.it/wiki/List_of_address_prefixes
+ * @see     https://en.bitcoin.it/wiki/List_of_address_prefixes
  */
 class PrivateKey extends Key
 {
@@ -191,8 +191,8 @@ class PrivateKey extends Key
      * 0x30 + size(all) + 0x02 + size(r) + r + 0x02 + size(s) + s
      * http://www.itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf
      *
-     * @param string
-     * @param string
+     * @param  string
+     * @param  string
      * @return string
      */
     public static function serializeSig($r, $s)
@@ -304,7 +304,7 @@ class PrivateKey extends Key
     /**
      * Encodes keypair data to PEM format.
      *
-     * @param  array  $keypair The keypair info.
+     * @param  array $keypair The keypair info.
      * @return string          The data to decode.
      */
     public function pemEncode($keypair)

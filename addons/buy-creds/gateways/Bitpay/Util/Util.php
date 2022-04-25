@@ -219,7 +219,7 @@ class Util
      *
      * @see http://php.net/manual/en/function.decbin.php but for large numbers
      *
-     * @param string
+     * @param  string
      * @return string
      */
     public static function decToBin($dec)
@@ -252,8 +252,8 @@ class Util
      *   xR = s2 - 2xP mod p
      *   yR = -yP + s(xP - xR) mod p
      *
-     * @param  PointInterface $point
-     * @param CurveParameterInterface
+     * @param  PointInterface          $point
+     * @param  CurveParameterInterface
      * @return PointInterface
      */
     public static function pointDouble(PointInterface $point, CurveParameterInterface $parameters = null)
@@ -305,16 +305,16 @@ class Util
     }
 
         /**
-     * Point addition method P + Q = R where:
-     *   s = (yP - yQ)/(xP - xQ) mod p
-     *   xR = s2 - xP - xQ mod p
-     *   yR = -yP + s(xP - xR) mod p
-     *
-     * @param PointInterface
-     * @param PointInterface
-     *
-     * @return PointInterface
-     */
+         * Point addition method P + Q = R where:
+         *   s = (yP - yQ)/(xP - xQ) mod p
+         *   xR = s2 - xP - xQ mod p
+         *   yR = -yP + s(xP - xR) mod p
+         *
+         * @param PointInterface
+         * @param PointInterface
+         *
+         * @return PointInterface
+         */
     public static function pointAdd(PointInterface $P, PointInterface $Q)
     {
         if ($P->isInfinity()) {

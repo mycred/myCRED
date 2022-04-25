@@ -41,7 +41,7 @@ class SinKey extends Key
     }
 
     /**
-     * @param PublicKey
+     * @param  PublicKey
      * @return SinKey
      */
     public function setPublicKey(PublicKey $publicKey)

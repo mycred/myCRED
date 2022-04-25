@@ -1,27 +1,31 @@
 <?php
-if ( ! defined( 'myCRED_VERSION' ) ) exit;
+if (! defined('myCRED_VERSION') ) { exit;
+}
 
 /**
  * Query Statistics
- * @see http://codex.mycred.me/classes/mycred_query_stats/ 
- * @since 1.7
+ *
+ * @see     http://codex.mycred.me/classes/mycred_query_stats/ 
+ * @since   1.7
  * @version 1.0
  */
-if ( ! class_exists( 'myCRED_Query_Stats' ) ) :
-	class myCRED_Query_Stats {
+if (! class_exists('myCRED_Query_Stats') ) :
+    class myCRED_Query_Stats
+    {
 
-		protected $db = '';
+        protected $db = '';
 
-		/**
-		 * Construct
-		 */
-		public function __construct() {
+        /**
+         * Construct
+         */
+        public function __construct()
+        {
 
-			global $mycred;
+            global $mycred;
 
-			$this->db = $mycred->log_table;
+            $this->db = $mycred->log_table;
 
-		}
+        }
 
-	}
+    }
 endif;

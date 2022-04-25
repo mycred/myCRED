@@ -246,7 +246,7 @@ interface InvoiceInterface
      * characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getItemDesc();
 
@@ -255,7 +255,7 @@ interface InvoiceInterface
      * length is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getItemCode();
 
@@ -265,7 +265,7 @@ interface InvoiceInterface
      * ● false: Indicates that nothing is to be shipped for this order
      *
      * @deprecated
-     * @return boolean
+     * @return     boolean
      */
     public function isPhysical();
 
@@ -274,7 +274,7 @@ interface InvoiceInterface
      * if provided. Maximum string length of each field is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getBuyerName();
 
@@ -283,7 +283,7 @@ interface InvoiceInterface
      * if provided. Maximum string length of each field is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getBuyerAddress1();
 
@@ -292,7 +292,7 @@ interface InvoiceInterface
      * if provided. Maximum string length of each field is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getBuyerAddress2();
 
@@ -301,7 +301,7 @@ interface InvoiceInterface
      * if provided. Maximum string length of each field is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getBuyerCity();
 
@@ -310,7 +310,7 @@ interface InvoiceInterface
      * if provided. Maximum string length of each field is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getBuyerState();
 
@@ -319,7 +319,7 @@ interface InvoiceInterface
      * if provided. Maximum string length of each field is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getBuyerZip();
 
@@ -328,7 +328,7 @@ interface InvoiceInterface
      * if provided. Maximum string length of each field is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getBuyerCountry();
 
@@ -337,7 +337,7 @@ interface InvoiceInterface
      * if provided. Maximum string length of each field is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getBuyerEmail();
 
@@ -346,7 +346,7 @@ interface InvoiceInterface
      * if provided. Maximum string length of each field is 100 characters.
      *
      * @deprecated
-     * @return string
+     * @return     string
      */
     public function getBuyerPhone();
 

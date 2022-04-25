@@ -28,33 +28,33 @@ class Configuration implements ConfigurationInterface
         $rootNode    = $treeBuilder->root('bitpay');
         $rootNode
             ->children()
-                ->scalarNode('public_key')
-                    ->info('Public Key Filename')
-                    ->defaultValue(getenv('HOME').'/.bitpay/api.pub')
-                ->end()
-                ->scalarNode('private_key')
-                    ->info('Private Key Filename')
-                    ->defaultValue(getenv('HOME').'/.bitpay/api.key')
-                ->end()
-                ->scalarNode('sin_key')
-                    ->info('Private Key Filename')
-                    ->defaultValue(getenv('HOME').'/.bitpay/api.sin')
-                ->end()
-                ->enumNode('network')
-                    ->values(array('livenet', 'testnet'))
-                    ->info('Network')
-                    ->defaultValue('livenet')
-                ->end()
-                ->enumNode('adapter')
-                    ->values(array('curl', 'mock'))
-                    ->info('Client Adapter')
-                    ->defaultValue('curl')
-                ->end()
-                ->append($this->addKeyStorageNode())
-                ->scalarNode('key_storage_password')
-                    ->info('Used to encrypt and decrypt keys when saving to filesystem')
-                    ->defaultNull()
-                ->end()
+            ->scalarNode('public_key')
+            ->info('Public Key Filename')
+            ->defaultValue(getenv('HOME').'/.bitpay/api.pub')
+            ->end()
+            ->scalarNode('private_key')
+            ->info('Private Key Filename')
+            ->defaultValue(getenv('HOME').'/.bitpay/api.key')
+            ->end()
+            ->scalarNode('sin_key')
+            ->info('Private Key Filename')
+            ->defaultValue(getenv('HOME').'/.bitpay/api.sin')
+            ->end()
+            ->enumNode('network')
+            ->values(array('livenet', 'testnet'))
+            ->info('Network')
+            ->defaultValue('livenet')
+            ->end()
+            ->enumNode('adapter')
+            ->values(array('curl', 'mock'))
+            ->info('Client Adapter')
+            ->defaultValue('curl')
+            ->end()
+            ->append($this->addKeyStorageNode())
+            ->scalarNode('key_storage_password')
+            ->info('Used to encrypt and decrypt keys when saving to filesystem')
+            ->defaultNull()
+            ->end()
             ->end();
 
         return $treeBuilder;
@@ -76,8 +76,9 @@ class Configuration implements ConfigurationInterface
             ->info('Class that is used to store your keys')
             ->defaultValue('Bitpay\Storage\EncryptedFilesystemStorage')
             ->validate()
-                ->always()
-                ->then(function ($value) {
+            ->always()
+            ->then(
+                function ($value) {
                     if (!class_exists($value)) {
                         throw new \Exception(
                             sprintf(
@@ -98,7 +99,8 @@ class Configuration implements ConfigurationInterface
                     }
 
                     return $value;
-                })
+                }
+            )
             ->end();
 
         return $node;

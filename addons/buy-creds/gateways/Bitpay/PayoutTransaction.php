@@ -8,6 +8,7 @@ namespace Bitpay;
 
 /**
  * Class PayoutTransaction
+ *
  * @package Bitpay
  */
 class PayoutTransaction implements PayoutTransactionInterface
@@ -37,7 +38,8 @@ class PayoutTransaction implements PayoutTransactionInterface
 
     /**
      * Set transaction ID for payout.
-     * @param $txid
+     *
+     * @param  $txid
      * @return $this
      */
     public function setTransactionId($txid)
@@ -59,7 +61,8 @@ class PayoutTransaction implements PayoutTransactionInterface
 
     /**
      * Set the amount of bitcoin paid in the paout.
-     * @param $amount
+     *
+     * @param  $amount
      * @return $this
      */
     public function setAmount($amount)
@@ -81,7 +84,8 @@ class PayoutTransaction implements PayoutTransactionInterface
 
     /**
      * Set the date and time of when the payment was sent.
-     * @param $date
+     *
+     * @param  $date
      * @return $this
      */
     public function setDate($date)

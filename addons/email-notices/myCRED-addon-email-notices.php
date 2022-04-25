@@ -377,8 +377,10 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 					if ( empty( $email->last_run ) )
 						echo '<p><strong>' . __( 'Active', 'mycred' ) . '</strong></p>';
-					else
-						echo '<p>' . sprintf( '<strong>%s</strong> %s', __( 'Active - Last run', 'mycred' ), date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), $email->last_run ) ) . '</p>';
+					else {
+						$allowed_html = [ 'strong' => [] ];
+						echo '<p>' . wp_kses( sprintf( '<strong>%s</strong> %s', __( 'Active - Last run', 'mycred' ), date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), $email->last_run ) ), $allowed_html ) . '</p>';
+					}
 
 				}
 
@@ -414,7 +416,12 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				else
 					$description[] = sprintf( '<strong>%s:</strong> %s', __( 'Recipient', 'mycred' ), __( 'Both', 'mycred' ) );
 
-				echo '<p>' . implode( '<br />', $description ) . '</p>';
+				$allowed_html = [
+				    'br'     => [],
+				    'strong' => []
+				];
+
+				echo '<p>' . wp_kses( implode( '<br />', $description ), $allowed_html ) . '</p>';
 
 			}
 
@@ -422,15 +429,15 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			elseif ( $column_name == 'mycred-email-ctype' ) {
 
 				echo '<p>';
-				if ( empty( $email->point_types ) )
-					_e( 'No point types selected', 'mycred' );
-
+				if ( empty( $email->point_types ) ) {
+					esc_html_e( 'No point types selected', 'mycred' );
+				}
 				else {
 					$types = array();
 					foreach ( $email->point_types as $type_key ) {
 						$types[] = $this->point_types[ $type_key ];
 					}
-					echo implode( ', ', $types );
+					echo esc_html( implode( ', ', $types ) );
 				}
 				echo '</p>';
 
@@ -933,7 +940,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				else {
 
 					$reference_list   = array();
-					$custom_reference = explode( ',', $_POST['mycred_email']['custom_reference'] );
+					$custom_reference = explode( ',', sanitize_text_field( $_POST['mycred_email']['custom_reference'] ) );
 
 					foreach ( $custom_reference as $reference_id ) {
 
@@ -970,14 +977,16 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			// Point Types
 			if ( array_key_exists( 'ctype', $_POST['mycred_email'] ) && ! empty( $_POST['mycred_email']['ctype'] ) ) {
 
-				$checked_types = ( isset( $_POST['mycred_email']['ctype'] ) ) ? $_POST['mycred_email']['ctype'] : array();
-				if ( ! empty( $checked_types ) ) {
-					foreach ( $checked_types as $type_key ) {
+				if ( isset( $_POST['mycred_email']['ctype'] ) && is_array( $_POST['mycred_email']['ctype'] ) ) {
+					
+					foreach ( $_POST['mycred_email']['ctype'] as $type_key ) {
 						$type_key = sanitize_key( $type_key );
 						if ( mycred_point_type_exists( $type_key ) && ! in_array( $type_key, $point_types ) )
 							$point_types[] = $type_key;
 					}
+				
 				}
+
 				mycred_update_post_meta( $post_id, 'mycred_email_ctype', $point_types );
 
 			}

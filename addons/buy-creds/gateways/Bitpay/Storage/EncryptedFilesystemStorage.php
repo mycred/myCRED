@@ -53,13 +53,15 @@ class EncryptedFilesystemStorage implements StorageInterface
     {
         $path    = $key->getId();
         $data    = serialize($key);
-        $encoded = bin2hex(openssl_encrypt(
-            $data,
-            self::METHOD,
-            $this->password,
-            1,
-            self::IV
-        ));
+        $encoded = bin2hex(
+            openssl_encrypt(
+                $data,
+                self::METHOD,
+                $this->password,
+                1,
+                self::IV
+            )
+        );
 
         file_put_contents($path, $encoded);
     }

@@ -47,7 +47,7 @@ abstract class Key extends Point implements KeyInterface
     /**
      * Returns a new instance of self.
      *
-     * @param string $id
+     * @param  string $id
      * @return \Bitpay\KeyInterface
      */
     public static function create($id = null)
