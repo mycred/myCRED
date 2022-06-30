@@ -1,17 +1,14 @@
 <?php
 namespace MG_Blocks;
 
-if (! defined('ABSPATH') ) { exit;
-}
+if ( ! defined('ABSPATH') ) exit;
 
-if (! class_exists('mycred_buy_block') ) :
-    class mycred_buy_block
-    {
+if ( ! class_exists('mycred_buy_block') ) :
+    class mycred_buy_block {
 
-        public function __construct()
-        {
+        public function __construct() {
 
-            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ));
+            add_action('enqueue_block_editor_assets', array( $this, 'register_assets' ) );
 
             register_block_type( 
                 'mycred-gb-blocks/mycred-buy', 
@@ -20,8 +17,7 @@ if (! class_exists('mycred_buy_block') ) :
         
         }
 
-        public function register_assets()
-        {
+        public function register_assets() {
 
             wp_enqueue_script(
                 'mycred-buy', 
@@ -40,24 +36,23 @@ if (! class_exists('mycred_buy_block') ) :
                 $gateways[$gateway['title']] = $gateway_id;
             }
 
-            wp_localize_script('mycred-buy', 'mycred_buy', $gateways);
+            wp_localize_script( 'mycred-buy', 'mycred_buy', $gateways );
 
         }
 
-        public function render_block( $attributes, $content )
-        {
+        public function render_block( $attributes, $content ) {
 
-            if (! empty($attributes['clss']) ) {
+            if ( ! empty( $attributes['clss'] ) ) {
                 $attributes['class'] = $attributes['clss'];
                 unset($attributes['clss']);
             }
 
-            if (! empty($attributes['link_title']) ) {
+            if ( ! empty( $attributes['link_title'] ) ) {
                 $content = $attributes['link_title'];
                 unset($attributes['link_title']);
             }
 
-            return "[mycred_buy " . mycred_blocks_functions::mycred_extract_attributes($attributes) . "]" . $content . "[/mycred_buy]";
+            return "[mycred_buy " . mycred_blocks_functions::mycred_extract_attributes( $attributes ) . "]" . $content . "[/mycred_buy]";
 
         }
 

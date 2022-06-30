@@ -240,18 +240,18 @@ ul.filter-fields-list li input[type="text"] {
 margin-top: 13px;
  }
 .filter-fields-list .mycred-select-option {
-        display: inline-block;
-        margin-top: 18px;
-        min-width: 125px;
-        max-width: 109px;
-        float: left;
+		display: inline-block;
+		margin-top: 18px;
+		min-width: 125px;
+		max-width: 109px;
+		float: left;
 }
 .mycred-tab-content a{
-    text-decoration: none;
+	text-decoration: none;
 }
 .correct-app-id
 {
-    border: #01ab01 solid 1px!important;
+	border: #01ab01 solid 1px!important;
 }
 .incorrect-app-id
 {
@@ -259,16 +259,16 @@ border: #dc3232 solid 1px!important;
 }
 small.response_message {
     color: red;
-    display: none;
+	display: none;
 }
 .mycred-tab-content li.sortable-item.ui-sortable-handle {
     background-color: whitesmoke;
     padding-bottom: 8px;
     padding-right: 10px;
     padding-left: 8px;
-    border: 1px solid #dadada;
-    
-         
+	border: 1px solid #dadada;
+	
+		 
 }
 .mycred-tab-content li.sortable-item i.mycred-social-icon-bars {
     cursor: all-scroll;
@@ -287,45 +287,45 @@ box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.2);
 
 .my_cred_follow_button_input_field
 {
-     display: inline-block;
-     width: 78%;
+	 display: inline-block;
+	 width: 78%;
 }
 .mycred_share_width_fix .my_cred_follow_button_input_field .mycred-social-custom-fields
 {
-    width: 100%;
+	width: 100%;
 }
 
 .mycred-tab-content.admin-mycred  a.mycred-social-icon-pinterest.i-text-admin:hover:after,
 a.i-text-admin.mycred-social-icon-pinterest:hover:after {
-    content: "Pinterest";
+	content: "Pinterest";
 }
 .mycred-tab-content.admin-mycred  a.mycred-social-icon-facebook.i-text-admin:hover:after,
 a.mycred-social-icon-facebook.i-text-admin:hover:after {
-    content: "Facebook";
+	content: "Facebook";
 }
 .mycred-tab-content.admin-mycred  a.mycred-social-icon-twitter.i-text-admin:hover:after,
 a.mycred-social-icon-twitter.i-text-admin:hover:after {
-    content: "Twitter";
+	content: "Twitter";
 }
 .mycred-tab-content.admin-mycred  a.mycred-social-icon-linkedin.i-text-admin:hover:after,
 a.mycred-social-icon-linkedin.i-text-admin:hover:after {
-    content: "Linkedin";
+	content: "Linkedin";
 }
 .mycred-tab-content.admin-mycred  a.mycred-social-icon-youtube.i-text-admin:hover:after,
 a.mycred-social-icon-youtube.i-text-admin:hover:after {
-    content: "Youtube";
+	content: "Youtube";
 }
 .mycred-tab-content.admin-mycred  a.mycred-social-icon-twitch.i-text-admin:hover:after,
 a.mycred-social-icon-twitch.i-text-admin:hover:after {
-    content: "Twitch";
+	content: "Twitch";
 }
 .mycred-tab-content.admin-mycred  a.mycred-social-icon-instagram.i-text-admin:hover:after,
 a.mycred-social-icon-instagram.i-text-admin:hover:after {
     content: "Instagram";
 }
 .mycred-social-wrapper button a:focus{
-    color: #fff;
-    -webkit-box-shadow: none;
+	color: #fff;
+	-webkit-box-shadow: none;
     box-shadow: none;
 }
 .mycred-social-wrapper a {
@@ -342,10 +342,10 @@ a.mycred-social-icon-instagram.i-text-admin:hover:after {
     padding: 5px;
     color: #7c7c7c;
     border: 1px solid #f5da87;
-}    
+}	
 
 .mycred-social-wrapper a.social-share button{
-    padding: 10px 15px;
+	padding: 10px 15px;
     font-size: 18px;
     text-align: center;
     border: 0px;
@@ -354,8 +354,8 @@ a.mycred-social-icon-instagram.i-text-admin:hover:after {
 
 @media (max-width:768px) {
     .mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-pinterest ,.mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-facebook,
-    .mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-twitter ,.mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-linkedin,
-    .mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-twitch ,.mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-youtube, .mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-instagram {
+	.mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-twitter ,.mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-linkedin,
+	.mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-twitch ,.mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-youtube, .mycred-social-wrapper button.mycred-social-icons.mycred-social-icon-instagram {
         width: 100%;
         display: block;
         min-width: unset;

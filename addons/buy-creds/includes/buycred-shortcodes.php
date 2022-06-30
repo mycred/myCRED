@@ -77,7 +77,7 @@ if ( ! function_exists( 'mycred_render_buy_points' ) ) :
 		if ( empty( $classes ) || ! in_array( 'mycred-buy-link', $classes ) )
 			$classes[] = 'mycred-buy-link';
 
-		$current_url        = set_url_scheme( sanitize_url('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) );
+		$current_url        = set_url_scheme( sanitize_url( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) );
 		if ( is_ssl() )
 			$current_url = str_replace( 'http://', 'https://', $current_url );
 
@@ -222,10 +222,10 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 					<input type="hidden" name="ctype" value="<?php echo esc_attr( $point_types[0][0] ); ?>" /><?php 
 				} 
 
-				if( isset($e_rate) && !empty($e_rate)){ 
-					$e_rate=mycred_encode_values($e_rate);
+				if( ! empty( $e_rate ) ) { 
+					$e_rate = mycred_encode_values( $e_rate );
 				?>
-			<input type="hidden" name="er_random" value="<?php echo esc_attr($e_rate); ?>" />
+			<input type="hidden" name="er_random" value="<?php echo esc_attr( $e_rate ); ?>" />
 			<?php } ?>			
 			<div class="form-group">
 				<label class="mycred-point-type"><?php echo $point_types[0][1]; ?></label>

@@ -502,7 +502,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             }
 
-            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( sanitize_key( $_GET['post'] ) ) == MYCRED_BADGE_KEY ) {
+            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BADGE_KEY ) {
 
                 return MYCRED_MAIN_SLUG;
 
@@ -534,7 +534,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             }
 
-            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( sanitize_key( $_GET['post'] ) ) == MYCRED_BADGE_KEY ) {
+            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BADGE_KEY ) {
 
                 return 'edit.php?post_type=' . MYCRED_BADGE_KEY;
 
@@ -624,7 +624,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
                     echo '-';
 
                 elseif ( $badge->main_image !== false )
-                    echo wp_kses_post($badge->main_image);
+                    echo wp_kses_post( $badge->main_image );
 
             }
 
@@ -636,7 +636,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
                 if ( $badge->open_badge || $image === false )
                     echo '-';
                 else
-                    echo wp_kses_post($image);
+                    echo wp_kses_post( $image );
 
             }
 
@@ -664,7 +664,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
                 $badge = mycred_get_badge_type( $badge_id );
 
-                echo esc_html( $badge == false ? 'No Acheivement Type' : $badge );
+                echo $badge == false ? 'No Acheivement Type' : esc_html( $badge );
 
             }
 
@@ -947,7 +947,7 @@ th#badge-users { width: 10%; }
                                 data : {
                                     action   : button.attr( 'data-action' ),
                                     token    : button.attr( 'data-token' ),
-                                    badge_id : <?php echo esc_js( $post->ID ); ?>
+                                    badge_id : <?php echo absint( $post->ID ); ?>
                                 },
                                 dataType : "JSON",
                                 url : ajaxurl,
@@ -970,7 +970,7 @@ th#badge-users { width: 10%; }
 
             </div>
             <div id="mycred-manual-badge" class="seperate-bottom">
-                <label for="mycred-badge-is-manual"><input type="checkbox" name="mycred_badge[manual]" id="mycred-badge-is-manual" <?php checked( $manual_badge );?> value="1" /> <?php esc_html_e( 'This badge is manually awarded.', 'mycred' ); ?></label>
+                <label for="mycred-badge-is-manual"><input type="checkbox" name="mycred_badge[manual]" id="mycred-badge-is-manual"<?php if ( $manual_badge ) echo ' checked="checked"'; ?> value="1" /> <?php esc_html_e( 'This badge is manually awarded.', 'mycred' ); ?></label>
             </div>
             <?php
 
@@ -998,7 +998,7 @@ th#badge-users { width: 10%; }
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="default-image text-center seperate-bottom">
                         <div class="default-image-wrapper image-wrapper<?php if ( $default_image == '' ) echo ' empty dashicons'; ?>">
-                            <?php echo wp_kses_post($default_image); ?>
+                            <?php echo wp_kses_post( $default_image ); ?>
                             <input type="hidden" name="mycred_badge[main_image]" id="badge-main-image-id" value="<?php if ( $attachment ) echo esc_attr( $di ); ?>" />
                             <input type="hidden" name="mycred_badge[main_image_url]" id="badge-main-image-url" value="<?php if ( $di != '' && strpos( '://', $di ) !== false ) echo esc_attr( $default_image ); ?>" />
                         </div>
@@ -1041,9 +1041,9 @@ th#badge-users { width: 10%; }
 
             ?>
             <div id="mycred-open-badge" class="seperate-bottom">
-                <label for="mycred-badge-is-open-badge"><input type="checkbox" name="mycred_badge[open_badge]" id="mycred-badge-is-open-badge"<?php if ( $open_badge ) echo ' checked="checked"'; ?> value="1" /> <?php _e( 'This badge is Open Badge.', 'mycred' ); ?></label>
+                <label for="mycred-badge-is-open-badge"><input type="checkbox" name="mycred_badge[open_badge]" id="mycred-badge-is-open-badge"<?php if ( $open_badge ) echo ' checked="checked"'; ?> value="1" /> <?php esc_html_e( 'This badge is Open Badge.', 'mycred' ); ?></label>
             </div>
-            <span class="description"><?php _e( 'Multi level badge settings will be disable when switched to open badge.', 'mycred' ); ?></span>
+            <span class="description"><?php esc_html_e( 'Multi level badge settings will be disable when switched to open badge.', 'mycred' ); ?></span>
             <?php
 
         }
@@ -1059,7 +1059,7 @@ th#badge-users { width: 10%; }
 
             ?>
             <style>#mycred-badge-congratulation-msg{display:block;margin:12px 0 0;width:100%;}</style>
-            <textarea name="mycred_badge[congratulation_msg]" placeholder="You have earned this Badge!" id="mycred-badge-congratulation-msg"><?php echo empty( $congratulation_msg ) ? '' : $congratulation_msg; ?></textarea>
+            <textarea name="mycred_badge[congratulation_msg]" placeholder="You have earned this Badge!" id="mycred-badge-congratulation-msg"><?php echo empty( $congratulation_msg ) ? '' : esc_textarea( $congratulation_msg ); ?></textarea>
             <?php
 
         }
@@ -1106,7 +1106,7 @@ th#badge-users { width: 10%; }
                     $level        = $level_counter;
 
                     $add_level    = '<button type="button" class="button button-seconary button-small top-right-corner" id="badges-add-new-level">' . esc_js( __( 'Add Level', 'mycred' ) ) . '</button>';
-                    $remove_level = '<button type="button" class="button button-seconary button-small top-right-corner remove-badge-level" data-level="{{level}}">' . esc_js( __( 'Remove Level', 'mycred' ) ) . '</button>';
+                    $remove_level = '<button type="button" class="button button-seconary button-small remove-badge-level" data-level="{{level}}">' . esc_js( __( 'Remove Level', 'mycred' ) ) . '</button>';
 
                     $level_image  = $this->get_level_image( $setup, $level );
                     $empty_level  = 'empty dashicons';
@@ -1275,7 +1275,7 @@ th#badge-users { width: 10%; }
 
                     $js_level           = str_replace( '{{rewards}}',       $rewards, $js_level );
 
-                    echo $template;
+                    echo  $template;
 
                     $level_counter++;
 
@@ -1474,31 +1474,31 @@ th#badge-users { width: 10%; }
             $bbpress    = ( ( class_exists( 'bbPress' ) ) ? true : false );
 
             ?>
-            <h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Badges', 'mycred' ); ?></h4>
+            <h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Badges', 'mycred' ); ?></h4>
             <div class="body" style="display:none;">
 
-                <h3><?php _e( 'Single Badge Page', 'mycred' ); ?></h3>
+                <h3><?php esc_html_e( 'Single Badge Page', 'mycred' ); ?></h3>
                 
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                         
                         <div class="form-group">
                             <div class="checkbox" style="padding-top: 4px;">
-                                <label for="<?php echo $this->field_id( 'show_level_description' ); ?>">
-                                    <input type="checkbox" name="<?php echo $this->field_name( 'show_level_description' ); ?>" id="<?php echo $this->field_id( 'show_level_description' ); ?>" <?php checked( $settings['show_level_description'], 1 ); ?> value="1"><?php _e('Show Level Description', 'mycred'); ?>
+                                <label for="<?php echo esc_attr( $this->field_id( 'show_level_description' ) ); ?>">
+                                    <input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_level_description' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_level_description' ) ); ?>" <?php checked( $settings['show_level_description'], 1 ); ?> value="1"><?php esc_html_e('Show Level Description', 'mycred'); ?>
                                 </label>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <div class="checkbox" style="padding-top: 4px;">
-                                <label for="<?php echo $this->field_id( 'show_congo_text' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_congo_text' ); ?>" id="<?php echo $this->field_id( 'show_congo_text' ); ?>" <?php checked( $settings['show_congo_text'], 1 ); ?> value="1"> <?php _e('Show Congratulation Text', 'mycred'); ?></label>
+                                <label for="<?php echo esc_attr( $this->field_id( 'show_congo_text' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_congo_text' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_congo_text' ) ); ?>" <?php checked( $settings['show_congo_text'], 1 ); ?> value="1"> <?php esc_html_e('Show Congratulation Text', 'mycred'); ?></label>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <div class="checkbox" style="padding-top: 4px;">
-                                <label for="<?php echo $this->field_id( 'show_steps_to_achieve' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_steps_to_achieve' ); ?>" id="<?php echo $this->field_id( 'show_steps_to_achieve' ); ?>" <?php checked( $settings['show_steps_to_achieve'], 1 ); ?> value="1"> <?php _e('Show Steps to Achieve', 'mycred'); ?></label>
+                                <label for="<?php echo esc_attr( $this->field_id( 'show_steps_to_achieve' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_steps_to_achieve' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_steps_to_achieve' ) ); ?>" <?php checked( $settings['show_steps_to_achieve'], 1 ); ?> value="1"> <?php esc_html_e('Show Steps to Achieve', 'mycred'); ?></label>
                             </div>
                         </div>
 
@@ -1507,38 +1507,38 @@ th#badge-users { width: 10%; }
 
                         <div class="form-group">
                             <div class="checkbox" style="padding-top: 4px;">
-                                <label for="<?php echo $this->field_id( 'show_levels' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_levels' ); ?>" id="<?php echo $this->field_id( 'show_levels' ); ?>" <?php checked( $settings['show_levels'], 1 ); ?> value="1"> <?php _e('Show Levels', 'mycred'); ?></label>
+                                <label for="<?php echo esc_attr( $this->field_id( 'show_levels' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_levels' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_levels' ) ); ?>" <?php checked( $settings['show_levels'], 1 ); ?> value="1"> <?php esc_html_e('Show Levels', 'mycred'); ?></label>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <div class="checkbox" style="padding-top: 4px;">
-                                <label for="<?php echo $this->field_id( 'show_level_points' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_level_points' ); ?>" id="<?php echo $this->field_id( 'show_level_points' ); ?>" <?php checked( $settings['show_level_points'], 1 ); ?> value="1"> <?php _e('Show Level Reward', 'mycred'); ?></label>
+                                <label for="<?php echo esc_attr( $this->field_id( 'show_level_points' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_level_points' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_level_points' ) ); ?>" <?php checked( $settings['show_level_points'], 1 ); ?> value="1"> <?php esc_html_e('Show Level Reward', 'mycred'); ?></label>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <div class="checkbox" style="padding-top: 4px;">
-                                <label for="<?php echo $this->field_id( 'show_earners' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_earners' ); ?>" id="<?php echo $this->field_id( 'show_earners' ); ?>" <?php checked( $settings['show_earners'], 1 ); ?> value="1"> <?php _e('Show Earners', 'mycred'); ?></label>
+                                <label for="<?php echo esc_attr( $this->field_id( 'show_earners' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_earners' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_earners' ) ); ?>" <?php checked( $settings['show_earners'], 1 ); ?> value="1"> <?php esc_html_e('Show Earners', 'mycred'); ?></label>
                             </div>
                         </div>
 
                     </div>
                 </div>
 
-                <h3><?php _e( 'Open Badge', 'mycred' ); ?></h3>
+                <h3><?php esc_html_e( 'Open Badge', 'mycred' ); ?></h3>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                         <div class="form-group">
                             <div class="checkbox">
-                                <label for="<?php echo $this->field_id( 'open_badge' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'open_badge' ); ?>" id="<?php echo $this->field_id( 'open_badge' ); ?>" <?php checked( $settings['open_badge'], 1 ); ?> value="1" > <?php _e( 'Enable Open Badge.', 'mycred' ); ?></label>
+                                <label for="<?php echo esc_attr( $this->field_id( 'open_badge' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'open_badge' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'open_badge' ) ); ?>" <?php checked( $settings['open_badge'], 1 ); ?> value="1" > <?php esc_html_e( 'Enable Open Badge.', 'mycred' ); ?></label>
                             </div>
                         </div>
                     </div>
                     <?php if( $settings['open_badge'] == '1' ):?>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                             <div class="form-group">
-                                <label for="<?php echo $this->field_id( 'open_badge_evidence_page' ); ?>"><?php _e( 'Evidence Page', 'mycred' ); ?></label>
+                                <label for="<?php echo esc_attr( $this->field_id( 'open_badge_evidence_page' ) ); ?>"><?php esc_html_e( 'Evidence Page', 'mycred' ); ?></label>
                                 <?php       
 
                                     $selectedEvidencePage = mycred_get_evidence_page_id();   
@@ -1549,7 +1549,7 @@ th#badge-users { width: 10%; }
                                         'selected' => $selectedEvidencePage
                                     );
 
-                                    wp_dropdown_pages( $args );
+                                    wp_dropdown_pages( esc_attr( $args ) );
                                 ?>
                             </div>
                         </div>
@@ -1561,13 +1561,13 @@ th#badge-users { width: 10%; }
                     <?php endif;?>
                 </div>
 
-                <h3><?php _e( 'Third-party Integrations', 'mycred' ); ?></h3>
+                <h3><?php esc_html_e( 'Third-party Integrations', 'mycred' ); ?></h3>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <div class="form-group">
-                            <label for="<?php echo $this->field_id( 'buddypress' ); ?>">BuddyPress</label>
+                            <label for="<?php echo esc_attr( $this->field_id( 'buddypress' ) ); ?>">BuddyPress</label>
                             <?php if ( $buddypress ) : ?>
-                            <select name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>" class="form-control">
+                            <select name="<?php echo esc_attr( $this->field_name( 'buddypress' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'buddypress' ) ); ?>" class="form-control">
                                 <?php
 
                                 $buddypress_options = array(
@@ -1578,9 +1578,9 @@ th#badge-users { width: 10%; }
                                 );
 
                                 foreach ( $buddypress_options as $location => $description ) {
-                                    echo '<option value="' . $location . '"';
+                                    echo '<option value="' . esc_attr( $location ) . '"';
                                     if ( isset( $settings['buddypress'] ) && $settings['buddypress'] == $location ) echo ' selected="selected"';
-                                    echo '>' . $description . '</option>';
+                                    echo '>' . esc_html( $description ) . '</option>';
                                 }
 
                                 ?>
@@ -1589,19 +1589,19 @@ th#badge-users { width: 10%; }
                         </div>
                         <div class="form-group">
                             <div class="checkbox">
-                                <label for="<?php echo $this->field_id( 'show_all_bp' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bp' ); ?>" id="<?php echo $this->field_id( 'show_all_bp' ); ?>" <?php checked( $settings['show_all_bp'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
+                                <label for="<?php echo esc_attr( $this->field_id( 'show_all_bp' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_all_bp' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_all_bp' ) ); ?>" <?php checked( $settings['show_all_bp'], 1 ); ?> value="1" /> <?php esc_html_e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
                             </div>
                             <?php else : ?>
-                                <input type="hidden" name="<?php echo $this->field_name( 'buddypress' ); ?>" id="<?php echo $this->field_id( 'buddypress' ); ?>" value="" />
-                                <p><span class="description"><?php _e( 'Not installed', 'mycred' ); ?></span></p>
+                                <input type="hidden" name="<?php echo esc_attr( $this->field_name( 'buddypress' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'buddypress' ) ); ?>" value="" />
+                                <p><span class="description"><?php esc_html_e( 'Not installed', 'mycred' ); ?></span></p>
                             <?php endif; ?>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                         <div class="form-group">
-                            <label for="<?php echo $this->field_id( 'bbpress' ); ?>">bbPress</label>
+                            <label for="<?php echo esc_attr( $this->field_id( 'bbpress' ) ); ?>">bbPress</label>
                             <?php if ( $bbpress ) : ?>
-                            <select name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>" class="form-control">
+                            <select name="<?php echo esc_attr( $this->field_name( 'bbpress' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bbpress' ) ); ?>" class="form-control">
                                 <?php
 
                                 $bbpress_options = array(
@@ -1612,9 +1612,9 @@ th#badge-users { width: 10%; }
                                 );
 
                                 foreach ( $bbpress_options as $location => $description ) {
-                                    echo '<option value="' . $location . '"';
+                                    echo '<option value="' . esc_attr( $location ) . '"';
                                     if ( isset( $settings['bbpress'] ) && $settings['bbpress'] == $location ) echo ' selected="selected"';
-                                    echo '>' . $description . '</option>';
+                                    echo '>' . esc_html( $description ) . '</option>';
                                 }
 
                                 ?>
@@ -1623,17 +1623,17 @@ th#badge-users { width: 10%; }
                         </div>
                         <div class="form-group">
                             <div class="checkbox">
-                                <label for="<?php echo $this->field_id( 'show_all_bb' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_all_bb' ); ?>" id="<?php echo $this->field_id( 'show_all_bb' ); ?>" <?php checked( $settings['show_all_bb'], 1 ); ?> value="1" /> <?php _e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
+                                <label for="<?php echo esc_attr( $this->field_id( 'show_all_bb' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_all_bb' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_all_bb' ) ); ?>" <?php checked( $settings['show_all_bb'], 1 ); ?> value="1" /> <?php esc_html_e( 'Show all badges, including badges users have not yet earned.', 'mycred' ); ?></label>
                             </div>
                             <?php else : ?>
-                                <input type="hidden" name="<?php echo $this->field_name( 'bbpress' ); ?>" id="<?php echo $this->field_id( 'bbpress' ); ?>" value="" />
-                                <p><span class="description"><?php _e( 'Not installed', 'mycred' ); ?></span></p>
+                                <input type="hidden" name="<?php echo esc_attr( $this->field_name( 'bbpress' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bbpress' ) ); ?>" value="" />
+                                <p><span class="description"><?php esc_html_e( 'Not installed', 'mycred' ); ?></span></p>
                             <?php endif; ?>
                         </div>
                     </div>
                 </div>
 
-                <h3 style="margin-bottom: 0;"><?php _e( 'Available Shortcodes', 'mycred' ); ?></h3>
+                <h3 style="margin-bottom: 0;"><?php esc_html_e( 'Available Shortcodes', 'mycred' ); ?></h3>
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <p><a href="http://codex.mycred.me/shortcodes/mycred_my_badges/" target="_blank">[mycred_my_badges]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_badges/" target="_blank">[mycred_badges]</a></p>
@@ -1695,15 +1695,15 @@ th#badge-users { width: 10%; }
                 .badge-wrapper select { width: 100%; }
                 .badge-image-wrap { text-align: center; }
                 .badge-image-wrap .badge-image { display: block; width: 100%; height: 100px; line-height: 100px; }
-                .badge-image-wrap .badge-image.empty { content: "<?php _e( 'No image set', 'mycred' ); ?>"; }
+                .badge-image-wrap .badge-image.empty { content: "<?php esc_html_e( 'No image set', 'mycred' ); ?>"; }
                 .badge-image-wrap .badge-image img { width: auto; height: auto; max-height: 100px; }
             </style>
             <table class="form-table">
                 <tr>
-                    <th scope="row"><?php _e( 'Badges', 'mycred' ); ?></th>
+                    <th scope="row"><?php esc_html_e( 'Badges', 'mycred' ); ?></th>
                     <td>
                         <fieldset id="mycred-badge-list" class="badge-list">
-                            <legend class="screen-reader-text"><span><?php _e( 'Badges', 'mycred' ); ?></span></legend>
+                            <legend class="screen-reader-text"><span><?php esc_html_e( 'Badges', 'mycred' ); ?></span></legend>
                             <?php
 
                             if ( ! empty( $all_badges ) ) {
@@ -1752,20 +1752,20 @@ th#badge-users { width: 10%; }
                                     }
 
                                     ?>
-                                    <div class="badge-wrapper<?php if ( ! mycred_is_admin() ) echo ' badge-wrapper-center'; ?> color-option<?php if ( $earned === 1 ) echo ' selected'; ?>" id="mycred-badge<?php echo $badge_id; ?>-wrapper">
+                                    <div class="badge-wrapper<?php if ( ! mycred_is_admin() ) echo ' badge-wrapper-center'; ?> color-option<?php if ( $earned === 1 ) echo ' selected'; ?>" id="mycred-badge<?php echo esc_attr( $badge_id ); ?>-wrapper">
                                         <div>
                                             <?php if ( mycred_is_admin() ):?>
-                                            <label for="mycred-badge<?php echo $badge_id; ?>"><input type="checkbox" name="mycred_badge_manual[badges][<?php echo $badge_id; ?>][has]" class="toggle-badge" id="mycred-badge<?php echo $badge_id; ?>" <?php checked( $earned, 1 );?> value="1" /> <?php _e( 'Earned', 'mycred' ); ?></label>
+                                            <label for="mycred-badge<?php echo esc_attr( $badge_id ); ?>"><input type="checkbox" name="mycred_badge_manual[badges][<?php echo $badge_id; ?>][has]" class="toggle-badge" id="mycred-badge<?php echo esc_attr( $badge_id ); ?>" <?php checked( $earned, 1 );?> value="1" /> <?php esc_html_e( 'Earned', 'mycred' ); ?></label>
                                             <?php endif; ?>
                                             <div class="badge-image-wrap">
 
-                                                <div class="badge-image<?php if ( $badge_image == '' ) echo ' empty'; ?>"><?php echo $badge_image; ?></div>
+                                                <div class="badge-image<?php if ( $badge_image == '' ) echo ' empty'; ?>"><?php echo wp_kses_post( $badge_image ); ?></div>
 
-                                                <h4><?php echo $badge->title; ?></h4>
+                                                <h4><?php echo esc_html( $badge->title ); ?></h4>
                                             </div>
                                             <div class="badge-actions" style="min-height: 32px;">
 
-                                                <?php echo $level_select; ?>
+                                                <?php echo esc_html( $level_select ); ?>
 
                                             </div>
 
@@ -1783,7 +1783,7 @@ th#badge-users { width: 10%; }
 
                             ?>
                         </fieldset>
-                        <input type="hidden" name="mycred_badge_manual[token]" value="<?php echo wp_create_nonce( 'mycred-manual-badges' . $user_id ); ?>" />
+                        <input type="hidden" name="mycred_badge_manual[token]" value="<?php echo esc_attr( wp_create_nonce( 'mycred-manual-badges' . $user_id ) ); ?>" />
                     </td>
                 </tr>
             </table>

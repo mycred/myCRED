@@ -166,7 +166,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			add_filter( 'manage_' . MYCRED_RANK_KEY . '_posts_columns',       array( $this, 'adjust_column_headers' ), 50 );
 			add_action( 'manage_' . MYCRED_RANK_KEY . '_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
 			add_action( 'save_post_' . MYCRED_RANK_KEY,                       array( $this, 'save_rank' ), 10, 2 );
-			add_filter( 'views_edit-mycred_rank', array( $this, 'modify_ranks_views_links' ) );
+			add_filter( 'views_edit-mycred_rank', 			  array( $this, 'modify_ranks_views_links' ) );
 
 			add_action( 'delete_user', array( $this, 'delete_user_rank_data' ) );
 		}
@@ -1989,12 +1989,13 @@ jQuery(function($){
 		 * @since 2.2
 		 * @version 1.0
 		 */
-		public function active_current_view( $view )
-		{
-			$post_status = isset( $_GET['post_status'] ) ? $_GET['post_status'] : '';
+		public function active_current_view( $view ) {
+
+			$post_status = isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : '';
 
 			if( $post_status == $view ) 
 				return 'class="current" aria-current="page"';
+
 		}
 		
 		/**
@@ -2002,13 +2003,13 @@ jQuery(function($){
 		 * @since 2.2
 		 * @version 1.0
 		 */
-		public function modify_ranks_views_links( $view )
-		{
-			$post_status = isset( $_GET['post_status'] ) ? $_GET['post_status'] : '';
+		public function modify_ranks_views_links( $view ) {
+
+			$post_status = isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : '';
 			
 			$current = 'class="current" aria-current="page"';
 
-			$current_point_type = isset( $_GET['ctype'] ) ? $_GET['ctype'] : MYCRED_DEFAULT_TYPE_KEY;
+			$current_point_type = isset( $_GET['ctype'] ) ? sanitize_key( $_GET['ctype'] ) : MYCRED_DEFAULT_TYPE_KEY;
 
 			$view['all'] = '<a href="edit.php?post_type=mycred_rank&ctype='.$current_point_type.'" '.$this->active_current_view( '' ).'>All</a>';
 
@@ -2021,12 +2022,14 @@ jQuery(function($){
 				$view['draft'] = '<a href="edit.php?post_status=draft&amp;post_type=mycred_rank&ctype='.$current_point_type.'" '.$this->active_current_view( 'draft' ).'>Drafts</a>';
 
 			return $view;
+		
 		}
 
-		public function delete_user_rank_data( $user_id ) 
-		{	
+		public function delete_user_rank_data( $user_id ) {	
+
 			$current_assign_rank = mycred_get_users_rank($user_id);
 			mycred_update_post_meta( $current_assign_rank->post_id, 'mycred_rank_users', mycred_count_users_with_rank( $current_assign_rank->post_id ) - 1 );		
+		
 		}
 
 	}

@@ -8,7 +8,6 @@ namespace Bitpay;
 
 /**
  * Interface PayoutInterface
- *
  * @package Bitpay
  */
 interface PayoutInterface

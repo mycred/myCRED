@@ -1,30 +1,27 @@
 <?php
 namespace MG_Blocks;
 
-if (! defined('ABSPATH') ) {
+if ( ! defined('ABSPATH') ) {
     exit; // Exit if accessed directly.
 }
 
-define('mycred_gb_gutenberg_SLUG', 'mycred-gutenberg-blocks');
-define('mycred_gb_gutenberg_VERSION', '1.1.2');
-define('mycred_gb_gutenberg', __FILE__);
+define( 'mycred_gb_gutenberg_SLUG', 'mycred-gutenberg-blocks' );
+define( 'mycred_gb_gutenberg_VERSION', '1.1.2' );
+define( 'mycred_gb_gutenberg', __FILE__ );
 
-final class MyCred_Gutenberg
-{
+final class MyCred_Gutenberg {
 
     private static $_instance = null;
 
     /**
      * Instance
      * Ensures only one instance of the class is loaded or can be loaded.
-     *
-     * @since  1.0.0
+     * @since 1.0.0
      * @access public
      * @static
      * @return MyCred_Gutenberg An instance of the class.
      */
-    public static function instance()
-    {
+    public static function instance() {
 
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
@@ -32,56 +29,48 @@ final class MyCred_Gutenberg
         return self::$_instance;
     }
 
-    public function __construct()
-    {
+    public function __construct() {
         add_action('plugins_loaded', [$this, 'init']);
     }
 
-    public function init()
-    {
+    public function init() {
 
         if (!class_exists('myCRED_Core')) {
             add_action('admin_notices', [$this, 'admin_notice_mycred_missing_plugin']);
             return;
         }
 
-        if (!function_exists('register_block_type')) {
+        if (!function_exists('register_block_type'))
             return;
-        }
 
         $this->includes();
         $this->register_block_category();
         add_action('init', [$this, 'load_modules']);
     }
 
-    public function admin_notice_mycred_missing_plugin()
-    {
+    public function admin_notice_mycred_missing_plugin() {
 
-        if (isset($_GET['activate'])) {
+        if (isset($_GET['activate']))
             unset($_GET['activate']);
-        }
 
         $message = sprintf(
-            esc_html__('"%1$s" requires "%2$s" to be installed and activated.', 'mycred'), '<b>' . esc_html__('myCRED for Gutenberg', 'mycred') . '</b>', '<b>' . esc_html__('myCRED', 'mycred') . '</b>'
+                esc_html__('"%1$s" requires "%2$s" to be installed and activated.', 'mycred'), '<b>' . esc_html__('myCRED for Gutenberg', 'mycred') . '</b>', '<b>' . esc_html__('myCRED', 'mycred') . '</b>'
         );
 
         printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
     }
 
-    public function includes()
-    {
-        include_once __DIR__ . '/includes/mycred-gutenberg-functions.php';
+    public function includes() {
+        require_once( __DIR__ . '/includes/mycred-gutenberg-functions.php' );
     }
 
-    public function register_block_category()
-    {
+    public function register_block_category() {
 
-        add_filter('block_categories_all', array( $this, 'mb_block_categories' ), 10, 2);
+        add_filter( 'block_categories_all', array( $this, 'mb_block_categories' ), 10, 2 );
 
     }
 
-    public function mb_block_categories( $categories, $post )
-    {
+    public function mb_block_categories( $categories, $post ) {
         return array_merge(
             $categories, 
             array(
@@ -93,8 +82,7 @@ final class MyCred_Gutenberg
         );
     }
 
-    public function load_modules()
-    {
+    public function load_modules() {
 
         $mycred_modules = [
             'mycred-affiliate-id',
@@ -159,7 +147,7 @@ final class MyCred_Gutenberg
         }
 
         foreach ($mycred_modules as $mycred_module) {
-            include_once __DIR__ . "/blocks/$mycred_module/$mycred_module.php";
+            require_once __DIR__ . "/blocks/$mycred_module/$mycred_module.php";
         }
     }
 

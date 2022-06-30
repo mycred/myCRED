@@ -279,7 +279,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			global $pagenow;
 
-			if ( isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_EMAIL_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
+			if ( isset( $_GET['post'] ) && mycred_get_post_type( sanitize_key( $_GET['post'] ) ) == MYCRED_EMAIL_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
 				return MYCRED_MAIN_SLUG;
 
 			if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_EMAIL_KEY )
@@ -304,7 +304,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			
 			}
 
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_EMAIL_KEY ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( sanitize_key( $_GET['post'] ) ) == MYCRED_EMAIL_KEY ) {
 
 				return 'edit.php?post_type=' . MYCRED_EMAIL_KEY;
 
@@ -368,19 +368,17 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			if ( $column_name == 'mycred-email-status' ) {
 
 				if ( $email->post->post_status != 'publish' && $email->post->post_status != 'future' )
-					echo '<p>' . __( 'Not Active', 'mycred' ) . '</p>';
+					echo '<p>' . esc_html__( 'Not Active', 'mycred' ) . '</p>';
 
 				elseif ( $email->post->post_status == 'future' )
-					echo '<p>' . sprintf( '<strong>%s</strong> %s', __( 'Scheduled', 'mycred' ), date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), strtotime( $email->post->post_date ) ) ) . '</p>';
+					echo '<p>' . sprintf( '<strong>%s</strong> %s', esc_html__( 'Scheduled', 'mycred' ), esc_html( date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), strtotime( $email->post->post_date ) ) ) ) . '</p>';
 
 				else {
 
 					if ( empty( $email->last_run ) )
-						echo '<p><strong>' . __( 'Active', 'mycred' ) . '</strong></p>';
-					else {
-						$allowed_html = [ 'strong' => [] ];
-						echo '<p>' . wp_kses( sprintf( '<strong>%s</strong> %s', __( 'Active - Last run', 'mycred' ), date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), $email->last_run ) ), $allowed_html ) . '</p>';
-					}
+						echo '<p><strong>' . esc_html__( 'Active', 'mycred' ) . '</strong></p>';
+					else
+						echo '<p>' . sprintf( '<strong>%s</strong> %s', esc_html__( 'Active - Last run', 'mycred' ), esc_html( date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), $email->last_run ) ) ) . '</p>';
 
 				}
 
@@ -416,12 +414,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				else
 					$description[] = sprintf( '<strong>%s:</strong> %s', __( 'Recipient', 'mycred' ), __( 'Both', 'mycred' ) );
 
-				$allowed_html = [
-				    'br'     => [],
-				    'strong' => []
-				];
-
-				echo '<p>' . wp_kses( implode( '<br />', $description ), $allowed_html ) . '</p>';
+				echo wp_kses_post( '<p>' . implode( '<br />', $description ) . '</p>' );
 
 			}
 
@@ -429,9 +422,9 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			elseif ( $column_name == 'mycred-email-ctype' ) {
 
 				echo '<p>';
-				if ( empty( $email->point_types ) ) {
+				if ( empty( $email->point_types ) )
 					esc_html_e( 'No point types selected', 'mycred' );
-				}
+
 				else {
 					$types = array();
 					foreach ( $email->point_types as $type_key ) {
@@ -986,7 +979,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 					}
 				
 				}
-
+				
 				mycred_update_post_meta( $post_id, 'mycred_email_ctype', $point_types );
 
 			}

@@ -359,7 +359,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 					'comment_author_email' => $author_email,
 					'comment_content'      => $comment,
 					'comment_type'         => 'cashcred',
-					'comment_author_IP'    => sanitize_text_field($_SERVER['REMOTE_ADDR']),
+					'comment_author_IP'    => $_SERVER['REMOTE_ADDR'],
 					'comment_date'         => $time,
 					'comment_approved'     => 1,
 					'user_id'              => 0
@@ -529,7 +529,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				check_site_add_post_meta( $post_id, 'cost',         $cost, true );
 				check_site_add_post_meta( $post_id, 'currency',     $currency, true );
 				check_site_add_post_meta( $post_id, 'from',         get_current_user_id(), true );
-				check_site_add_post_meta( $post_id, 'user_ip',      sanitize_text_field($_SERVER['REMOTE_ADDR']), true );
+				check_site_add_post_meta( $post_id, 'user_ip',      $_SERVER['REMOTE_ADDR'], true );
 				check_site_add_post_meta( $post_id, 'manual',       'Manual', true );
 				
 				if( isset( $mycred_pref_cashcreds['gateway_prefs'][ $cashcred_pay_method ]["allow_auto_withdrawal"] ) && 

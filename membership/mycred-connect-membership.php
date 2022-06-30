@@ -2,69 +2,64 @@
 /**
  * Class to connect mycred with membership
  * 
- * @since   1.0
+ * @since 1.0
  * @version 1.0
  */
 
 // If this file is called directly, abort.
-if (! defined('ABSPATH') ) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if (! class_exists('myCRED_Connect_Membership') ) :
-    Class myCRED_Connect_Membership
-    {
+if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
+    Class myCRED_Connect_Membership {
 
         /**
          * Construct
          */
-        public function __construct()
-        {
+        public function __construct() {
 
-            add_action('admin_menu',        array( $this, 'mycred_membership_menu' ));
-            add_action('admin_menu',        array( $this, 'mycred_treasures' ));
-            add_action('admin_menu',        array( $this, 'mycred_support' ));
-            add_action('admin_init',        array( $this, 'add_styles' ));
-            add_filter('admin_footer_text', array( $this, 'mycred_admin_footer_text'));
+            add_action( 'admin_menu',        array( $this, 'mycred_membership_menu' ) );
+            add_action( 'admin_menu',        array( $this, 'mycred_treasures' ) );
+            add_action( 'admin_menu',        array( $this, 'mycred_support' ) );
+            add_action( 'admin_init',        array( $this, 'add_styles' ) );
+            add_filter( 'admin_footer_text', array( $this, 'mycred_admin_footer_text') );
         
         }
 
-        public function add_styles()
-        {
+        public function add_styles() {
 
-            wp_register_style('admin-subscription-css', plugins_url('assets/css/admin-subscription.css', myCRED_THIS), array(), '1.2', 'all');
+            wp_register_style('admin-subscription-css', plugins_url( 'assets/css/admin-subscription.css', myCRED_THIS ), array(), '1.2', 'all');
             
-            if(isset($_GET['page']) && $_GET['page'] == 'mycred-membership' ) {
-                wp_enqueue_style('mycred-bootstrap-grid');
+            if( isset($_GET['page']) && $_GET['page'] == 'mycred-membership' ) {
+                wp_enqueue_style( 'mycred-bootstrap-grid' );
             }
 
-            elseif(isset($_GET['page']) && $_GET['page'] == 'mycred-treasures' ) {
-                wp_enqueue_style('mycred-bootstrap-grid');
+             elseif( isset($_GET['page']) && $_GET['page'] == 'mycred-treasures' ) {
+                wp_enqueue_style( 'mycred-bootstrap-grid' );
             }
 
-            elseif(isset($_GET['page']) && $_GET['page'] == 'mycred-support' ) {
-                wp_enqueue_style('mycred-bootstrap-grid');
+            elseif( isset($_GET['page']) && $_GET['page'] == 'mycred-support' ) {
+                wp_enqueue_style( 'mycred-bootstrap-grid' );
             }
             
             wp_enqueue_style('admin-subscription-css');
 
         }
 
-        public function mycred_admin_footer_text( $footer_text )
-        {
+        public function mycred_admin_footer_text( $footer_text ) {
             
             global $typenow;
 
-            if(isset($_GET['page']) && $_GET['page'] == 'mycred-support' ) {
+            if( isset($_GET['page']) && $_GET['page'] == 'mycred-support' ) {
 
-                    $mycred_footer_text = sprintf(
-                        __('Thank you for being a <a href="%1$s" target="_blank">myCred </a>user! Please give your <a href="%2$s" target="_blank">%3$s</a> rating on WordPress.org', 'mycred'),
+                    $mycred_footer_text = sprintf( __( 'Thank you for being a <a href="%1$s" target="_blank">myCred </a>user! Please give your <a href="%2$s" target="_blank">%3$s</a> rating on WordPress.org', 'mycred' ),
                         'https://mycred.me',
                         'https://wordpress.org/support/plugin/mycred/reviews/?rate=5#new-post',
                         '&#9733;&#9733;&#9733;&#9733;&#9733;'
                     );
 
-                  return str_replace('</span>', '', $footer_text) . ' | ' . $mycred_footer_text . '</span>';
+                  return str_replace( '</span>', '', $footer_text ) . ' | ' . $mycred_footer_text . '</span>';
 
             }
             else {
@@ -78,8 +73,7 @@ if (! class_exists('myCRED_Connect_Membership') ) :
         /**
          * Register membership menu
          */
-        public function mycred_membership_menu()
-        {
+        public function mycred_membership_menu() {
             mycred_add_main_submenu( 
                 'License', 
                 'License', 
@@ -90,10 +84,9 @@ if (! class_exists('myCRED_Connect_Membership') ) :
         }
 
          /**
-          * Register membership menu
-          */
-        public function mycred_treasures()
-        {
+         * Register membership menu
+         */
+        public function mycred_treasures() {
             mycred_add_main_submenu( 
                 'Treasures', 
                 'Treasures', 
@@ -106,8 +99,7 @@ if (! class_exists('myCRED_Connect_Membership') ) :
         /**
          * Register Help / Support menu
          */
-        public function mycred_support()
-        {
+        public function mycred_support() {
             mycred_add_main_submenu( 
                 'Support', 
                 'Support', 
@@ -117,8 +109,7 @@ if (! class_exists('myCRED_Connect_Membership') ) :
             );
         }
 
-        public function mycred_support_callback()
-        {
+         public function mycred_support_callback() {
 
             $references  = mycred_get_all_references();
 
@@ -158,11 +149,15 @@ if (! class_exists('myCRED_Connect_Membership') ) :
                     <p>If you need to build a custom feature, simply <a href="https://objectsws.atlassian.net/servicedesk/customer/portal/11/create/92">submit a request</a> on our myCred website.</p>
                     <hr>
                     
+                    <h2>myCred Add-ons Update:</h2>
+                    <p>For our users' convenience and their site optimization, we made a unified license system for individual and membership users. <a href="<?php echo admin_url('options.php?page=mycred-update'); ?>">Click here to update your add-ons</a></p>
+                    <hr>
+                    
                     <h2>myCred Log References:</h2>
                     <div class="row mycred-all-references-list">
-                       <?php foreach ( $references as $key => $entry ):?>   
+                        <?php foreach ( $references as $key => $entry ):?>   
                         <div class="col-md-6 mb-2"><code><?php echo $key;?></code> - <?php echo $entry;?></div>
-                       <?php endforeach;?>
+                        <?php endforeach;?>
                     </div>
 
                 </div>
@@ -170,15 +165,13 @@ if (! class_exists('myCRED_Connect_Membership') ) :
             </div>
 
            
-            <?php
+           <?php
         }
 
         /**
          * Treasures menu callback
          */
-        public function mycred_treasures_callback()
-        {
-            ?>
+        public function mycred_treasures_callback() {?>
             <div class="wrap" id="myCRED-wrap">
                 <div class="mycred-addon-outer">    
                     <div class="myCRED-addon-heading">
@@ -190,7 +183,7 @@ if (! class_exists('myCRED_Connect_Membership') ) :
                     <div class="themes">
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url('assets/images/treasures/badges.png', myCRED_THIS);?>" alt="Treasure Badges">
+                                <img src="<?php echo plugins_url( 'assets/images/treasures/badges.png', myCRED_THIS );?>" alt="Treasure Badges">
                                 <h3>Badges</h3>
                                 <p>40 unique and beautifully designed Badge designs available in Gold, Silver and Bronze.</p>
                             </div>
@@ -203,7 +196,7 @@ if (! class_exists('myCRED_Connect_Membership') ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url('assets/images/treasures/rank.png', myCRED_THIS);?>" alt="Treasure Ranks">
+                                <img src="<?php echo plugins_url( 'assets/images/treasures/rank.png', myCRED_THIS );?>" alt="Treasure Ranks">
                                 <h3>Ranks</h3>
                                 <p>40 unique and beautifully designed virtual Ranks are available in Red, Silver and Gold.</p>
                             </div>
@@ -216,7 +209,7 @@ if (! class_exists('myCRED_Connect_Membership') ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url('assets/images/treasures/currency.png', myCRED_THIS);?>" alt="Treasure Currencies">
+                                <img src="<?php echo plugins_url( 'assets/images/treasures/currency.png', myCRED_THIS );?>" alt="Treasure Currencies">
                                 <h3>Currency</h3>
                                 <p>17 unique and beautifully designed Currency designs available in Gold, Silver & Bronze.</p>
                             </div>
@@ -229,7 +222,7 @@ if (! class_exists('myCRED_Connect_Membership') ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url('assets/images/treasures/learning.png', myCRED_THIS);?>" alt="Treasure Learning">
+                                <img src="<?php echo plugins_url( 'assets/images/treasures/learning.png', myCRED_THIS );?>" alt="Treasure Learning">
                                 <h3>Learning</h3>
                                 <p>30 unique and beautifully designed Learning icons are available in four different shapes.</p>
                             </div>
@@ -242,7 +235,7 @@ if (! class_exists('myCRED_Connect_Membership') ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url('assets/images/treasures/fitness.png', myCRED_THIS);?>" alt="Treasure Fitness">
+                                <img src="<?php echo plugins_url( 'assets/images/treasures/fitness.png', myCRED_THIS );?>" alt="Treasure Fitness">
                                 <h3>Fitness</h3>
                                 <p>30 unique and beautifully designed Fitness icons are available in three different shapes.</p>
                             </div>
@@ -255,7 +248,7 @@ if (! class_exists('myCRED_Connect_Membership') ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url('assets/images/treasures/gems.png', myCRED_THIS);?>" alt="Treasure Gems">
+                                <img src="<?php echo plugins_url( 'assets/images/treasures/gems.png', myCRED_THIS );?>" alt="Treasure Gems">
                                 <h3>Gems</h3>
                                 <p>500 unique and beautifully designed gem icons are available in four different shapes.</p>
                             </div>
@@ -269,41 +262,39 @@ if (! class_exists('myCRED_Connect_Membership') ) :
                     </div>
                 </div>
             </div>        
-            <?php
+           <?php
         }
 
         /**
          * Membership menu callback
          */
-        public function mycred_membership_callback()
-        {
+        public function mycred_membership_callback() {
             $user_id = get_current_user_id();
             $this->mycred_save_license();
-            $membership_key = get_option('mycred_membership_key');
-            if(!isset($membership_key)  && !empty($membership_key) ) {
+            $membership_key = get_option( 'mycred_membership_key' );
+            if( !isset( $membership_key )  && !empty( $membership_key ) )
                 $membership_key = '';
-            }
             ?>
             <div class="wrap">
                 <div class="mmc_welcome">
                     <div class="mmc_welcome_content">
-                        <div class="mmc_title"><?php _e('Welcome to myCred Premium Club', 'mycred'); ?></div>
+                        <div class="mmc_title"><?php _e( 'Welcome to myCred Premium Club', 'mycred' ); ?></div>
                         <form action="#" method="post">
                         <?php 
-                        if(mycred_is_valid_license_key($membership_key)) {
-                            echo '<span class="dashicons dashicons-yes-alt membership-license-activated"></span>';
-                        } 
-                        else {
-                            // if membership is not active in current site and the membership key is entered
-                            echo '<span class="dashicons dashicons-dismiss membership-license-inactive"></span>';
-                        } 
+                            if(mycred_is_valid_license_key( $membership_key )) {
+                                echo '<span class="dashicons dashicons-yes-alt membership-license-activated"></span>';
+                            } 
+                            else {
+                                // if membership is not active in current site and the membership key is entered
+                                echo '<span class="dashicons dashicons-dismiss membership-license-inactive"></span>';
+                            } 
                                 
                                 
                         ?>
                         
-                            <input type="text" name="mmc_lincense_key" class="mmc_lincense_key" placeholder="<?php _e('Add Your License key', 'mycred'); ?>" value="<?php echo $membership_key?>">
+                            <input type="text" name="mmc_lincense_key" class="mmc_lincense_key" placeholder="<?php _e( 'Add Your License key', 'mycred' ); ?>" value="<?php echo $membership_key?>">
                             <input type="submit" class="mmc_save_license button-primary" value="Save"/>
-                            <div class="mmc_license_link"><a href="https://mycred.me/redirect-to-membership/" target="_blank"><span class="dashicons dashicons-editor-help"></span><?php _e('Click here to get your License Key', 'mycred') ?></a>
+                            <div class="mmc_license_link"><a href="https://mycred.me/redirect-to-membership/" target="_blank"><span class="dashicons dashicons-editor-help"></span><?php _e('Click here to get your License Key','mycred') ?></a>
                             </div>
                             <div class="mmc_license_link">
                                 
@@ -322,50 +313,47 @@ if (! class_exists('myCRED_Connect_Membership') ) :
         /**
          * Saving user membership key
          */
-        public function mycred_save_license()
-        {
+        public function mycred_save_license() {
             
-            if(!isset($_POST['mmc_lincense_key']) ) { return;
-            }
+            if( !isset($_POST['mmc_lincense_key']) ) return;
 
-            $license_key = sanitize_text_field($_POST['mmc_lincense_key']);
+            $license_key = sanitize_text_field( $_POST['mmc_lincense_key'] );
 
-            if(isset($license_key) ) {
+            if( isset( $license_key ) ) {
 
-                update_option('mycred_membership_key', $license_key);
-                mycred_is_valid_license_key($license_key, true);
+                update_option( 'mycred_membership_key', $license_key );
+                mycred_is_valid_license_key( $license_key, true );
                 $this->removeLicenseTransients();
 
             }
             
         }
 
-        public function removeLicenseTransients()
-        {
+        public function removeLicenseTransients() {
             
-            $addons      = apply_filters('mycred_license_addons', array());
-            $update_data = get_site_transient('update_plugins');
+            $addons      = apply_filters( 'mycred_license_addons', array() );
+            $update_data = get_site_transient( 'update_plugins' );
 
             foreach ( $addons as $addon ) {
 
-                if (isset($update_data->response[ $addon . '/' . $addon . '.php' ]) ) {
-                    unset($update_data->response[ $addon . '/' . $addon . '.php' ]);
+                if ( isset( $update_data->response[ $addon . '/' . $addon . '.php' ] ) ) {
+                    unset( $update_data->response[ $addon . '/' . $addon . '.php' ] );
                 }
 
-                if (isset($update_data->no_update[ $addon . '/' . $addon . '.php' ]) ) {
-                    unset($update_data->no_update[ $addon . '/' . $addon . '.php' ]);
+                if ( isset( $update_data->no_update[ $addon . '/' . $addon . '.php' ] ) ) {
+                    unset( $update_data->no_update[ $addon . '/' . $addon . '.php' ] );
                 }
 
-                if (isset($update_data->checked[ $addon . '/' . $addon . '.php' ]) ) {
-                    unset($update_data->checked[ $addon . '/' . $addon . '.php' ]);
+                if ( isset( $update_data->checked[ $addon . '/' . $addon . '.php' ] ) ) {
+                    unset( $update_data->checked[ $addon . '/' . $addon . '.php' ] );
                 }
                     
-                $transient_key = 'mcl_' . md5($addon);
-                delete_site_transient($transient_key);
+                $transient_key = 'mcl_' . md5( $addon );
+                delete_site_transient( $transient_key );
 
             }
 
-            set_site_transient('update_plugins', $update_data);
+            set_site_transient( 'update_plugins', $update_data );
 
         }
 

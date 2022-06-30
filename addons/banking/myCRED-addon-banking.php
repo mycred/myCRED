@@ -206,7 +206,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 	<?php $this->update_notice(); ?>
 
-	<h1><?php _e( 'Central Deposit', 'mycred' ); ?></h1>
+	<h1><?php esc_html_e( 'Central Deposit', 'mycred' ); ?></h1>
 	<form method="post" class="form" action="options.php">
 
 		<?php settings_fields( $this->settings_name ); ?>
@@ -220,13 +220,13 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 				foreach ( $installed as $key => $data ) {
 
 ?>
-			<h4><span class="dashicons <?php echo $data['icon']; ?><?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' static'; ?>"></span><?php echo $this->core->template_tags_general( $data['title'] ); ?></h4>
+			<h4><span class="dashicons <?php echo esc_attr( $data['icon'] ); ?><?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' static'; ?>"></span><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></h4>
 			<div class="body" style="display: none;">
-				<p><?php echo nl2br( $this->core->template_tags_general( $data['description'] ) ); ?></p>
-				<label class="subheader" for="mycred-bank-service-<?php echo $key; ?>"><?php _e( 'Enable', 'mycred' ); ?></label>
+				<p><?php echo nl2br( esc_html( $this->core->template_tags_general( $data['description'] ) ) ); ?></p>
+				<label class="subheader" for="mycred-bank-service-<?php echo esc_attr( $key ); ?>"><?php esc_html_e( 'Enable', 'mycred' ); ?></label>
 				<ol>
 					<li>
-						<input type="checkbox" name="<?php echo $this->option_id; ?>[active][]" id="mycred-bank-service-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> />
+						<input type="checkbox" name="<?php echo esc_attr( $this->option_id ); ?>[active][]" id="mycred-bank-service-<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $key ); ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> />
 					</li>
 				</ol>
 
@@ -242,7 +242,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 		</div>
 
-		<?php submit_button( __( 'Update Changes', 'mycred' ), 'primary large', 'submit', false ); ?>
+		<?php submit_button( esc_html__( 'Update Changes', 'mycred' ), 'primary large', 'submit', false ); ?>
 
 	</form>
 </div>
@@ -335,13 +335,13 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 		public function ajax_handler() {
 
 			// Make sure this is an ajax call for this point type
-			if ( isset( $_REQUEST['_token'] ) && wp_verify_nonce( $_REQUEST['_token'], 'run-mycred-bank-task' . $this->mycred_type ) ) {
+			if ( isset( $_REQUEST['_token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_token'] ) ), 'run-mycred-bank-task' . $this->mycred_type ) ) {
 
 				// Make sure ajax call is made by an admin
 				if ( $this->core->user_is_point_admin() ) {
 
 					// Get the service requesting to use this
-					$service   = sanitize_key( $_POST['service'] );
+					$service   = ( isset( $_POST['service'] ) ? sanitize_key( wp_unslash( $_POST['service'] ) ) : '' );
 					$installed = $this->get();
 
 					// If there is such a service, load it's ajax handler
