@@ -3,7 +3,7 @@
  * Plugin Name: myCred
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 2.4.8
+ * Version: 2.4.8.1
  * Tags: point, credit, loyalty program, engagement, reward, woocommerce rewards
  * Author: myCred
  * Author URI: https://mycred.me
@@ -20,7 +20,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '2.4.8';
+		public $version             = '2.4.8.1';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -54,14 +54,14 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.4.8' ); }
+		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.4.8.1' ); }
 
 		/**
 		 * Not allowed
 		 * @since 1.7
 		 * @version 1.0
 		 */
-		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.4.8' ); }
+		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.4.8.1' ); }
 
 		/**
 		 * Get
@@ -82,7 +82,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( ! defined( $name ) )
 				define( $name, $value );
 			elseif ( ! $definable && defined( $name ) )
-				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . esc_html( $name ) . ' as it is already defined somewhere else!', '2.4.8' );
+				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . esc_html( $name ) . ' as it is already defined somewhere else!', '2.4.8.1' );
 		}
 
 		/**
@@ -94,7 +94,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( file_exists( $required_file ) )
 				require_once $required_file;
 			else
-				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . esc_html( $required_file ) . ' not found.', '2.4.8' );
+				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . esc_html( $required_file ) . ' not found.', '2.4.8.1' );
 		}
 
 		/**
