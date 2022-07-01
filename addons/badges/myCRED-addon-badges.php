@@ -1765,7 +1765,27 @@ th#badge-users { width: 10%; }
                                             </div>
                                             <div class="badge-actions" style="min-height: 32px;">
 
-                                                <?php echo esc_html( $level_select ); ?>
+                                                <?php 
+
+                                                    $allowed_html = array(
+                                                        'input' => array(
+                                                            'type'  => array(),
+                                                            'value' => array(),
+                                                            'name'  => array()
+                                                        ),
+                                                        'select' => array(
+                                                            'name'     => array(),
+                                                            'disabled' => array()
+                                                        ),
+                                                        'option' => array(
+                                                            'value'    => array(),
+                                                            'selected' => array()
+                                                        )
+                                                    );
+
+                                                    echo wp_kses( $level_select, $allowed_html ); 
+
+                                                ?>
 
                                             </div>
 
