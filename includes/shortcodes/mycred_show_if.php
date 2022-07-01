@@ -49,6 +49,9 @@ if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 
 		// Lets start determening if the user can see the content
 		$should_show = false;
+		$check_bal 	 = $balance == -1 ? true : false;
+		$check_ref   = empty( $ref ) ? true : false;
+		$check_rank  = $rank == -1 ? true : false;
 
 		// Balance related requirement
 		if ( $balance >= 0 ) {
@@ -58,11 +61,11 @@ if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 
 			// Zero balance requirement
 			if ( $balance == $mycred->zero() && $users_balance == $mycred->zero() )
-				$should_show = true;
+				$check_bal = true;
 
 			// Balance must be higher or equal to the amount set
 			elseif ( $users_balance >= $balance )
-				$should_show = true;
+				$check_bal = true;
 
 		}
 
@@ -73,11 +76,11 @@ if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 
 			// Combined with a balance requirement we must have references
 			if ( $balance >= 0 && $ref_count == 0 && $comp === 'AND' )
-				$should_show = false;
+				$check_ref = false;
 
 			// Ref count must be higher or equal to the count set
 			elseif ( $ref_count >= $count )
-				$should_show = true;
+				$check_ref = true;
 
 		}
 
@@ -97,9 +100,26 @@ if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 			if ( isset( $users_rank->post_id ) && $rank_id !== false ) {
 
 				if ( $users_rank->post_id != $rank_id && $comp === 'AND' )
-					$should_show = false;
+					$check_rank = false;
 
 				elseif ( $users_rank->post_id == $rank_id )
+					$check_rank = true;
+
+			}
+
+		}
+
+		if ( $user_id == get_current_user_id() ) {
+
+			if ( $comp === 'AND' ) {
+
+				if( $check_bal && $check_ref && $check_rank ) 
+					$should_show = true;
+
+			}
+			else {
+
+				if( ( $balance >= 0 && $check_bal ) || ( ! empty( $ref ) && $check_ref ) || ( $rank != -1 && $check_rank ) ) 
 					$should_show = true;
 
 			}

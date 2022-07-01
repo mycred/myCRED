@@ -480,7 +480,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			function thankyou_page() {
 
 				$thankyou_msg = apply_filters( 'mycred_woo_thank_you_message', '<p>' . __( 'Your account has successfully been charged.', 'mycred' ) . '</p>' );
-				echo esc_html( $thankyou_msg );
+				echo wp_kses_post( $thankyou_msg );
 			}
 
 		}

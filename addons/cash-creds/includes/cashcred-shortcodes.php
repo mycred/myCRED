@@ -40,6 +40,8 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 		if ( empty( $point_types ) ) return $excluded;
 
 		$point_types = cashcred_is_user_have_balances( $point_types, $user_id );
+		
+		$users_balance = $mycred->get_users_balance( $user_id, $types );
 
 		//Insufficient points for withdrawal.
 		if ( empty( $point_types ) ) return $insufficient;
@@ -195,6 +197,10 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 				<label><?php echo sprintf( esc_html__('Withdraw %s value', 'mycred'), esc_html( $point_types[ current(array_keys($point_types)) ]->plural() ) ); ?></label>
 				<?php 
 					$amount = ! empty( $amount ) ? floatval( $amount ) : 0;
+					
+					if($amount > $users_balance) {
+						return;
+					}
 				?> 
 				<input type="number" id="withdraw_points" name="points" class="form-control" placeholder="0" value="<?php echo ! empty($amount) ? esc_attr( $amount ) : 0; ?>" required />
 				<p class="cashcred-min"><?php echo esc_html__('Minimum Amount: ', 'mycred');?><span></span></p>

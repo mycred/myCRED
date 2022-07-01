@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 6.0
-Stable tag: 2.4.7
+Stable tag: 2.4.8
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -316,6 +316,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.8 =
+Bug fixes.
+
 = 2.4.7 =
 Bug fixes.
 
@@ -407,6 +410,12 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.4.8 =
+- **NEW** - Introduced new action hook mycred_cashcred_before_bank_form.
+- **FIX** - Fixed PHP errors.
+- **FIX** - mycred_show_if shortcode was not working correctly when using multiple shortcodes on the same page.
+- **FIX** - The user field issue was fixed in the Bulk Assign tool.
 
 = 2.4.7 =
 - **NEW** - Added filter "mycred_email_event".

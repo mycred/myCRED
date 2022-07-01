@@ -210,7 +210,7 @@ class myCRED_Tools {
 		if( isset( $_REQUEST['selected_type'] ) ) {
 
 			$selected_type = sanitize_key( $_REQUEST['selected_type'] );
-			
+
 			switch ( $selected_type ) {
 				case 'points':
 					$this->process_points();
@@ -262,7 +262,7 @@ class myCRED_Tools {
 		$points_to_award = sanitize_text_field( wp_unslash( $_REQUEST['points_to_award'] ) );
 
 		$log_entry = isset( $_REQUEST['log_entry'] ) ? ( sanitize_key( $_REQUEST['log_entry'] ) == 'true' ? true : false ) : false;
-		
+
 		$users_to_award = $this->get_requested_users();
 
 		if ( empty( $users_to_award ) ) return;
@@ -274,7 +274,7 @@ class myCRED_Tools {
 			//Entries with log
 			if( $log_entry ) {
 
-				$log_entry_text = isset( $_REQUEST['log_entry_text'] ) ? sanitize_key( $_REQUEST['log_entry_text'] ) : '';
+				$log_entry_text = isset( $_REQUEST['log_entry_text'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['log_entry_text'] ) ) : '';
 
 				if( empty( $log_entry_text ) ) {
 
@@ -358,9 +358,9 @@ class myCRED_Tools {
 		}
 		
 		if ( $is_revoke )
-			$selected_badges = isset( $_REQUEST['badges_to_revoke'] ) ? sanitize_key( $_REQUEST['badges_to_revoke'] ) : '';
+			$selected_badges = isset( $_REQUEST['badges_to_revoke'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['badges_to_revoke'] ) ) : '';
 		else
-			$selected_badges = isset( $_REQUEST['badges_to_award'] ) ? sanitize_key( $_REQUEST['badges_to_award'] ) : '';
+			$selected_badges = isset( $_REQUEST['badges_to_award'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['badges_to_award'] ) ) : '';
 
 		$selected_badges = json_decode( stripslashes( $selected_badges ) );
 
@@ -422,7 +422,7 @@ class myCRED_Tools {
 			}
 			else {
 
-				$selected_users      = isset( $_REQUEST['users'] ) ? sanitize_key( $_REQUEST['users'] ) : '[]';
+				$selected_users      = isset( $_REQUEST['users'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['users'] ) ) : '[]';
 				$selected_user_roles = isset( $_REQUEST['user_roles'] ) ? sanitize_key( $_REQUEST['user_roles'] ) : '[]';
 
 				$selected_users      = json_decode( stripslashes( $selected_users ) );

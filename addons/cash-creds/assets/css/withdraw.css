@@ -90,3 +90,6 @@
     font-size: smaller;
 }
 
+#cashcred_total span.amount_label {
+    margin-right: 5px;
+}

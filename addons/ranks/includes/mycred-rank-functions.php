@@ -106,14 +106,15 @@ endif;
  * @version 1.3
  */
 if ( ! function_exists( 'mycred_get_rank' ) ) :
-	function mycred_get_rank( $rank_identifier = NULL ) {
+	function mycred_get_rank( $rank_identifier = NULL, $force = false ) {
 
 		global $mycred_rank;
 
 		$rank_id     = mycred_get_rank_object_id( $rank_identifier );
 		if ( $rank_id === false ) return false;
 
-		if ( isset( $mycred_rank )
+		if ( ! $force  
+			&& isset( $mycred_rank )
 			&& ( $mycred_rank instanceof myCRED_Rank )
 			&& ( $rank_id === $mycred_rank->post_id )
 		) {
@@ -575,7 +576,7 @@ if ( ! function_exists( 'mycred_get_ranks' ) ) :
 			if ( ! empty( $rank_ids ) ) {
 
 				foreach ( $rank_ids as $rank_id )
-					$results[] = mycred_get_rank( $rank_id );
+					$results[] = mycred_get_rank( $rank_id, true );
 
 			}
 

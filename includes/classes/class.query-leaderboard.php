@@ -818,8 +818,11 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					$balance_format = 'CAST( %f AS DECIMAL( ' . $length . ', ' . $this->core->format['decimals'] . ' ) )';
 				}
 
-				$query = $wpdb->prepare( "AND l.meta_value != {$balance_format}", $this->core->zero() );
+				if ( ! $this->args['total'] ) {
+					$query = $wpdb->prepare( "AND l.meta_value != {$balance_format}", $this->core->zero() );
+				}
 
+				
 			}
 
 			return apply_filters( 'mycred_leaderboard_exclude_filter', $query, $this );

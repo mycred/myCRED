@@ -61,7 +61,7 @@ if ( ! class_exists( 'myCRED_walkthroug' ) ) :
 					array(
 						'step' => $step,
 						'redirect_url' => $redirect_url
-					),
+					)
 				);
 				wp_enqueue_script( 'mycred-tourguide-script' );
 

@@ -993,6 +993,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 				if ( isset( $_POST['mycred_email']['ctype'] ) && is_array( $_POST['mycred_email']['ctype'] ) ) {
 					
+					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					foreach ( $_POST['mycred_email']['ctype'] as $type_key ) {
 						$type_key = sanitize_key( $type_key );
 						if ( mycred_point_type_exists( $type_key ) && ! in_array( $type_key, $point_types ) )
