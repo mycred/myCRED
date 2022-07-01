@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 5.9.3
-Stable tag: 2.4.5.1
+Stable tag: 2.4.5.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -374,6 +374,9 @@ The banking module have been replaced by Central deposite module, and interest r
 
 
 == Changelog ==
+
+= 2.4.5.2 =
+- **FIX** - Sell Content enable/disable dropdown not working
 
 = 2.4.5.1 =
 - **FIX** - Php notices in Sell Content
