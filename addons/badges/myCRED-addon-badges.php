@@ -1136,7 +1136,8 @@ th#badge-users { width: 10%; }
                         'data-row' => array(),
                     ),
                     'option' => array(
-                        'value' => array()
+                        'value' => array(),
+                        'selected' => array()
                     ),
                     'p' => array(
                         'class' => array(),

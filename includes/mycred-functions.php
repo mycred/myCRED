@@ -3765,7 +3765,7 @@ if ( !function_exists( 'mycred_badge_level_req_check' ) ):
         if ( $level_index == 1 )
             $starting_index = 1;
         if ( $level_index > 1 )
-            $starting_index = $level_index - 1;
+            $starting_index = $level_index;
 
             // Based on the base requirements, we first get the users log entry results
 

@@ -490,7 +490,7 @@ function mycred_woo_product_unreward( $product_reward ) {
 		$product_reward->entry,
 		$product_reward->id,
 		$product_reward->data,
-		$product_reward->ctype,
+		$product_reward->ctype
 	);
 
 }

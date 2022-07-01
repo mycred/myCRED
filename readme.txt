@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 6.0
-Stable tag: 2.4.6
+Stable tag: 2.4.6.1
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -316,6 +316,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.6.1 =
+Bug fixes.
+
 = 2.4.6 =
 New features and Bug fixes.
 
@@ -400,8 +403,11 @@ The banking module have been replaced by Central deposite module, and interest r
 * Portuguese (Brazil) - Guilherme
 * Japanese - Mochizuki Hiroshi
 
-
 == Changelog ==
+
+= 2.4.6.1 =
+- **FIX** - Badge level requirements not being saved.
+- **FIX** - Badge level requirements appear twice on the badge single page.
 
 = 2.4.6 =
 - **NEW** - Added minimum points reminder email notification for central deposit.
