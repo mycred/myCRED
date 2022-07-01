@@ -681,7 +681,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 			if ( isset( $_POST['mycred_sell_this'] ) && ! empty( $_POST['mycred_sell_this'] ) ) {
 
-				foreach ( sanitize_text_field( wp_unslash( $_POST['mycred_sell_this'] ) ) as $point_type => $share ) {
+				foreach ( $_POST['mycred_sell_this'] as $point_type => $share ) {
 
 					$share = sanitize_text_field( $share );
 
@@ -1314,7 +1314,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 					<div class="form-group slim">
 						<label for="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-price"><?php esc_html_e( 'Price', 'mycred' ); ?></label>
-						<input type="text" name="mycred_sell_this[<?php echo esc_attr( $point_type ); ?>][price]" id="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-price" class="form-control" value="<?php echo esc_attr( $sale_setup['price'] ); ?>" />
+						<input type="text" name="mycred_sell_this[<?php echo esc_attr( $point_type ); ?>][price]" id="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-price" class="form-control" value="<?php echo absint( $sale_setup['price'] ); ?>" />
 					</div>
 				</div>
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
@@ -1376,11 +1376,12 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 						$mycred     = mycred( $point_type );
 
 						$new_setup  = array( 'status' => 'disabled', 'price' => 0, 'expire' => 0 );
+
 						$submission = shortcode_atts( array(
 							'status' => 'disabled',
 							'price'  => 0,
 							'expire' => 0
-						), sanitize_text_field( wp_unslash( $_POST['mycred_sell_this'][ $point_type ] ) ) );
+						), $_POST['mycred_sell_this'][ $point_type ] );
 
 						if ( $submission['status'] == '' ) $submission['status'] = 'disabled';
 
