@@ -104,7 +104,24 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                 <thead>
                     <tr>
                         <td><label for=""><?php esc_html_e( 'Select Type', 'mycred' ) ?></label></td>
-                        <td><?php echo mycred_create_select2( $award_type, $award_args ); ?></td>
+                        <td>
+                            <?php echo wp_kses(
+                                    mycred_create_select2( $award_type, $award_args ),
+                                    array(
+                                        'select' => array(
+                                            'id' => array(),
+                                            'class' => array(),
+                                            'name' => array(),
+                                            'style' => array()
+                                        ),
+                                        'option' => array(
+                                            'value' => array(),
+                                            'selected' => array()
+                                        ),
+                                    )
+                                ); 
+                            ?>
+                        </td>
                     </tr>
                 </thead>
 
@@ -131,7 +148,24 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
 
                     <tr>
                         <td><label for=""><?php esc_html_e( 'Select Point Type', 'mycred' ) ?></label></td>
-                        <td><?php echo mycred_create_select2( $point_types, $pt_args ); ?></td>
+                        <td>
+                            <?php echo wp_kses(
+                                    mycred_create_select2( $point_types, $pt_args ),
+                                    array(
+                                        'select' => array(
+                                            'id' => array(),
+                                            'name' => array(),
+                                            'class' => array(),
+                                            'style' => array()
+                                        ),
+                                        'option' => array(
+                                            'value' => array(),
+                                            'selected' => array()
+                                        ),
+                                    )
+                                ); 
+                            ?>        
+                        </td>
                     </tr>
 
                     <tr>
@@ -169,7 +203,25 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                 <tbody class="bulk-award-badge" style="display: none;">
                     <tr>
                         <td><label for=""><?php esc_html_e( 'Select Badge(s)', 'mycred' ) ?></label></td>
-                        <td><?php echo mycred_create_select2( $badges, $badges_args ); ?></td>
+                        <td>
+                            <?php echo wp_kses(
+                                    mycred_create_select2( $badges, $badges_args ),
+                                    array(
+                                        'select' => array(
+                                            'id' => array(),
+                                            'name' => array(),
+                                            'class' => array(),
+                                            'style' => array(),
+                                            'multiple' => array()
+                                        ),
+                                        'option' => array(
+                                            'value' => array(),
+                                            'selected' => array()
+                                        ),
+                                    )
+                                ); 
+                            ?>
+                        </td>
                     </tr>
                 </tbody>
 
@@ -177,7 +229,22 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                     <tr>
                         <td><label for=""><?php esc_html_e( 'Select Rank', 'mycred' ) ?></label></td>
                         <td>
-                            <?php echo mycred_create_select2( $ranks, $ranks_args ); ?>
+                            <?php echo wp_kses(
+                                    mycred_create_select2( $ranks, $ranks_args ),
+                                    array(
+                                        'select' => array(
+                                            'id' => array(),
+                                            'name' => array(),
+                                            'class' => array(),
+                                            'style' => array()
+                                        ),
+                                        'option' => array(
+                                            'value' => array(),
+                                            'selected' => array()
+                                        ),
+                                    )
+                                ); 
+                            ?>
                         </td>
                     </tr>
                     <tr class="bulk-award-rank">
@@ -191,7 +258,46 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                 </tbody>
 
                 <!-- User fields -->
-                <?php echo $this->users_fields( $user_args ) ?>
+                <?php 
+                    $allowed_html = array(
+                        'tbody' => array(),
+                        'p'     => array(),
+                        'i'     => array(),
+                        'tr'    => array(
+                            'class'     => array()
+                        ),
+                        'td'    => array(
+                            'class'     => array()
+                        ),
+                        'label'	=> array(
+                            'class'	    => array(),
+                            'for'       => array()
+                        ),
+                        'input' => array(
+                            'type'  	=> array(),
+                            'value' 	=> array(),
+                            'name'  	=> array(),
+                            'class'		=> array(),
+                            'id'		=> array(),
+                            'checked'   => array()
+                        ),
+                        'span'	=> array(
+                            'class'		=> array()
+                        ),
+                        'select' => array(
+                            'id'        => array(),
+                            'style'     => array(),
+                            'name'  	=> array(),
+                            'class'		=> array(),
+                            'multiple'   => array()
+                        ),
+                        'option' => array(
+                            'value'    	=> array(),
+                            'selected' 	=> array()
+                        )
+                    ); 
+                
+                echo wp_kses( $this->users_fields( $user_args ), $allowed_html );?>
 
                 <!-- Award Button -->
                 <tbody>

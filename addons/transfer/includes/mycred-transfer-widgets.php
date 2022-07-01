@@ -30,6 +30,47 @@ if ( ! class_exists( 'myCRED_Widget_Transfer' ) ) :
 		 */
 		public function widget( $args, $instance ) {
 
+			$allowed_html = array(
+				'label'	=> array(
+					'class'			=> array()
+				),
+				'input' => array(
+					'type'  		=> array(),
+					'value' 		=> array(),
+					'name'  		=> array(),
+					'class'			=> array(),
+					'aria-required'	=> array(),
+					'data-form'		=> array(),
+					'placeholder'	=> array(),
+					'autocomplete'	=> array(),
+					'id'			=> array()
+				),
+				'span' => array(
+					'class'		=> array()
+				),
+				'form' 	=> array(
+					'id'			=> array(),
+					'class'			=> array(),
+					'method'		=> array(),
+					'data-ref'		=> array()
+				),
+				'div'	=> array(
+					'class'			=> array(),
+					'id'			=> array()
+				),
+				'button' => array(
+					'class'			=> array()
+				),
+				'select' => array(
+					'name'  		=> array(),
+					'class'			=> array()
+				),
+				'option' => array(
+					'value'    		=> array(),
+					'selected' 		=> array()
+				)
+			);
+			
 			extract( $args, EXTR_SKIP );
 
 			$instance = shortcode_atts( array(
@@ -45,14 +86,14 @@ if ( ! class_exists( 'myCRED_Widget_Transfer' ) ) :
 				'placeholder'  => ''
 			), $instance );
 
-			echo $before_widget;
+			echo wp_kses_post( $before_widget );
 
 			// Title
 			if ( ! empty( $instance['title'] ) )
-				echo $before_title . $instance['title'] . $after_title;
+				echo wp_kses_post( $before_title . $instance['title'] . $after_title );
 
 			// Let the shortcode to the job
-			echo mycred_transfer_render( array(
+			echo wp_kses( mycred_transfer_render( array(
 				'button'       => $instance['button'],
 				'pay_to'       => $instance['pay_to'],
 				'show_balance' => $instance['show_balance'],
@@ -62,9 +103,9 @@ if ( ! class_exists( 'myCRED_Widget_Transfer' ) ) :
 				'excluded'     => $instance['excluded'],
 				'types'        => $instance['types'],
 				'placeholder'  => $instance['placeholder']
-			) );
+			) ), $allowed_html );
 
-			echo $after_widget;
+			echo wp_kses_post( $after_widget );
 
 		}
 

@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 6.0
-Stable tag: 2.4.6.1
+Stable tag: 2.4.7
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -316,6 +316,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.7 =
+Bug fixes.
+
 = 2.4.6.1 =
 Bug fixes.
 
@@ -404,6 +407,13 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.4.7 =
+- **NEW** - Added filter "mycred_email_event".
+- **FIX** - mycred_list_ranks order attribute was not working in some cases.
+- **FIX** - mycred_transfer numeric username was not working.
+- **FIX** - mycred_leaderboard exclude_zero attribute was not working.
+- **FIX** - Fixed security vulnerabilities.
 
 = 2.4.6.1 =
 - **FIX** - Badge level requirements not being saved.

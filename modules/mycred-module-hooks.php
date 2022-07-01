@@ -515,6 +515,7 @@ jQuery(function($) {
 			$installed  = $this->get();
 
 			if ( ! empty( $_POST['sidebars'] ) ) {
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				foreach ( $_POST['sidebars'] as $sidebar_id => $hooks ) {
 
 					$hooks = explode( ',', $hooks );
@@ -601,10 +602,10 @@ jQuery(function($) {
 
 				// Get hook settings
 				if ( $ctype == MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[$mycred_pref_hooks_save]['hook_prefs'] ) ) {
-					$hook_prefs = $_POST[$mycred_pref_hooks_save]['hook_prefs'][ $hook_id ];
+					$hook_prefs = mycred_sanitize_array( wp_unslash( $_POST[$mycred_pref_hooks_save]['hook_prefs'][ $hook_id ] ) );
 				}
 				elseif ( $ctype != MYCRED_DEFAULT_TYPE_KEY && array_key_exists( $hook_id, $_POST[ $mycred_pref_hooks_save.'_' . $ctype ]['hook_prefs'] ) ) {
-					$hook_prefs = $_POST[ $mycred_pref_hooks_save.'_' . $ctype ]['hook_prefs'][ $hook_id ];
+					$hook_prefs = mycred_sanitize_array( wp_unslash( $_POST[ $mycred_pref_hooks_save.'_' . $ctype ]['hook_prefs'][ $hook_id ] ) );
 					$mycred_pref_hooks_save = $mycred_pref_hooks_save . '_' . $ctype;
 				}
 

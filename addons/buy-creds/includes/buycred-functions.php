@@ -404,7 +404,7 @@ if ( ! function_exists( 'buycred_get_pending_payment' ) ) :
 
 		// Construct fake pending object ( when no pending payment object exists )
 		if ( is_array( $payment_id ) ) {
-
+			
 			$pending_payment                 = new StdClass();
 			$pending_payment->payment_id     = false;
 			$pending_payment->public_id      = $payment_id['public_id'];
@@ -422,9 +422,7 @@ if ( ! function_exists( 'buycred_get_pending_payment' ) ) :
 		}
 
 		else {
-
 			$payment_id = buycred_get_pending_payment_id( $payment_id );
-
 			if ( $payment_id === false ) return false;
 
 			$pending_payment                 = new StdClass();
@@ -440,13 +438,13 @@ if ( ! function_exists( 'buycred_get_pending_payment' ) ) :
 			$pending_payment->transaction_id = $pending_payment->public_id;
 
 			$pending_payment->cancel_url     = buycred_get_cancel_transaction_url( $pending_payment->public_id );
-
+			$url = ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) ? set_url_scheme( esc_url_raw( wp_unslash( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) ) : '';
 			$pending_payment->pay_now_url    = add_query_arg( array(
 				'mycred_buy' => $pending_payment->gateway_id,
 				'amount'     => $pending_payment->amount,
 				'revisit'    => $payment_id,
 				'token'      => wp_create_nonce( 'mycred-buy-creds' )
-			), set_url_scheme( esc_url_raw( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) );
+			), $url );
 
 		}
 
@@ -488,7 +486,7 @@ if ( ! function_exists( 'buycred_add_pending_comment' ) ) :
 			'comment_author_email' => $author_email,
 			'comment_content'      => $comment,
 			'comment_type'         => 'buycred',
-			'comment_author_IP'    => sanitize_text_field( $_SERVER['REMOTE_ADDR'] ),
+			'comment_author_IP'    => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
 			'comment_date'         => $time,
 			'comment_approved'     => 1,
 			'user_id'              => 0
@@ -506,7 +504,7 @@ if ( ! function_exists( 'buycred_get_cancel_transaction_url' ) ) :
 	function buycred_get_cancel_transaction_url( $transaction_id = NULL ) {
 
 		$settings = mycred_get_buycred_settings();
-		$base     = set_url_scheme( sanitize_url( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) );
+		$base     = ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) ? set_url_scheme( sanitize_text_field( wp_unslash( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) ) : '';
 
 		// Cancel page
 		if ( $settings['cancelled']['use'] == 'page' ) {

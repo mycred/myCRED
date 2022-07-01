@@ -186,7 +186,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 				// First get a clean list of ids to delete
 				$export    = new myCRED_Query_Export( $args );
 
-				$export->get_data_by_ids( $_GET['entry'] );
+				$export->get_data_by_ids( array_map( 'absint', wp_unslash( $_GET['entry'] ) ) );
 				$export->set_export_file_name( $file_name );
 
 				$export->do_export();

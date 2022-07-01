@@ -743,7 +743,8 @@ jQuery(function($){
 		public function save_pending_payment( $post_id, $post ) {
 
 			if ( ! $this->core->user_is_point_editor() || ! isset( $_POST['buycred_pending_payment'] ) ) return;
-
+			
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$pending_payment = $_POST['buycred_pending_payment'];
 			$changed         = false;
 

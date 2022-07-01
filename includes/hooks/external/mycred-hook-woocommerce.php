@@ -226,7 +226,8 @@ if ( ! function_exists( 'mycred_woo_save_reward_settings' ) ) :
 		if ( ! isset( $_POST['mycred_reward'] ) || empty( $_POST['mycred_reward'] ) || $post_type != 'product' ) return;
 
 		$new_setup = array();
-		foreach ( $_POST['mycred_reward'] as $point_type => $setup ) {
+
+		foreach ( mycred_sanitize_array( wp_unslash( $_POST['mycred_reward'] ) ) as $point_type => $setup ) {
 
 			if ( empty( $setup ) ) continue;
 
@@ -255,6 +256,7 @@ if ( ! function_exists( 'mycred_woo_save_product_variation_detail' ) ) :
 		if ( ! isset( $_POST['_mycred_reward'] ) || empty( $_POST['_mycred_reward'] ) || ! array_key_exists( $post_id, $_POST['_mycred_reward'] ) ) return;
 
 		$new_setup = array();
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		foreach ( $_POST['_mycred_reward'][ $post_id ] as $point_type => $value ) {
 
 			$value  = sanitize_text_field( $value );

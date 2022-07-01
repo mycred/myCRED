@@ -1518,6 +1518,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			$type_object = new myCRED_Point_Type( $point_type );
 
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			foreach ( $_POST['mycred_rank'] as $meta_key => $meta_value ) {
 
 				if ( $meta_key == 'ctype' ) continue;

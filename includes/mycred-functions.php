@@ -694,8 +694,12 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			$comment_url        = '#item-has-been-deleted';
 			$comment_post_title = __( 'Deleted Item', 'mycred' );
 
+
+
 			// Comment does not exist - see if we can re-construct
 			if ( $comment === NULL ) {
+
+				
 
 				// Nope, no backup, bye
 				if ( ! is_array( $data ) || ! array_key_exists( 'comment_ID', $data ) ) return $content;
@@ -709,11 +713,16 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 			}
 			else {
 
+				
+
 				$comment_post       = mycred_get_post( $comment->comment_post_ID );
 				$comment_url        = mycred_get_permalink( $comment_post );
 				$comment_post_title = mycred_get_permalink( $comment_post );
 
+
 			}
+
+		
 
 			// Let others play first
 			$content = apply_filters( 'mycred_parse_tags_comment', $content, $comment, $data );
@@ -725,9 +734,8 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 
 			$content = str_replace( '%c_post_id%',         $comment->comment_post_ID, $content );
 			$content = str_replace( '%c_post_title%',      esc_attr( $comment_post_title ), $content );
-
 			$content = str_replace( '%c_post_url%',        esc_url_raw( $comment_url ), $content );
-			$content = str_replace( '%c_link_with_title%', '<a href="' . esc_url_raw( $comment_url ) . '">' . esc_attr( $comment_post_title ) . '</a>', $content );
+			$content = str_replace( '%c_link_with_title%', '<a href="' . esc_url_raw( $comment_url ) . '">' . esc_attr($comment_post->post_title ) . '</a>', $content );
 
 			return $content;
 
@@ -2614,6 +2622,22 @@ endif;
 if ( ! function_exists( 'mycred_types_select_from_dropdown' ) ) :
 	function mycred_types_select_from_dropdown( $name = '', $id = '', $selected = '', $return = false, $extra = '' ) {
 
+		$allowed_html = array(
+			'input' => array(
+				'type'  		=> array(),
+				'value' 		=> array(),
+				'name'  		=> array(),
+				'id'			=> array()
+			),
+			'select' => array(
+				'name'  		=> array(),
+				'class'			=> array()
+			),
+			'option' => array(
+				'value'    		=> array(),
+				'selected' 		=> array()
+			)
+		);
 		$types  = mycred_get_types();
 		$output = '';
 
@@ -2644,7 +2668,7 @@ if ( ! function_exists( 'mycred_types_select_from_dropdown' ) ) :
 		if ( $return )
 			return $output;
 
-		echo $output;
+		echo wp_kses( $output, $allowed_html) ;
 
 	}
 endif;
@@ -2657,6 +2681,21 @@ endif;
 if ( ! function_exists( 'mycred_types_select_from_checkboxes' ) ) :
 	function mycred_types_select_from_checkboxes( $name = '', $id = '', $selected_values = array(), $return = false ) {
 
+		$allowed_html = array(
+			'label'	=> array(
+				'for'			=> array()
+			),
+			'input' => array(
+				'type'  		=> array(),
+				'value' 		=> array(),
+				'name'  		=> array(),
+				'id'			=> array(),
+				'checked'		=> array()
+			),
+			'div'	=> array(
+				'class'			=> array()
+			)
+		);
 		$types = mycred_get_types();
 
 		$output = '';
@@ -2675,7 +2714,7 @@ if ( ! function_exists( 'mycred_types_select_from_checkboxes' ) ) :
 		if ( $return )
 			return $output;
 
-		echo $output;
+		echo wp_kses( $output, $allowed_html );
 
 	}
 endif;
@@ -4161,7 +4200,7 @@ function mycred_create_select2( $options = '', $attributes = array(), $selected 
 
 	if( !empty( $attributes ) )
 		foreach( $attributes as $attr => $value )
-			$content .= "{$attr}='{$value}'";
+			$content .= "{$attr}='{$value}' ";
 
 	$content .= "style='width: 168px;'>";
 

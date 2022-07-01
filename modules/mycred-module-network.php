@@ -107,7 +107,7 @@ if ( ! class_exists( 'myCRED_Network_Module' ) ) :
 			$screen = get_current_screen();
 			if ( $screen->id == 'sites-network' ) {
 
-				echo '<style type="text/css">th#' . MYCRED_SLUG . ' { width: 15%; }</style>';
+				echo '<style type="text/css">th#' . esc_attr( MYCRED_SLUG ) . ' { width: 15%; }</style>';
 
 			}
 
@@ -153,6 +153,7 @@ if ( ! class_exists( 'myCRED_Network_Module' ) ) :
 					}
 					else {
 
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo '<span class="dashicons dashicons-yes"' . ( $blog_id == 1 ? ' style="color: green;"' : '' ) . '></span><div class="row-actions"><span class="info" style="color: #666">' . ( $blog_id == 1 ? esc_html__( 'Master Template', 'mycred' ) : esc_html__( 'Enabled', 'mycred' ) ) . '</span></div>';
 
 					}
@@ -238,7 +239,7 @@ h4.ui-accordion-header:before { content: "<?php esc_attr_e( 'click to open', 'my
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php printf( esc_html__( '%s Network', 'mycred' ), $name ); ?><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/multisites/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<h1><?php printf( esc_html__( '%s Network', 'mycred' ), esc_html( $name ) ); ?><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/multisites/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 <?php
 
 			if ( wp_is_large_network() ) {
@@ -254,14 +255,14 @@ h4.ui-accordion-header:before { content: "<?php esc_attr_e( 'click to open', 'my
 				// Inform user that myCRED has not yet been setup
 				$setup = get_blog_option( 1, 'mycred_setup_completed', false );
 				if ( $setup === false )
-					echo '<div class="error"><p>' . sprintf( esc_html__( 'Note! %s has not yet been setup.', 'mycred' ), $name ) . '</p></div>';
+					echo '<div class="error"><p>' . sprintf( esc_html__( 'Note! %s has not yet been setup.', 'mycred' ), esc_html( $name ) ) . '</p></div>';
 
 				// Settings Updated
 				if ( isset( $_GET['settings-updated'] ) )
 					echo '<div class="updated"><p>' . esc_html__( 'Settings Updated', 'mycred' ) . '</p></div>';
 
 ?>
-	<form method="post" action="<?php echo admin_url( 'options.php' ); ?>" class="form" name="mycred-core-settings-form" novalidate>
+	<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>" class="form" name="mycred-core-settings-form" novalidate>
 
 		<?php settings_fields( 'mycred_network' ); ?>
 
@@ -311,7 +312,7 @@ h4.ui-accordion-header:before { content: "<?php esc_attr_e( 'click to open', 'my
 						<div class="form-group">
 							<label for="mycred-network-block"><?php esc_html_e( 'Blog IDs', 'mycred' ); ?></label>
 							<input type="text" name="mycred_network[block]" id="mycred-network-block" value="<?php echo esc_attr( $this->settings['block'] ); ?>" class="form-control" />
-							<p><span class="description"><?php printf( __( 'Comma separated list of blog ids where %s is to be disabled.', 'mycred' ), $name ); ?></span></p>
+							<p><span class="description"><?php printf( esc_html__( 'Comma separated list of blog ids where %s is to be disabled.', 'mycred' ), esc_html( $name ) ); ?></span></p>
 						</div>
 					</div>
 				</div>

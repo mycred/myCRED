@@ -286,7 +286,10 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			$screen           = isset( $_POST['screen'] ) ? sanitize_key( $_POST['screen'] ) : '';
 
 			// Parse form submission
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			parse_str( $_POST['form'], $post );
+
+			$post = mycred_sanitize_array( $post );
 
 			// Apply defaults
 			$request          = shortcode_atts( apply_filters( 'mycred_update_log_entry_request', array(
@@ -461,7 +464,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 				// First get a clean list of ids to delete
 				$entry_ids = array();
-				foreach ( (array) $_GET['entry'] as $id ) {
+				foreach ( array_map( 'absint', wp_unslash( $_GET['entry'] ) ) as $id ) {
 					$id = absint( $id );
 					if ( $id === 0 || in_array( $id, $entry_ids ) ) continue;
 					$entry_ids[] = $id;
@@ -668,10 +671,10 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				echo '<input type="hidden" name="s" value="' . esc_attr( $search_args['s'] ) . '" />';
 
 			if ( isset( $_GET['ref'] ) )
-				echo '<input type="hidden" name="show" value="' . esc_attr( $_GET['ref'] ) . '" />';
+				echo '<input type="hidden" name="show" value="' . esc_attr( sanitize_key( $_GET['ref'] ) ) . '" />';
 
 			if ( isset( $_GET['show'] ) )
-				echo '<input type="hidden" name="show" value="' . esc_attr( $_GET['show'] ) . '" />';
+				echo '<input type="hidden" name="show" value="' . esc_attr( sanitize_key( $_GET['show'] ) ) . '" />';
 
 			if ( array_key_exists( 'order', $search_args ) )
 				echo '<input type="hidden" name="order" value="' . esc_attr( $search_args['order'] ) . '" />';
@@ -766,7 +769,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				echo '<input type="hidden" name="ref" value="' . esc_attr( $search_args['ref'] ) . '" />';
 
 			if ( isset( $_GET['show'] ) )
-				echo '<input type="hidden" name="show" value="' . esc_attr( $_GET['show'] ) . '" />';
+				echo '<input type="hidden" name="show" value="' . esc_attr( sanitize_key( $_GET['show'] ) ) . '" />';
 
 			elseif ( array_key_exists( 'time', $search_args ) )
 				echo '<input type="hidden" name="time" value="' . esc_attr( $search_args['time'] ) . '" />';

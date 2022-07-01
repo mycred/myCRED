@@ -34,8 +34,8 @@ if ( ! class_exists( 'myCRED_Remote' ) ) :
 			$this->core   = mycred();
 			$this->key    = $key;
 
-			$this->method = $_SERVER['REQUEST_METHOD'];
-			$this->uri    = explode( '/', $_SERVER['REQUEST_URI'] );
+			$this->method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '';
+			$this->uri    = explode( '/', isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' );
 			$this->format = '';
 
 			$this->parse_call();
@@ -105,12 +105,12 @@ if ( ! class_exists( 'myCRED_Remote' ) ) :
 			$parameters = array();
 
 			if ( isset( $_SERVER['QUERY_STRING'] ) )
-				parse_str( $_SERVER['QUERY_STRING'], $parameters );
+				parse_str( sanitize_text_field( wp_unslash( $_SERVER['QUERY_STRING'] ) ), $parameters );
 
 			$body         = file_get_contents( "php://input" );
 			$content_type = false;
 			if ( isset( $_SERVER['CONTENT_TYPE'] ) ) {
-				$content_type = $_SERVER['CONTENT_TYPE'];
+				$content_type = sanitize_text_field( wp_unslash( $_SERVER['CONTENT_TYPE'] ) );
 			}
 
 			switch ( $content_type ) {
@@ -168,22 +168,22 @@ if ( ! class_exists( 'myCRED_Remote' ) ) :
 		public function get_host_IP() {
 
 			if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) )
-				$this->host = $_SERVER['HTTP_CLIENT_IP'];
+				$this->host = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
 
 			elseif ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) )
-				$this->host = $_SERVER['HTTP_X_FORWARDED_FOR'];
+				$this->host = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
 
 			elseif ( isset( $_SERVER['HTTP_X_FORWARDED'] ) )
-				$this->host = $_SERVER['HTTP_X_FORWARDED'];
+				$this->host = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED'] ) );
 
 			elseif ( isset( $_SERVER['HTTP_FORWARDED_FOR'] ) )
-				$this->host = $_SERVER['HTTP_FORWARDED_FOR'];
+				$this->host = sanitize_text_field( wp_unslash( $_SERVER['HTTP_FORWARDED_FOR'] ) );
 
 			elseif ( isset( $_SERVER['HTTP_FORWARDED'] ) )
-				$this->host = $_SERVER['HTTP_FORWARDED'];
+				$this->host = sanitize_text_field( wp_unslash( $_SERVER['HTTP_FORWARDED'] ) );
 
 			elseif ( isset( $_SERVER['REMOTE_ADDR'] ) )
-				$this->host = $_SERVER['REMOTE_ADDR'];
+				$this->host = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
 
 			else
 				$this->host = 'UNKNOWN';
@@ -533,7 +533,7 @@ if ( ! function_exists( 'mycred_remote_init' ) ) :
 		$prefs = mycred_get_remote();
 		if ( ! $prefs['enabled'] ) return;
 
-		$uri   = explode( '/', $_SERVER['REQUEST_URI'] );
+		$uri   = explode( '/', isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' );
 		if ( isset( $uri[1] ) && $uri[1] == $prefs['uri'] ) {
 
 			// Load

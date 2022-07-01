@@ -35,7 +35,7 @@ if ( ! class_exists( 'myCRED_walkthroug' ) ) :
             wp_register_script( 'mycred-tourguide-script', plugins_url( 'assets/js/tourguide.min.js',myCRED_THIS ), array( 'jquery' ), myCRED_VERSION , true );
 
 
-				$step = intval($_GET['mycred_tour_guide']);
+				$step = isset( $_GET['mycred_tour_guide'] ) ? intval($_GET['mycred_tour_guide']) : '';
 
 				$redirect_url = '';
 

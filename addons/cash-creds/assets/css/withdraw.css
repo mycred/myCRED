@@ -76,10 +76,6 @@
 	float: right;
 }
 
-div#submit_button, .amount_label{
-	float: left;
-}
-
 .cashcred-tab{
 	 display:none;
 }

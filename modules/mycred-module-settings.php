@@ -171,10 +171,12 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			if ( ! isset( $_POST['type'] ) )
 				wp_send_json_error( 'Missing point type' );
 
-			$type = isset( $_POSt['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
+			$type = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
+
+			$identify = isset( $_POST['identify'] ) ? sanitize_text_field( wp_unslash( $_POST['identify'] ) ) : 'ID';
 
 			// Identify users by
-			switch ( $_POST['identify'] ) {
+			switch ( $identify ) {
 
 				case 'ID' :
 
@@ -455,8 +457,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			// If the requested tab exists, localize the accordion script to open this tab.
 			// For this to work, the variable "active" must be set to the position of the
 			// tab starting with zero for "Core".
-			if ( isset( $_REQUEST['open-tab'] ) && array_key_exists( $_REQUEST['open-tab'], $this->accordion_tabs ) )
-				wp_localize_script( 'mycred-accordion', 'myCRED', array( 'active' => $this->accordion_tabs[ $_REQUEST['open-tab'] ] ) );
+			if ( isset( $_REQUEST['open-tab'] ) && array_key_exists( sanitize_key( wp_unslash( $_REQUEST['open-tab'] ) ), $this->accordion_tabs ) )
+				wp_localize_script( 'mycred-accordion', 'myCRED', array( 'active' => $this->accordion_tabs[ sanitize_key( wp_unslash( $_REQUEST['open-tab'] ) ) ] ) );
 
 			wp_localize_script(
 				'mycred-type-management',
@@ -597,58 +599,12 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			);
 
 			$allowed_html = array(
-				'input' => array(
-					'class'		=> array(),
-					'type'  	=> array(),
-					'tabindex'	=> array(),
-					'autocorrect'	=> array(),
-					'autocapitalize' => array(),
-					'spellcheck'	=> array(),
-					'role'	=> array(),
-					'aria-autocomplete'	=> array(),
-					'autocomplete'	=> array(),
-					'aria-describedby'	=> array(),
-					'placeholder' 	=> array(),
-					'style'  	=> array()
-				),
-				'span'	=> array(
-					'class'		=> array(),
-					'dir'		=> array(),
-					'data-select2-id'	=> array(),
-					'style'		=> array(),
-					'aria-hidden' => array(),
-					'role'		=> array(),
-					'tabindex'	=> array(),
-					'aria-haspopup'	=> array(),
-					'aria-expanded'	=> array(),
-					'aria-disabled'	=> array()
-				),
-				'ul'	=> array(
-					'class'		=> array(),
-					'id'		=> array()
-				),
-				'li'	=> array(
-					'class'		=> array(),
-					'title'		=> array(),
-					'data-select2-id'	=> array(),
-				),
-				'button'	=> array(
-					'class'		=> array(),
-					'type'		=> array(),
-					'title'		=> array(),
-					'tabindex'	=> array(),
-					'aria-label'	=> array(),
-					'aria-describedby'	=> array(),
-				),
 				'select' => array(
 					'name'  	=> array(),
 					'id'		=> array(),
 					'class'		=> array(),
 					'style'		=> array(),
 					'multiple'	=> array(),
-					'data-select2-id'	=> array(),
-					'tabindex'	=> array(),
-					'aria-hidden' => array()
 				),
 				'option' => array(
 					'value'    => array(),
@@ -663,7 +619,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 	<?php $this->update_notice(); ?>
 
 	<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?>
-	<p id="mycred-thank-you-text"><?php printf( esc_html__( 'Thank you for using %s. If you have a moment, please leave a %s.', 'mycred' ), esc_html_e( mycred_label() ), sprintf( '<a href="https://wordpress.org/support/plugin/mycred/reviews/?rate=5#new-post" target="_blank">%s</a>', esc_html__( 'review', 'mycred' ) ) ); ?><span id="mycred-social-media"><?php echo implode( ' ',  $social  ) ; ?></span></p>
+	<p id="mycred-thank-you-text"><?php printf( esc_html__( 'Thank you for using %s. If you have a moment, please leave a %s.', 'mycred' ), esc_html_e( mycred_label() ), sprintf( '<a href="https://wordpress.org/support/plugin/mycred/reviews/?rate=5#new-post" target="_blank">%s</a>', esc_html__( 'review', 'mycred' ) ) ); ?><span id="mycred-social-media"><?php echo wp_kses_post( implode( ' ',  $social  ) ); ?></span></p>
 	<?php endif; ?>
 
 	<form method="post" action="options.php" class="form" name="mycred-core-settings-form" novalidate>
@@ -759,8 +715,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 								<div class="form-group">
 									<label for="<?php echo esc_attr( $excluded_ids_args['id'] ); ?>"><?php esc_html_e( 'Exclude Users', 'mycred' ); ?></label>
-									<?php echo mycred_create_select2( $all_users, $excluded_ids_args, $excluded_ids ); ?>
-									<?php //echo wp_kses( mycred_create_select2( $all_users, $excluded_ids_args, $excluded_ids ), $allowed_html ); ?>
+									<?php echo wp_kses( mycred_create_select2( $all_users, $excluded_ids_args, $excluded_ids ), $allowed_html ); ?>
 								</div>
 								<div class="form-group">
 									<div class="checkbox">
@@ -774,7 +729,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 								<div class="form-group">
 									<label for="<?php echo esc_attr( $roles_args['id'] ); ?>"><?php esc_html_e( 'Exclude by User Role', 'mycred' ); ?></label>
-									<?php echo mycred_create_select2( $roles, $roles_args, $excluded_roles ); ?>
+									<?php echo wp_kses( mycred_create_select2( $roles, $roles_args, $excluded_roles ), $allowed_html ); ?>
 								</div>
 							</div>
 						</div>
@@ -1300,7 +1255,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			
 			if( isset( $_GET['action'] ) && $_GET['action'] == 'mycred-get-users-to-exclude' )
 			{
-				$search = sanitize_text_field( $_GET['search'] );
+				$search = isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '';
 
 				$results = mycred_get_users_by_name_email( $search );
 

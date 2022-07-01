@@ -73,8 +73,12 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 				wp_send_json_error( 'ERROR_1' );
 
 			// Get the form
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			parse_str( $_POST['form'], $post );
+			
 			unset( $_POST );
+
+			$post = mycred_sanitize_array( $post );
 
 			$submitted       = $post['mycred_manage_balance'];
 
@@ -233,10 +237,10 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 ?>
 <div class="row ledger header">
-	<div class="col-xs-4"><strong><?php esc_html_e( 'Date', 'mycred' ); ?></strong></div>
-	<div class="col-xs-4"><strong><?php esc_html_e( 'Time', 'mycred' ); ?></strong></div>
-	<div class="col-xs-4"><strong><?php esc_html_e( 'Reference', 'mycred' ); ?></strong></div>
-	<div class="col-xs-12"><strong><?php esc_html_e( 'Entry', 'mycred' ); ?></strong></div>
+	<div class="col-md-3 col-sm-12"><strong><?php esc_html_e( 'Date', 'mycred' ); ?></strong></div>
+	<div class="col-md-3 col-sm-12"><strong><?php esc_html_e( 'Time', 'mycred' ); ?></strong></div>
+	<div class="col-md-3 col-sm-12"><strong><?php esc_html_e( 'Reference', 'mycred' ); ?></strong></div>
+	<div class="col-md-3 col-sm-12"><strong><?php esc_html_e( 'Entry', 'mycred' ); ?></strong></div>
 </div>
 <?php
 
@@ -258,10 +262,10 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 ?>
 <div class="row ledger">
-	<div class="col-xs-4"><?php echo $date; ?></div>
-	<div class="col-xs-4"><?php echo $time; ?></div>
-	<div class="col-xs-4"><?php echo $ref; ?></div>
-	<div class="col-xs-12"><?php echo $entry; ?></div>
+	<div class="col-md-3 col-sm-12"><?php echo esc_html( $date );?></div>
+	<div class="col-md-3 col-sm-12"><?php echo esc_html( $time );?></div>
+	<div class="col-md-3 col-sm-12"><?php echo esc_html( $ref );?></div>
+	<div class="col-md-3 col-sm-12"><?php echo esc_html( $entry );?></div>
 </div>
 <?php
 
@@ -398,7 +402,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 			if ( $screen === NULL || $screen->id != 'users' ) return;
 
 			if ( isset( $query->query_vars['orderby'] ) ) {
-
+;
 				global $wpdb;
 
 				$mycred_types = mycred_get_types();
@@ -409,15 +413,16 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 					$order = $query->query_vars['order'];
 
 				$mycred       = $this->core;
-				if ( isset( $_REQUEST['ctype'] ) && array_key_exists( $_REQUEST['ctype'], $mycred_types ) )
-					$mycred = mycred( $_REQUEST['ctype'] );
+
+				if ( isset( $_REQUEST['ctype'] ) && array_key_exists( sanitize_key( wp_unslash( $_REQUEST['ctype'] ) ), $mycred_types ) )
+					$mycred = mycred( sanitize_key( wp_unslash( $_REQUEST['ctype'] ) ) );
 
 				// Sort by only showing users with a particular point type
-				if ( $cred_id == 'balance' ) {
+				if ( $cred_id == 'mycred_default' ) {
 
 					$amount = $mycred->zero();
 					if ( isset( $_REQUEST['amount'] ) )
-						$amount = $mycred->number( $_REQUEST['amount'] );
+						$amount = $mycred->number( intval( $_REQUEST['amount'] ) );
 
 					$query->query_from  .= " LEFT JOIN {$wpdb->usermeta} mycred ON ({$wpdb->users}.ID = mycred.user_id AND mycred.meta_key = '{$mycred->cred_id}')";
 					$query->query_where .= " AND mycred.meta_value = {$amount}";
@@ -569,7 +574,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 ?>
 					<div class="mycred-wrapper balance-wrapper disabled-option color-option">
-						<div><?php echo $data['name']; ?></div>
+						<div><?php echo esc_html( $data['name'] ); ?></div>
 						<div class="balance-row">
 							<div class="balance-view"><?php esc_html_e( 'Excluded', 'mycred' ); ?></div>
 							<div class="balance-edit">&nbsp;</div>
@@ -583,11 +588,11 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 ?>
 					<div class="mycred-wrapper balance-wrapper color-option selected">
-						<?php if ( $data['can_edit'] ) : ?><div class="toggle-mycred-balance-editor"><a href="javascript:void(0);" data-type="<?php echo $point_type; ?>" data-view="<?php esc_attr_e( 'Edit', 'mycred' ); ?>" data-edit="<?php esc_attr_e( 'Cancel', 'mycred' ); ?>"><?php esc_html_e( 'Edit', 'mycred' ); ?></a></div><?php endif; ?>
-						<div><?php echo $data['name']; ?></div>
-						<div class="balance-row" id="mycred-balance-<?php echo $point_type; ?>">
-							<div class="balance-view"><?php echo $data['formatted']; ?></div>
-							<?php if ( $data['can_edit'] ) : ?><div class="balance-edit"><input type="text" name="mycred_new_balance[<?php echo $point_type; ?>]" value="" placeholder="<?php echo $data['raw']; ?>" size="12" /></div><?php endif; ?>
+						<?php if ( $data['can_edit'] ) : ?><div class="toggle-mycred-balance-editor"><a href="javascript:void(0);" data-type="<?php echo esc_attr( $point_type ); ?>" data-view="<?php esc_attr_e( 'Edit', 'mycred' ); ?>" data-edit="<?php esc_attr_e( 'Cancel', 'mycred' ); ?>"><?php esc_html_e( 'Edit', 'mycred' ); ?></a></div><?php endif; ?>
+						<div><?php echo esc_html( $data['name'] ); ?></div>
+						<div class="balance-row" id="mycred-balance-<?php echo esc_attr( $point_type ); ?>">
+							<div class="balance-view"><?php echo esc_html( $data['formatted'] ); ?></div>
+							<?php if ( $data['can_edit'] ) : ?><div class="balance-edit"><input type="text" name="mycred_new_balance[<?php echo esc_attr( $point_type ); ?>]" value="" placeholder="<?php echo esc_attr( $data['raw'] ); ?>" size="12" /></div><?php endif; ?>
 						</div>
 <?php
 
@@ -682,7 +687,8 @@ jQuery(function($){
 			$editor_id = get_current_user_id();
 
 			if ( isset( $_POST['mycred_new_balance'] ) && is_array( $_POST['mycred_new_balance'] ) && ! empty( $_POST['mycred_new_balance'] ) ) {
-
+				
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				foreach ( $_POST['mycred_new_balance'] as $point_type => $balance ) {
 
 					$point_type = sanitize_key( $point_type );
@@ -731,8 +737,8 @@ jQuery(function($){
 				ob_start();
 
 ?>
-<div id="edit-mycred-balance" style="display: none;">
-	<?php if ( $name == 'myCRED' ) : ?><img id="mycred-token-sitting" class="hidden-sm hidden-xs" src="<?php echo plugins_url( 'assets/images/token-sitting.png', myCRED_THIS ); ?>" alt="Token looking on" /><?php endif; ?>
+<div id="edit-mycred-balance">
+	<?php if ( $name == 'myCRED' ) : ?><img id="mycred-token-sitting" class="hidden-sm hidden-xs" src="<?php echo esc_url( plugins_url( 'assets/images/token-sitting.png', myCRED_THIS ) ); ?>" alt="Token looking on" /><?php endif; ?>
 	<div class="mycred-container">
 		<form class="form" method="post" action="" id="mycred-editor-form">
 			<input type="hidden" name="mycred_manage_balance[type]" value="" id="mycred-edit-balance-of-type" />
@@ -780,17 +786,17 @@ jQuery(function($){
 <?php
 
 				foreach ( $references as $ref_id => $ref_label ) {
-					echo '<option value="' . $ref_id . '"';
+					echo '<option value="' . esc_attr( $ref_id ). '"';
 					if ( $ref_id == $this->manual_reference ) echo ' selected="selected"';
-					echo '>' . $ref_label . '</option>';
+					echo '>' . esc_html( $ref_label ) . '</option>';
 				}
 
-				echo '<option value="mycred_custom">' . __( 'Log under a custom reference', 'mycred' ) . '</option>';
+				echo '<option value="mycred_custom">' . esc_html__( 'Log under a custom reference', 'mycred' ) . '</option>';
 
 ?>
 						</select>
 					</div>
-					<div id="mycred-custom-reference-wrapper" style="display: none;">
+					<div id="mycred-custom-reference-wrapper">
 						<input type="text" name="mycred_manage_balance[custom]" id="mycred-editor-custom-reference" placeholder="<?php esc_attr_e( 'lowercase without empty spaces', 'mycred' ); ?>" class="regular-text" value="" />
 					</div>
 				</div>
@@ -798,7 +804,7 @@ jQuery(function($){
 					<div class="form-group">
 						<label><?php esc_html_e( 'Log Entry', 'mycred' ); ?></label>
 						<input type="text" name="mycred_manage_balance[entry]" id="mycred-editor-entry" placeholder="<?php esc_attr_e( 'optional', 'mycred' ); ?>" class="regular-text" value="" />
-						<span class="description"><?php echo $mycred->available_template_tags( array( 'general', 'amount' ) ); ?></span>
+						<span class="description"><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'amount' ) ) ); ?></span>
 					</div>
 				</div>
 			</div>
@@ -811,7 +817,7 @@ jQuery(function($){
 			</div>
 		</form>
 
-		<div id="mycred-users-mini-ledger" style="display: none;">
+		<div id="mycred-users-mini-ledger">
 			<div class="border">
 				<div id="mycred-processing"><div class="loading-indicator"></div></div>
 			</div>
@@ -825,7 +831,57 @@ jQuery(function($){
 				$content = ob_get_contents();
 				ob_end_clean();
 
-				echo apply_filters( 'mycred_admin_inline_editor', $content );
+				$allowed_html = array(
+					'div' => array(
+						'id' => array(),
+						'class' => array(),
+						'style' => array()
+					),
+					'img' => array(
+						'id' => array(),
+						'class' => array(),
+						'src' => array(),
+						'alt' => array()
+					),
+					'form' => array(
+						'id' => array(),
+						'class' => array(),
+						'action' => array(),
+						'method' => array()
+					),
+					'input' => array(
+						'id' => array(),
+						'class' => array(),
+						'type' => array(),
+						'value' => array(),
+						'size' => array(),
+						'placeholder' => array(),
+						'name' => array()
+					),
+					'select' => array(
+						'id' => array(),
+						'name' => array()
+					),
+					'option' => array(
+						'value' => array(),
+						'selected' => array()
+					),
+					'span' => array(
+						'id' => array(),
+						'class' => array()
+					),
+					'button' => array(
+						'id' => array(),
+						'class' => array(),
+						'type' => array()
+					),
+					'label' => array()
+				);
+
+				echo wp_kses(
+					apply_filters( 'mycred_admin_inline_editor', $content ),
+					$allowed_html
+				);
 
 			}
 

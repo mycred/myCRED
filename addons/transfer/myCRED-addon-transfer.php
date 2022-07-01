@@ -101,16 +101,18 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		 */
 		public function register_script() {
 
-			global $mycred_do_transfer;
-
-			$mycred_do_transfer = false;
-
 			// Register script
 			wp_register_script(
 				'mycred-transfer',
 				plugins_url( 'assets/js/mycred-transfer.js', myCRED_TRANSFER ),
 				array( 'jquery', 'jquery-ui-autocomplete' ),
 				'1.7'
+			);
+
+			//Register style
+			wp_register_style( 
+				'mycred-transfer',
+				plugins_url( 'css/transfer.css', myCRED_TRANSFER ) 
 			);
 
 		}
@@ -128,7 +130,9 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 			if ( $mycred_do_transfer !== true ) return;
 
 			// Autofill CSS
-			echo '<style type="text/css">' . apply_filters( 'mycred_transfer_autofill_css', '.ui-autocomplete { position: absolute; z-index: 1000; cursor: default; padding: 0; margin-top: 2px; list-style: none; background-color: #ffffff; border: 1px solid #ccc; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); } .ui-autocomplete > li { padding: 3px 20px; } .ui-autocomplete > li:hover { background-color: #DDD; cursor: pointer; } .ui-autocomplete > li.ui-state-focus { background-color: #DDD; } .ui-helper-hidden-accessible { display: none; }', $this ) . '</style>';
+			wp_enqueue_style( 'mycred-transfer' );
+			$style = apply_filters( 'mycred_transfer_autofill_css', '.ui-autocomplete { position: absolute; z-index: 1000; cursor: default; padding: 0; margin-top: 2px; list-style: none; background-color: #ffffff; border: 1px solid #ccc; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); } .ui-autocomplete > li { padding: 3px 20px; } .ui-autocomplete > li:hover { background-color: #DDD; cursor: pointer; } .ui-autocomplete > li.ui-state-focus { background-color: #DDD; } .ui-helper-hidden-accessible { display: none; }', $this );
+			wp_add_inline_style( 'mycred-transfer', $style );
 
 			// Prep Script
 			$base     = array(
@@ -171,7 +175,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				array_merge_recursive( $base, $messages )
 			);
 
-			wp_enqueue_script( 'mycred-transfer' );
+			wp_enqueue_script( 'mycred-transfer' ); 
 
 		}
 
@@ -189,7 +193,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 			$results = array();
 			$user_id = get_current_user_id();
-			$string  = sanitize_text_field( $_REQUEST['string']['term'] );
+			$string  = isset( $_REQUEST['string']['term'] ) ? sanitize_key( $_REQUEST['string']['term'] ) : '';
 
 			// Let other play
 			do_action( 'mycred_transfer_autofill_find', $this->transfers, $this->core );
@@ -224,7 +228,10 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		 */
 		public function ajax_call_transfer() {
 
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized 
 			parse_str( $_POST['form'], $post );
+
+			$post = mycred_sanitize_array( $post );
 
 			// Generate Transaction ID for our records
 			$user_id        = get_current_user_id();
@@ -286,8 +293,8 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 				<?php else : ?>
 
-				<p class="form-control-static"><?php echo $this->core->plural(); ?></p>
-				<input type="hidden" name="mycred_pref_core[transfers][types][]" value="<?php echo MYCRED_DEFAULT_TYPE_KEY; ?>" />
+				<p class="form-control-static"><?php echo esc_html( $this->core->plural() ); ?></p>
+				<input type="hidden" name="mycred_pref_core[transfers][types][]" value="<?php echo esc_attr( MYCRED_DEFAULT_TYPE_KEY ); ?>" />
 
 				<?php endif; ?>
 
@@ -295,8 +302,8 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'reload' ); ?>"><?php esc_html_e( 'Reload', 'mycred' ); ?></label>
-				<select name="<?php echo $this->field_name( 'reload' ); ?>" id="<?php echo $this->field_id( 'reload' ); ?>" class="form-control">
+				<label for="<?php echo esc_attr( $this->field_id( 'reload' ) ); ?>"><?php esc_html_e( 'Reload', 'mycred' ); ?></label>
+				<select name="<?php echo esc_attr( $this->field_name( 'reload' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'reload' ) ); ?>" class="form-control">
 <?php
 
 			foreach ( $yes_no as $value => $label ) {
@@ -310,21 +317,21 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'message' ); ?>"><?php esc_html_e( 'Message Length', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'message' ); ?>" id="<?php echo $this->field_id( 'message' ); ?>" class="form-control" value="<?php echo absint( $settings['message'] ); ?>" />
+				<label for="<?php echo esc_attr( $this->field_id( 'message' ) ); ?>"><?php esc_html_e( 'Message Length', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'message' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'message' ) ); ?>" class="form-control" value="<?php echo esc_attr( absint( $settings['message'] ) ); ?>" />
 				<p><span class="description"><?php esc_html_e( 'The maximum length of messages users can attach to a transfer. Use zero to disable.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'autofill' ); ?>"><?php esc_html_e( 'Autofill Recipient', 'mycred' ); ?></label>
-				<select name="<?php echo $this->field_name( 'autofill' ); ?>" id="<?php echo $this->field_id( 'autofill' ); ?>" class="form-control">
+				<label for="<?php echo esc_attr( $this->field_id( 'autofill' ) ); ?>"><?php esc_html_e( 'Autofill Recipient', 'mycred' ); ?></label>
+				<select name="<?php echo esc_attr( $this->field_name( 'autofill' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'autofill' ) ); ?>" class="form-control">
 <?php
 
 			foreach ( $autofills as $key => $label ) {
-				echo '<option value="' . $key . '"';
+				echo '<option value="' . esc_attr( $key ) . '"';
 				if ( $autofill == $key ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+				echo '>' . esc_html( $label ) . '</option>';
 			}
 
 ?>
@@ -336,7 +343,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 	<div class="row">
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'limit' => 'none' ) ); ?>"><?php esc_html_e( 'Limits', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'limit' => 'none' ) ) ); ?>"><?php esc_html_e( 'Limits', 'mycred' ); ?></label>
 <?php
 
 			// Loop though limits
@@ -344,7 +351,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				foreach ( $limits as $key => $description ) {
 
 ?>
-				<div class="radio"><label for="<?php echo $this->field_id( array( 'limit' => $key ) ); ?>"><input type="radio" name="<?php echo $this->field_name( array( 'limit' => 'limit' ) ); ?>" id="<?php echo $this->field_id( array( 'limit' => $key ) ); ?>" <?php checked( $limit, $key ); ?> value="<?php echo $key; ?>" /> <?php echo $description; ?></label></div>
+				<div class="radio"><label for="<?php echo esc_attr( $this->field_id( array( 'limit' => $key ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'limit' => 'limit' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'limit' => $key ) ) ); ?>" <?php checked( $limit, $key ); ?> value="<?php echo esc_attr( $key ); ?>" /> <?php echo esc_html( $description ); ?></label></div>
 <?php
 
 				}
@@ -355,14 +362,14 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'limit' => 'amount' ) ); ?>"><?php esc_html_e( 'Limit Amount', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'limit' => 'amount' ) ); ?>" id="<?php echo $this->field_id( array( 'limit' => 'amount' ) ); ?>" class="form-control" value="<?php echo $this->core->number( $settings['limit']['amount'] ); ?>" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'limit' => 'amount' ) ) ); ?>"><?php esc_html_e( 'Limit Amount', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'limit' => 'amount' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'limit' => 'amount' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $this->core->number( $settings['limit']['amount'] ) ); ?>" />
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'templates' => 'button' ) ); ?>"><?php esc_html_e( 'Default Button Label', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'templates' => 'button' ) ); ?>" id="<?php echo $this->field_id( array( 'templates' => 'button' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['templates']['button'] ); ?>" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'templates' => 'button' ) ) ); ?>"><?php esc_html_e( 'Default Button Label', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'templates' => 'button' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'templates' => 'button' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['templates']['button'] ); ?>" />
 				<p><span class="description"><?php esc_html_e( 'The default transfer button label. You can override this in the shortcode or widget if needed.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
@@ -372,16 +379,16 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'logs' => 'sending' ) ); ?>"><?php esc_html_e( 'Log template for sending', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'logs' => 'sending' ) ); ?>" id="<?php echo $this->field_id( array( 'logs' => 'sending' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['logs']['sending'] ); ?>" />
-				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ), '%transfer_message%' ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'logs' => 'sending' ) ) ); ?>"><?php esc_html_e( 'Log template for sending', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'logs' => 'sending' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'logs' => 'sending' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['logs']['sending'] ); ?>" />
+				<p><span class="description"><?php echo wp_kses_post( $this->core->available_template_tags( array( 'general', 'user' ) , '%transfer_message%' ) ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'logs' => 'receiving' ) ); ?>"><?php esc_html_e( 'Log template for receiving', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'logs' => 'receiving' ) ); ?>" id="<?php echo $this->field_id( array( 'logs' => 'receiving' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['logs']['receiving'] ); ?>" />
-				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ), '%transfer_message%' ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'logs' => 'receiving' ) ) ); ?>"><?php esc_html_e( 'Log template for receiving', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'logs' => 'receiving' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'logs' => 'receiving' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['logs']['receiving'] ); ?>" />
+				<p><span class="description"><?php echo wp_kses_post( $this->core->available_template_tags( array( 'general', 'user' ), '%transfer_message%' ) ); ?></span></p>
 			</div>
 		</div>
 	</div>
@@ -390,15 +397,15 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'errors' => 'low' ) ); ?>"><?php esc_html_e( 'Insufficient Funds Warning', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'errors' => 'low' ) ); ?>" id="<?php echo $this->field_id( array( 'errors' => 'low' ) ); ?>" value="<?php echo esc_attr( $settings['errors']['low'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'errors' => 'low' ) ) ); ?>"><?php esc_html_e( 'Insufficient Funds Warning', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'errors' => 'low' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'errors' => 'low' ) ) ); ?>" value="<?php echo esc_attr( $settings['errors']['low'] ); ?>" class="form-control" />
 				<p><span class="description"><?php esc_html_e( 'Message to show the user if they try to send more then they can afford.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="mycred-transfer-log-receiving"><?php esc_html_e( 'Limit Reached Warning', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'errors' => 'over' ) ); ?>" id="<?php echo $this->field_id( array( 'errors' => 'over' ) ); ?>" value="<?php echo esc_attr( $settings['errors']['over'] ); ?>" class="form-control" />
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'errors' => 'over' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'errors' => 'over' ) ) ); ?>" value="<?php echo esc_attr( $settings['errors']['over'] ); ?>" class="form-control" />
 				<p><span class="description"><?php esc_html_e( 'Message to show the user once they reach their transfer limit. Ignored if no limits are enforced.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
@@ -410,7 +417,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 <?php
 
 			wp_editor( $settings['templates']['login'], $this->field_id( array( 'templates' => 'login' ) ), array(
-				'textarea_name' => $this->field_name( array( 'templates' => 'login' ) ),
+				'textarea_name' => esc_attr( $this->field_name( array( 'templates' => 'login' ) ) ),
 				'textarea_rows' => 10
 			) );
 
@@ -424,11 +431,11 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 <?php
 
 			wp_editor( $settings['templates']['limit'], $this->field_id( array( 'templates' => 'limit' ) ), array(
-				'textarea_name' => $this->field_name( array( 'templates' => 'limit' ) ),
+				'textarea_name' => esc_attr( $this->field_name( array( 'templates' => 'limit' ) ) ),
 				'textarea_rows' => 10
 			) );
 
-			echo '<p>' . $this->core->available_template_tags( array( 'general' ), '%limit% %left%' ) . '</p>';
+			echo '<p>' . wp_kses_post( $this->core->available_template_tags( array( 'general' ), '%limit% %left%' ) ) . '</p>';
 
 ?>
 		</div>
@@ -440,11 +447,11 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 <?php
 
 			wp_editor( $settings['templates']['balance'], $this->field_id( array( 'templates' => 'balance' ) ), array(
-				'textarea_name' => $this->field_name( array( 'templates' => 'balance' ) ),
+				'textarea_name' => esc_attr( $this->field_name( array( 'templates' => 'balance' ) ) ),
 				'textarea_rows' => 10
 			) );
 
-			echo '<p>' . $this->core->available_template_tags( array( 'general' ), '%balance%' ) . '</p>';
+			echo '<p>' . wp_kses_post( $this->core->available_template_tags( array( 'general' ), '%balance%' ) ) . '</p>';
 
 ?>
 		</div>

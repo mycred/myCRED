@@ -292,7 +292,8 @@ function mycred_load_buddypress_profile_hook() {
 		public function ajax_addremove_friend() {
 
 			// Bail if not a POST action
-			if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) )
+			$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_key( $_SERVER['REQUEST_METHOD'] ) ) : '';
+			if( 'POST' !== $request_method )
 				return;
 
 			$user_id = bp_loggedin_user_id();

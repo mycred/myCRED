@@ -1458,6 +1458,7 @@ jQuery(function($) {
 
 			if ( isset( $_POST['mycred_adjust_users_buyrates'] ) && is_array( $_POST['mycred_adjust_users_buyrates'] ) && ! empty( $_POST['mycred_adjust_users_buyrates'] ) ) {
 
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				foreach ( $_POST['mycred_adjust_users_buyrates'] as $ctype => $gateway ) {
 
 					$ctype  = sanitize_key( $ctype );

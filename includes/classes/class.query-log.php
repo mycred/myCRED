@@ -1285,8 +1285,9 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$current              = $this->get_pagenum();
 
 			$removable_query_args = wp_removable_query_args();
+			$url     = ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) ? set_url_scheme( sanitize_text_field( wp_unslash( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) ) : '';
 
-			$current_url          = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+			$current_url          = $url;
 			$current_url          = remove_query_arg( $removable_query_args, $current_url );
 			$current_url          = str_replace( '/' . $current . '/', '/', $current_url );
 			$current_url          = apply_filters( 'mycred_log_front_nav_url', $current_url, $this );
@@ -1383,7 +1384,8 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$output             = '';
 			$total_pages        = $this->max_num_pages;
 			$current            = $this->get_pagenum();
-			$current_url        = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+			$url     			= ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) ? set_url_scheme( sanitize_text_field( wp_unslash( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) ) : '';
+			$current_url        = $url;
 
 			if ( ! $this->is_admin )
 				$current_url = str_replace( '/page/' . $current . '/', '/', $current_url );
@@ -1692,7 +1694,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		public function the_entry( $log_entry, $wrap = 'td' ) {
 
 			if ( $this->render_mode )
-				echo $this->get_the_entry( $log_entry, $wrap );
+				echo wp_kses_post( $this->get_the_entry( $log_entry, $wrap ) );
 
 		}
 
@@ -1769,9 +1771,9 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 						$content = $time = apply_filters( 'mycred_log_date', date_i18n( $date_format, $log_entry->time ), $log_entry->time, $log_entry );
 						$content = '<time>' . $content . '</time>';
 
-						if ( $this->is_admin ) {
+						if ( $this->is_admin && empty( $_REQUEST['time'] ) ) {
 
-							$request_page = isset( $_REQUEST['page'] ) ? intval( $_REQUEST['page'] ) : 0;
+							$request_page = isset( $_REQUEST['page'] ) ? sanitize_key( wp_unslash( $_REQUEST['page'] ) ) : 'mycred';
 
 							$content .= '<div class="row-actions"><span class="view"><a href="' . esc_url( add_query_arg( array( 'page' => $request_page, 'time' => $this->get_time_for_filter( $log_entry->time ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Filter by Date', 'mycred' ) . '</a></span></div>';
 
@@ -1832,7 +1834,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 			if ( ! isset( $_REQUEST['user'] ) || $_REQUEST['user'] == '' ) {
 
-				$request_page = isset( $_REQUEST['page'] ) ? intval( $_REQUEST['page'] ) : 0;
+				$request_page = isset( $_REQUEST['page'] ) ? sanitize_key( wp_unslash( $_REQUEST['page'] ) ) : 'mycred';
 
 				$actions['view']   = '<a href="' . add_query_arg( array( 'page' => $request_page, 'user' => $entry->user_id ), admin_url( 'admin.php' ) ) . '">' . $filter_label . '</a>';
 			}
@@ -2028,7 +2030,7 @@ jQuery(function($) {
 		 */
 		protected function get_time_for_filter( $timestamp ) {
 
-			$start = strtotime( date( 'Y-m-d 00:00:00' ), $timestamp );
+			$start = strtotime( date( 'Y-m-d 00:00:00', $timestamp ) );
 			$end   = $start + ( DAY_IN_SECONDS - 1 );
 
 			return $start . ',' . $end;

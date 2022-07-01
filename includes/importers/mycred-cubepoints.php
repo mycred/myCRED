@@ -352,7 +352,7 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 			else {
 
 				$show_greet = false;
-				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( esc_html__( 'Import complete - A total of <strong>%d</strong> balances were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), esc_html( $this->imported ), esc_html( $this->skipped ) ) . '</p></div>';
+				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( wp_kses_post( __( 'Import complete - A total of <strong>%d</strong> balances were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ) ), esc_html( $this->imported ), esc_html( $this->skipped ) ) . '</p></div>';
 				echo '<p><a href="' . esc_url( admin_url( 'users.php' ) ) . '" class="button button-large button-primary">' . esc_html__( 'View Users', 'mycred' ) . '</a></p>';
 
 			}

@@ -71,7 +71,7 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 			foreach ( (array) $notices as $notice ) {
 
 				$notice = str_replace( array( "\r", "\n", "\t" ), '', $notice );
-				echo '<!-- Notice --><script type="text/javascript">(function(jQuery){jQuery.noticeAdd({ text: "' . wp_kses_post( $notice ) . '",stay: ' . esc_js( $stay ) . '});})(jQuery);</script>';
+				echo '<!-- Notice --><script type="text/javascript">(function(jQuery){jQuery.noticeAdd({ text: `' . wp_kses_post( $notice ) . '`,stay: ' . esc_js( $stay ) . '});})(jQuery);</script>';
 
 			}
 

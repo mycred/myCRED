@@ -681,6 +681,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 			if ( isset( $_POST['mycred_sell_this'] ) && ! empty( $_POST['mycred_sell_this'] ) ) {
 
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				foreach ( $_POST['mycred_sell_this'] as $point_type => $share ) {
 
 					$share = sanitize_text_field( $share );
@@ -1381,7 +1382,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 							'status' => 'disabled',
 							'price'  => 0,
 							'expire' => 0
-						), $_POST['mycred_sell_this'][ $point_type ] );
+						), mycred_sanitize_array( wp_unslash( $_POST['mycred_sell_this'][ $point_type ] ) ) );
 
 						if ( $submission['status'] == '' ) $submission['status'] = 'disabled';
 

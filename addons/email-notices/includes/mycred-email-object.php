@@ -194,6 +194,10 @@ if ( ! class_exists( 'myCRED_Email' ) ) :
 
 			if ( empty( $event ) || ! array_key_exists( 'user_id', $event ) ) return false;
 
+			$send = apply_filters( 'mycred_email_event', true, $event );
+
+			if( ! $send ) return;
+
 			$user_id    = absint( $event['user_id'] );
 
 			$user       = get_userdata( $user_id );

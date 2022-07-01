@@ -996,7 +996,8 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 			if( ! isset( $_POST['mycred_coupon']['check'] ) ){
 				$_POST['mycred_coupon']['check'] = false;
 			}
-
+			
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			foreach ( $_POST['mycred_coupon'] as $meta_key => $meta_value ) {
 
 				if( $meta_key == 'reward' ){

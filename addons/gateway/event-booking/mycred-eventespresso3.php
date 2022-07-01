@@ -450,7 +450,7 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 <?php if ( $this->update ) : ?>
 <h2 style="color: green;"><?php esc_html_e( 'Settings Updated', 'mycred' ); ?></h2>
 <?php endif; ?>
-<form method="post" action="<?php echo esc_url( $_SERVER['REQUEST_URI'] ); ?>#mycred-gate">
+<form method="post" action="<?php echo isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : ''; ?>#mycred-gate">
 
 	<?php do_action( 'mycred_espresso_before_prefs' ); ?>
 

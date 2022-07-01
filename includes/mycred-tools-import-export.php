@@ -18,37 +18,37 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
         $ranks = get_mycred_tools_page_url( 'ranks' );
         $setup = get_mycred_tools_page_url( 'setup' );
 
-        $page = isset( $_GET['mycred-tools'] ) ? $_GET['mycred-tools'] : '';
+        $page = isset( $_GET['mycred-tools'] ) ? sanitize_text_field( wp_unslash( $_GET['mycred-tools'] ) ) : '';
         
         $heading = $_GET['mycred-tools'] == 'setup' ? __( 'Export','mycred' ) : __( 'Import','mycred' );
 
-        echo  "<h1>{$heading}</h1>";
+        echo  '<h1>' . esc_html( $heading ) . '</h1>';
         ?>
         
         <div class="subsubsub">
-            <a href="<?php echo $points; ?>" class="<?php echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'points' ) ? 'current' : ''; ?>"><?php esc_html_e( 'Points','mycred' ); ?></a>
+            <a href="<?php echo esc_url( $points ); ?>" class="<?php echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'points' ) ? 'current' : ''; ?>"><?php esc_html_e( 'Points','mycred' ); ?></a>
             <?php
             if( class_exists( 'myCRED_Badge' ) )
             {
                 $current = ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'badges' ) ? 'current' : '';
-                echo "| <a href='{$badges}' class='{$current}'> Badges</a>";
+                echo '| <a href="' . esc_url( $badges ) . '" class="' . esc_attr( $current ) . '"> Badges</a>';
             }
 
             if( class_exists( 'myCRED_Ranks_Module' ) )
             {
                 $current = ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'ranks' ) ? 'current' : '';
-                echo "| <a href='{$ranks}' class='{$current}'>Ranks</a>";
+                echo '| <a href="' . esc_url( $ranks ) . '" class="' . esc_attr( $current ) . '">Ranks</a>';
             }
             ?>
 
-            | <a href="<?php echo $setup; ?>" class="<?php echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'setup' ) ? 'current' : ''; ?>"><?php esc_html_e( 'Setup','mycred' ); ?></a>
+            | <a href="<?php echo esc_url( $setup ); ?>" class="<?php echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'setup' ) ? 'current' : ''; ?>"><?php esc_html_e( 'Setup','mycred' ); ?></a>
 
-            <input type="hidden" class="request-tab" value="<?php echo $_GET['mycred-tools'] ?>" />
+            <input type="hidden" class="request-tab" value="<?php echo esc_attr( sanitize_text_field( wp_unslash( $_GET['mycred-tools'] ) ) ); ?>" />
         </div>
         <br class="clear">
         <?php
 
-        echo $this->get_body( $page );
+        $this->get_body( $page );
     }
 
     public function get_body( $page )
@@ -141,12 +141,40 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
             <div class="mycred-container">
                 <label><?php esc_html_e( 'Select Point Types','mycred' ); ?></label>
-                <?php echo mycred_create_select2( $pt_options, $pr_attr ) ?>
+                <?php 
+                    echo wp_kses( 
+                        mycred_create_select2( $pt_options, $pr_attr ),
+                        array(
+                            'select' => array(
+                                'id' => array(),
+                                'style' => array(),
+                                'multiple' => array()
+                            ),
+                            'option' => array(
+                                'value' => array(),
+                                'selected' => array()
+                            ),
+                        )
+                    );
+                ?>
             </div>
 
             <div class="mycred-container">
-                <label><?php esc_html_e( 'User Field in Exported File', 'mycred' ); ?></label>
-                <?php echo mycred_create_select2( $uf_options, $uf_attr ) ?>
+                <label><?php esc_html_e( 'User Field in Exported File', 'mycred' );?></label>
+                <?php echo wp_kses(
+                        mycred_create_select2( $uf_options, $uf_attr ),
+                        array(
+                            'select' => array(
+                                'id' => array(),
+                                'style' => array()
+                            ),
+                            'option' => array(
+                                'value' => array(),
+                                'selected' => array()
+                            ),
+                        )
+                    );
+                ?>
             </div>
 
             <div class="mycred-container">
@@ -215,7 +243,20 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                     <td>
                         <form method="post" enctype="multipart/form-data">
                             <input type="file" id="import-file" name="file" accept=".csv" />
-                            <?php echo mycred_create_select2( $type_options, $type_attr ) ?>
+                            <?php echo wp_kses(
+                                    mycred_create_select2( $type_options, $type_attr ),
+                                    array(
+                                        'select' => array(
+                                            'id' => array(),
+                                            'style' => array()
+                                        ),
+                                        'option' => array(
+                                            'value' => array(),
+                                            'selected' => array()
+                                        ),
+                                    )
+                                ); 
+                            ?>
                             <button class="button button-primary", id="import">
                                 <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import User Badges','mycred' ); ?>
                             </button>
@@ -255,17 +296,57 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
             <div class="mycred-container">
                 <label><?php esc_html_e( 'Select Badges','mycred' ); ?></label>
-                <?php echo mycred_create_select2( $badges_options, $badges_attr ) ?>
+                <?php echo wp_kses(
+                        mycred_create_select2( $badges_options, $badges_attr ),
+                        array(
+                            'select' => array(
+                                'id' => array(),
+                                'style' => array(),
+                                'multiple' => array()
+                            ),
+                            'option' => array(
+                                'value' => array(),
+                                'selected' => array()
+                            ),
+                        )
+                    ); 
+                ?>
             </div>
 
             <div class="mycred-container">
                 <label><?php esc_html_e( 'User Field in Exported File', 'mycred' ); ?></label>
-                <?php echo mycred_create_select2( $uf_options, $uf_attr ) ?>
+                <?php echo wp_kses(
+                        mycred_create_select2( $uf_options, $uf_attr ),
+                        array(
+                            'select' => array(
+                                'id' => array(),
+                                'style' => array()
+                            ),
+                            'option' => array(
+                                'value' => array(),
+                                'selected' => array()
+                            ),
+                        )
+                    ); 
+                ?>
             </div>
 
             <div class="mycred-container">
                 <label><?php esc_html_e( 'Badge Fields in Exported File', 'mycred' ); ?></label>
-                <?php echo mycred_create_select2( $badges_fields_options, $badges_fields_attr ) ?>
+                <?php echo wp_kses(
+                        mycred_create_select2( $badges_fields_options, $badges_fields_attr ),
+                        array(
+                            'select' => array(
+                                'id' => array(),
+                                'style' => array()
+                            ),
+                            'option' => array(
+                                'value' => array(),
+                                'selected' => array()
+                            ),
+                        )
+                    ); 
+                ?>
             </div>
 
             <div class="mycred-container">
@@ -335,7 +416,20 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                         <td>
                             <form method="post" enctype="multipart/form-data">
                                 <input type="file" id="import-file" name="file" accept=".csv" />
-                                <?php echo mycred_create_select2( $type_options, $type_attr ) ?>
+                                <?php echo wp_kses(
+                                        mycred_create_select2( $type_options, $type_attr ),
+                                        array(
+                                            'select' => array(
+                                                'id' => array(),
+                                                'style' => array()
+                                            ),
+                                            'option' => array(
+                                                'value' => array(),
+                                                'selected' => array()
+                                            ),
+                                        )
+                                    ); 
+                                ?>
                                 <button class="button button-primary", id="import">
                                     <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import User Ranks','mycred' ); ?>
                                 </button>
@@ -375,17 +469,57 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
                 <div class="mycred-container">
                     <label><?php esc_html_e( 'Select Ranks','mycred' ); ?></label>
-                    <?php echo mycred_create_select2( $ranks_options, $ranks_attr ) ?>
+                    <?php echo wp_kses(
+                            mycred_create_select2( $ranks_options, $ranks_attr ),
+                            array(
+                                'select' => array(
+                                    'id' => array(),
+                                    'style' => array(),
+                                    'multiple' => array()
+                                ),
+                                'option' => array(
+                                    'value' => array(),
+                                    'selected' => array()
+                                ),
+                            )
+                        ); 
+                    ?>
                 </div>
 
                 <div class="mycred-container">
                     <label><?php esc_html_e( 'User Field in Exported File', 'mycred' ); ?></label>
-                    <?php echo mycred_create_select2( $uf_options, $uf_attr ) ?>
+                    <?php echo wp_kses(
+                            mycred_create_select2( $uf_options, $uf_attr ),
+                            array(
+                                'select' => array(
+                                    'id' => array(),
+                                    'style' => array()
+                                ),
+                                'option' => array(
+                                    'value' => array(),
+                                    'selected' => array()
+                                ),
+                            )
+                        ); 
+                    ?>
                 </div>
 
                 <div class="mycred-container">
                     <label><?php esc_html_e( 'Rank Fields in Exported File', 'mycred' ); ?></label>
-                    <?php echo mycred_create_select2( $ranks_fields_options, $ranks_fields_attr ) ?>
+                    <?php echo wp_kses(
+                            mycred_create_select2( $ranks_fields_options, $ranks_fields_attr ),
+                            array(
+                                'select' => array(
+                                    'id' => array(),
+                                    'style' => array()
+                                ),
+                                'option' => array(
+                                    'value' => array(),
+                                    'selected' => array()
+                                ),
+                            )
+                        ); 
+                    ?>
                 </div>
 
                 <div class="mycred-container">
@@ -960,17 +1094,18 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
         if( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-tools-import-export' )
         {
             //Export Raw points 
-            if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'points' && $_POST['request'] == 'export' )
+            if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'points' && isset( $_POST['request'] ) && $_POST['request'] == 'export' )
             {
-                $point_types = sanitize_text_field( $_POST['types'] );
-                $point_types = stripslashes( $point_types );
+
+                $point_types = isset( $_POST['types'] ) ? sanitize_text_field( wp_unslash( $_POST['types'] ) ) : json_encode( array( MYCRED_DEFAULT_TYPE_KEY ) );
                 $point_types = json_decode( $point_types );
 
                 $point_types = mycred_sanitize_array( $point_types );
                 
-                $user_field = sanitize_text_field( $_POST['user_field'] );
+                $user_field = isset( $_POST['user_field'] ) ? sanitize_text_field( wp_unslash( $_POST['user_field'] ) ) : 'id';
+                $template   = isset( $_POST['template'] ) ? sanitize_text_field( wp_unslash( $_POST['template'] ) ) : 'raw';
                 
-                return $this->export_csv( 'points', sanitize_text_field( $_POST['template'] ), $user_field, $point_types );
+                return $this->export_csv( 'points', $template, $user_field, $point_types );
 
                 die;
             }
@@ -978,7 +1113,9 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
             //Import Points
             if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'points' && $_POST['request'] == 'import' && isset( $_FILES ) )
             {
-                $file_path = sanitize_text_field( $_FILES['_file']['tmp_name'] );
+
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+                $file_path = isset( $_FILES['_file']['tmp_name'] ) ? sanitize_text_field( $_FILES['_file']['tmp_name'] ) : '';
     
                 $this->import_csv( $file_path, 'points' );
             }
@@ -1001,21 +1138,21 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
             //Badges
             //Export Raw Badges
-            if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'badges' && $_POST['request'] == 'export' )
+            if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'badges' && isset( $_POST['request'] ) && $_POST['request'] == 'export' )
             {
-                $template = sanitize_text_field( $_POST['template'] );
+                $template = isset( $_POST['template'] ) ? sanitize_text_field( wp_unslash( $_POST['template'] ) ) : 'raw';
 
-                $user_field = sanitize_text_field( $_POST['user_field'] );
+                $user_field = isset( $_POST['user_field'] ) ? sanitize_text_field( wp_unslash( $_POST['user_field'] ) ) : 'id';
 
-                $post_field = sanitize_text_field( $_POST['post_field'] );
+                $post_field = isset( $_POST['post_field'] ) ? sanitize_text_field( wp_unslash( $_POST['post_field'] ) ) : 'id';
 
-                $badges = stripslashes( $_POST['types'] );
+                $badges = isset( $_POST['types'] ) ? sanitize_text_field( wp_unslash( $_POST['types'] ) ) : json_encode( array() );
 
                 $badges = json_decode( $badges );
 
                 $badges = mycred_sanitize_array( $badges );
 
-                return $this->export_csv( 'badges', $template, $user_field, $badges, $post_field);
+                return $this->export_csv( 'badges', $template, $user_field, $badges, $post_field );
 
                 die;
             }
@@ -1023,9 +1160,11 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
             //Import Badges
             if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'badges' && $_POST['request'] == 'import' && isset( $_FILES ) )
             {
-                $file_path = sanitize_text_field( $_FILES['_file']['tmp_name'] );
 
-                $import_format_type = sanitize_text_field( $_POST['import_format_type'] );
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+                $file_path = isset( $_FILES['_file']['tmp_name'] ) ? sanitize_text_field( $_FILES['_file']['tmp_name'] ) : '';
+
+                $import_format_type = isset( $_POST['import_format_type'] ) ? sanitize_text_field( wp_unslash( $_POST['import_format_type'] ) ) : 'id';
 
                 $this->import_csv( $file_path, 'badges',  $import_format_type  );
             }
@@ -1043,9 +1182,10 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
             //Import Ranks
             if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'ranks' && $_POST['request'] == 'import' && isset( $_FILES ) )
             {
-                $file_path = sanitize_text_field( $_FILES['_file']['tmp_name'] );
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+                $file_path = isset( $_FILES['_file']['tmp_name'] ) ? sanitize_text_field( $_FILES['_file']['tmp_name'] ) : '';
 
-                $import_format_type = sanitize_text_field( $_POST['import_format_type'] );
+                $import_format_type = isset( $_POST['import_format_type'] ) ? sanitize_text_field( wp_unslash( $_POST['import_format_type'] ) ) : 'id';
 
                 $this->import_csv( $file_path, 'ranks',  $import_format_type  );
             }
@@ -1053,13 +1193,14 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
             //Export Raw Ranks
             if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'ranks' && $_POST['request'] == 'export' )
             {
-                $template = sanitize_text_field( $_POST['template'] );
 
-                $user_field = sanitize_text_field( $_POST['user_field'] );
+                $template = isset( $_POST['template'] ) ? sanitize_text_field( wp_unslash( $_POST['template'] ) ) : 'raw';
 
-                $post_field = sanitize_text_field( $_POST['post_field'] );
+                $user_field = isset( $_POST['user_field'] ) ? sanitize_text_field( wp_unslash( $_POST['user_field'] ) ) : 'id';
 
-                $ranks = stripslashes( $_POST['types'] );
+                $post_field = isset( $_POST['post_field'] ) ? sanitize_text_field( wp_unslash( $_POST['post_field'] ) ) : 'id';
+
+                $ranks = isset( $_POST['types'] ) ? sanitize_text_field( wp_unslash( $_POST['types'] ) ) : json_encode( array() );
 
                 $ranks = json_decode( $ranks );
 
@@ -1083,9 +1224,10 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
             //Export Setup
             if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'setup' && ( isset( $_POST['template'] ) && $_POST['template'] == 'raw' ) )
             {
-                $setup_types = mycred_sanitize_array( $_POST['setup_types'] );
                 
-                $template = sanitize_text_field( $_POST['template'] );
+                $setup_types = isset( $_POST['setup_types'] ) ? mycred_sanitize_array( wp_unslash( $_POST['setup_types'] ) ) : array();
+                
+                $template    = isset( $_POST['template'] ) ? sanitize_text_field( wp_unslash( $_POST['template'] ) ) : 'raw';
 
                 return $this->export_csv( 'setup', $template, '', '', $setup_types );
             }
@@ -1094,7 +1236,8 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
             //Import Setup
             if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'setup' && $_POST['request'] == 'import' )
             {
-                $file_path = sanitize_text_field( $_FILES['_file']['tmp_name'] );
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+                $file_path = isset( $_FILES['_file']['tmp_name'] ) ? sanitize_text_field( $_FILES['_file']['tmp_name'] ) : '';
 
                 $this->import_setup_json( $file_path );
             }

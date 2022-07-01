@@ -153,7 +153,6 @@ if (! function_exists('mycred_render_my_badges') ) :
 
                     if ( $badge->level_image !== false ) {
 
-                        var_dump( $level, $badge );
                        
                         echo '<div class="demo-badge-image">' . wp_kses_post( $badge->get_image( $level ) ) . '</div>';
 

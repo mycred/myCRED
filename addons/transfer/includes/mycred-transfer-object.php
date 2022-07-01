@@ -388,6 +388,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( empty( $this->transferable_types ) ) {
 
 				$this->errors['excluded'] = $transfer_notices['excluded'];
+				$mycred_do_transfer       = false;
 
 				return false;
 
@@ -397,6 +398,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( ! $this->user_can_transfer_minimum() ) {
 
 				$this->errors['minimum'] = $transfer_notices['minimum'];
+				$mycred_do_transfer      = false;
 
 				return false;
 
@@ -406,6 +408,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( $this->user_is_over_limit() ) {
 
 				$this->errors['limit'] = $transfer_notices['limit'];
+				$mycred_do_transfer    = false;
 
 				return false;
 
@@ -648,7 +651,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 				$this->request['amount'] = $transfered_attributes->amount;
 			}
 
-			$this->recipient_id    = absint( $recipient_id );
+			$this->recipient_id    = apply_filters( 'mycred_transfer_recipient', absint( $recipient_id ), $this->request );
 
 			// We are trying to transfer to ourselves
 			if ( $this->recipient_id == $this->sender_id )
@@ -1011,7 +1014,6 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 				)
 			);
 			
-
 			$field = '<div class="form-group select-recipient-wrapper">';
 			if ( $this->args['recipient_label'] != '' ) $field .= '<label class="recipient-label">' . esc_html( $this->args['recipient_label'] ) . '</label>';
 
@@ -1073,6 +1075,49 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 		 */
 		public function get_transfer_points_field( $return = false ) {
 
+			$allowed_html = array(
+				'label'	=> array(
+					'class'			=> array()
+				),
+				'input' => array(
+					'type'  		=> array(),
+					'value' 		=> array(),
+					'name'  		=> array(),
+					'class'			=> array(),
+					'aria-required'	=> array(),
+					'data-form'		=> array(),
+					'placeholder'	=> array(),
+					'autocomplete'	=> array(),
+					'id'			=> array()
+				),
+				'ul' 	=> array(
+					'id'			=> array(),
+					'tabindex'		=> array(),
+					'class'			=> array(),
+					'unselectable'	=> array(),
+					'style'			=> array(),
+				),
+				'li'	=> array(
+					'class'			=> array()
+				),
+				'div'	=> array(
+					'class'			=> array(),
+					'id'			=> array(),
+					'tabindex'		=> array()
+				),
+				'span'	=> array(
+					'class'			=> array()
+				),
+				'select' => array(
+					'name'  		=> array(),
+					'class'			=> array()
+				),
+				'option' => array(
+					'value'    		=> array(),
+					'selected' 		=> array()
+				)
+			);
+
 			// Transfer of one particular point type
 			if ( count( $this->transferable_types ) == 1 ) {
 
@@ -1099,7 +1144,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( $return )
 				return $field;
 
-			echo $field;
+			echo wp_kses( $field , $allowed_html );
 
 		}
 
@@ -1110,16 +1155,59 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 		 */
 		public function get_transfer_amount_field( $return = false ) {
 
+			$allowed_html = array(
+				'label'	=> array(
+					'class'			=> array()
+				),
+				'input' => array(
+					'type'  		=> array(),
+					'value' 		=> array(),
+					'name'  		=> array(),
+					'class'			=> array(),
+					'aria-required'	=> array(),
+					'data-form'		=> array(),
+					'placeholder'	=> array(),
+					'autocomplete'	=> array(),
+					'id'			=> array()
+				),
+				'ul' 	=> array(
+					'id'			=> array(),
+					'tabindex'		=> array(),
+					'class'			=> array(),
+					'unselectable'	=> array(),
+					'style'			=> array(),
+				),
+				'li'	=> array(
+					'class'			=> array()
+				),
+				'div'	=> array(
+					'class'			=> array(),
+					'id'			=> array(),
+					'tabindex'		=> array()
+				),
+				'span'	=> array(
+					'class'			=> array()
+				),
+				'select' => array(
+					'name'  		=> array(),
+					'class'			=> array()
+				),
+				'option' => array(
+					'value'    		=> array(),
+					'selected' 		=> array()
+				)
+			);
+			
 			$type_id    = $this->transferable_types[0];
 			$balance    = $this->balances[ $type_id ];
 			$point_type = $balance->point_type;
 
 			$field      = '<div class="form-group select-amount-wrapper">';
-			if ( $this->args['amount_label'] != '' ) $field .= '<label class="amount-label">' . esc_html( $this->args['amount_label'] ) . '</label>';
+			if ( $this->args['amount_label'] != '' ) $field .= '<label class="amount-label">' . esc_attr( $this->args['amount_label'] ) . '</label>';
 
 			// User needs to nominate the amount
 			if ( ! is_array( $this->transfer_amount ) && $this->transfer_amount == 0 ){
-				$field .= '<input type="text" name="mycred_new_transfer[amount]" placeholder="' . esc_html( $this->args['amount_placeholder'] ) . '" class="form-control" value="" />';	
+				$field .= '<input type="text" name="mycred_new_transfer[amount]" placeholder="' . esc_attr( $this->args['amount_placeholder'] ) . '" class="form-control" value="" />';	
 			}
 			// Multiple amounts to pick from
 			elseif ( is_array( $this->transfer_amount ) && count( $this->transfer_amount ) > 1 ) {
@@ -1127,7 +1215,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 				$field .= '<select name="mycred_new_transfer[amount]" class="form-control">';
 
 				foreach ( $this->transfer_amount as $amount )
-					$field .= '<option value="' . esc_attr( $amount ) . '">' . esc_attr( $amount ) . '</option>';
+					$field .= '<option value="' . esc_attr( $amount ) . '">' . esc_html( $amount ) . '</option>';
 
 				$field .= '</select>';
 
@@ -1138,7 +1226,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 
 				$this->shortcode_attr['amount'] = $this->transfer_amount;
 				$field .= '<input type="hidden" name="mycred_new_transfer[amount]" value="' . esc_attr( $this->transfer_amount ) . '" />';
-				$field .= '<span class="form-control-static" id="mycred-transfer-form-amount-field">' . esc_attr( $this->transfer_amount ) . '</span>';
+				$field .= '<span class="form-control-static" id="mycred-transfer-form-amount-field">' . esc_html( $this->transfer_amount ) . '</span>';
 
 			}
 
@@ -1149,7 +1237,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( $return )
 				return $field;
 
-			echo $field;
+			echo wp_kses( $field , $allowed_html );
 
 		}
 
@@ -1160,6 +1248,49 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 		 */
 		public function get_transfer_point_type_field( $return = false ) {
 
+			$allowed_html = array(
+				'label'	=> array(
+					'class'			=> array()
+				),
+				'input' => array(
+					'type'  		=> array(),
+					'value' 		=> array(),
+					'name'  		=> array(),
+					'class'			=> array(),
+					'aria-required'	=> array(),
+					'data-form'		=> array(),
+					'placeholder'	=> array(),
+					'autocomplete'	=> array(),
+					'id'			=> array()
+				),
+				'ul' 	=> array(
+					'id'			=> array(),
+					'tabindex'		=> array(),
+					'class'			=> array(),
+					'unselectable'	=> array(),
+					'style'			=> array(),
+				),
+				'li'	=> array(
+					'class'			=> array()
+				),
+				'div'	=> array(
+					'class'			=> array(),
+					'id'			=> array(),
+					'tabindex'		=> array()
+				),
+				'span'	=> array(
+					'class'			=> array()
+				),
+				'select' => array(
+					'name'  		=> array(),
+					'class'			=> array()
+				),
+				'option' => array(
+					'value'    		=> array(),
+					'selected' 		=> array()
+				)
+			);
+			
 			$field = '<input type="hidden" name="mycred_new_transfer[ctype]" value="' . esc_attr( $this->transferable_types[0] ) . '" />';
 
 			$this->shortcode_attr['types'][] = $this->transferable_types[0];
@@ -1187,7 +1318,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( $return )
 				return $field;
 
-			echo $field;
+			echo wp_kses( $field, $allowed_html );
 
 		}
 
@@ -1201,6 +1332,49 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			$message = array();
 
 			$field = '';
+
+			$allowed_html = array(
+				'label'	=> array(
+					'class'			=> array()
+				),
+				'input' => array(
+					'type'  		=> array(),
+					'value' 		=> array(),
+					'name'  		=> array(),
+					'class'			=> array(),
+					'aria-required'	=> array(),
+					'data-form'		=> array(),
+					'placeholder'	=> array(),
+					'autocomplete'	=> array(),
+					'id'			=> array()
+				),
+				'ul' 	=> array(
+					'id'			=> array(),
+					'tabindex'		=> array(),
+					'class'			=> array(),
+					'unselectable'	=> array(),
+					'style'			=> array(),
+				),
+				'li'	=> array(
+					'class'			=> array()
+				),
+				'div'	=> array(
+					'class'			=> array(),
+					'id'			=> array(),
+					'tabindex'		=> array()
+				),
+				'span'	=> array(
+					'class'			=> array()
+				),
+				'select' => array(
+					'name'  		=> array(),
+					'class'			=> array()
+				),
+				'option' => array(
+					'value'    		=> array(),
+					'selected' 		=> array()
+				)
+			);
 
 			if ( (bool) $this->args['show_message'] && $this->settings['message'] > 0 ) {
 
@@ -1223,7 +1397,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( $return )
 				return $field;
 
-			echo $field;
+			echo wp_kses( $field, $allowed_html );
 
 		}
 
@@ -1234,6 +1408,49 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 		 */
 		public function get_transfer_extra_fields( $return = false ) {
 
+			$allowed_html = array(
+				'label'	=> array(
+					'class'			=> array()
+				),
+				'input' => array(
+					'type'  		=> array(),
+					'value' 		=> array(),
+					'name'  		=> array(),
+					'class'			=> array(),
+					'aria-required'	=> array(),
+					'data-form'		=> array(),
+					'placeholder'	=> array(),
+					'autocomplete'	=> array(),
+					'id'			=> array()
+				),
+				'ul' 	=> array(
+					'id'			=> array(),
+					'tabindex'		=> array(),
+					'class'			=> array(),
+					'unselectable'	=> array(),
+					'style'			=> array(),
+				),
+				'li'	=> array(
+					'class'			=> array()
+				),
+				'div'	=> array(
+					'class'			=> array(),
+					'id'			=> array(),
+					'tabindex'		=> array()
+				),
+				'span'	=> array(
+					'class'			=> array()
+				),
+				'select' => array(
+					'name'  		=> array(),
+					'class'			=> array()
+				),
+				'option' => array(
+					'value'    		=> array(),
+					'selected' 		=> array()
+				)
+			);
+			
 			// Show Balance 
 			$extras = array();
 			if ( (bool) $this->args['show_balance'] && ! empty( $this->settings['templates']['balance'] ) ) {
@@ -1294,7 +1511,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( $return )
 				return $field;
 
-			echo $field;
+			echo wp_kses_post( $field, $allowed_html );
 
 		}
 
@@ -1388,7 +1605,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( $return )
 				return $content;
 
-			echo $content;
+			echo wp_kses_post( $content );
 
 		}
 

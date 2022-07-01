@@ -110,8 +110,8 @@ class myCRED_Tools {
 			<div class="clear"></div>
 			<div class="mycred-tools-main-nav">
 				<h2 class="nav-tab-wrapper">
-					<a href="<?php echo admin_url('admin.php?page=mycred-tools') ?>" class="nav-tab <?php echo !isset( $_GET['mycred-tools'] ) ? 'nav-tab-active' : ''; ?>">Bulk Assign</a>
-					<a href="<?php echo $import_export ?>" class="nav-tab <?php echo ( isset( $_GET['mycred-tools'] ) && in_array( $_GET['mycred-tools'], $pages ) ) ? 'nav-tab-active' : ''; ?>">Import/Export</a>
+					<a href="<?php echo esc_url( admin_url('admin.php?page=mycred-tools') ) ?>" class="nav-tab <?php echo !isset( $_GET['mycred-tools'] ) ? 'nav-tab-active' : ''; ?>">Bulk Assign</a>
+					<a href="<?php echo esc_url( $import_export ) ?>" class="nav-tab <?php echo ( isset( $_GET['mycred-tools'] ) && in_array( $_GET['mycred-tools'], $pages ) ) ? 'nav-tab-active' : ''; ?>">Import/Export</a>
 					<!-- <a href="<?php //echo $logs_cleanup ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'logs-cleanup' ) ? 'nav-tab-active' : ''; ?>">Logs Cleanup</a>
 					<a href="<?php //echo $reset_data ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'reset-data' ) ? 'nav-tab-active' : ''; ?>">Reset Data</a> -->
 				</h2>
@@ -209,7 +209,7 @@ class myCRED_Tools {
 
 		if( isset( $_REQUEST['selected_type'] ) ) {
 
-			$selected_type = sanitize_text_field( $_REQUEST['selected_type'] );
+			$selected_type = sanitize_key( $_REQUEST['selected_type'] );
 			
 			switch ( $selected_type ) {
 				case 'points':
@@ -241,7 +241,7 @@ class myCRED_Tools {
 		
 		}
 		
-		$point_type      = sanitize_text_field( $_REQUEST['point_type'] );
+		$point_type      = sanitize_key( $_REQUEST['point_type'] );
 		$current_user_id = get_current_user_id();
 		$mycred          = mycred( $point_type );
 
@@ -259,9 +259,9 @@ class myCRED_Tools {
 		
 		}
 
-		$points_to_award = sanitize_text_field( $_REQUEST['points_to_award'] );
+		$points_to_award = sanitize_text_field( wp_unslash( $_REQUEST['points_to_award'] ) );
 
-		$log_entry = isset( $_REQUEST['log_entry'] ) ? ( sanitize_text_field( $_REQUEST['log_entry'] ) == 'true' ? true : false ) : false;
+		$log_entry = isset( $_REQUEST['log_entry'] ) ? ( sanitize_key( $_REQUEST['log_entry'] ) == 'true' ? true : false ) : false;
 		
 		$users_to_award = $this->get_requested_users();
 
@@ -274,7 +274,7 @@ class myCRED_Tools {
 			//Entries with log
 			if( $log_entry ) {
 
-				$log_entry_text = isset( $_REQUEST['log_entry_text'] ) ? sanitize_text_field( $_REQUEST['log_entry_text'] ) : '';
+				$log_entry_text = isset( $_REQUEST['log_entry_text'] ) ? sanitize_key( $_REQUEST['log_entry_text'] ) : '';
 
 				if( empty( $log_entry_text ) ) {
 
@@ -358,9 +358,9 @@ class myCRED_Tools {
 		}
 		
 		if ( $is_revoke )
-			$selected_badges = isset( $_REQUEST['badges_to_revoke'] ) ? sanitize_text_field( $_REQUEST['badges_to_revoke'] ) : '';
+			$selected_badges = isset( $_REQUEST['badges_to_revoke'] ) ? sanitize_key( $_REQUEST['badges_to_revoke'] ) : '';
 		else
-			$selected_badges = isset( $_REQUEST['badges_to_award'] ) ? sanitize_text_field( $_REQUEST['badges_to_award'] ) : '';
+			$selected_badges = isset( $_REQUEST['badges_to_award'] ) ? sanitize_key( $_REQUEST['badges_to_award'] ) : '';
 
 		$selected_badges = json_decode( stripslashes( $selected_badges ) );
 
@@ -407,7 +407,7 @@ class myCRED_Tools {
 
 		if ( isset( $_REQUEST['award_to_all_users'] ) ) {
 			
-			$award_to_all_users = sanitize_text_field( $_REQUEST['award_to_all_users'] ) == 'true' ? true : false;
+			$award_to_all_users = sanitize_key( $_REQUEST['award_to_all_users'] ) == 'true' ? true : false;
 
 			if ( $award_to_all_users ) {
 				
@@ -422,8 +422,8 @@ class myCRED_Tools {
 			}
 			else {
 
-				$selected_users      = isset( $_REQUEST['users'] ) ? sanitize_text_field( $_REQUEST['users'] ) : '[]';
-				$selected_user_roles = isset( $_REQUEST['user_roles'] ) ? sanitize_text_field( $_REQUEST['user_roles'] ) : '[]';
+				$selected_users      = isset( $_REQUEST['users'] ) ? sanitize_key( $_REQUEST['users'] ) : '[]';
+				$selected_user_roles = isset( $_REQUEST['user_roles'] ) ? sanitize_key( $_REQUEST['user_roles'] ) : '[]';
 
 				$selected_users      = json_decode( stripslashes( $selected_users ) );
 				$selected_user_roles = json_decode( stripslashes( $selected_user_roles ) );
@@ -469,7 +469,7 @@ class myCRED_Tools {
 		
 		if( isset( $_GET['action'] ) &&  $_GET['action'] == 'mycred-tools-select-user' )
 		{
-			$search = sanitize_text_field( $_GET['search'] );
+			$search = isset($_GET['search'] ) ? sanitize_key( $_GET['search'] ) : '';
 
 			$results = mycred_get_users_by_name_email( $search, 'user_email' );
 

@@ -285,7 +285,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			if ( $user_id !== NULL && ! is_user_logged_in() ) {
 
 				// Attempt to get the users IP
-				$IP = apply_filters( 'mycred_affiliate_IP', $_SERVER['REMOTE_ADDR'], 'visit', $this );
+				$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+				$IP = sanitize_key( apply_filters( 'mycred_affiliate_IP', $remote_addr, 'visit', $this ) );
 				if ( $IP != '' && $IP != '0.0.0.0' ) {
 
 					// If referral counts
@@ -365,7 +366,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			
 
 			// Attempt to get the users IP
-			$IP = apply_filters( 'mycred_affiliate_IP', $_SERVER['REMOTE_ADDR'], 'signup', $this );
+			$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+			$IP = sanitize_key( apply_filters( 'mycred_affiliate_IP', $remote_addr, 'signup', $this ) );
 
 			if ( $this->core->has_entry( 'signup_referral', $new_user_id, $user_id, $IP, $this->mycred_type ) ) return;
 

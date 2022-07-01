@@ -548,7 +548,7 @@ endif;
 if ( ! function_exists( 'mycred_get_ranks' ) ) :
 	function mycred_get_ranks( $status = 'publish', $number = '-1', $order = 'DESC', $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-		$cache_key = 'ranks-published-' . $point_type;
+		$cache_key = 'ranks-published-' . $point_type . $status . $number . $order;
 		$ranks     = wp_cache_get( $cache_key, MYCRED_SLUG );
 		$results   = array();
 

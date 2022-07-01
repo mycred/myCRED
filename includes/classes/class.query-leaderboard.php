@@ -311,10 +311,10 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			global $wpdb, $mycred_log_table;
 
-			$query             = '';
-			$exclude_filter    = $this->get_excludefilter();
-			$exclude_user_filter    = $this->get_exclude_userfilter();
-			$multisite_check   = $this->get_multisitefilter();
+			$query               = '';
+			$exclude_filter      = $this->get_excludefilter();
+			$exclude_user_filter = $this->get_exclude_userfilter();
+			$multisite_check     = $this->get_multisitefilter();
 
 			/**
 			 * Total balance with timeframe
@@ -334,7 +334,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 				}
 
-				$query             = $wpdb->prepare( "
+				$query = $wpdb->prepare( "
 					SELECT l.user_id AS ID, SUM( l.creds ) AS cred 
 					FROM {$mycred_log_table} l 
 					{$multisite_check} 
@@ -344,7 +344,8 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					{$exclude_user_filter}
 					GROUP BY l.user_id
 					ORDER BY SUM( l.creds ) {$this->order}, l.user_id ASC 
-					{$this->limit};", $point_type_values );
+					{$this->limit};", $point_type_values 
+				);
 
 			}
 
@@ -368,7 +369,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 				}
 
-				$query             = $wpdb->prepare( "
+				$query = $wpdb->prepare( "
 					SELECT DISTINCT u.ID, l.meta_value AS cred 
 					FROM {$wpdb->users} u 
 					INNER JOIN {$wpdb->usermeta} l ON ( u.ID = l.user_id ) 
@@ -376,8 +377,9 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					WHERE {$point_type_is} 
 					{$exclude_filter} 
 					{$exclude_user_filter}
-					ORDER BY l.meta_value+0 {$this->order}, l.user_id ASC
-					{$this->limit};", $point_type_values );
+					ORDER BY l.meta_value+0 {$this->order}, u.ID ASC
+					{$this->limit};", $point_type_values 
+				);
 
 			}
 
@@ -807,6 +809,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			// Option to exclude zero balances
 			$query = '';
+
 			if ( $this->args['exclude_zero'] ) {
 
 				$balance_format = '%d';
@@ -815,8 +818,7 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					$balance_format = 'CAST( %f AS DECIMAL( ' . $length . ', ' . $this->core->format['decimals'] . ' ) )';
 				}
 
-				if ( ! $this->args['total'] )
-					$query = $wpdb->prepare( "AND l.meta_value != {$balance_format}", $this->core->zero() );
+				$query = $wpdb->prepare( "AND l.meta_value != {$balance_format}", $this->core->zero() );
 
 			}
 
@@ -836,26 +838,29 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 			global $wpdb;
 
 			// Option to exclude zero balances
-			$query = '';
-			$checkIDs='~^\d+(,\d+)*$~'; 
-			$exclude=$this->args['exclude'];
+			$query    = '';
+			$checkIDs = '~^\d+(,\d+)*$~'; 
+			$exclude  = $this->args['exclude'];
 
-			if (!empty($exclude)) {
+			if ( ! empty( $exclude ) ) {
 
-				if(preg_match($checkIDs,$exclude)){
+				if( preg_match( $checkIDs, $exclude ) ) {
 
-					$exclude=$this->args['exclude'];
+					$exclude = $this->args['exclude'];
 
 				}
-				elseif(!preg_match($checkIDs,$exclude)){
+				elseif( ! preg_match( $checkIDs, $exclude ) ) {
 				
-					$exclude=mycred_leaderboard_exclude_role($exclude);
+					$exclude = mycred_leaderboard_exclude_role($exclude);
 
 				}
-				$query = $wpdb->prepare( "AND l.user_id NOT IN ($exclude)");	
+
+				$query = $wpdb->prepare( "AND l.user_id NOT IN ($exclude)" );	
 
 			}
+
 			return apply_filters( 'mycred_leaderboard_exclude_user_filter', $query, $this );
+		
 		}
 
 		/**

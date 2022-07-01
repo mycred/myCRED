@@ -432,6 +432,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 
 			$payment_methods = array();
 
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 			foreach ( $_POST['cashcred_user_settings'] as $type_id => $value ) {
 
 				$payment_method_data = array();

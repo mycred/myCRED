@@ -231,9 +231,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 			<div class="mycred-cashcred-withdraw-form-footer">
 				<div id="cashcred_total" class="form-group">
 					<strong>
-
-						
-						<span class="amount_label"><?php echo esc_html__( 'Amount:', 'mycred' ) . '&nbsp'; ?></span>
+						<span class="amount_label"><?php echo esc_html__( 'Amount:', 'mycred' ); ?></span>
 						<span id="cashcred_currency_symbol"></span> 
 						<span id="cashcred_total_amount"></span>
 					</strong>

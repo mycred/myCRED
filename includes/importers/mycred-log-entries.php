@@ -211,7 +211,7 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 			}
 
 			if ( $ran ) {
-				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( esc_html__( 'Import complete - A total of <strong>%d</strong> log entries were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), esc_html( $this->imported ), esc_html( $this->skipped ) ) . '</p></div>';
+				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( wp_kses_post( __( 'Import complete - A total of <strong>%d</strong> log entries were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ) ), esc_html( $this->imported ), esc_html( $this->skipped ) ) . '</p></div>';
 				echo '<p><a href="' . esc_url( admin_url( 'admin.php?page=' . MYCRED_SLUG ) ) . '" class="button button-large button-primary">' . esc_html__( 'View Log', 'mycred' ) . '</a></p>';
 			}
 

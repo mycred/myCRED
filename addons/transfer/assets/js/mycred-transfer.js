@@ -126,8 +126,14 @@
 
 					}
 
-					else if ( myCREDTransfer[ response.data ] !== undefined )
-						alert( myCREDTransfer[ response.data ][ $( formid + ' [name="mycred_new_transfer[ctype]"]' ).val() ] );
+					else if ( myCREDTransfer[ response.data ] !== undefined ) {
+
+						if ( typeof myCREDTransfer[ response.data ] === 'object' ) 
+							alert( myCREDTransfer[ response.data ][ $( formid + ' [name="mycred_new_transfer[ctype]"]' ).val() ] );
+						else
+							alert( myCREDTransfer[ response.data ] );
+						
+					}
 
 				}
 

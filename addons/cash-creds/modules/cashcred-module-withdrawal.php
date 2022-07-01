@@ -1133,13 +1133,12 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
  
 		 	if ( ! $this->core->user_is_point_editor() || ! isset( $_POST['cashcred_pending_payment'] ) ) return;
 
-			$pending_payment = $_POST['cashcred_pending_payment'];
-
 			$old_status = mycred_get_post_meta( $post_id, 'status', true );
 			$new_status = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
 			$user_id 	= isset( $_POST['user_id'] ) ? absint( $_POST['user_id'] ) : 0;
 			$user_settings = mycred_get_user_meta( $user_id, cashcred_get_user_settings(), '', true );
-			$updated_user_settings = $_POST['cashcred_user_settings'];
+			
+			$updated_user_settings = isset( $_POST['cashcred_user_settings'] ) ? mycred_sanitize_array( wp_unslash( $_POST['cashcred_user_settings'] ) ) : array();
 			
 			$changed_fields  = array();
 
@@ -1154,6 +1153,9 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			mycred_cashcred_update_status( $post_id, 'status', $new_status );
 
 			mycred_update_user_meta( $user_id, cashcred_get_user_settings(), '', $updated_user_settings );
+
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$pending_payment = $_POST['cashcred_pending_payment'];
 
 			foreach ( $pending_payment as $meta_key => $meta_value ) {
 

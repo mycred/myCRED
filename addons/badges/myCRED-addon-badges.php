@@ -1393,8 +1393,9 @@ th#badge-users { width: 10%; }
             if ( ! empty( $_POST['mycred_badge']['levels'] ) ) {
 
                 $level_row = 0;
-
-                foreach ( $_POST['mycred_badge']['levels'] as $level_id => $level_setup ) {
+            
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                foreach( $_POST['mycred_badge']['levels'] as $level_id => $level_setup ){
 
                     $level = array();
 
@@ -1895,7 +1896,8 @@ th#badge-users { width: 10%; }
                     $users_badges = mycred_get_users_badges( $user_id );
 
                     if ( ! empty( $_POST['mycred_badge_manual']['badges'] ) ) {
-                        foreach ( $_POST['mycred_badge_manual']['badges'] as $badge_id => $data ) {
+                    
+                        foreach ( mycred_sanitize_array( wp_unslash( $_POST['mycred_badge_manual']['badges'] ) ) as $badge_id => $data ) {
 
                             $badge = mycred_get_badge( $badge_id );
 

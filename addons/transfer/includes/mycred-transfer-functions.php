@@ -174,28 +174,28 @@ if ( ! function_exists( 'mycred_get_transfer_recipient' ) ) :
 		$settings     = mycred_get_addon_settings( 'transfers' );
 		$recipient_id = false;
 
-		if ( ! empty( $value ) ) {
+		if ( ! empty( $value )  ) {
 
 			// A numeric ID has been provided that we need to validate
 			if ( is_numeric( $value ) ) {
 
 				$user = get_userdata( $value );
+
 				if ( isset( $user->ID ) )
 					$recipient_id = $user->ID;
-
 			}
 
 			// A username has been provided
-			elseif ( $settings['autofill'] == 'user_login' ) {
-
+			if ( $settings['autofill'] == 'user_login' ) {
 				$user = get_user_by( 'login', $value );
 				if ( isset( $user->ID ) )
 					$recipient_id = $user->ID;
 
 			}
 
+
 			// An email address has been provided
-			elseif ( $settings['autofill'] == 'user_email' ) {
+			if ( $settings['autofill'] == 'user_email' || is_email($value) ) {
 
 				$user = get_user_by( 'email', $value );
 				if ( isset( $user->ID ) )
