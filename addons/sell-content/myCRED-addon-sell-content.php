@@ -617,7 +617,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 ?>
 				<div class="mycred-wrapper buycred-wrapper disabled-option color-option">
-					<div><?php printf( esc_html( _x( '%s Profit Share', 'Points Name', 'mycred' ), $data['name'] ) ); ?></div>
+					<div><?php printf( esc_html( _x( '%s Profit Share', 'Points Name', 'mycred' ) ), $data['name'] ); ?></div>
 					<div class="balance-row">
 						<div class="balance-view"><?php esc_html_e( 'Disabled', 'mycred' ); ?></div>
 						<div class="balance-desc"><em><?php esc_html_e( 'Not accepted as payment.', 'mycred' ); ?></em></div>
@@ -632,10 +632,10 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 ?>
 				<div class="mycred-wrapper buycred-wrapper disabled-option color-option">
-					<div><?php printf( esc_html( _x( '%s Profit Share', 'Points Name', 'mycred' ), $data['name'] ) ); ?></div>
+					<div><?php printf( esc_html( _x( '%s Profit Share', 'Points Name', 'mycred' ) ), $data['name'] ); ?></div>
 					<div class="balance-row">
 						<div class="balance-view"><?php esc_html_e( 'Excluded', 'mycred' ); ?></div>
-						<div class="balance-desc"><em><?php printf( esc_html( _x( 'User can not pay using %s', 'Points Name', 'mycred' ), $data['name'] ) ); ?></em></div>
+						<div class="balance-desc"><em><?php printf( esc_html( _x( 'User can not pay using %s', 'Points Name', 'mycred' ) ), $data['name'] ); ?></em></div>
 					</div>
 				</div>
 <?php
@@ -647,7 +647,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 ?>
 				<div class="mycred-wrapper buycred-wrapper color-option selected">
-					<div><?php printf( esc_html( _x( '%s Profit Share', 'Buying Points', 'mycred' ), $data['name'] ) ); ?></div>
+					<div><?php printf( esc_html( _x( '%s Profit Share', 'Buying Points', 'mycred' ) ), $data['name'] ); ?></div>
 					<div class="balance-row">
 						<div class="balance-view"><input type="text" size="8" name="mycred_sell_this[<?php echo esc_attr( $point_type ); ?>]" class="half" placeholder="<?php echo esc_attr( $data['default'] ); ?>" value="<?php if ( $data['override'] ) echo esc_attr( $data['custom'] ); ?>" /> %</div>
 						<div class="balance-desc"><em><?php esc_html_e( 'Leave empty to use the default.', 'mycred' ); ?></em></div>
@@ -861,7 +861,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 ?>
 	<div id="mycred-sell-<?php echo esc_attr( $point_type ); ?>-wrap" style="display: <?php echo esc_attr( $selected ); ?>;">
-		<h3><?php printf( esc_html( __( '%s Setup', 'mycred' ), $point_type_label ) ); ?></h3>
+		<h3><?php printf( esc_html( __( '%s Setup', 'mycred' ) ), $point_type_label ); ?></h3>
 		<div class="row">
 			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 				<div class="form-group">
@@ -881,14 +881,14 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 				<div class="form-group">
 					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-expire' ) ) ); ?>"><?php esc_html_e( 'Expiration', 'mycred' ); ?></label>
 					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[expire]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-expire' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['expire'] ); ?>" />
-					<p><span class="description"><?php printf( esc_html( __( 'Option to automatically expire purchases after certain number of %s. Use zero to disable.', 'mycred' ), $expiration_label ) ); ?></span></p>
+					<p><span class="description"><?php printf( esc_html( __( 'Option to automatically expire purchases after certain number of %s. Use zero to disable.', 'mycred' ) ), $expiration_label ); ?></span></p>
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 				<div class="form-group">
 					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-profit-share' ) ) ); ?>"><?php esc_html_e( 'Profit Share', 'mycred' ); ?></label>
 					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[profit_share]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-profit-share' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['profit_share'] ); ?>" />
-					<p><span class="description"><?php printf( esc_html( __( 'Option to pay a percentage of each sale with the content author.', 'mycred' ), $expiration_label ) ); ?></span></p>
+					<p><span class="description"><?php printf( esc_html( __( 'Option to pay a percentage of each sale with the content author.', 'mycred' ) ), $expiration_label ); ?></span></p>
 				</div>
 			</div>
 		</div>
@@ -1297,7 +1297,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 		<div class="row row-narrow">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="form-group slim">
-					<label for="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-status" class="slim"><input type="checkbox" name="mycred_sell_this[<?php echo esc_attr( $point_type ); ?>][status]" id="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-status"<?php if ( $sale_setup['status'] === 'enabled' ) echo ' checked="checked"'; ?> value="enabled" class="toggle-setup" data-type="<?php echo esc_attr( $point_type ); ?>" /> <?php printf( esc_html( __( 'Sell using %s', 'Point types name', 'mycred' ), $mycred->plural() ) ); ?></label>
+					<label for="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-status" class="slim"><input type="checkbox" name="mycred_sell_this[<?php echo esc_attr( $point_type ); ?>][status]" id="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-status"<?php if ( $sale_setup['status'] === 'enabled' ) echo ' checked="checked"'; ?> value="enabled" class="toggle-setup" data-type="<?php echo esc_attr( $point_type ); ?>" /> <?php printf( esc_html( __( 'Sell using %s', 'Point types name', 'mycred' ) ), $mycred->plural() ); ?></label>
 				</div>
 			</div>
 		</div>
