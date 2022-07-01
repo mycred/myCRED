@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 5.9.3
-Stable tag: 2.4.5.3
+Tested up to: 6.0
+Stable tag: 2.4.5.4
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -375,6 +375,9 @@ The banking module have been replaced by Central deposite module, and interest r
 
 == Changelog ==
 
+= 2.4.5.4 =
+- **FIX** - Rank publish or update not working correctly.
+
 = 2.4.5.3 =
 - **FIX** - Sell content issues in manual pages/posts
 
@@ -382,7 +385,7 @@ The banking module have been replaced by Central deposite module, and interest r
 - **FIX** - Sell Content settings not being saved.
 
 = 2.4.5.1 =
-- **FIX** - Php notices in setting area
+- **FIX** - PHP notices in setting area.
 
 = 2.4.5 =
 - **TWAEK** - Code improvement.

@@ -1509,7 +1509,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			$type_object = new myCRED_Point_Type( $point_type );
 
-			foreach ( sanitize_text_field( wp_unslash( $_POST['mycred_rank'] ) ) as $meta_key => $meta_value ) {
+			foreach ( $_POST['mycred_rank'] as $meta_key => $meta_value ) {
 
 				if ( $meta_key == 'ctype' ) continue;
 
