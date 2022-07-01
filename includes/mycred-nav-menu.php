@@ -82,18 +82,18 @@ if ( ! class_exists( 'myCRED_Nav_Menu' ) ) :
 
 		public function mycred_nav_menu_list( $meta_key, $point_type_label, $nav_menu_placeholder, $type ) {?>
 			<li>
-				<input type="hidden" class="menu-item-title" name="menu-item[<?php echo $nav_menu_placeholder;?>][menu-item-title]" value="<?php echo ( $type == 'rank' ? '%rank_title% %rank_logo%' : '%balance%' );?>">
-				<input type="hidden" class="menu-item-db-id" name="menu-item[<?php echo $nav_menu_placeholder;?>][menu-item-db-id]" value="0" />
-				<input type="hidden" class="menu-item-object-id" name="menu-item[<?php echo $nav_menu_placeholder;?>][menu-item-object-id]" value="1" />
-				<input type="hidden" class="menu-item-object" name="menu-item[<?php echo $nav_menu_placeholder;?>][menu-item-object]" value="mycred_menu_<?php echo $type;?>" />
-				<input type="hidden" class="menu-item-type" name="menu-item[<?php echo $nav_menu_placeholder;?>][menu-item-type]" value="<?php echo $meta_key;?>" />
-				<input type="hidden" id="menu-item[<?php echo $nav_menu_placeholder;?>][menu-item-nonce]" value="<?php echo esc_attr( wp_create_nonce( 'mycred-menu-nonce' ) ); ?>" />
+				<input type="hidden" class="menu-item-title" name="menu-item[<?php echo esc_attr( $nav_menu_placeholder );?>][menu-item-title]" value="<?php echo ( $type == 'rank' ? '%rank_title% %rank_logo%' : '%balance%' );?>">
+				<input type="hidden" class="menu-item-db-id" name="menu-item[<?php echo esc_attr( $nav_menu_placeholder );?>][menu-item-db-id]" value="0" />
+				<input type="hidden" class="menu-item-object-id" name="menu-item[<?php echo esc_attr( $nav_menu_placeholder );?>][menu-item-object-id]" value="1" />
+				<input type="hidden" class="menu-item-object" name="menu-item[<?php echo esc_attr( $nav_menu_placeholder );?>][menu-item-object]" value="mycred_menu_<?php echo esc_attr( $type );?>" />
+				<input type="hidden" class="menu-item-type" name="menu-item[<?php echo esc_attr( $nav_menu_placeholder );?>][menu-item-type]" value="<?php echo esc_attr( $meta_key );?>" />
+				<input type="hidden" id="menu-item[<?php echo esc_attr( $nav_menu_placeholder );?>][menu-item-nonce]" value="<?php echo esc_attr( wp_create_nonce( 'mycred-menu-nonce' ) ); ?>" />
 				<label class="menu-item-title">
 					<input type="checkbox" 
 						class="menu-item-checkbox" 
-						name="menu-item[<?php echo $nav_menu_placeholder;?>][menu-item-object-id]" 
-						value="<?php echo $meta_key?>"
-					/> <?php echo $point_type_label.( $type == 'rank' ? ' Rank' : ' Balance' );?>
+						name="menu-item[<?php echo esc_attr( $nav_menu_placeholder );?>][menu-item-object-id]" 
+						value="<?php echo esc_attr( $meta_key );?>"
+					/> <?php echo esc_html( $point_type_label . ( $type == 'rank' ? ' Rank' : ' Balance' ) );?>
 				</label>
 			</li><?php 
 		}

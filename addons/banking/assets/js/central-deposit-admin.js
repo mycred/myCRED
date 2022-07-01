@@ -1,5 +1,7 @@
 jQuery(function($) {
+	
 	$(document).ready(function() {
+	
 	    $('.mycred_bank_id_select2').select2({
 			minimumInputLength: 1,
 			placeholder: "Select a user",
@@ -34,5 +36,7 @@ jQuery(function($) {
 				cache: true
 			}
 	    });
+
 	});
+
 } );

@@ -125,7 +125,7 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Daily_Loses' ) ) :
 ?>
 <div id="" class="clear clearfix">
 	<h1><?php esc_html_e( 'Loses in the last 10 days', 'mycred' ); ?></h1>
-	<p><span class="description"><?php echo $lose_label; ?></span></p>
+	<p><span class="description"><?php echo esc_html( $lose_label ); ?></span></p>
 <?php
 
 			if ( ! empty( $ten_day_lose ) ) {
@@ -147,11 +147,11 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Daily_Loses' ) ) :
 
 ?>
 <li>
-	<strong style="color:<?php echo $this->colors[ $item->type ]['negative']; ?>;"><?php echo $label; ?></strong>
+	<strong style="color:<?php echo esc_attr( $this->colors[ $item->type ]['negative'] ); ?>;"><?php echo esc_html( $label ); ?></strong>
 	<span class="view"><a href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'View', 'mycred' ); ?></a></span>
 	<ul>
 		<li><?php echo number_format( $item->total, 0, '.', ' ' ); ?></li>
-		<li><?php echo $item->count; ?></li>
+		<li><?php echo esc_html( $item->count ); ?></li>
 	</ul>
 	<div class="clear clearfix"></div>
 </li>
@@ -159,11 +159,11 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Daily_Loses' ) ) :
 
 				}
 
-				echo '</ol></div><div class="last-ten-days-chart"><canvas id="daily-loses-' . $this->id . '-chart"></canvas><div id="' . $this->id . '-legend" class="mycred-chart-legend clear clearfix"></div></div>';
+				echo '</ol></div><div class="last-ten-days-chart"><canvas id="daily-loses-' . esc_attr( $this->id ) . '-chart"></canvas><div id="' . esc_attr( $this->id ) . '-legend" class="mycred-chart-legend clear clearfix"></div></div>';
 
 			}
 			else {
-				echo '<div class="mycred-empty-widget"><p>' . __( 'No data found', 'mycred' ) . '</p></div>';
+				echo '<div class="mycred-empty-widget"><p>' . esc_html__( 'No data found', 'mycred' ) . '</p></div>';
 			}
 
 ?>
@@ -177,20 +177,20 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Daily_Loses' ) ) :
 <script type="text/javascript">
 jQuery(function($) {
 
-	var <?php echo $this->id; ?> = $( '#daily-loses-<?php echo $this->id; ?>-chart' ).get(0).getContext( '2d' );
+	var <?php echo esc_attr( $this->id ); ?> = $( '#daily-loses-<?php echo esc_attr( $this->id ); ?>-chart' ).get(0).getContext( '2d' );
 
-	<?php echo $this->id; ?>.canvas.height = 400;
-	var <?php echo $this->id; ?>chart = new Chart( <?php echo $this->id; ?> ).Line({
-		labels   : [<?php echo "'" . implode( "', '", $spending['categories'] ) . "'"; ?>],
-		datasets : [<?php echo implode( ',', $spending['series'] ); ?>]
+	<?php echo esc_attr( $this->id ); ?>.canvas.height = 400;
+	var <?php echo esc_attr( $this->id ); ?>chart = new Chart( <?php echo esc_attr( $this->id ); ?> ).Line({
+		labels   : [<?php echo "'" . esc_html( implode( "', '", $spending['categories'] ) ) . "'"; ?>],
+		datasets : [<?php echo esc_html( implode( ',', $spending['series'] ) ); ?>]
 	},{
 		bezierCurve: false,
 		responsive: true,
     	maintainAspectRatio: false
 	});
 
-	var <?php echo $this->id; ?>legend = <?php echo $this->id; ?>chart.generateLegend();
-	$( '#<?php echo $this->id; ?>-legend' ).append( <?php echo $this->id; ?>legend );
+	var <?php echo esc_attr( $this->id ); ?>legend = <?php echo esc_attr( $this->id ); ?>chart.generateLegend();
+	$( '#<?php echo esc_attr( $this->id ); ?>-legend' ).append( <?php echo esc_attr( $this->id ); ?>legend );
 
 });
 </script>

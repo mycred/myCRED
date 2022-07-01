@@ -138,7 +138,7 @@ if ( ! class_exists( 'myCRED_Network_Module' ) ) :
 
 				if ( mycred_is_site_blocked( $blog_id ) ) {
 
-					echo '<span class="dashicons dashicons-warning"></span><div class="row-actions"><span class="info" style="color: #666">' . __( 'Blocked', 'mycred' ) . '</span></div>';
+					echo '<span class="dashicons dashicons-warning"></span><div class="row-actions"><span class="info" style="color: #666">' . esc_html__( 'Blocked', 'mycred' ) . '</span></div>';
 
 				}
 				else {
@@ -146,14 +146,14 @@ if ( ! class_exists( 'myCRED_Network_Module' ) ) :
 					if ( ! $this->settings['master'] ) {
 
 						if ( get_blog_option( $blog_id, 'mycred_setup_completed', false ) !== false )
-							echo '<span class="dashicons dashicons-yes" style="color: green;"></span><div class="row-actions"><span class="info" style="color: #666">' . __( 'Installed', 'mycred' ) . '</span></div>';
+							echo '<span class="dashicons dashicons-yes" style="color: green;"></span><div class="row-actions"><span class="info" style="color: #666">' . esc_html__( 'Installed', 'mycred' ) . '</span></div>';
 						else
-							echo '<span class="dashicons dashicons-minus"></span><div class="row-actions"><span class="info" style="color: #666">' . __( 'Not Installed', 'mycred' ) . '</span></div>';
+							echo '<span class="dashicons dashicons-minus"></span><div class="row-actions"><span class="info" style="color: #666">' . esc_html__( 'Not Installed', 'mycred' ) . '</span></div>';
 
 					}
 					else {
 
-						echo '<span class="dashicons dashicons-yes"' . ( $blog_id == 1 ? ' style="color: green;"' : '' ) . '></span><div class="row-actions"><span class="info" style="color: #666">' . ( $blog_id == 1 ? __( 'Master Template', 'mycred' ) : __( 'Enabled', 'mycred' ) ) . '</span></div>';
+						echo '<span class="dashicons dashicons-yes"' . ( $blog_id == 1 ? ' style="color: green;"' : '' ) . '></span><div class="row-actions"><span class="info" style="color: #666">' . ( $blog_id == 1 ? esc_html__( 'Master Template', 'mycred' ) : esc_html__( 'Enabled', 'mycred' ) ) . '</span></div>';
 
 					}
 
@@ -238,7 +238,7 @@ h4.ui-accordion-header:before { content: "<?php esc_attr_e( 'click to open', 'my
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php printf( __( '%s Network', 'mycred' ), $name ); ?><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/multisites/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<h1><?php printf( esc_html__( '%s Network', 'mycred' ), $name ); ?><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/multisites/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 <?php
 
 			if ( wp_is_large_network() ) {
@@ -254,11 +254,11 @@ h4.ui-accordion-header:before { content: "<?php esc_attr_e( 'click to open', 'my
 				// Inform user that myCRED has not yet been setup
 				$setup = get_blog_option( 1, 'mycred_setup_completed', false );
 				if ( $setup === false )
-					echo '<div class="error"><p>' . sprintf( __( 'Note! %s has not yet been setup.', 'mycred' ), $name ) . '</p></div>';
+					echo '<div class="error"><p>' . sprintf( esc_html__( 'Note! %s has not yet been setup.', 'mycred' ), $name ) . '</p></div>';
 
 				// Settings Updated
 				if ( isset( $_GET['settings-updated'] ) )
-					echo '<div class="updated"><p>' . __( 'Settings Updated', 'mycred' ) . '</p></div>';
+					echo '<div class="updated"><p>' . esc_html__( 'Settings Updated', 'mycred' ) . '</p></div>';
 
 ?>
 	<form method="post" action="<?php echo admin_url( 'options.php' ); ?>" class="form" name="mycred-core-settings-form" novalidate>

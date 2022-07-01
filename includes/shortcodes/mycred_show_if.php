@@ -33,12 +33,6 @@ if ( ! function_exists( 'mycred_render_shortcode_show_if' ) ) :
 
 		// Get the user ID
 		$user_id = mycred_get_user_id( $user_id );
-		
-		if ( is_user_logged_in() && $user_id == get_current_user_id()  )
-			return $content;
-
-		if ( ! is_user_logged_in() && $user_id == 'current' )
-			return $content;
 
 		// You can only use AND or OR for comparisons
 		if ( ! in_array( $comp, array( 'AND', 'OR' ) ) )

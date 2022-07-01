@@ -25,7 +25,8 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 		public function __construct() {
 
 			$this->import_page   = MYCRED_SLUG . '-import-balance';
-			$this->delimiter     = empty( $_POST['delimiter'] ) ? ',' : (string) strip_tags( trim( $_POST['delimiter'] ) );
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$this->delimiter     = empty( $_POST['delimiter'] ) ? ',' : (string) strip_tags( trim( sanitize_text_field( $_POST['delimiter'] ) ) ); 
 			$this->documentation = 'http://codex.mycred.me/chapter-ii/import-data/importing-balances/';
 
 		}
@@ -108,13 +109,13 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 
 			} else {
 
-				if ( file_exists( ABSPATH . $_POST['file_url'] ) ) {
+				if ( file_exists( ABSPATH . sanitize_text_field( wp_unslash( $_POST['file_url'] ) ) ) ) {
 
-					$this->file_url = esc_attr( $_POST['file_url'] );
+					$this->file_url = sanitize_text_field( wp_unslash( $_POST['file_url'] ) );
 
 				} else {
 
-					echo '<div class="error notice notice-error is-dismissible"><p>' . __( 'The file does not exist or could not be read.', 'mycred' ) . '</p></div>';
+					echo '<div class="error notice notice-error is-dismissible"><p>' . esc_html__( 'The file does not exist or could not be read.', 'mycred' ) . '</p></div>';
 					return false;
 
 				}
@@ -141,7 +142,7 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 			// Make sure the file exists
 			if ( ! is_file( $file ) ) {
 
-				echo '<div class="error notice notice-error is-dismissible"><p>' . __( 'The file does not exist or could not be read.', 'mycred' ) . '</p></div>';
+				echo '<div class="error notice notice-error is-dismissible"><p>' . esc_html__( 'The file does not exist or could not be read.', 'mycred' ) . '</p></div>';
 				return true;
 
 			}
@@ -193,7 +194,7 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 						}
 
 						$mycred = mycred( $point_type );
-						$method = trim( $_POST['method'] );
+						$method = isset( $_POST['method'] ) ? trim( sanitize_key( wp_unslash( $_POST['method'] ) ) ): '';
 
 						// If a log entry should be added with the import
 						if ( ! empty( $log_entry ) )
@@ -217,7 +218,7 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 
 				} else {
 
-					echo '<div class="error notice notice-error is-dismissible"><p>' . __( 'Invalid CSV file. Please consult the documentation for further assistance.', 'mycred' ) . '</p></div>';
+					echo '<div class="error notice notice-error is-dismissible"><p>' . esc_html__( 'Invalid CSV file. Please consult the documentation for further assistance.', 'mycred' ) . '</p></div>';
 
 				}
 
@@ -226,8 +227,8 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 			}
 
 			if ( $ran ) {
-				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( __( 'Import complete - A total of <strong>%d</strong> balances were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), $this->imported, $this->skipped ) . '</p></div>';
-				echo '<p><a href="' . admin_url( 'users.php' ) . '" class="button button-large button-primary">' . __( 'View Users', 'mycred' ) . '</a></p>';
+				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( esc_html__( 'Import complete - A total of <strong>%d</strong> balances were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), esc_html( $this->imported ), esc_html( $this->skipped ) ) . '</p></div>';
+				echo '<p><a href="' . esc_url( admin_url( 'users.php' ) ) . '" class="button button-large button-primary">' . esc_html__( 'View Users', 'mycred' ) . '</a></p>';
 			}
 
 			do_action( 'import_end' );
@@ -242,11 +243,11 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 		 */
 		public function header() {
 
-			$label = __( 'Import Balances', 'mycred' );
+			$label = esc_html__( 'Import Balances', 'mycred' );
 			if ( MYCRED_DEFAULT_LABEL === 'myCRED' )
-				$label .= ' <a href="' . $this->documentation . '" target="_blank" class="page-title-action">' . __( 'Documentation', 'mycred' ) . '</a>';
+				$label .= ' <a href="' . $this->documentation . '" target="_blank" class="page-title-action">' . esc_html__( 'Documentation', 'mycred' ) . '</a>';
 
-			echo '<div class="wrap"><h1>' . $label . '</h1>';
+			echo '<div class="wrap"><h1>' . wp_kses_post( $label ) . '</h1>';
 
 		}
 
@@ -274,7 +275,7 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 			if ( ! empty( $upload_dir['error'] ) ) :
 
 ?>
-<div class="error notice notice-error"><p><?php echo $upload_dir['error']; ?></p></div>
+<div class="error notice notice-error"><p><?php echo esc_html( $upload_dir['error'] ); ?></p></div>
 <?php
 
 			else :
@@ -290,8 +291,8 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 				<td>
 					<input type="file" id="upload" name="import" size="25" />
 					<input type="hidden" name="action" value="save" />
-					<input type="hidden" name="max_file_size" value="<?php echo $bytes; ?>" />
-					<small><?php printf( __( 'Maximum size: %s', 'mycred' ), $size ); ?></small>
+					<input type="hidden" name="max_file_size" value="<?php echo esc_attr( $bytes ); ?>" />
+					<small><?php printf( esc_html__( 'Maximum size: %s', 'mycred' ), esc_html( $size ) ); ?></small>
 				</td>
 			</tr>
 			<tr>
@@ -299,7 +300,7 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 					<label for="file_url"><?php esc_html_e( 'OR enter path to file:', 'mycred' ); ?></label>
 				</th>
 				<td>
-					<?php echo ABSPATH . ' '; ?><input type="text" id="file_url" name="file_url" size="25" />
+					<?php echo esc_html( ABSPATH ) . ' '; ?><input type="text" id="file_url" name="file_url" size="25" />
 				</td>
 			</tr>
 			<tr>

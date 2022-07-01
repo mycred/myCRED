@@ -62,50 +62,50 @@ if ( ! class_exists( 'myCRED_Module_OB_Social_Share' ) ) :
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-group">
                         <div class="checkbox" style="padding-top: 4px;">
-                            <label for="<?php echo $this->field_id( 'enable_open_badge_ss' ) ?>"><input type="checkbox" name="<?php echo $this->field_name( 'enable_open_badge_ss' ) ?>" id="<?php echo $this->field_id( 'enable_open_badge_ss' ) ?>" <?php checked( $settings['enable_open_badge_ss'], 1 ); ?> value="1">Enable Open Badge Social Sharing</label>
+                            <label for="<?php echo esc_attr( $this->field_id( 'enable_open_badge_ss' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'enable_open_badge_ss' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'enable_open_badge_ss' ) ); ?>" <?php checked( $settings['enable_open_badge_ss'], 1 ); ?> value="1">Enable Open Badge Social Sharing</label>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-group">
                         <div class="checkbox" style="padding-top: 4px;">
-                            <label for="<?php echo $this->field_id( 'enable_fb' ) ?>"><input type="checkbox" name="<?php echo $this->field_name( 'enable_fb' ) ?>" id="<?php echo $this->field_id( 'enable_fb' ) ?>" <?php checked( $settings['enable_fb'], 1 ); ?> value="1">Show Facebook button</label>
+                            <label for="<?php echo esc_attr( $this->field_id( 'enable_fb' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'enable_fb' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'enable_fb' ) ); ?>" <?php checked( $settings['enable_fb'], 1 ); ?> value="1">Show Facebook button</label>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="checkbox" style="padding-top: 4px;">
-                            <label for="<?php echo $this->field_id( 'enable_twitter' ) ?>"><input type="checkbox" name="<?php echo $this->field_name( 'enable_twitter' ) ?>" id="<?php echo $this->field_id( 'enable_twitter' ) ?>" <?php checked( $settings['enable_twitter'], 1 ); ?> value="1">Show Twitter button</label>
+                            <label for="<?php echo esc_attr( $this->field_id( 'enable_twitter' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'enable_twitter' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'enable_twitter' ) ); ?>" <?php checked( $settings['enable_twitter'], 1 ); ?> value="1">Show Twitter button</label>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="checkbox" style="padding-top: 4px;">
-                            <label for="<?php echo $this->field_id( 'enable_li' ) ?>"><input type="checkbox" name="<?php echo $this->field_name( 'enable_li' ) ?>" id="<?php echo $this->field_id( 'enable_li' ) ?>" <?php checked( $settings['enable_li'], 1 ); ?> value="1">Show LinkedIn button</label>
+                            <label for="<?php echo esc_attr( $this->field_id( 'enable_li' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'enable_li' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'enable_li' ) ); ?>" <?php checked( $settings['enable_li'], 1 ); ?> value="1">Show LinkedIn button</label>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="checkbox" style="padding-top: 4px;">
-                            <label for="<?php echo $this->field_id( 'enable_pt' ) ?>"><input type="checkbox" name="<?php echo $this->field_name( 'enable_pt' ) ?>" id="<?php echo $this->field_id( 'enable_pt' ) ?>" <?php checked( $settings['enable_pt'], 1 ); ?> value="1">Show Pinterest button</label>
+                            <label for="<?php echo esc_attr( $this->field_id( 'enable_pt' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'enable_pt' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'enable_pt' ) ); ?>" <?php checked( $settings['enable_pt'], 1 ); ?> value="1">Show Pinterest button</label>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <h3>Social Sharing button style</h3>
                     <div class="clearfix">
-                        <input type="radio" name="<?php echo $this->field_name( 'button_style' ) ?>" <?php echo $this->is_checked( 'button_style' ) ? 'checked' : ''; ?> value="button_style">Button Style<br>
+                        <input type="radio" name="<?php echo esc_attr( $this->field_name( 'button_style' ) ); ?>" <?php echo $this->is_checked( 'button_style' ) ? 'checked' : ''; ?> value="button_style">Button Style<br>
                         <button class="mycred-social-icons mycred-social-icon-facebook"><a href="javascript:void(0)">facebook</a></button>
                         <button class="mycred-social-icons mycred-social-icon-twitter"><a href="javascript:void(0)">twitter</a></button>
                         <button class="mycred-social-icons mycred-social-icon-linkedin"><a href="javascript:void(0)">linkedin</a></button>
                         <button class="mycred-social-icons mycred-social-icon-pinterest"><a href="javascript:void(0)">pinterest</a></button>
                     </div>
                     <div class="clearfix">
-                        <input type="radio" name="<?php echo $this->field_name( 'button_style' ) ?>" <?php echo $this->is_checked( 'icon_style' ) ? 'checked' : ''; ?> value="icon_style">Icon Style<br>
+                        <input type="radio" name="<?php echo esc_attr( $this->field_name( 'button_style' ) ); ?>" <?php echo $this->is_checked( 'icon_style' ) ? 'checked' : ''; ?> value="icon_style">Icon Style<br>
                         <a href="javascript:void(0)" class="mycred-social-icons mycred-social-icon-facebook"></a>
                         <a href="javascript:void(0)" class="mycred-social-icons mycred-social-icon-twitter"></a>
                         <a href="javascript:void(0)" class="mycred-social-icons mycred-social-icon-linkedin"></a>
                         <a href="javascript:void(0)" class="mycred-social-icons mycred-social-icon-pinterest"></a>
                     </div>
                     <div class="clearfix">
-                        <input type="radio" name="<?php echo  $this->field_name( 'button_style' ) ?>" <?php echo $this->is_checked( 'text_style' ) ? 'checked' : ''; ?> value="text_style">Text Style<br>
+                        <input type="radio" name="<?php echo esc_attr( $this->field_name( 'button_style' ) ); ?>" <?php echo $this->is_checked( 'text_style' ) ? 'checked' : ''; ?> value="text_style">Text Style<br>
                         <button class="facebook social-text"><a href="javascript:void(0)">facebook</a></button>
                         <button class="twitter social-text"><a href="javascript:void(0)">twitter</a></button>
                         <button class="linkedin social-text"><a href="javascript:void(0)">linkedin</a></button>

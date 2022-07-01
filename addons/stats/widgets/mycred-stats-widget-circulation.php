@@ -142,17 +142,17 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Circulation' ) ) :
 
 ?>
 <div id="mycred-stats-overview" class="row">
-	<div id="mycred-stats-<?php echo $this->id; ?>" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-		<canvas id="total-circulation-<?php echo $this->id; ?>-chart"></canvas>
+	<div id="mycred-stats-<?php echo esc_attr( $this->id ); ?>" class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+		<canvas id="total-circulation-<?php echo esc_attr( $this->id ); ?>-chart"></canvas>
 	</div>
 	<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-		<h1><?php echo $label; ?>: <?php echo $this->format_number( $circulation['total'] ); ?></h1>
+		<h1><?php echo esc_html( $label ); ?>: <?php echo esc_html( $this->format_number( $circulation['total'] ) ); ?></h1>
 <?php
 
 			if ( $this->args['ctypes'] == 'all' ) :
 
 ?>
-		<ul id="total-per-point-type"><li><?php echo implode( '</li><li>', $circulation['totals'] ); ?></li></ul>
+		<ul id="total-per-point-type"><li><?php echo wp_kses_post( implode( '</li><li>', $circulation['totals'] ) ); ?></li></ul>
 <?php
 
 			else :
@@ -175,7 +175,7 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Circulation' ) ) :
 
 // 
 ?>
-		<ul id="total-per-point-type"><li><?php printf( __( 'Total Gained: %s', 'mycred' ), '<span style="color:' . $gain_color . '">' . $mycred->format_creds( $gains ) . '</span>' ); ?></li><li><?php printf( __( 'Total Spent: %s', 'mycred' ), '<span style="color:' . $lose_color . '">' . $mycred->format_creds( $loses ) . '</span>' ); ?></li></ul>
+		<ul id="total-per-point-type"><li><?php printf( esc_html__( 'Total Gained: %s', 'mycred' ), '<span style="color:' . esc_attr( $gain_color ) . '">' . esc_html( $mycred->format_creds( $gains ) ) . '</span>' ); ?></li><li><?php printf( esc_html__( 'Total Spent: %s', 'mycred' ), '<span style="color:' . esc_attr( $lose_color ) . '">' . esc_html( $mycred->format_creds( $loses ) ) . '</span>' ); ?></li></ul>
 <?php
 
 			endif;
@@ -211,8 +211,8 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Circulation' ) ) :
 				$mycred = mycred( $type_id );
 
 ?>
-					<tr style="color: <?php echo $this->colors[ $type_id ]['positive']; ?>;">
-						<td class="rowtitle"><?php echo $this->ctypes[ $type_id ]; ?></td>
+					<tr style="color: <?php echo esc_attr( $this->colors[ $type_id ]['positive'] ); ?>;">
+						<td class="rowtitle"><?php echo esc_html( $this->ctypes[ $type_id ] ); ?></td>
 <?php
 
 				$page_id = MYCRED_SLUG;
@@ -221,8 +221,8 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Circulation' ) ) :
 
 				$base_url = add_query_arg( array( 'page' => $page_id ), admin_url( 'admin.php' ) );
 				foreach ( $dates as $key => $item ) {
-					echo '<td class="cell">' . $mycred->format_number( $item['gains'] ) . '</td>';
-					echo '<td class="cell">' . $mycred->format_number( $item['loses'] ) . '</td>';
+					echo '<td class="cell">' . esc_html( $mycred->format_number( $item['gains'] ) ) . '</td>';
+					echo '<td class="cell">' . esc_html( $mycred->format_number( $item['loses'] ) ) . '</td>';
 				}
 
 			}
@@ -236,12 +236,12 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Circulation' ) ) :
 <script type="text/javascript">
 jQuery(function($) {
 
-	var <?php echo $this->id; ?> = $( '#total-circulation-<?php echo $this->id; ?>-chart' ).get(0).getContext( '2d' );
-	<?php echo $this->id; ?>.canvas.width = 240;
-	<?php echo $this->id; ?>.canvas.height = 240;
+	var <?php echo esc_attr( $this->id ); ?> = $( '#total-circulation-<?php echo esc_attr( $this->id ); ?>-chart' ).get(0).getContext( '2d' );
+	<?php echo esc_attr( $this->id ); ?>.canvas.width = 240;
+	<?php echo esc_attr( $this->id ); ?>.canvas.height = 240;
 
-	var <?php echo $this->id; ?>chart = new Chart( <?php echo $this->id; ?> ).Doughnut([
-		<?php echo implode( ',', $circulation['series'] ); ?>
+	var <?php echo esc_attr( $this->id ); ?>chart = new Chart( <?php echo esc_attr( $this->id ); ?> ).Doughnut([
+		<?php echo esc_attr( implode( ',', $circulation['series'] ) ); ?>
 	],{
 		segmentStrokeColor : '#F1F1F1',
 		segmentStrokeWidth : 3,
@@ -270,16 +270,16 @@ jQuery(function($) {
 
 ?>
 <div id="mycred-stats-overview" class="clear clearfix">
-	<div id="mycred-stats-<?php echo $this->id; ?>" class="left-column">
-		<canvas id="total-circulation-<?php echo $this->id; ?>-chart"></canvas>
+	<div id="mycred-stats-<?php echo esc_attr( $this->id ); ?>" class="left-column">
+		<canvas id="total-circulation-<?php echo esc_attr( $this->id ); ?>-chart"></canvas>
 	</div>
-	<h1><?php echo $label; ?>: <?php echo $this->format_number( $circulation['total'] ); ?></h1>
+	<h1><?php echo esc_html( $label ); ?>: <?php echo esc_html( $this->format_number( $circulation['total'] ) ); ?></h1>
 <?php
 
 			if ( $this->args['ctypes'] == 'all' ) :
 
 ?>
-	<ul id="total-per-point-type"><li><?php echo implode( '</li><li>', $circulation['totals'] ); ?></li></ul>
+	<ul id="total-per-point-type"><li><?php echo wp_kses_post( implode( '</li><li>', $circulation['totals'] ) ); ?></li></ul>
 <?php
 
 			else :
@@ -305,7 +305,7 @@ jQuery(function($) {
 				$circulation['series'][] = "{ value: {$gains_l}, color: '" . $color . "', highlight: '" . $color . "', label: '" . esc_attr__( 'Total loses (%)', 'mycred' ) . "' }";
 
 ?>
-	<ul id="total-per-point-type"><li><?php printf( __( 'Total Gained: %s', 'mycred' ), '<span style="color:' . $gain_color . '">' . $mycred->format_creds( $gains ) . '</span>' ); ?></li><li><?php printf( __( 'Total Spent: %s', 'mycred' ), '<span style="color:' . $lose_color . '">' . $mycred->format_creds( $loses ) . '</span>' ); ?></li></ul>
+	<ul id="total-per-point-type"><li><?php printf( esc_html__( 'Total Gained: %s', 'mycred' ), '<span style="color:' . esc_attr( $gain_color ) . '">' . esc_html( $mycred->format_creds( $gains ) ) . '</span>' ); ?></li><li><?php printf( esc_html__( 'Total Spent: %s', 'mycred' ), '<span style="color:' . esc_attr( $lose_color ) . '">' . esc_html( $mycred->format_creds( $loses ) ) . '</span>' ); ?></li></ul>
 <?php
 
 			endif;
@@ -342,8 +342,8 @@ jQuery(function($) {
 				$mycred  = mycred( $type_id );
 
 ?>
-				<tr style="color: <?php echo $this->colors[ $type_id ]['positive']; ?>;">
-					<td class="rowtitle"><?php echo $this->ctypes[ $type_id ]; ?></td>
+				<tr style="color: <?php echo esc_attr( $this->colors[ $type_id ]['positive'] ); ?>;">
+					<td class="rowtitle"><?php echo esc_html( $this->ctypes[ $type_id ] ); ?></td>
 <?php
 
 				$page_id = MYCRED_SLUG;
@@ -353,9 +353,9 @@ jQuery(function($) {
 				$base_url = add_query_arg( array( 'page' => $page_id ), admin_url( 'admin.php' ) );
 				foreach ( $dates as $key => $item ) {
 					$url = add_query_arg( array( 'show' => $key ), $base_url );
-					echo '<td class="cell"><a href="' . esc_url( $url ) . '">' . $mycred->format_number( $item['gains'] ) . '</a></td>';
+					echo '<td class="cell"><a href="' . esc_url( $url ) . '">' . esc_html( $mycred->format_number( $item['gains'] ) ) . '</a></td>';
 					$url = add_query_arg( array( 'show' => $key, 'num' => 0, 'compare' => urlencode( '<' ) ), $base_url );
-					echo '<td class="cell"><a href="' . esc_url( $url ) . '">' . $mycred->format_number( $item['loses'] ) . '</a></td>';
+					echo '<td class="cell"><a href="' . esc_url( $url ) . '">' . esc_html( $mycred->format_number( $item['loses'] ) ) . '</a></td>';
 				}
 
 			}
@@ -363,19 +363,19 @@ jQuery(function($) {
 ?>
 			</tbody>
 		</table>
-		<?php echo $this->action_buttons(); ?>
+		<?php echo wp_kses_post( $this->action_buttons() ); ?>
 	</div>
 	<div class="clear clearfix"></div>
 </div>
 <script type="text/javascript">
 jQuery(function($) {
 
-	var <?php echo $this->id; ?> = $( '#total-circulation-<?php echo $this->id; ?>-chart' ).get(0).getContext( '2d' );
-	<?php echo $this->id; ?>.canvas.width = 240;
-	<?php echo $this->id; ?>.canvas.height = 240;
+	var <?php echo esc_attr( $this->id ); ?> = $( '#total-circulation-<?php echo esc_attr( $this->id ); ?>-chart' ).get(0).getContext( '2d' );
+	<?php echo esc_attr( $this->id ); ?>.canvas.width = 240;
+	<?php echo esc_attr( $this->id ); ?>.canvas.height = 240;
 
-	var <?php echo $this->id; ?>chart = new Chart( <?php echo $this->id; ?> ).Doughnut([
-		<?php echo implode( ',', $circulation['series'] ); ?>
+	var <?php echo esc_attr( $this->id ); ?>chart = new Chart( <?php echo esc_attr( $this->id ); ?> ).Doughnut([
+		<?php echo esc_html( implode( ',', $circulation['series'] ) ); ?>
 	],{
 		segmentStrokeColor : '#F1F1F1',
 		segmentStrokeWidth : 3,

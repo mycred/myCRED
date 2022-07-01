@@ -17,6 +17,7 @@ require_once myCRED_BANK_ABSTRACT_DIR . 'mycred-abstract-service.php';
 require_once myCRED_BANK_INCLUDES_DIR . 'mycred-banking-functions.php';
 
 require_once myCRED_BANK_SERVICES_DIR . 'mycred-service-central.php';
+require_once myCRED_BANK_SERVICES_DIR . 'mycred-service-schedule-deposit.php';
 
 /**
  * myCRED_Banking_Module class
@@ -143,6 +144,14 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 				'callback'     => array( 'myCRED_Banking_Service_Central' )
 			);
 
+			$services['schedule_deposit'] = array(
+				'title'        => __( 'Schedule Deposit', 'mycred' ),
+				'description'  => __( 'The admin can schedule the points deposit to the central account automatically after the specified interval.', 'mycred' ),
+				'cron'         => false,
+				'icon'         => 'dashicons-admin-site',
+				'callback'     => array( 'myCRED_Banking_Service_Schedule_Deposit' )
+			);
+
 			$services = apply_filters( 'mycred_setup_banking', $services );
 
 			if ( $save === true && $this->core->user_is_point_admin() ) {
@@ -151,6 +160,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 					'services'      => $services,
 					'service_prefs' => $this->service_prefs
 				);
+
 				mycred_update_option( $this->option_id, $new_data );
 			}
 
@@ -171,7 +181,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
 			wp_enqueue_style( 'mycred-forms' );
 			wp_enqueue_style( 'mycred-select2-style' );
-
+			wp_enqueue_style( MYCRED_SLUG . '-buttons' );
 			wp_register_script( 'mycred-central-deposit-admin', plugins_url( 'assets/js/central-deposit-admin.js', myCRED_BANK ), array( 'jquery', 'mycred-select2-script' ), myCRED_VERSION );
 
 			wp_enqueue_script( 'mycred-central-deposit-admin' );
@@ -257,6 +267,9 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 		 */
 		public function sanitize_settings( $post ) {
 
+			// added do_action in 2.2.4
+			$post        	      = apply_filters( 'mycred_banking_settings_save', $post, $this );
+			
 			$installed            = $this->get();
 
 			// Construct new settings

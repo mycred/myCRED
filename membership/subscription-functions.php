@@ -27,7 +27,7 @@ if( ! function_exists('mycred_is_valid_license_key') ) :
             $request_args = array(
                 'body' => array(
                     'license_key' => $key,
-                    'site'        => site_url(),
+                    'site'        => get_bloginfo( 'url' ),
                     'api-key'     => md5( get_bloginfo( 'url' ) )
                 ),
                 'timeout' => 12

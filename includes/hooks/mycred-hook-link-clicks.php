@@ -38,7 +38,7 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 			add_action( 'mycred_front_enqueue_footer', array( $this, 'enqueue_footer' ) );
 			add_filter( 'mycred_parse_tags_link',      array( $this, 'parse_custom_tags' ), 10, 2 );
 
-			if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-click-points' && isset( $_POST['token'] ) && wp_verify_nonce( $_POST['token'], 'mycred-link-points' ) )
+			if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-click-points' && isset( $_POST['token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['token'] ) ), 'mycred-link-points' ) )
 				$this->ajax_call_link_points();
 
 		}
@@ -177,14 +177,14 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 
 			// Token
 			if ( ! isset( $_POST['key'] ) ) wp_send_json( 300 );
-			$token = mycred_verify_token( $_POST['key'], 4 );
+			$token = mycred_verify_token( sanitize_text_field( wp_unslash( $_POST['key'] ) ), 4 );
 			if ( $token === false ) wp_send_json( 305 );
 
 			list ( $amount, $point_type, $id, $url ) = $token;
 			if ( $amount == '' || $point_type == '' || $id == '' || $url == '' ) wp_send_json( 310 );
 
 			// Make sure the token is not abused
-			if ( $url != urlencode( $_POST['url'] ) ) wp_send_json( 315 );
+			if ( $url != urlencode( esc_url_raw( wp_unslash( $_POST['url'] ) ) ) ) wp_send_json( 315 );
 
 			// Bail now if this was not intenteded for this type
 			if ( $point_type != $this->mycred_type ) return;
@@ -199,9 +199,9 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 
 			$data = array(
 				'ref_type'   => 'link',
-				'link_url'   => esc_url_raw( $_POST['url'] ),
+				'link_url'   => esc_url_raw( wp_unslash( $_POST['url'] ) ),
 				'link_id'    => $id,
-				'link_title' => ( isset( $_POST['etitle'] ) ) ? sanitize_text_field( $_POST['etitle'] ) : ''
+				'link_title' => ( isset( $_POST['etitle'] ) ) ? sanitize_text_field( wp_unslash( $_POST['etitle'] ) ) : ''
 			);
 
 			// Limits
@@ -275,15 +275,15 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'creds' ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'creds' ); ?>" id="<?php echo $this->field_id( 'creds' ); ?>" value="<?php echo $this->core->number( $prefs['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( 'creds' ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'creds' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'creds' ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'user' ), '%url%, %title% or %id%' ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general', 'user' ), '%url%, %title% or %id%' ) ); ?></span>
 			</div>
 		</div>
 	</div>

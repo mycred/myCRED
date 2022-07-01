@@ -46,8 +46,11 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 			// Make sure we are in the correct point type
 			if ( $this->mycred_type != $mycred->cred_id || $reply === false ) return $reply;
 
+			// added filter in 2.2.4 for schedule deposit
+			if( apply_filters( 'mycred_check_schedule_deposite_entry', false, $reply, $request, $mycred ) ) return $reply;
+
 			// Check manual
-			if ( isset( $this->prefs['ignore_manual'] ) && $this->prefs['ignore_manual'] == 0 && $request['ref'] == 'manual' ) return $reply;
+			if ( isset( $this->prefs['ignore_manual'] ) && $this->prefs['ignore_manual'] == 1 && $request['ref'] == 'manual' ) return $reply;
 
 			// Instances to ignore
 			if ( in_array( $request['ref'], apply_filters( 'mycred_central_banking_ignore', array( 'interest', 'recurring_payout', 'transfer' ), $this ) ) ) return $reply;
@@ -55,7 +58,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 			extract( $request );
 
 			// Make sure that the request is not for our bank account
-			//if ( $user_id == $this->prefs['bank_id'] ) return $reply;
+			if ( $user_id == $this->prefs['bank_id'] ) return $reply;
 
 			// Get the banks balance
 			$bank_balance = $mycred->get_users_balance( $this->prefs['bank_id'], $this->mycred_type );
@@ -104,6 +107,8 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 
 			if ( ! empty( $this->prefs['bank_id'] ) )
 				$user = get_userdata( $this->prefs['bank_id'] );
+
+			if( ! empty( mycred_get_option('mycred_pref_bank')['active'] ) && in_array( 'central', mycred_get_option('mycred_pref_bank')['active'] ) ) {
 ?>
 <div class="row">
 	<div class="col-xs-12">
@@ -135,7 +140,9 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 </div>
 <?php
 
-			do_action( 'mycred_banking_central', $this );
+				do_action( 'mycred_banking_central', $this );
+
+			}
 
 		}
 
@@ -175,7 +182,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 			    ),
 			    'fields'         => array( 'ID', 'display_name', 'user_email' ),
 			    'number'         => 10,
-			    'offset'		 => ( $page_no - 1 ) * 10,
+			    'offset'		 => ( intval( $page_no ) - 1 ) * 10,
 			    'orderby'		 => 'display_name'
 			) );
 			$users = $users_query->get_results();

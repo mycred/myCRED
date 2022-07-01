@@ -82,12 +82,12 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 			$interval = abs( floatval( $interval ) / 1000 );
 
 			// Get playback details
-			$actions  				= sanitize_text_field( $_POST['video_a'] );
-			$seconds  				= absint( $_POST['video_b'] );
-			$duration 				= absint( $_POST['video_c'] );
-			$state    				= absint( $_POST['video_d'] );
-			$streaming 				= sanitize_text_field( mycred_decode_values( $_POST['video_e'] ) );
-			$stream_live_duration 	= absint( mycred_decode_values( $_POST['video_f'] ) );
+			$actions  				= isset( $_POST['video_a'] ) ? sanitize_text_field( wp_unslash( $_POST['video_a'] ) ) : '';
+			$seconds  				= isset( $_POST['video_b'] ) ? absint( $_POST['video_b'] ) : 0;
+			$duration 				= isset( $_POST['video_c'] ) ? absint( $_POST['video_c'] ) : 0;
+			$state    				= isset( $_POST['video_d'] ) ? absint( $_POST['video_d'] ) : 0;
+			$streaming 				= isset( $_POST['video_e'] ) ? mycred_decode_values( sanitize_text_field( wp_unslash( $_POST['video_e'] ) ) ) : '';
+			$stream_live_duration 	= isset( $_POST['video_f'] ) ? mycred_decode_values( absint( $_POST['video_f'] ) ) : 0;
 			
 			// Apply Leniency
 			$leniency = $duration * ( $this->prefs['leniency'] / 100 );
@@ -321,44 +321,44 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'creds' ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'creds' ); ?>" id="<?php echo $this->field_id( 'creds' ); ?>" value="<?php echo $this->core->number( $prefs['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( 'creds' ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'creds' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'creds' ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
 			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'logic' => 'play' ) ); ?>"><?php esc_html_e( 'Award Logic', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'logic' => 'play' ) ) ); ?>"><?php esc_html_e( 'Award Logic', 'mycred' ); ?></label>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'logic' => 'play' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'logic' ); ?>" id="<?php echo $this->field_id( array( 'logic' => 'play' ) ); ?>"<?php checked( $prefs['logic'], 'play' ); ?> value="play" class="toggle-hook-option" /> <?php esc_html_e( 'Play - As soon as video starts playing.', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'logic' => 'play' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'logic' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'logic' => 'play' ) ) ); ?>"<?php checked( $prefs['logic'], 'play' ); ?> value="play" class="toggle-hook-option" /> <?php esc_html_e( 'Play - As soon as video starts playing.', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'logic' => 'full' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'logic' ); ?>" id="<?php echo $this->field_id( array( 'logic' => 'full' ) ); ?>"<?php checked( $prefs['logic'], 'full' ); ?> value="full" class="toggle-hook-option" /> <?php esc_html_e( 'Full - First when the entire video has played.', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'logic' => 'full' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'logic' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'logic' => 'full' ) ) ); ?>"<?php checked( $prefs['logic'], 'full' ); ?> value="full" class="toggle-hook-option" /> <?php esc_html_e( 'Full - First when the entire video has played.', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'logic' => 'interval' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'logic' ); ?>" id="<?php echo $this->field_id( array( 'logic' => 'interval' ) ); ?>"<?php checked( $prefs['logic'], 'interval' ); ?> value="interval" class="toggle-hook-option" /> <?php echo $this->core->template_tags_general( __( 'Interval - For each x number of seconds watched.', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'logic' => 'interval' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'logic' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'logic' => 'interval' ) ) ); ?>"<?php checked( $prefs['logic'], 'interval' ); ?> value="interval" class="toggle-hook-option" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Interval - For each x number of seconds watched.', 'mycred' ) ) ); ?></label>
 				</div>
 			</div>
 		</div>
 		<div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
-			<div id="<?php echo $this->field_id( array( 'logic-option-interval' ) ); ?>"<?php if ( $prefs['logic'] != 'interval' ) echo ' style="display: none;"';?>>
+			<div id="<?php echo esc_attr( $this->field_id( array( 'logic-option-interval' ) ) ); ?>"<?php if ( $prefs['logic'] != 'interval' ) echo ' style="display: none;"';?>>
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( 'interval' ); ?>"><?php esc_html_e( 'Intervals', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( 'interval' ); ?>" id="<?php echo $this->field_id( 'interval' ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['interval'] ); ?>" class="form-control" />
-					<span class="description"><?php printf( __( 'The number of seconds a user must watch in order to get %s.', 'mycred' ), $this->core->plural() ); ?></span>
+					<label for="<?php echo esc_attr( $this->field_id( 'interval' ) ); ?>"><?php esc_html_e( 'Intervals', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'interval' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'interval' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['interval'] ); ?>" class="form-control" />
+					<span class="description"><?php printf( esc_html__( 'The number of seconds a user must watch in order to get %s.', 'mycred' ), esc_html( $this->core->plural() ) ); ?></span>
 				</div>
 			</div>
-			<div id="<?php echo $this->field_id( array( 'logic-option-full' ) ); ?>"<?php if ( $prefs['logic'] != 'full' ) echo ' style="display: none;"';?>>
+			<div id="<?php echo esc_attr( $this->field_id( array( 'logic-option-full' ) ) ); ?>"<?php if ( $prefs['logic'] != 'full' ) echo ' style="display: none;"';?>>
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( 'leniency' ); ?>"><?php esc_html_e( 'Leniency', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( 'leniency' ); ?>" id="<?php echo $this->field_id( 'leniency' ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['leniency'] ); ?>" class="form-control" />
+					<label for="<?php echo esc_attr( $this->field_id( 'leniency' ) ); ?>"><?php esc_html_e( 'Leniency', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'leniency' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'leniency' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['leniency'] ); ?>" class="form-control" />
 					<span class="description"><?php esc_html_e( 'Do not set this value to zero! A lot of thing can happen while a user watches a movie and sometimes a few seconds can drop of the counter due to buffering or play back errors.', 'mycred' ); ?></span>
 				</div>
 			</div>
@@ -379,16 +379,16 @@ jQuery(function($){
 	$( '#sidebar-active .toggle-hook-option' ).change(function(){
 
 		if ( $(this).val() == 'interval' ) {
-			$( '#<?php echo $this->field_id( array( 'logic-option-interval' ) ); ?>' ).show();
-			$( '#<?php echo $this->field_id( array( 'logic-option-full' ) ); ?>' ).hide();
+			$( '#<?php echo esc_js( $this->field_id( array( 'logic-option-interval' ) ) ); ?>' ).show();
+			$( '#<?php echo esc_js( $this->field_id( array( 'logic-option-full' ) ) ); ?>' ).hide();
 		}
 		else if ( $(this).val() == 'full' ) {
-			$( '#<?php echo $this->field_id( array( 'logic-option-full' ) ); ?>' ).show();
-			$( '#<?php echo $this->field_id( array( 'logic-option-interval' ) ); ?>' ).hide();
+			$( '#<?php echo esc_js( $this->field_id( array( 'logic-option-full' ) ) ); ?>' ).show();
+			$( '#<?php echo esc_js( $this->field_id( array( 'logic-option-interval' ) ) ); ?>' ).hide();
 		}
 		else {
-			$( '#<?php echo $this->field_id( array( 'logic-option-full' ) ); ?>' ).hide();
-			$( '#<?php echo $this->field_id( array( 'logic-option-interval' ) ); ?>' ).hide();
+			$( '#<?php echo esc_js( $this->field_id( array( 'logic-option-full' ) ) ); ?>' ).hide();
+			$( '#<?php echo esc_js( $this->field_id( array( 'logic-option-interval' ) ) ); ?>' ).hide();
 		}
 
 	});
@@ -474,10 +474,10 @@ if ( ! function_exists( 'mycred_video_detect_views' ) ) :
 
 		if ( is_user_logged_in() ) {
 
-			if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-viewing-videos' && isset( $_POST['setup'] ) && isset( $_POST['type'] ) && isset( $_POST['token'] ) && wp_verify_nonce( $_POST['token'], 'mycred-video-points' ) ) {
+			if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-viewing-videos' && isset( $_POST['setup'] ) && isset( $_POST['type'] ) && isset( $_POST['token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['token'] ) ), 'mycred-video-points' ) ) {
 
-				$key        = sanitize_text_field( $_POST['setup'] );
-				$point_type = sanitize_text_field( $_POST['type'] );
+				$key        = sanitize_text_field( wp_unslash( $_POST['setup'] ) );
+				$point_type = sanitize_text_field( wp_unslash( $_POST['type'] ) );
 				$setup      = mycred_verify_token( $key, 6 );
 
 				if ( $setup === false || $setup[5] != $point_type ) wp_send_json_error();

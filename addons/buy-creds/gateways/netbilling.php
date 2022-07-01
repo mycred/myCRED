@@ -201,13 +201,29 @@ if ( ! class_exists( 'myCRED_NETbilling' ) ) :
 		 */
 		public function checkout_page_body() {
 
-			echo $this->checkout_header();
-			echo $this->checkout_logo( false );
+			echo wp_kses_post( $this->checkout_header() );
+			echo wp_kses_post( $this->checkout_logo( false ) );
+			echo wp_kses_post( $this->checkout_order() );
+			echo wp_kses_post( $this->checkout_cancel() );
 
-			echo $this->checkout_order();
-			echo $this->checkout_cancel();
-
-			echo $this->checkout_footer();
+			echo wp_kses( 
+				$this->checkout_footer(), 
+				array( 
+					'div' => array( 'class' => array() ), 
+					'button' => array( 
+						'type' => array(), 
+						'id' => array(), 
+						'data-act' => array(), 
+						'data-value' => array(), 
+						'class' => array(), 
+					),
+					'input' => array( 
+						'type' => array(), 
+						'name' => array(), 
+						'value' => array()
+					)
+				) 
+			);
 
 		}
 

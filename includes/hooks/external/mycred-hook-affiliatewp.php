@@ -318,7 +318,32 @@ function mycred_load_affiliatewp_hook() {
 		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'visits', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'visits', 'limit' ) ), $this->field_id( array( 'visits', 'limit' ) ), $prefs['visits']['limit'] ); ?>
+				<?php echo wp_kses( 
+						$this->hook_limit_setting( $this->field_name( array( 'visits', 'limit' ) ), $this->field_id( array( 'visits', 'limit' ) ), $prefs['visits']['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						)
+					); 
+				?>
 			</div>
 		</div>
 	</div>
@@ -362,7 +387,7 @@ function mycred_load_affiliatewp_hook() {
 				</div>
 				<label for="<?php echo esc_attr( $this->field_id( array( 'referrals', 'exchange' ) ) ); ?>"><?php esc_html_e( 'Exchange Rate', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'referrals', 'exchange' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'referrals', 'exchange' ) ) ); ?>" class="form-control"<?php if ( array_key_exists( $this->currency, $this->point_types ) ) echo ' readonly="readonly"'; ?> value="<?php echo esc_attr( $prefs['referrals']['exchange'] ); ?>" />
-				<span class="description"><?php if ( ! array_key_exists( $this->currency, $this->point_types ) ) printf( __( 'How much is 1 %s worth in %s', 'mycred' ), $this->core->plural(), $this->currency ); else esc_html_e( 'Disabled', 'mycred' ); ?></span>
+				<span class="description"><?php if ( ! array_key_exists( $this->currency, $this->point_types ) ) printf( esc_html__( 'How much is 1 %s worth in %s', 'mycred' ), esc_html( $this->core->plural() ), esc_html( $this->currency ) ); else esc_html_e( 'Disabled', 'mycred' ); ?></span>
 			</div>
 		</div>
 	</div>

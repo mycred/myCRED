@@ -30,7 +30,7 @@ function mycred_about_header() {
     padding-top: 40px;
 }
 #mycred-welcome .intro .mycred-logo {
-	background: url('<?php echo plugins_url( 'assets/images/mycred-icon.png', myCRED_THIS ); ?>') no-repeat center center; 
+	background: url('<?php echo esc_url( plugins_url( 'assets/images/mycred-icon.png', myCRED_THIS ) ); ?>') no-repeat center center; 
 	background-size: 95px;
 	display: block;
     margin: auto;
@@ -331,7 +331,7 @@ b, strong {
 					</div>
 
 					<div class="block">
-					<h1><?php printf( __( 'Welcome to %s %s', 'mycred' ), $name, myCRED_VERSION ); ?></h1>
+					<h1><?php printf( esc_html__( 'Welcome to %s %s', 'mycred' ), esc_html( $name ), esc_html( myCRED_VERSION ) ); ?></h1>
 						<h6>Thank you for choosing myCred - the most powerful points management system for WordPress. Build and manage a broad range of digital rewards, including points, ranks, and badges on your WordPress-powered website.
 </h6>
 					</div>
@@ -356,7 +356,7 @@ if ( !is_mycred_ready() ) {
 
 	<div class="button-wrap mycred-clear">
 		<div class="left">
-			<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" onclick="startTour()" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange mycred-footer-btn">
+			<a href="<?php echo esc_url( admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ); ?>" id="first_setup" onclick="startTour()" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange mycred-footer-btn">
 			Setup myCred
 			</a>
 		
@@ -394,7 +394,7 @@ function mycred_about_page() {
 
 			?>
 	
-				<img src="<?php echo plugins_url( 'assets/images/about/welcome.png', myCRED_THIS ); ?>" alt="Welcome" class="video-thumbnail">
+				<img src="<?php echo esc_url( plugins_url( 'assets/images/about/welcome.png', myCRED_THIS ) ); ?>" alt="Welcome" class="video-thumbnail">
 
 			<div class="block">
 				
@@ -403,7 +403,7 @@ function mycred_about_page() {
 						<?php 
 						if ( !is_mycred_ready() ) {
 						?>
-							<a href="<?php echo admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ?>" id="first_setup" onclick="startTour()" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange">
+							<a href="<?php echo esc_url( admin_url( 'plugins.php?page=' . MYCRED_SLUG . '-setup&mycred_tour_guide=1' ) ); ?>" id="first_setup" onclick="startTour()" class="mycred-btn mycred-btn-block mycred-btn-lg mycred-btn-orange">
 								Setup myCred
 							</a>
 						<?php
@@ -429,61 +429,61 @@ function mycred_about_page() {
 					<div class="feature-list mycred-clear">
 
 						<div class="feature-block first">
-							<img src="<?php echo plugins_url( 'assets/images/about/account.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/account.png', myCRED_THIS ) ); ?>">
 							<h5>Account History</h5>
 							<p>A central log records your user's points whenever they perform an action.</p>
 						</div>
 
 						<div class="feature-block last">
-							<img src="<?php echo plugins_url( 'assets/images/about/points-management.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/points-management.png', myCRED_THIS ) ); ?>">
 							<h5>Points Management</h5>
 							<p>Adjust your user's balance by adding or removing points with or without a log entry.</p>
 						</div>
 
 						<div class="feature-block first">
-							<img src="<?php echo plugins_url( 'assets/images/about/automatic-points.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/automatic-points.png', myCRED_THIS ) ); ?>">
 							<h5>Automatic Points</h5>
 							<p>Automatically award or deduct points from your user’s balance.</p>
 						</div>
 
 						<div class="feature-block last">
-							<img src="<?php echo plugins_url( 'assets/images/about/multi-points.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/multi-points.png', myCRED_THIS ) ); ?>">
 							<h5>Multiple Point Types</h5>
 							<p>Create multiple point types through the admin area to manage things easily.</p>
 						</div>
 
 						<div class="feature-block first">
-							<img src="<?php echo plugins_url( 'assets/images/about/convert-points.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/convert-points.png', myCRED_THIS ) ); ?>">
 							<h5>Convert Points to Cash</h5>
 							<p>Users can redeem myCred points for real money.</p>
 						</div>
 
 						<div class="feature-block last">
-							<img src="<?php echo plugins_url( 'assets/images/about/multi-site-support.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/multi-site-support.png', myCRED_THIS ) ); ?>">
 							<h5>Multi-Site Support</h5>
 							<p>Choose between using a unique myCred installation or centralize balances across your network.</p>
 						</div>
 
 						<div class="feature-block first">
-							<img src="<?php echo plugins_url( 'assets/images/about/leaderboards.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/leaderboards.png', myCRED_THIS ) ); ?>">
 							<h5>Leaderboards</h5>
 							<p>Generate leaderboards based on your user’s balance or points history.</p>
 						</div>
 
 						<div class="feature-block last">
-							<img src="<?php echo plugins_url( 'assets/images/about/badges.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/badges.png', myCRED_THIS ) ); ?>">
 							<h5>Badges</h5>
 							<p>Award badges to your users based on their points history.</p>
 						</div>
 
 						<div class="feature-block first">
-							<img src="<?php echo plugins_url( 'assets/images/about/buy-points.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/buy-points.png', myCRED_THIS ) ); ?>">
 							<h5>Buy Points</h5>
 							<p>Users can purchase points using real money using popular payment gateways.</p>
 						</div>
 
 						<div class="feature-block last">
-							<img src="<?php echo plugins_url( 'assets/images/about/sell-content.png', myCRED_THIS ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/about/sell-content.png', myCRED_THIS ) ); ?>">
 							<h5>Sell Content</h5>
 							<p>Sell access to the content field of posts/pages or custom post types on your website.</p>
 						</div>
@@ -535,15 +535,16 @@ function mycred_about_page() {
 				<div class="block">
 					<h2>Change Log</h2>
 					<ul>
-						<li><strong>NEW</strong> - Introduced a "Bulk Assign" tool for awarding/revoking points, badges, and ranks.</li>
-						<li><strong>NEW</strong> - Introduced a new feature "Exclude by user role" admin can exclude any user role from the specific point type.</li>
-						<li><strong>NEW</strong> - Introduced a timeframe attribute in [mycred_my_balance_converted] shortcode. Now you can show users converted balance of a given timeframe today, yesterday, this week, this month, last month.</li>
-						<li><strong>FIX</strong> - Sometimes user's ranks were not updating automatically.</li>
-						<li><strong>FIX</strong> - Membership page layout issues.</li>
-						<li><strong>FIX</strong> - Points conversion not working when using arrows to increase or decrease the amount in [mycred_cashcred] shortcode.</li>
-						<li><strong>FIX</strong> - buyCred payment dialog couldn’t load on the subsite.</li>
-						<li><strong>FIX</strong> - After deleting the badge their data will keep existing on the user's meta.</li>
-						<li><strong>FIX</strong> - "this-week" value not working in [mycred_leaderboard] timeframe attribute when the week starts other than "Monday" in your WordPress setting.</li>
+						<li><strong>NEW</strong> - Added minimum points reminder email notification for central deposit.</li>
+						<li><strong>NEW</strong> - Added points automatically to the central account after the specified interval. (Schedule Deposit)</li>
+						<li><strong>NEW</strong> - Added "No Available Balance" email notification for central deposit.</li>
+						<li><strong>FIX</strong> - buyCred purchase reward hook setup did not appear properly in mycred_hook_table.</li>
+						<li><strong>FIX</strong> - Typo fixes in wooCommerce product reward reference.</li>
+						<li><strong>FIX</strong> - The "Insufficient Funds Warning" message did not appear according to the myCred transfer setting.</li>
+						<li><strong>FIX</strong> - Product Reward refund was not working.</li>
+						<li><strong>FIX</strong> - user_id attribute was not working in mycred_show_if shortcode.</li>
+						<li><strong>FIX</strong> - License was not working when using subdirectory in multisite network.</li>
+						<li><strong>FIX</strong> - Fixed security vulnerabilities.</li>
 					</ul>
 				</div>
 			</div><!-- /.mycred-change-log -->
@@ -554,18 +555,18 @@ function mycred_about_page() {
 					<h1>Testimonials</h1>
 
 					<div class="testimonial-block mycred-clear">
-						<img src="<?php echo plugins_url( 'assets/images/about/56826.png', myCRED_THIS ); ?>">
+						<img src="<?php echo esc_url( plugins_url( 'assets/images/about/56826.png', myCRED_THIS ) ); ?>">
 						<p>myCred is pretty solid WordPress plugin. You can do almost anything with it.	myCred offers a great developer codex along with hooks, and filters. The versatile collection of addons is just amazing.</p>
 						<p><strong>Wooegg</strong></p>
 					</div>
 
 					<div class="testimonial-block mycred-clear">
-						<img src="<?php echo plugins_url( 'assets/images/about/56826.png', myCRED_THIS ); ?>">
+						<img src="<?php echo esc_url( plugins_url( 'assets/images/about/56826.png', myCRED_THIS ) ); ?>">
 						<p>MyCred might be free but the add-ons it offers are absolutely incredible! myCred is the best points system for WordPress, period.</p>
 						<p><strong>Rongenius</strong></p>
 					</div>
 					<div class="testimonial-block mycred-clear">
-						<img src="<?php echo plugins_url( 'assets/images/about/56826.png', myCRED_THIS ); ?>">
+						<img src="<?php echo esc_url( plugins_url( 'assets/images/about/56826.png', myCRED_THIS ) ); ?>">
 						<p>myCred is highly optimized and there are a lot of functions and short codes available to customize its structure. Special congratulations to its creators!</p>
 						<p><strong>Miladesmaili</strong></p>
 					</div>

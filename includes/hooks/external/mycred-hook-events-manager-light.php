@@ -202,21 +202,46 @@ function mycred_load_events_manager_light_hook() {
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'attend' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'attend' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'attend' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['attend']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'attend' => 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'attend' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'attend' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['attend']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'attend' => 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'attend' => 'limit' ) ), $this->field_id( array( 'attend' => 'limit' ) ), $prefs['attend']['limit'] ); ?>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'attend' => 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( array( 'attend' => 'limit' ) ), $this->field_id( array( 'attend' => 'limit' ) ), $prefs['attend']['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						) 
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'attend' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'attend' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'attend' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['attend']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'attend' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'attend' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'attend' => 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['attend']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general', 'post' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -226,15 +251,15 @@ function mycred_load_events_manager_light_hook() {
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'cancel' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'cancel' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'cancel' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['cancel']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'cancel' => 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'cancel' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'cancel' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['cancel']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'cancel' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'cancel' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'cancel' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['cancel']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'cancel' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'cancel' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'cancel' => 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['cancel']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general', 'post' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>

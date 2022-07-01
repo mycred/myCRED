@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 6.0
-Stable tag: 2.4.5.4
+Stable tag: 2.4.6
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -29,6 +29,19 @@ myCred allows **THREE different ways** through which you can award your users:
 * **Ranks -** Set ranks within your leaderboards and reward your users with significant perks after they reach a certain milestone.
 
 * **Badges -** Boost your users' participation by rewarding them for their exceptional performance.
+
+**myCred v2.4.6 update - Schedule Deposit in Central Deposit**
+
+We have added new functionality in the Central deposit built-in Addon where admin can schedule the points deposit to the central account automatically after the specified interval.
+
+= Features =
+
+* **Set Starting from** - Setup the starting date 
+* **Interval (in days)** - Deposit points after x days interval.
+* **Amount** - The amount of points to be scheduled.
+* **Recurring** - Enabling this options will deposit the amount recursively after the defined interval. We have also added two new email triggers for Central deposit.
+* Added Email notification on Minimum balance in central deposit.
+* Added Email notification on No balance Left in central deposit.
 
 **Latest update - myCred v2.4.4**
 
@@ -303,6 +316,21 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.6 =
+New features and Bug fixes.
+
+= 2.4.5.4 =
+Bug fixes.
+
+= 2.4.5.3 =
+Bug fixes.
+
+= 2.4.5.2 =
+Bug fixes.
+
+= 2.4.5.1 =
+Bug fixes.
+
 = 2.4.5 =
 Code improvement.
 
@@ -375,11 +403,23 @@ The banking module have been replaced by Central deposite module, and interest r
 
 == Changelog ==
 
+= 2.4.6 =
+- **NEW** - Added minimum points reminder email notification for central deposit.
+- **NEW** - Added points automatically to the central account after the specified interval. (Schedule Deposit)
+- **NEW** - Added "No Available Balance" email notification for central deposit.
+- **FIX** - buyCred purchase reward hook setup did not appear properly in mycred_hook_table.
+- **FIX** - Typo fixes in wooCommerce product reward reference.
+- **FIX** - The "Insufficient Funds Warning" message did not appear according to the myCred transfer setting.
+- **FIX** - Product Reward refund was not working.
+- **FIX** - user_id attribute was not working in mycred_show_if shortcode.
+- **FIX** - License was not working when using subdirectory in multisite network.
+- **FIX** - Fixed security vulnerabilities.
+
 = 2.4.5.4 =
 - **FIX** - Rank publish or update not working correctly.
 
 = 2.4.5.3 =
-- **FIX** - Sell content issues in manual pages/posts
+- **FIX** - Sell content issues in manual pages/posts.
 
 = 2.4.5.2 =
 - **FIX** - Sell Content settings not being saved.

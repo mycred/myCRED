@@ -270,7 +270,7 @@ if ( ! class_exists( 'myCRED_Stats_Module' ) ) :
 						$values[] = $set->value;
 				}
 
-				echo '<span class="' . MYCRED_SLUG . '-stats-bar" data-type="' . $point_type . '" data-positive="' . $color['positive'] . '" data-negative="' . $color['negative'] . '" style="display: none;">' . implode( ',', $values ) . '</span>';
+				echo '<span class="' . esc_attr( MYCRED_SLUG ) . '-stats-bar" data-type="' . esc_attr( $point_type ) . '" data-positive="' . esc_attr( $color['positive'] ) . '" data-negative="' . esc_attr( $color['negative'] ) . '" style="display: none;">' . esc_html( implode( ',', $values ) ) . '</span>';
 
 			}
 
@@ -287,7 +287,7 @@ if ( ! class_exists( 'myCRED_Stats_Module' ) ) :
 <script type="text/javascript">
 jQuery(function($){
 
-	$( 'span.<?php echo MYCRED_SLUG; ?>-stats-bar' ).each(function(index,item){
+	$( 'span.<?php echo esc_attr( MYCRED_SLUG ); ?>-stats-bar' ).each(function(index,item){
 
 		var barchart      = $(this);
 		var positivecolor = barchart.data( 'positive' );
@@ -362,16 +362,16 @@ jQuery(function($){
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 					<div class="form-group">
-						<label for="<?php echo $this->field_id( 'color_positive' ); ?>"><?php esc_html_e( 'Positive Values', 'mycred' ); ?></label>
-						<input type="text" name="<?php echo $this->field_name( 'color_positive' ); ?>" id="<?php echo $this->field_id( 'color_positive' ); ?>" value="<?php echo esc_attr( $prefs['color_positive'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
+						<label for="<?php echo esc_attr( $this->field_id( 'color_positive' ) ); ?>"><?php esc_html_e( 'Positive Values', 'mycred' ); ?></label>
+						<input type="text" name="<?php echo esc_attr( $this->field_name( 'color_positive'  )); ?>" id="<?php echo esc_attr( $this->field_id( 'color_positive' ) ); ?>" value="<?php echo esc_attr( $prefs['color_positive'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
 					</div>
 
 				</div>
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 					<div class="form-group">
-						<label for="<?php echo $this->field_id( 'color_negative' ); ?>"><?php esc_html_e( 'Negative Values', 'mycred' ); ?></label>
-						<input type="text" name="<?php echo $this->field_name( 'color_negative' ); ?>" id="<?php echo $this->field_id( 'color_negative' ); ?>" value="<?php echo esc_attr( $prefs['color_negative'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
+						<label for="<?php echo esc_attr( $this->field_id( 'color_negative' ) ); ?>"><?php esc_html_e( 'Negative Values', 'mycred' ); ?></label>
+						<input type="text" name="<?php echo esc_attr( $this->field_name( 'color_negative' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'color_negative' ) ); ?>" value="<?php echo esc_attr( $prefs['color_negative'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
 					</div>
 
 				</div>
@@ -395,7 +395,7 @@ jQuery(function($){
 
 					<div class="form-group">
 						<div class="checkbox">
-							<label for="<?php echo $this->field_id( 'animate' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'animate' ); ?>" id="<?php echo $this->field_id( 'animate' ); ?>"<?php checked( $prefs['animate'], 1 ); ?> value="1" /> <?php esc_html_e( 'Animate Charts', 'mycred' ); ?></label>
+							<label for="<?php echo esc_attr( $this->field_id( 'animate' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'animate' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'animate' ) ); ?>"<?php checked( $prefs['animate'], 1 ); ?> value="1" /> <?php esc_html_e( 'Animate Charts', 'mycred' ); ?></label>
 						</div>
 					</div>
 
@@ -404,7 +404,7 @@ jQuery(function($){
 
 					<div class="form-group">
 						<div class="checkbox">
-							<label for="<?php echo $this->field_id( 'bezier' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'bezier' ); ?>" id="<?php echo $this->field_id( 'bezier' ); ?>"<?php checked( $prefs['bezier'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use Bezier Curves', 'mycred' ); ?></label>
+							<label for="<?php echo esc_attr( $this->field_id( 'bezier' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'bezier' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bezier' ) ); ?>"<?php checked( $prefs['bezier'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use Bezier Curves', 'mycred' ); ?></label>
 						</div>
 					</div>
 
@@ -412,14 +412,14 @@ jQuery(function($){
 			</div>
 
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'caching' ); ?>"><?php esc_html_e( 'Caching', 'mycred' ); ?></label>
-				<select name="<?php echo $this->field_name( 'caching' ); ?>" id="<?php echo $this->field_id( 'caching' ); ?>" class="form-control">
+				<label for="<?php echo esc_attr( $this->field_id( 'caching' ) ); ?>"><?php esc_html_e( 'Caching', 'mycred' ); ?></label>
+				<select name="<?php echo esc_attr( $this->field_name( 'caching' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching' ) ); ?>" class="form-control">
 <?php
 
 				foreach ( $cache_options as $value => $label ) {
-					echo '<option value="' . $value . '"';
+					echo '<option value="' . esc_attr( $value ) . '"';
 					if ( $prefs['caching'] == $value ) echo ' selected="selected"';
-					echo '>' . $label . '</option>';
+					echo '>' . esc_html( $label ) . '</option>';
 				}
 
 ?>

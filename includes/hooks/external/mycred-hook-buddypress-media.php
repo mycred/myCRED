@@ -291,21 +291,46 @@ function mycred_load_buddypress_media_hook() {
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_media', 'photo' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'photo' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'photo' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['new_media']['photo'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_media', 'photo' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_media', 'photo' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_media', 'photo' ) ) ); ?>"<?php echo wp_kses_post( $photos ); ?> value="<?php echo esc_attr( $this->core->number( $prefs['new_media']['photo'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_media', 'photo_limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_media', 'photo_limit' ) ), $this->field_id( array( 'new_media', 'photo_limit' ) ), $prefs['new_media']['photo_limit'] ); ?>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_media', 'photo_limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
+				<?php echo wp_kses( 
+						$this->hook_limit_setting( $this->field_name( array( 'new_media', 'photo_limit' ) ), $this->field_id( array( 'new_media', 'photo_limit' ) ), $prefs['new_media']['photo_limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						) 
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_media', 'photo_log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'photo_log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'photo_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_media']['photo_log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_media', 'photo_log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_media', 'photo_log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_media', 'photo_log' ) ) ); ?>"<?php echo wp_kses_post( $photos ); ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_media']['photo_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -315,21 +340,46 @@ function mycred_load_buddypress_media_hook() {
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_media', 'video' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'video' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'video' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['new_media']['video'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_media', 'video' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_media', 'video' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_media', 'video' ) ) ); ?>"<?php echo wp_kses_post( $videos ); ?> value="<?php echo esc_attr( $this->core->number( $prefs['new_media']['video'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_media', 'video_limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_media', 'video_limit' ) ), $this->field_id( array( 'new_media', 'video_limit' ) ), $prefs['new_media']['video_limit'] ); ?>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_media', 'video_limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( array( 'new_media', 'video_limit' ) ), $this->field_id( array( 'new_media', 'video_limit' ) ), $prefs['new_media']['video_limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						) 
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_media', 'video_log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'video_log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'video_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_media']['video_log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_media', 'video_log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_media', 'video_log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_media', 'video_log' ) ) ); ?>"<?php echo wp_kses_post( $videos ); ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_media']['video_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -339,21 +389,46 @@ function mycred_load_buddypress_media_hook() {
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_media', 'music' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'music' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'music' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['new_media']['music'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_media', 'music' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_media', 'music' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_media', 'music' ) ) ); ?>"<?php echo wp_kses_post( $music ); ?> value="<?php echo esc_attr( $this->core->number( $prefs['new_media']['music'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_media', 'music_limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_media', 'music_limit' ) ), $this->field_id( array( 'new_media', 'music_limit' ) ), $prefs['new_media']['music_limit'] ); ?>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_media', 'music_limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( array( 'new_media', 'music_limit' ) ), $this->field_id( array( 'new_media', 'music_limit' ) ), $prefs['new_media']['music_limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						) 
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_media', 'music_log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_media', 'music_log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_media', 'music_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_media']['music_log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_media', 'music_log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_media', 'music_log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_media', 'music_log' ) ) ); ?>"<?php echo wp_kses_post( $music ); ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_media']['music_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -363,15 +438,15 @@ function mycred_load_buddypress_media_hook() {
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_media', 'photo' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'photo' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'photo' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['delete_media']['photo'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'photo' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_media', 'photo' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'photo' ) ) ); ?>"<?php echo wp_kses_post( $photos ); ?> value="<?php echo esc_attr( $this->core->number( $prefs['delete_media']['photo'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_media', 'photo_log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'photo_log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'photo_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_media']['photo_log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'photo_log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_media', 'photo_log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'photo_log' ) ) ); ?>"<?php echo wp_kses_post( $photos ); ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_media']['photo_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -381,15 +456,15 @@ function mycred_load_buddypress_media_hook() {
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_media', 'video' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'video' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'video' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['delete_media']['video'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'video' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_media', 'video' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'video' ) ) ); ?>"<?php echo wp_kses_post( $videos ); ?> value="<?php echo esc_attr( $this->core->number( $prefs['delete_media']['video'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_media', 'video_log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'video_log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'video_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_media']['video_log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'video_log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_media', 'video_log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'video_log' ) ) ); ?>"<?php echo wp_kses_post( $videos ); ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_media']['video_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -399,15 +474,15 @@ function mycred_load_buddypress_media_hook() {
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_media', 'music' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'music' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'music' ) ); ?>"<?php echo $photos; ?> value="<?php echo $this->core->number( $prefs['delete_media']['music'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'music' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_media', 'music' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'music' ) ) ); ?>"<?php echo wp_kses_post( $music ); ?> value="<?php echo esc_attr( $this->core->number( $prefs['delete_media']['music'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_media', 'music_log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_media', 'music_log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_media', 'music_log' ) ); ?>"<?php echo $photos; ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_media']['music_log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'music_log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_media', 'music_log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_media', 'music_log' ) ) ); ?>"<?php echo wp_kses_post( $music ); ?> placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_media']['music_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>

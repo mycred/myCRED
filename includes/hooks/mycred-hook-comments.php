@@ -360,7 +360,7 @@ if ( ! class_exists( 'myCRED_Hook_Comments' ) ) :
 				);
 
 			if ( function_exists( 'dsq_is_installed' ) )
-				echo '<p>' . $this->core->template_tags_general( __( '%plural% are only awarded when your website has been synced with the Disqus server!', 'mycred' ) ) . '</p>';
+				echo '<p>' . wp_kses_post( $this->core->template_tags_general( __( '%plural% are only awarded when your website has been synced with the Disqus server!', 'mycred' ) ) ) . '</p>';
 
 ?>
 <div class="hook-instance">
@@ -368,23 +368,23 @@ if ( ! class_exists( 'myCRED_Hook_Comments' ) ) :
 	<div class="row">
 		<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'approved' => 'creds' ) ); ?>"><?php esc_html_e( 'Member', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'approved' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'approved' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['approved']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'approved' => 'creds' ) ) ); ?>"><?php esc_html_e( 'Member', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'approved' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'approved' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['approved']['creds'] ) ); ?>" class="form-control" />
 				<span class="description"><?php esc_html_e( 'Use zero to disable.', 'mycred' ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'approved' => 'author' ) ); ?>"><?php esc_html_e( 'Content Author', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'approved' => 'author' ) ); ?>" id="<?php echo $this->field_id( array( 'approved' => 'author' ) ); ?>" value="<?php echo $this->core->number( $prefs['approved']['author'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'approved' => 'author' ) ) ); ?>"><?php esc_html_e( 'Content Author', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'approved' => 'author' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'approved' => 'author' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['approved']['author'] ) ); ?>" class="form-control" />
 				<span class="description"><?php esc_html_e( 'Use zero to disable.', 'mycred' ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'approved' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'approved' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'approved' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['approved']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'comment' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'approved' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'approved' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'approved' => 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['approved']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general', 'comment' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -392,7 +392,7 @@ if ( ! class_exists( 'myCRED_Hook_Comments' ) ) :
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'limits' => 'self_reply' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'limits' => 'self_reply' ) ); ?>" id="<?php echo $this->field_id( array( 'limits' => 'self_reply' ) ); ?>" <?php checked( $prefs['limits']['self_reply'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( '%plural% is to be awarded even when comment authors reply to their own comment.', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'limits' => 'self_reply' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'limits' => 'self_reply' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'limits' => 'self_reply' ) ) ); ?>" <?php checked( $prefs['limits']['self_reply'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( '%plural% is to be awarded even when comment authors reply to their own comment.', 'mycred' ) ) ); ?></label>
 				</div>
 			</div>
 		</div>
@@ -400,16 +400,16 @@ if ( ! class_exists( 'myCRED_Hook_Comments' ) ) :
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'limits' => 'per_post' ) ); ?>"><?php esc_html_e( 'Limit per post', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'limits' => 'per_post' ) ); ?>" id="<?php echo $this->field_id( array( 'limits' => 'per_post' ) ); ?>" value="<?php echo esc_attr( $prefs['limits']['per_post'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->core->template_tags_general( __( 'The number of comments per post that grants %_plural% to the comment author. Use zero for unlimited.', 'mycred' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'limits' => 'per_post' ) ) ); ?>"><?php esc_html_e( 'Limit per post', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'limits' => 'per_post' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'limits' => 'per_post' ) ) ); ?>" value="<?php echo esc_attr( $prefs['limits']['per_post'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->core->template_tags_general( __( 'The number of comments per post that grants %_plural% to the comment author. Use zero for unlimited.', 'mycred' ) ) ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'limits' => 'per_day' ) ); ?>"><?php esc_html_e( 'Limit per day', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'limits' => 'per_day' ) ); ?>" id="<?php echo $this->field_id( array( 'limits' => 'per_day' ) ); ?>" value="<?php echo $prefs['limits']['per_day']; ?>" class="form-control" />
-				<span class="description"><?php echo $this->core->template_tags_general( __( 'Number of comments per day that grants %_plural%. Use zero for unlimited.', 'mycred' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'limits' => 'per_day' ) ) ); ?>"><?php esc_html_e( 'Limit per day', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'limits' => 'per_day' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'limits' => 'per_day' ) ) ); ?>" value="<?php echo esc_attr( $prefs['limits']['per_day'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->core->template_tags_general( __( 'Number of comments per day that grants %_plural%. Use zero for unlimited.', 'mycred' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -419,23 +419,23 @@ if ( ! class_exists( 'myCRED_Hook_Comments' ) ) :
 	<div class="row">
 		<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'spam' => 'creds' ) ); ?>"><?php esc_html_e( 'Member', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'spam' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'spam' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['spam']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'spam' => 'creds' ) ) ); ?>"><?php esc_html_e( 'Member', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'spam' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'spam' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['spam']['creds'] ) ); ?>" class="form-control" />
 				<span class="description"><?php esc_html_e( 'Use zero to disable.', 'mycred' ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'spam' => 'author' ) ); ?>"><?php esc_html_e( 'Content Author', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'spam' => 'author' ) ); ?>" id="<?php echo $this->field_id( array( 'spam' => 'author' ) ); ?>" value="<?php echo $this->core->number( $prefs['spam']['author'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'spam' => 'author' ) ) ); ?>"><?php esc_html_e( 'Content Author', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'spam' => 'author' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'spam' => 'author' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['spam']['author'] ) ); ?>" class="form-control" />
 				<span class="description"><?php esc_html_e( 'Use zero to disable.', 'mycred' ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'spam' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'spam' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'spam' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['spam']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'comment' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'spam' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'spam' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'spam' => 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['spam']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general', 'comment' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -445,23 +445,23 @@ if ( ! class_exists( 'myCRED_Hook_Comments' ) ) :
 	<div class="row">
 		<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'trash' => 'creds' ) ); ?>"><?php esc_html_e( 'Member', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'trash' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'trash' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['trash']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'trash' => 'creds' ) ) ); ?>"><?php esc_html_e( 'Member', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'trash' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'trash' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['trash']['creds'] ) ); ?>" class="form-control" />
 				<span class="description"><?php esc_html_e( 'Use zero to disable.', 'mycred' ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'trash' => 'author' ) ); ?>"><?php esc_html_e( 'Content Author', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'trash' => 'author' ) ); ?>" id="<?php echo $this->field_id( array( 'trash' => 'author' ) ); ?>" value="<?php echo $this->core->number( $prefs['trash']['author'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'trash' => 'author' ) ) ); ?>"><?php esc_html_e( 'Content Author', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'trash' => 'author' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'trash' => 'author' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['trash']['author'] ) ); ?>" class="form-control" />
 				<span class="description"><?php esc_html_e( 'Use zero to disable.', 'mycred' ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'trash' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'trash' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'trash' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['trash']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'comment' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'trash' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'trash' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'trash' => 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['trash']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general', 'comment' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>

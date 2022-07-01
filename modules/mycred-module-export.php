@@ -140,7 +140,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 			if ( mycred_is_valid_export_url() ) {
 
 				$args       = array();
-				$export_set = sanitize_key( $_GET['set'] );
+				$export_set = isset( $_GET['set'] ) ? sanitize_key( $_GET['set'] ) : '';
 
 				if ( $this->export['front_format'] === 'raw' || ( $this->export['front_format'] === 'both' && isset( $_GET['raw'] ) && $_GET['raw'] == 1 ) )
 					$args['raw'] = true;
@@ -174,7 +174,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 			do_action( 'mycred_do_admin_export', $point_type, $this );
 
 			// Bulk action - export selected log entries
-			if ( isset( $_GET['action'] ) && substr( $_GET['action'], 0, 6 ) == 'export' && isset( $_GET['entry'] ) ) {
+			if ( isset( $_GET['action'] ) && substr( sanitize_key( $_GET['action'] ), 0, 6 ) == 'export' && isset( $_GET['entry'] ) ) {
 
 				$args      = array();
 
@@ -196,7 +196,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 			// Use of an export url
 			if ( mycred_is_valid_export_url( true ) ) {
 
-				$export_set     = sanitize_key( $_GET['set'] );
+				$export_set     = isset( $_GET['set'] ) ? sanitize_key( $_GET['set'] ) : '';
 				$export_options = mycred_get_log_exports();
 				$search_args    = mycred_get_search_args();
 
@@ -305,7 +305,7 @@ if ( ! class_exists( 'myCRED_Export_Module' ) ) :
 				if ( $id === 'search' && ! empty( $search_args ) )
 					$url = add_query_arg( $search_args, $url );
 
-				echo '<a href="' . esc_url( $url ) . '" class="' . $data['class'] . '">' . $data['label'] . '</a> ';
+				echo '<a href="' . esc_url( $url ) . '" class="' . esc_attr( $data['class'] ) . '">' . esc_html( $data['label'] ) . '</a> ';
 
 			}
 
@@ -339,7 +339,7 @@ jQuery(function($) {
 
 ?>
 <div style="display:none;" class="clear" id="export-log-history">
-	<strong><?php esc_html_e( 'Export', 'mycred' ); ?>:</strong>
+	<strong><?php esc_html_e( 'Export123', 'mycred' ); ?>:</strong>
 	<div>
 <?php
 
@@ -352,7 +352,7 @@ jQuery(function($) {
 				$url = mycred_get_export_url( $id, $raw );
 				if ( $url === false ) continue;
 
-				echo '<a href="' . esc_url( $url ) . '" class="' . $data['class'] . '">' . $data['my_label'] . '</a> ';
+				echo '<a href="' . esc_url( $url ) . '" class="' . esc_attr( $data['class'] ) . '">' . esc_html( $data['my_label'] ) . '</a> ';
 
 			}
 
@@ -397,9 +397,9 @@ jQuery(function($) {
 <?php
 
 			foreach ( $enabled_disabled as $value => $label ) {
-				echo '<option value="' . $value . '"';
+				echo '<option value="' . esc_attr( $value ). '"';
 				if ( $this->export['front'] == $value ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+				echo '>' . esc_html( $label ). '</option>';
 			}
 
 ?>
@@ -413,9 +413,9 @@ jQuery(function($) {
 <?php
 
 			foreach ( $export_formats as $value => $label ) {
-				echo '<option value="' . $value . '"';
+				echo '<option value="' . esc_attr( $value ) . '"';
 				if ( $this->export['front_format'] == $value ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+				echo '>' . esc_html( $label ) . '</option>';
 			}
 
 ?>
@@ -426,14 +426,14 @@ jQuery(function($) {
 			<div class="form-group">
 				<label for="mycred-export-prefs-front-end-name"><?php esc_html_e( 'File Name', 'mycred' ); ?></label>
 				<input type="text" class="form-control" name="mycred_pref_core[export][front_name]" id="mycred-export-prefs-front-end-name" value="<?php echo esc_attr( $this->export['front_name'] ); ?>" />
-				<p><span class="description"><?php echo '<code>%point_type%</code> = ' . __( 'Point Type', 'mycred' ) . ', <code>%username%</code> = ' . __( 'Username', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php echo '<code>%point_type%</code> = ' . esc_html__( 'Point Type', 'mycred' ) . ', <code>%username%</code> = ' . esc_html__( 'Username', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<p><span class="description"><?php echo str_replace( 'mycred_history', '<a href="http://codex.mycred.me/shortcodes/mycred_history/" target="_blank">mycred_history</a>', __( 'If enabled, users will only be able to export their own log entries! Export tools becomes available wherever you are using the mycred_history shortcode or in the users profile.', 'mycred' ) ); ?></span></p>
+			<p><span class="description"><?php echo wp_kses_post( str_replace( 'mycred_history', '<a href="http://codex.mycred.me/shortcodes/mycred_history/" target="_blank">mycred_history</a>', esc_html__( 'If enabled, users will only be able to export their own log entries! Export tools becomes available wherever you are using the mycred_history shortcode or in the users profile.', 'mycred' ) ) ); ?></span></p>
 		</div>
 	</div>
 
@@ -445,9 +445,9 @@ jQuery(function($) {
 <?php
 
 			foreach ( $enabled_disabled as $value => $label ) {
-				echo '<option value="' . $value . '"';
+				echo '<option value="' . esc_attr( $value ) . '"';
 				if ( $this->export['admin'] == $value ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+				echo '>' . esc_html( $label ) . '</option>';
 			}
 
 ?>
@@ -461,9 +461,9 @@ jQuery(function($) {
 <?php
 
 			foreach ( $export_formats as $value => $label ) {
-				echo '<option value="' . $value . '"';
+				echo '<option value="' . esc_attr( $value ) . '"';
 				if ( $this->export['admin_format'] == $value ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+				echo '>' . esc_attr( $label ) . '</option>';
 			}
 
 ?>
@@ -474,7 +474,7 @@ jQuery(function($) {
 			<div class="form-group">
 				<label for="mycred-export-prefs-admin-end-name"><?php esc_html_e( 'File Name', 'mycred' ); ?></label>
 				<input type="text" class="form-control" name="mycred_pref_core[export][admin_name]" id="mycred-export-prefs-admin-end-name" value="<?php echo esc_attr( $this->export['admin_name'] ); ?>" />
-				<p><span class="description"><?php echo '<code>%point_type%</code> = ' . __( 'Point Type', 'mycred' ) . ', <code>%username%</code> = ' . __( 'Username', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php echo '<code>%point_type%</code> = ' . esc_html__( 'Point Type', 'mycred' ) . ', <code>%username%</code> = ' . esc_html__( 'Username', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 	</div>

@@ -159,7 +159,7 @@ function mycred_load_bbpress_hook() {
 			$balance = $this->core->get_users_balance( $user_id, $this->mycred_type );
 			$layout  = $this->core->plural() . ': ' . $this->core->format_creds( $balance );
 
-			echo apply_filters( 'mycred_bbp_profile_balance', '<div class="users-mycred-balance">' . $layout . '</div>', $layout, $user_id, $this );
+			echo wp_kses_post( apply_filters( 'mycred_bbp_profile_balance', '<div class="users-mycred-balance">' . $layout . '</div>', $layout, $user_id, $this ) );
 
 		}
 
@@ -184,7 +184,7 @@ function mycred_load_bbpress_hook() {
 			$balance = $this->core->get_users_balance( $user_id, $this->mycred_type );
 			$layout  = $this->core->plural() . ': ' . $this->core->format_creds( $balance );
 
-			echo apply_filters( 'mycred_bbp_reply_balance', '<div class="users-mycred-balance">' . $layout . '</div>', $layout, $user_id, $this );
+			echo wp_kses_post( apply_filters( 'mycred_bbp_reply_balance', '<div class="users-mycred-balance">' . $layout . '</div>', $layout, $user_id, $this ) );
 
 		}
 
@@ -441,7 +441,32 @@ function mycred_load_bbpress_hook() {
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'new_forum', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_forum', 'limit' ) ), $this->field_id( array( 'new_forum', 'limit' ) ), $prefs['new_forum']['limit'] ); ?>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( array( 'new_forum', 'limit' ) ), $this->field_id( array( 'new_forum', 'limit' ) ), $prefs['new_forum']['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						)
+				); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -459,7 +484,7 @@ function mycred_load_bbpress_hook() {
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_forum', 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_forum', 'creds' ) ) ); ?>" id="<?php echo $this->field_id( array( 'delete_forum', 'creds' ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['delete_forum']['creds'] ) ); ?>" class="form-control" />
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_forum', 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_forum', 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['delete_forum']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
@@ -483,7 +508,32 @@ function mycred_load_bbpress_hook() {
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'new_topic', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_topic', 'limit' ) ), $this->field_id( array( 'new_topic', 'limit' ) ), $prefs['new_topic']['limit'] ); ?>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( array( 'new_topic', 'limit' ) ), $this->field_id( array( 'new_topic', 'limit' ) ), $prefs['new_topic']['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						)
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -498,7 +548,7 @@ function mycred_load_bbpress_hook() {
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'new_topic' => 'author' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'new_topic' => 'author' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_topic' => 'author' ) ) ); ?>" <?php checked( $prefs['new_topic']['author'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Forum authors can receive %_plural% for creating new topics.', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'new_topic' => 'author' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'new_topic' => 'author' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_topic' => 'author' ) ) ); ?>" <?php checked( $prefs['new_topic']['author'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Forum authors can receive %_plural% for creating new topics.', 'mycred' ) ) ); ?></label>
 				</div>
 			</div>
 		</div>
@@ -534,14 +584,39 @@ function mycred_load_bbpress_hook() {
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'fav_topic', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'fav_topic', 'limit' ) ), $this->field_id( array( 'fav_topic', 'limit' ) ), $prefs['fav_topic']['limit'] ); ?>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( array( 'fav_topic', 'limit' ) ), $this->field_id( array( 'fav_topic', 'limit' ) ), $prefs['fav_topic']['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						)
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'fav_topic', 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'fav_topic', 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'fav_topic', 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['fav_topic']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -558,7 +633,32 @@ function mycred_load_bbpress_hook() {
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'new_reply', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_reply', 'limit' ) ), $this->field_id( array( 'new_reply', 'limit' ) ), $prefs['new_reply']['limit'] ); ?>
+				<?php echo wp_kses( 
+						$this->hook_limit_setting( $this->field_name( array( 'new_reply', 'limit' ) ), $this->field_id( array( 'new_reply', 'limit' ) ), $prefs['new_reply']['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						) 
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -573,7 +673,7 @@ function mycred_load_bbpress_hook() {
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
-					<label for="<?php echo $this->field_id( array( 'new_reply' => 'author' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'new_reply' => 'author' ) ); ?>" id="<?php echo $this->field_id( array( 'new_reply' => 'author' ) ); ?>" <?php checked( $prefs['new_reply']['author'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Topic authors can receive %_plural% for replying to their own Topic.', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'new_reply' => 'author' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'new_reply' => 'author' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_reply' => 'author' ) ) ); ?>" <?php checked( $prefs['new_reply']['author'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Topic authors can receive %_plural% for replying to their own Topic.', 'mycred' ) ) ); ?></label>
 				</div>
 			</div>
 		</div>
@@ -584,15 +684,15 @@ function mycred_load_bbpress_hook() {
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_reply', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_reply', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_reply', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete_reply']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_reply', 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_reply', 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_reply', 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['delete_reply']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_reply', 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_reply', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_reply', 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_reply']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_reply', 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_reply', 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_reply', 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_reply']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -602,10 +702,10 @@ function mycred_load_bbpress_hook() {
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
-					<label for="<?php echo $this->field_id( 'show_points_in_reply' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_points_in_reply' ); ?>" id="<?php echo $this->field_id( 'show_points_in_reply' ); ?>" <?php checked( $prefs['show_points_in_reply'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Show users %_plural% balance in replies', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( 'show_points_in_reply' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_points_in_reply' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_points_in_reply' ) ); ?>" <?php checked( $prefs['show_points_in_reply'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Show users %_plural% balance in replies', 'mycred' ) ) ); ?></label>
 				</div>
 				<div class="radio">
-					<label for="<?php echo $this->field_id( 'show_points_in_profile' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'show_points_in_profile' ); ?>" id="<?php echo $this->field_id( 'show_points_in_profile' ); ?>" <?php checked( $prefs['show_points_in_profile'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Show users %_plural% balance in their bbPress profiles', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( 'show_points_in_profile' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'show_points_in_profile' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'show_points_in_profile' ) ); ?>" <?php checked( $prefs['show_points_in_profile'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Show users %_plural% balance in their bbPress profiles', 'mycred' ) ) ); ?></label>
 				</div>
 			</div>
 		</div>

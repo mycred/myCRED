@@ -238,7 +238,35 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			}
 
 			$output = do_shortcode( $output );
-			echo apply_filters( 'mycred_affiliate_bp_profile', $output, $user_id, $users_ref_link, $this );
+
+			echo wp_kses(
+				apply_filters( 'mycred_affiliate_bp_profile', $output, $user_id, $users_ref_link, $this ),
+				array(
+					'div' => array(
+						'class' => array()
+					),
+					'p' => array(),
+					'h4' => array(),
+					'input' => array(
+						'type' => array(),
+						'readonly' => array(),
+						'id' => array(),
+						'value' => array()
+					),
+					'button' => array(
+						'onclick' => array()
+					),
+					'table' => array(
+						'class' => array()
+					),
+					'tr' => array(
+						'class' => array()
+					),
+					'td' => array(
+						'class' => array()
+					)
+				) 
+			);
 
 		}
 
@@ -253,7 +281,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			if ( ! isset( $_GET[ $this->ref_key ] ) || empty( $_GET[ $this->ref_key ] ) || isset( $_COOKIE[ 'mycred_ref' . $this->mycred_type ] ) ) return;
 
 			// Attempt to get the user id based on the referral id
-			$user_id = $this->get_user_id_from_ref_id( $_GET[ $this->ref_key ] );
+			$user_id = $this->get_user_id_from_ref_id( sanitize_text_field( wp_unslash( $_GET[ $this->ref_key ] ) ) );
 			if ( $user_id !== NULL && ! is_user_logged_in() ) {
 
 				// Attempt to get the users IP
@@ -285,10 +313,10 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 					// Set cookies
 					if ( ! headers_sent() ) {
 
-						setcookie( 'mycred_ref' . $this->mycred_type, $_GET[ $this->ref_key ], apply_filters( 'mycred_affiliate_cookie', ( time()+3600*24 ), false, $this ), COOKIEPATH, COOKIE_DOMAIN );
+						setcookie( 'mycred_ref' . $this->mycred_type, sanitize_text_field( wp_unslash( $_GET[ $this->ref_key ] ) ), apply_filters( 'mycred_affiliate_cookie', ( time()+3600*24 ), false, $this ), COOKIEPATH, COOKIE_DOMAIN );
 
 						if ( get_option( 'users_can_register' ) && $this->prefs['signup']['creds'] > 0 )
-							setcookie( 'signup_ref' . $this->mycred_type, $_GET[ $this->ref_key ], apply_filters( 'mycred_affiliate_cookie', ( time()+3600*24 ), true, $this ), COOKIEPATH, COOKIE_DOMAIN );
+							setcookie( 'signup_ref' . $this->mycred_type, sanitize_text_field( wp_unslash( $_GET[ $this->ref_key ] ) ), apply_filters( 'mycred_affiliate_cookie', ( time()+3600*24 ), true, $this ), COOKIEPATH, COOKIE_DOMAIN );
 
 					}
 
@@ -309,11 +337,11 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			$ref = false;
 			$key = '';
 			if ( isset( $_COOKIE[ 'signup_ref' . $this->mycred_type ] ) ) {
-				$ref = $_COOKIE[ 'signup_ref' . $this->mycred_type ];
+				$ref = sanitize_text_field( wp_unslash( $_COOKIE[ 'signup_ref' . $this->mycred_type ] ) );
 				$key = 'signup_ref' . $this->mycred_type;
 			}
 			elseif ( isset( $_COOKIE[ 'mycred_ref' . $this->mycred_type ] ) ) {
-				$ref = $_COOKIE[ 'mycred_ref' . $this->mycred_type ];
+				$ref = sanitize_text_field( wp_unslash( $_COOKIE[ 'mycred_ref' . $this->mycred_type ] ) );
 				$key = 'mycred_ref' . $this->mycred_type;
 			}
 
@@ -601,21 +629,46 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'visit' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'visit' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'visit' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['visit']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'visit' => 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'visit' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'visit' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['visit']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'visit', 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'visit', 'limit' ) ), $this->field_id( array( 'visit', 'limit' ) ), $prefs['visit']['limit'] ); ?>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'visit', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( array( 'visit', 'limit' ) ), $this->field_id( array( 'visit', 'limit' ) ), $prefs['visit']['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						) 
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'visit' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'visit' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'visit' => 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['visit']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'visit' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'visit' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'visit' => 'log' ) ) ); ?>" value="<?php echo esc_attr( $prefs['visit']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -628,21 +681,46 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'signup' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'signup' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'signup' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['signup']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'signup' => 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'signup' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'signup' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['signup']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'signup', 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( 'signup', 'limit' ) ), $this->field_id( array( 'signup', 'limit' ) ), $prefs['signup']['limit'] ); ?>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'signup', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( array( 'signup', 'limit' ) ), $this->field_id( array( 'signup', 'limit' ) ), $prefs['signup']['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						) 
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'signup' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'signup' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'signup' => 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['signup']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ), '%user_name%' ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'signup' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'signup' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'signup' => 'log' ) ) ); ?>" value="<?php echo esc_attr( $prefs['signup']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ), '%user_name%' ) ); ?></span>
 			</div>
 		</div>
     </div>
@@ -654,9 +732,9 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<p>Registrations are disabled.</p>
-			<input type="hidden" name="<?php echo $this->field_name( array( 'signup' => 'creds' ) ); ?>" value="<?php echo esc_attr( $this->defaults['signup']['creds'] ); ?>" />
-			<input type="hidden" name="<?php echo $this->field_name( array( 'signup' => 'limit' ) ); ?>" value="<?php echo esc_attr( $this->defaults['signup']['limit'] ); ?>" />
-			<input type="hidden" name="<?php echo $this->field_name( array( 'signup' => 'log' ) ); ?>" value="<?php echo esc_attr( $this->defaults['signup']['log'] ); ?>" />
+			<input type="hidden" name="<?php echo esc_attr( $this->field_name( array( 'signup' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->defaults['signup']['creds'] ); ?>" />
+			<input type="hidden" name="<?php echo esc_attr( $this->field_name( array( 'signup' => 'limit' ) ) ); ?>" value="<?php echo esc_attr( $this->defaults['signup']['limit'] ); ?>" />
+			<input type="hidden" name="<?php echo esc_attr( $this->field_name( array( 'signup' => 'log' ) ) ); ?>" value="<?php echo esc_attr( $this->defaults['signup']['log'] ); ?>" />
 		</div>
 	</div>
 
@@ -668,23 +746,23 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-numeric"><input type="radio" name="<?php echo $this->field_name( array( 'setup' => 'links' ) ); ?>" id="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-numeric" <?php checked( $prefs['setup']['links'], 'numeric' ); ?> value="numeric" /> <?php esc_html_e( 'Assign numeric referral IDs to each user.', 'mycred' ); ?></label>
-				<span class="description"><?php printf( '%s: %s', __( 'Example', 'mycred' ), esc_url( add_query_arg( array( $this->ref_key => 1 ), home_url( '/' ) ) ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'setup' => 'links' ) ) ); ?>-numeric"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'setup' => 'links' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'setup' => 'links' ) ) ); ?>-numeric" <?php checked( $prefs['setup']['links'], 'numeric' ); ?> value="numeric" /> <?php esc_html_e( 'Assign numeric referral IDs to each user.', 'mycred' ); ?></label>
+				<span class="description"><?php printf( '%s: %s', esc_html__( 'Example', 'mycred' ), esc_url( add_query_arg( array( $this->ref_key => 1 ), home_url( '/' ) ) ) ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-username"><input type="radio" name="<?php echo $this->field_name( array( 'setup' => 'links' ) ); ?>" id="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-username" <?php checked( $prefs['setup']['links'], 'username' ); ?> value="username" /> <?php esc_html_e( 'Assign usernames as IDs for each user.', 'mycred' ); ?></label>
-				<span class="description"><?php printf( '%s: %s', __( 'Example', 'mycred' ), esc_url( add_query_arg( array( $this->ref_key => 'john+doe' ), home_url( '/' ) ) ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'setup' => 'links' ) ) ); ?>-username"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'setup' => 'links' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'setup' => 'links' ) ) ); ?>-username" <?php checked( $prefs['setup']['links'], 'username' ); ?> value="username" /> <?php esc_html_e( 'Assign usernames as IDs for each user.', 'mycred' ); ?></label>
+				<span class="description"><?php printf( '%s: %s', esc_html__( 'Example', 'mycred' ), esc_url( add_query_arg( array( $this->ref_key => 'john+doe' ), home_url( '/' ) ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'setup' => 'IP' ) ); ?>"><?php esc_html_e( 'IP Limit', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'setup' => 'IP' ) ); ?>" id="<?php echo $this->field_id( array( 'setup' => 'IP' ) ); ?>" value="<?php echo absint( $prefs['setup']['IP'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->core->template_tags_general( __( 'The number of times each IP address grants %_plural%. Use zero for unlimited.', 'mycred' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'setup' => 'IP' ) ) ); ?>"><?php esc_html_e( 'IP Limit', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'setup' => 'IP' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'setup' => 'IP' ) ) ); ?>" value="<?php echo absint( $prefs['setup']['IP'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->core->template_tags_general( __( 'The number of times each IP address grants %_plural%. Use zero for unlimited.', 'mycred' ) ) ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -703,7 +781,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'buddypress' => 'profile' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'buddypress' => 'profile' ) ); ?>" id="<?php echo $this->field_id( array( 'buddypress' => 'profile' ) ); ?>"<?php checked( $prefs['buddypress']['profile'], 1 ); ?> value="1" /> <?php esc_html_e( 'Insert referral link in users profiles', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'buddypress' => 'profile' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'buddypress' => 'profile' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'buddypress' => 'profile' ) ) ); ?>"<?php checked( $prefs['buddypress']['profile'], 1 ); ?> value="1" /> <?php esc_html_e( 'Insert referral link in users profiles', 'mycred' ); ?></label>
 				</div>
 			</div>
 		</div>
@@ -712,14 +790,14 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label><?php esc_html_e( 'Title', 'mycred' ); ?></label><br />
-				<input type="text" name="<?php echo $this->field_name( array( 'buddypress' => 'title' ) ); ?>" id="<?php echo $this->field_id( array( 'buddypress' => 'title' ) ); ?>" value="<?php echo esc_attr( $prefs['buddypress']['title'] ); ?>" class="form-control" />
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'buddypress' => 'title' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'buddypress' => 'title' ) ) ); ?>" value="<?php echo esc_attr( $prefs['buddypress']['title'] ); ?>" class="form-control" />
 				<span class="description"><?php esc_html_e( 'Leave empty to hide.', 'mycred' ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label><?php esc_html_e( 'Profile Positioning', 'mycred' ); ?></label><br />
-				<input type="text" name="<?php echo $this->field_name( array( 'buddypress' => 'priority' ) ); ?>" id="<?php echo $this->field_id( array( 'buddypress' => 'priority' ) ); ?>" value="<?php echo absint( $prefs['buddypress']['priority'] ); ?>" class="form-control" />
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'buddypress' => 'priority' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'buddypress' => 'priority' ) ) ); ?>" value="<?php echo absint( $prefs['buddypress']['priority'] ); ?>" class="form-control" />
 				<span class="description"><?php esc_html_e( 'You can move around the referral link on your users profile by changing the position. Increase to move up, decrease to move down.', 'mycred' ); ?></span>
 			</div>
 		</div>
@@ -727,18 +805,18 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'buddypress' => 'desc' ) ); ?>"><?php esc_html_e( 'Description', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'buddypress' => 'desc' ) ) ); ?>"><?php esc_html_e( 'Description', 'mycred' ); ?></label>
 				<span class="description"><?php esc_html_e( 'Optional description to insert under the link.', 'mycred' ); ?></span>
-				<textarea name="<?php echo $this->field_name( array( 'buddypress' => 'desc' ) ); ?>" id="<?php echo $this->field_id( array( 'buddypress' => 'desc' ) ); ?>" class="form-control" rows="5" cols="30"><?php echo esc_attr( $prefs['buddypress']['desc'] ); ?></textarea>
+				<textarea name="<?php echo esc_attr( $this->field_name( array( 'buddypress' => 'desc' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'buddypress' => 'desc' ) ) ); ?>" class="form-control" rows="5" cols="30"><?php echo esc_attr( $prefs['buddypress']['desc'] ); ?></textarea>
 			</div>
 		</div>
 	</div>
 </div>
 <?php else : ?>
-<input type="hidden" name="<?php echo $this->field_name( array( 'buddypress' => 'profile' ) ); ?>" value="<?php echo esc_attr( $this->defaults['buddypress']['profile'] ); ?>" />
-<input type="hidden" name="<?php echo $this->field_name( array( 'buddypress' => 'title' ) ); ?>" value="<?php echo esc_attr( $this->defaults['buddypress']['title'] ); ?>" />
-<input type="hidden" name="<?php echo $this->field_name( array( 'buddypress' => 'desc' ) ); ?>" value="<?php echo esc_attr( $this->defaults['buddypress']['desc'] ); ?>" />
-<input type="hidden" name="<?php echo $this->field_name( array( 'buddypress' => 'priority' ) ); ?>" value="<?php echo esc_attr( $this->defaults['buddypress']['priority'] ); ?>" />
+<input type="hidden" name="<?php echo esc_attr( $this->field_name( array( 'buddypress' => 'profile' ) ) ); ?>" value="<?php echo esc_attr( $this->defaults['buddypress']['profile'] ); ?>" />
+<input type="hidden" name="<?php echo esc_attr( $this->field_name( array( 'buddypress' => 'title' ) ) ); ?>" value="<?php echo esc_attr( $this->defaults['buddypress']['title'] ); ?>" />
+<input type="hidden" name="<?php echo esc_attr( $this->field_name( array( 'buddypress' => 'desc' ) ) ); ?>" value="<?php echo esc_attr( $this->defaults['buddypress']['desc'] ); ?>" />
+<input type="hidden" name="<?php echo esc_attr( $this->field_name( array( 'buddypress' => 'priority' ) ) ); ?>" value="<?php echo esc_attr( $this->defaults['buddypress']['priority'] ); ?>" />
 <?php endif; ?>
 <?php
 

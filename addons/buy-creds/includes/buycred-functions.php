@@ -197,7 +197,20 @@ if ( ! function_exists( 'mycred_purchase_limit_dropdown' ) ) :
 		}
 		$output .= '</select>';
 
-		echo $output;
+		echo wp_kses( 
+			$output,
+			array(
+				'select' => array(
+					'name' => array(),
+					'id' => array(),
+					'class' => array()
+				),
+				'option' => array(
+					'value' => array(),
+					'selected' => array()
+				)
+			) 
+		);
 
 	}
 endif;
@@ -433,7 +446,7 @@ if ( ! function_exists( 'buycred_get_pending_payment' ) ) :
 				'amount'     => $pending_payment->amount,
 				'revisit'    => $payment_id,
 				'token'      => wp_create_nonce( 'mycred-buy-creds' )
-			), set_url_scheme( sanitize_url( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) );
+			), set_url_scheme( esc_url_raw( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) );
 
 		}
 
@@ -511,8 +524,8 @@ if ( ! function_exists( 'buycred_get_cancel_transaction_url' ) ) :
 		}
 
 		// Override
-		if ( isset( $_REQUEST['return_to'] ) && esc_url_raw( $_REQUEST['return_to'] ) != '' )
-			$base = esc_url_raw( $_REQUEST['return_to'] );
+		if ( ! empty( $_REQUEST['return_to'] ) )
+			$base = esc_url_raw( wp_unslash( $_REQUEST['return_to'] ) );
 
 		if ( $transaction_id !== NULL )
 			$url = add_query_arg( array( 'buycred-cancel' => $transaction_id, '_token' => wp_create_nonce( 'buycred-cancel-pending-payment' ) ), $base );

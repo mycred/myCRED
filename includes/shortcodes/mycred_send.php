@@ -86,15 +86,15 @@ if ( ! function_exists( 'mycred_shortcode_send_points_ajax' ) ) :
 
 		$point_type    = MYCRED_DEFAULT_TYPE_KEY;
 		if ( isset( $_POST['type'] ) )
-			$point_type = sanitize_text_field( $_POST['type'] );
+			$point_type = sanitize_text_field( wp_unslash( $_POST['type'] ) );
 
 		// Make sure the type exists
 		if ( ! mycred_point_type_exists( $point_type ) ) die();
 
 		// Prep
-		$recipient     = (int) sanitize_text_field( $_POST['recipient'] );
-		$reference     = sanitize_text_field( $_POST['reference'] );
-		$log_entry     = strip_tags( trim( $_POST['log'] ), '<a>' );
+		$recipient     = isset( $_POST['recipient'] ) ? absint( $_POST['recipient'] ) : 0;
+		$reference     = isset( $_POST['reference'] ) ? sanitize_text_field( wp_unslash( $_POST['reference'] ) ) : '';
+		$log_entry     = isset( $_POST['log'] ) ? sanitize_text_field( wp_unslash( $_POST['log'] ) ) : '';
 
 		// No sending to ourselves
 		if ( $user_id == $recipient )
@@ -103,7 +103,7 @@ if ( ! function_exists( 'mycred_shortcode_send_points_ajax' ) ) :
 		$mycred        = mycred( $point_type );
 
 		// Prep amount
-		$amount        = sanitize_text_field( $_POST['amount'] );
+		$amount        = isset( $_POST['amount'] ) ? sanitize_text_field( wp_unslash( $_POST['amount'] ) ) : 0;
 		$amount        = $mycred->number( abs( $amount ) );
 
 		// Check solvency

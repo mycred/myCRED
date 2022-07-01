@@ -531,7 +531,7 @@ jQuery(function($) {
 				booking_id : booking
 			},
 			dataType   : "JSON",
-			url        : '<?php echo $ajax_url; ?>',
+			url        : '<?php echo esc_url( $ajax_url ); ?>',
 			beforeSend : function() {
 
 				button.val( '<?php echo esc_js( __( 'Processing...', 'mycred' ) ); ?>' );
@@ -733,17 +733,17 @@ jQuery(function($){
 			$new_settings                    = array();
 
 			// Setup
-			$new_settings['setup']           = isset( $_POST['mycred_gateway']['setup'] ) ? sanitize_text_field( $_POST['mycred_gateway']['setup'] ) : '';
-			$new_settings['type']            = isset( $_POST['mycred_gateway']['type'] ) ? sanitize_text_field( $_POST['mycred_gateway']['type'] ) : '';
-			$new_settings['refund']          = isset( $_POST['mycred_gateway']['refund'] ) ? abs( $_POST['mycred_gateway']['refund'] ) : '';
-			$new_settings['share']           = isset( $_POST['mycred_gateway']['share'] ) ? abs( $_POST['mycred_gateway']['share'] ) : '';
+			$new_settings['setup']           = isset( $_POST['mycred_gateway']['setup'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['setup'] ) ) : '';
+			$new_settings['type']            = isset( $_POST['mycred_gateway']['type'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['type'] ) ) : '';
+			$new_settings['refund']          = isset( $_POST['mycred_gateway']['refund'] ) ? abs( sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['refund'] ) ) ) : '';
+			$new_settings['share']           = isset( $_POST['mycred_gateway']['share'] ) ? abs( sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['share'] ) ) ) : '';
 
 			// Logs
-			$new_settings['log']['purchase'] = isset( $_POST['mycred_gateway']['log']['purchase'] ) ? sanitize_text_field( stripslashes( $_POST['mycred_gateway']['log']['purchase'] ) ) : '';
-			$new_settings['log']['refund']   = isset( $_POST['mycred_gateway']['log']['refund'] ) ? sanitize_text_field( stripslashes( $_POST['mycred_gateway']['log']['refund'] ) ) : '';
+			$new_settings['log']['purchase'] = isset( $_POST['mycred_gateway']['log']['purchase'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['log']['purchase'] ) ) : '';
+			$new_settings['log']['refund']   = isset( $_POST['mycred_gateway']['log']['refund'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['log']['refund'] ) ) : '';
 
 			if ( $new_settings['setup'] == 'multi' )
-				$new_settings['rate'] = isset( $_POST['mycred_gateway']['rate'] ) ? sanitize_text_field( $_POST['mycred_gateway']['rate'] ) : '';
+				$new_settings['rate'] = isset( $_POST['mycred_gateway']['rate'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['rate'] ) ) : '';
 			else
 				$new_settings['rate'] = $this->prefs['rate'];
 
@@ -765,13 +765,13 @@ jQuery(function($){
 			}
 
 			// Labels
-			$new_settings['labels']['link']      = sanitize_text_field( stripslashes( $_POST['mycred_gateway']['labels']['link'] ) );
-			$new_settings['labels']['header']    = sanitize_text_field( stripslashes( $_POST['mycred_gateway']['labels']['header'] ) );
-			$new_settings['labels']['button']    = sanitize_text_field( stripslashes( $_POST['mycred_gateway']['labels']['button'] ) );
+			$new_settings['labels']['link']      = isset( $_POST['mycred_gateway']['labels']['link'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['labels']['link'] ) ) : '';
+			$new_settings['labels']['header']    = isset( $_POST['mycred_gateway']['labels']['header'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['labels']['header'] ) ) : '';
+			$new_settings['labels']['button']    = isset( $_POST['mycred_gateway']['labels']['button'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['labels']['button'] ) ) : '';
 
 			// Messages
-			$new_settings['messages']['success'] = sanitize_text_field( stripslashes( $_POST['mycred_gateway']['messages']['success'] ) );
-			$new_settings['messages']['error']   = sanitize_text_field( stripslashes( $_POST['mycred_gateway']['messages']['error'] ) );
+			$new_settings['messages']['success'] = isset( $_POST['mycred_gateway']['messages']['success'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['success'] ) ) : '';
+			$new_settings['messages']['error']   = isset( $_POST['mycred_gateway']['messages']['error'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['error'] ) ) : '';
 
 			// Save Settings
 			$current     = $this->prefs;

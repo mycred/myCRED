@@ -236,7 +236,7 @@ function mycred_load_jetpack_hook() {
 				return $location;
 
 			// Make sure user exist
-			$user = get_user_by( 'email', $_REQUEST['email'] );
+			$user = get_user_by( 'email', sanitize_email( wp_unslash( $_REQUEST['email'] ) ) );
 			if ( $user === false )
 				return $location;
 
@@ -248,7 +248,7 @@ function mycred_load_jetpack_hook() {
 			if ( $this->core->has_entry( 'site_subscription', '', $user->ID ) )
 				return $location;
 
-			$this->site_subscribe( $_REQUEST['email'], $user->ID );
+			$this->site_subscribe( sanitize_email( wp_unslash( $_REQUEST['email'] ) ), $user->ID );
 
 			return $location;
 
@@ -540,15 +540,15 @@ function mycred_load_jetpack_hook() {
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'subscribe_site' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'subscribe_site' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_site' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['subscribe_site']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'subscribe_site' => 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'subscribe_site' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'subscribe_site' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['subscribe_site']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'subscribe_site' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'subscribe_site' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_site' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['subscribe_site']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'subscribe_site' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'subscribe_site' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'subscribe_site' => 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['subscribe_site']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -558,15 +558,15 @@ function mycred_load_jetpack_hook() {
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'subscribe_comment' => 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'subscribe_comment' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_comment' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['subscribe_comment']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'subscribe_comment' => 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'subscribe_comment' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'subscribe_comment' => 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['subscribe_comment']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'subscribe_comment' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'subscribe_comment' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'subscribe_comment' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['subscribe_comment']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'subscribe_comment' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'subscribe_comment' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'subscribe_comment' => 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['subscribe_comment']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>

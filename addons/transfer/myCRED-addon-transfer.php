@@ -123,7 +123,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		 */
 		public function maybe_load_script() {
 
-			global $mycred_do_transfer;
+			global $mycred_do_transfer, $mycred_transfer;
 
 			if ( $mycred_do_transfer !== true ) return;
 
@@ -140,6 +140,15 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				'autofill'  => $this->transfers['autofill']
 			);
 
+			$insufficient_fund_errors = array();
+
+            foreach ( $mycred_transfer->settings['types'] as $type ) {
+             
+                $mycred = mycred( $type );
+                $insufficient_fund_errors[ $type ] = $mycred->template_tags_general( $mycred_transfer->settings['errors']['low'] );
+            
+            }
+
 			// Messages
 			$messages = apply_filters( 'mycred_transfer_messages', array(
 				'completed' => esc_attr__( 'Transaction completed.', 'mycred' ),
@@ -149,7 +158,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				'error_4'   => esc_attr__( 'Transaction declined by recipient.', 'mycred' ),
 				'error_5'   => esc_attr__( 'Incorrect amount. Please try again.', 'mycred' ),
 				'error_6'   => esc_attr__( 'This myCRED Add-on has not yet been setup! No transfers are allowed until this has been done!', 'mycred' ),
-				'error_7'   => esc_attr__( 'Insufficient Funds. Please try a lower amount.', 'mycred' ),
+				'error_7'   => $insufficient_fund_errors,
 				'error_8'   => esc_attr__( 'Transfer Limit exceeded.', 'mycred' ),
 				'error_9'   => esc_attr__( 'Communications error. Please try again later.', 'mycred' ),
 				'error_10'  => esc_attr__( 'The selected point type can not be transferred.', 'mycred' ),

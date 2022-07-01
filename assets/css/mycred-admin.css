@@ -240,3 +240,7 @@ h4.buycred-cashcred-more-tab-btn.ui-accordion-header.ui-state-active:before, h4.
     float: left;
     width: 50%;
 }
+
+.mycred-input-date {
+    min-width: 176.4px;
+}

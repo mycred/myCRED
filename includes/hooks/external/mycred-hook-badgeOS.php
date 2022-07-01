@@ -121,7 +121,7 @@ function mycred_load_badgeos_hook() {
 				if ( ! $this->is_main_type )
 					$page = MYCRED_SLUG . '_' . $this->mycred_type . '-hooks';
 
-				echo '<p>' . sprintf( esc_html__( 'Please setup your <a href="%s">default settings</a> before using this feature.', 'mycred' ), admin_url( 'admin.php?page=' . $page ) ) . '</p>';
+				echo '<p>' . sprintf( esc_html__( 'Please setup your <a href="%s">default settings</a> before using this feature.', 'mycred' ), esc_url( admin_url( 'admin.php?page=' . $page ) ) ) . '</p>';
 				return;
 
 			}
@@ -135,9 +135,9 @@ function mycred_load_badgeos_hook() {
 				$achievement_data = $prefs[ $post->post_type ];
 
 ?>
-<p><strong><?php echo $this->core->template_tags_general( __( '%plural% to Award', 'mycred' ) ); ?></strong></p>
+<p><strong><?php echo wp_kses_post( $this->core->template_tags_general( __( '%plural% to Award', 'mycred' ) ) ); ?></strong></p>
 <p>
-	<label class="screen-reader-text" for="mycred-values-<?php echo esc_attr( $this->mycred_type ); ?>-creds"><?php echo $this->core->template_tags_general( __( '%plural% to Award', 'mycred' ) ); ?></label>
+	<label class="screen-reader-text" for="mycred-values-<?php echo esc_attr( $this->mycred_type ); ?>-creds"><?php echo wp_kses_post( $this->core->template_tags_general( __( '%plural% to Award', 'mycred' ) ) ); ?></label>
 	<input type="text" name="<?php echo esc_attr( $post_key ); ?>[creds]" id="mycred-values-<?php echo esc_attr( $this->mycred_type ); ?>-creds" value="<?php echo esc_attr( $this->core->number( $achievement_data['creds'] ) ); ?>" size="8" />
 	<span class="description"><?php esc_html_e( 'Use zero to disable', 'mycred' ); ?></span>
 </p>
@@ -194,20 +194,20 @@ function mycred_load_badgeos_hook() {
 
 			// Creds
 			if ( ! empty( $_POST[ $post_key ]['creds'] ) && $_POST[ $post_key ]['creds'] != $this->prefs[ $post_type ]['creds'] )
-				$data['creds'] = $this->core->number( $_POST[ $post_key ]['creds'] );
+				$data['creds'] = $this->core->number( sanitize_text_field( wp_unslash( $_POST[ $post_key ]['creds'] ) ) );
 			else
 				$data['creds'] = $this->core->number( $this->prefs[ $post_type ]['creds'] );
 
 			// Log template
 			if ( ! empty( $_POST[ $post_key ]['log'] ) && $_POST[ $post_key ]['log'] != $this->prefs[ $post_type ]['log'] )
-				$data['log'] = sanitize_text_field( $_POST[ $post_key ]['log'] );
+				$data['log'] = sanitize_text_field( wp_unslash( $_POST[ $post_key ]['log'] ) );
 			else
 				$data['log'] = sanitize_text_field( $this->prefs[ $post_type ]['log'] );
 
 			// If deduction is enabled save log template
 			if ( $this->prefs[ $post_type ]['deduct'] == 1 ) {
 				if ( ! empty( $_POST[ $post_key ]['deduct_log'] ) && $_POST[ $post_key ]['deduct_log'] != $this->prefs[ $post_type ]['deduct_log'] )
-					$data['deduct_log'] = sanitize_text_field( $_POST[ $post_key ]['deduct_log'] );
+					$data['deduct_log'] = sanitize_text_field( wp_unslash( $_POST[ $post_key ]['deduct_log'] ) );
 				else
 					$data['deduct_log'] = sanitize_text_field( $this->prefs[ $post_type ]['deduct_log'] );
 			}
@@ -314,7 +314,7 @@ function mycred_load_badgeos_hook() {
 
 ?>
 <div class="hook-instance">
-	<h3><?php printf( esc_html__( 'Earning: %s', 'mycred' ), $post_type_object->labels->singular_name ); ?></h3>
+	<h3><?php printf( esc_html__( 'Earning: %s', 'mycred' ), esc_html( $post_type_object->labels->singular_name ) ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
@@ -332,7 +332,7 @@ function mycred_load_badgeos_hook() {
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php printf( __( 'Revoked: %s', 'mycred' ), $post_type_object->labels->singular_name ); ?></h3>
+	<h3><?php printf( esc_html__( 'Revoked: %s', 'mycred' ), esc_html( $post_type_object->labels->singular_name ) ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">

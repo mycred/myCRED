@@ -233,17 +233,17 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 <tr valign="top">
 	<th scope="row" class="titledesc">
 		<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?></label>
-		<?php echo $this->get_tooltip_html( $data ); ?>
+		<?php echo wp_kses_post( $this->get_tooltip_html( $data ) ); ?>
 	</th>
 	<td class="forminp">
 		<?php if ( $data['type'] == 'currency' ) : $mycred = mycred( $currency ); ?>
-		<input type="hidden" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo get_woocommerce_currency(); ?>" />
-		<p><?php echo $mycred->plural(); ?></p>
+		<input type="hidden" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( get_woocommerce_currency() ); ?>" />
+		<p><?php echo esc_html( $mycred->plural() ); ?></p>
 		<?php else : ?>
 		<fieldset>
 			<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-			<input class="input-text regular-input <?php echo esc_attr( $data['class'] ); ?>" type="<?php echo esc_attr( $data['type'] ); ?>" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" placeholder="<?php echo esc_attr( $data['placeholder'] ); ?>" <?php disabled( $data['disabled'], true ); ?> <?php echo $this->get_custom_attribute_html( $data ); ?> />
-			<?php echo $this->get_description_html( $data ); ?>
+			<input class="input-text regular-input <?php echo esc_attr( $data['class'] ); ?>" type="<?php echo esc_attr( $data['type'] ); ?>" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" placeholder="<?php echo esc_attr( $data['placeholder'] ); ?>" <?php disabled( $data['disabled'], true ); ?> <?php echo esc_attr( $this->get_custom_attribute_html( $data ) ); ?> />
+			<?php echo wp_kses_post( $this->get_description_html( $data ) ); ?>
 		</fieldset>
 		<?php endif; ?>
 	</td>
@@ -276,7 +276,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			public function admin_options() {
 
 ?>
-		<h3><?php printf( __( '%s Payment', 'mycred' ), mycred_label() ); ?></h3>
+		<h3><?php printf( esc_html__( '%s Payment', 'mycred' ), esc_html( mycred_label() ) ); ?></h3>
 		<table class="form-table">
 <?php
 
@@ -479,8 +479,8 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 			 */
 			function thankyou_page() {
 
-				echo apply_filters( 'mycred_woo_thank_you_message', '<p>' . __( 'Your account has successfully been charged.', 'mycred' ) . '</p>' );
-
+				$thankyou_msg = apply_filters( 'mycred_woo_thank_you_message', '<p>' . __( 'Your account has successfully been charged.', 'mycred' ) . '</p>' );
+				echo esc_html( $thankyou_msg );
 			}
 
 		}
@@ -800,10 +800,10 @@ if ( ! function_exists( 'mycred_woo_after_order_total' ) ) :
 
 ?>
 <tr class="total">
-	<th><strong><?php echo $mycred->template_tags_general( $available_gateways['mycred']->get_option( 'total_label' ) ); ?></strong></th>
+	<th><strong><?php echo esc_html( $mycred->template_tags_general( $available_gateways['mycred']->get_option( 'total_label' ) ) ); ?></strong></th>
 	<td>
 		<div class="current-balance order-total-in-points">
-			<strong class="<?php if ( $balance < $cost ) echo 'mycred-low-funds'; else echo 'mycred-funds'; ?>"<?php if ( $balance < $cost ) echo ' style="color:red;"'; ?>><?php echo $mycred->format_creds( $cost ); ?></strong> 
+			<strong class="<?php if ( $balance < $cost ) echo 'mycred-low-funds'; else echo 'mycred-funds'; ?>"<?php if ( $balance < $cost ) echo ' style="color:red;"'; ?>><?php echo esc_html( $mycred->format_creds( $cost ) ); ?></strong> 
 		</div>
 	</td>
 </tr>
@@ -818,10 +818,10 @@ if ( ! function_exists( 'mycred_woo_after_order_total' ) ) :
 
 ?>
 <tr class="total">
-	<th><strong><?php echo $mycred->template_tags_general( $balance_label ); ?></strong></th>
+	<th><strong><?php echo esc_html( $mycred->template_tags_general( $balance_label ) ); ?></strong></th>
 	<td>
 		<div class="current-balance">
-			<?php echo $mycred->format_creds( $balance ); ?>
+			<?php echo esc_html( $mycred->format_creds( $balance ) ); ?>
 		</div>
 	</td>
 </tr>

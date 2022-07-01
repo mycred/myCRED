@@ -1099,41 +1099,56 @@ th#badge-users { width: 10%; }
             <div id="badge-levels">
                 <?php
 
-                    $esc_param = array(
-                        'div' => array(
-                            'class'      => array(),
-                            'id'         => array(),
-                            'data-level' => array(),
-                            'style'      => array(),
-                        ),
-                        'button' => array(
-                            'type'  => array(),
-                            'class' => array(),
-                            'id'    => array(),
-                        ),
-                        'img' => array(
-                            'alt'    => array(),
-                            'class'  => array(),
-                            'height' => array(),
-                            'src'    => array(),
-                            'width'  => array(),
-                        ),
-                        'input' => array(
-                            'type' => array(),
-                            'name' => array(),
-                            'value' => array(),
-                            'placeholder' => array(),
-                            'class' => array(),
-                        ),
-                        'select' => array(
-                            'name'	=> array(),
-                            'class' => array(),
-                            'data_row' => array(),
-                        ),
-                        'option' => array(
-                            'value' => array()
-                        ),
-                    );
+                $esc_param = array(
+                    'div' => array(
+                        'class'      => array(),
+                        'id'         => array(),
+                        'data-level' => array(),
+                        'style'      => array(),
+                        'data-row'    => array()
+                    ),
+                    'button' => array(
+                        'type'     => array(),
+                        'class'    => array(),
+                        'id'       => array(),
+                        'data-req' => array(),
+                        'data-level' => array()
+                    ),
+                    'img' => array(
+                        'alt'    => array(),
+                        'class'  => array(),
+                        'height' => array(),
+                        'src'    => array(),
+                        'width'  => array(),
+                    ),
+                    'input' => array(
+                        'type'        => array(),
+                        'name'        => array(),
+                        'value'       => array(),
+                        'placeholder' => array(),
+                        'class'       => array(),
+                        'size'        => array(),
+                        'data-row'    => array()
+                    ),
+                    'select' => array(
+                        'name'	=> array(),
+                        'class' => array(),
+                        'data-row' => array(),
+                    ),
+                    'option' => array(
+                        'value' => array()
+                    ),
+                    'p' => array(
+                        'class' => array(),
+                        'style' => array()
+                    ),
+                    'a' => array(
+                        'class' => array(),
+                        'href' => array(),
+                        'data-do' => array(),
+                        'style' => array()
+                    )
+                );
 
                 // Loop through each badge level
                 $level_counter = 0;
@@ -1311,7 +1326,7 @@ th#badge-users { width: 10%; }
 
                     $js_level           = str_replace( '{{rewards}}',       $rewards, $js_level );
 
-                    echo $template;
+                    echo wp_kses( $template, $esc_param );
 
                     $level_counter++;
 
@@ -1322,9 +1337,9 @@ th#badge-users { width: 10%; }
                 ?>
             </div>
             <script type="text/javascript">
-                var BadgeLevel         = '<?php echo wp_kses( $js_level, $esc_param ); ?>';
-                var BadgeNewRequrement = '<?php echo wp_kses( $js_requirement, $esc_param ); ?>';
-                var BadgeRequirement   = '<?php echo wp_kses( $js_requirement_clone, $esc_param ); ?>';
+                var BadgeLevel         = '<?php echo wp_kses( $js_level, $esc_param );?>';
+                var BadgeNewRequrement = '<?php echo wp_kses( $js_requirement, $esc_param );?>';
+                var BadgeRequirement   = '<?php echo wp_kses( $js_requirement_clone, $esc_param );?>';
             </script>
             <?php
 
@@ -1873,7 +1888,7 @@ th#badge-users { width: 10%; }
 
             if ( isset( $_POST['mycred_badge_manual']['token'] ) ) {
 
-                if ( wp_verify_nonce( $_POST['mycred_badge_manual']['token'], 'mycred-manual-badges' . $user_id ) ) {
+                if ( wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mycred_badge_manual']['token'] ) ), 'mycred-manual-badges' . $user_id ) ) {
 
                     $added        = $removed = $updated = 0;
                     $users_badges = mycred_get_users_badges( $user_id );

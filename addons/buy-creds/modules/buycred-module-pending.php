@@ -65,10 +65,10 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 			global $buycred_instance;
 
 			// Intercept payment cancellations
-			if ( isset( $_REQUEST['buycred-cancel'] ) && isset( $_REQUEST['_token'] ) && wp_verify_nonce( $_REQUEST['_token'], 'buycred-cancel-pending-payment' ) ) {
+			if ( isset( $_REQUEST['buycred-cancel'] ) && isset( $_REQUEST['_token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_token'] ) ), 'buycred-cancel-pending-payment' ) ) {
 
 				// Get pending payment object
-				$pending_payment_id = sanitize_text_field( $_REQUEST['buycred-cancel'] );
+				$pending_payment_id = sanitize_text_field( wp_unslash( $_REQUEST['buycred-cancel'] ) );
 
 				// Move item to trash
 				buycred_trash_pending_payment( $pending_payment_id );
@@ -118,7 +118,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 			add_action( 'save_post_' . MYCRED_BUY_KEY,                       array( $this, 'save_pending_payment' ), 10, 2 );
 
 			// Intercept payment completions
-			if ( isset( $_GET['credit'] ) && isset( $_GET['token'] ) && wp_verify_nonce( $_GET['token'], 'buycred-payout-pending' ) ) {
+			if ( isset( $_GET['credit'] ) && isset( $_GET['token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['token'] ) ), 'buycred-payout-pending' ) ) {
 
 				$pending_id = absint( $_GET['credit'] );
 
@@ -229,10 +229,10 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 			if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_BUY_KEY && isset( $_GET['credited'] ) ) {
 
 				if ( $_GET['credited'] == 1 )
-					echo '<div id="message" class="updated notice is-dismissible"><p>' . __( 'Pending payment successfully credited to account.', 'mycred' ) . '</p><button type="button" class="notice-dismiss"></button></div>';
+					echo '<div id="message" class="updated notice is-dismissible"><p>' . esc_html__( 'Pending payment successfully credited to account.', 'mycred' ) . '</p><button type="button" class="notice-dismiss"></button></div>';
 
 				elseif ( $_GET['credited'] == 0 )
-					echo '<div id="message" class="error notice is-dismissible"><p>' . __( 'Failed to credit the pending payment to account.', 'mycred' ) . '</p><button type="button" class="notice-dismiss"></button></div>';
+					echo '<div id="message" class="error notice is-dismissible"><p>' . esc_html__( 'Failed to credit the pending payment to account.', 'mycred' ) . '</p><button type="button" class="notice-dismiss"></button></div>';
 
 			}
 
@@ -263,7 +263,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 
 			global $pagenow;
 
-			if ( isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BUY_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
+			if ( isset( $_GET['post'] ) && mycred_get_post_type( absint( $_GET['post'] ) ) == MYCRED_BUY_KEY && isset( $_GET['action'] ) && $_GET['action'] == 'edit' )
 				return MYCRED_MAIN_SLUG;
 
 			return $parent;
@@ -285,7 +285,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 			
 			}
 
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BUY_KEY ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( absint( $_GET['post'] ) ) == MYCRED_BUY_KEY ) {
 
 				return 'edit.php?post_type=' . MYCRED_BUY_KEY;
 
@@ -332,9 +332,9 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 					$user = get_userdata( $from );
 
 					if ( isset( $user->display_name ) )
-						echo '<a href="' . add_query_arg( array( 'user_id' => $user->ID ), admin_url( 'user-edit.php' ) ) . '">' . $user->display_name . '</a>';
+						echo '<a href="' . esc_url( add_query_arg( array( 'user_id' => $user->ID ), admin_url( 'user-edit.php' ) ) ) . '">' . esc_html( $user->display_name ) . '</a>';
 					else
-						echo 'ID: ' . $from;
+						echo 'ID: ' . esc_html( $from );
 
 				break;
 				case 'amount';
@@ -343,7 +343,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 					$amount = mycred_get_post_meta( $post_id, 'amount', true );
 					$mycred = mycred( $type );
 
-					echo $mycred->format_creds( $amount );
+					echo esc_html( $mycred->format_creds( $amount ) );
 
 				break;
 				case 'cost';
@@ -351,7 +351,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 					$cost     = mycred_get_post_meta( $post_id, 'cost', true );
 					$currency = mycred_get_post_meta( $post_id, 'currency', true );
 
-					echo $cost . ' ' . $currency;
+					echo esc_html( $cost . ' ' . $currency );
 
 				break;
 				case 'gateway';
@@ -360,9 +360,9 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 					$installed = $mycred_modules['solo']['buycred']->get();
 
 					if ( isset( $installed[ $gateway ] ) )
-						echo $installed[ $gateway ]['title'];
+						echo esc_html( $installed[ $gateway ]['title'] );
 					else
-						echo $gateway;
+						echo esc_html( $gateway );
 
 				break;
 				case 'ctype';
@@ -370,9 +370,9 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 					$type = mycred_get_post_meta( $post_id, 'point_type', true );
 
 					if ( isset( $this->point_types[ $type ] ) )
-						echo $this->point_types[ $type ];
+						echo esc_html( $this->point_types[ $type ] );
 					else
-						echo $type;
+						echo esc_html( $type );
 
 				break;
 			}
@@ -538,8 +538,8 @@ jQuery(function($){
 
 		<div id="minor-publishing-actions">
 
-			<div><a href="<?php echo $payout_url; ?>" class="button button-secondary button-block"><?php esc_html_e( 'Pay Out', 'mycred' ); ?></a></div>
-			<div><a href="<?php echo $delete_url; ?>" class="button button-secondary button-block"><?php esc_html_e( 'Trash', 'mycred' ); ?></a></div>
+			<div><a href="<?php echo esc_url( $payout_url ); ?>" class="button button-secondary button-block"><?php esc_html_e( 'Pay Out', 'mycred' ); ?></a></div>
+			<div><a href="<?php echo esc_url( $delete_url ); ?>" class="button button-secondary button-block"><?php esc_html_e( 'Trash', 'mycred' ); ?></a></div>
 
 		</div>
 
@@ -624,8 +624,8 @@ jQuery(function($){
 			if ( count( $this->core->buy_creds['types'] ) == 1 ) {
 
 ?>
-				<p class="form-control-static"><?php echo strip_tags( $mycred->plural() ); ?></p>
-				<input type="hidden" name="buycred_pending_payment[point_type]" value="<?php echo $pending_payment->point_type; ?>" />
+				<p class="form-control-static"><?php echo esc_html( $mycred->plural() ); ?></p>
+				<input type="hidden" name="buycred_pending_payment[point_type]" value="<?php echo esc_attr( $pending_payment->point_type ); ?>" />
 <?php
 
 			}
@@ -639,9 +639,9 @@ jQuery(function($){
 
 				foreach ( $this->core->buy_creds['types'] as $point_type ) {
 
-					echo '<option value="' . $point_type . '"';
+					echo '<option value="' . esc_attr( $point_type ) . '"';
 					if ( $pending_payment->point_type == $point_type ) echo ' selected="selected"';
-					echo '>' . mycred_get_point_type_name( $point_type, false ) . '</option>';
+					echo '>' . esc_html( mycred_get_point_type_name( $point_type, false ) ) . '</option>';
 
 				}
 
@@ -662,10 +662,10 @@ jQuery(function($){
 
 			foreach ( $mycred_modules['solo']['buycred']->get() as $gateway_id => $info ) {
 
-				echo '<option value="' . $gateway_id . '"';
+				echo '<option value="' . esc_attr( $gateway_id ) . '"';
 				if ( $pending_payment->gateway_id == $gateway_id ) echo ' selected="selected"';
 				if ( ! $mycred_modules['solo']['buycred']->is_active( $gateway_id ) ) echo ' disabled="disabled"';
-				echo '>' . $info['title'] . '</option>';
+				echo '>' . esc_html( $info['title'] ) . '</option>';
 
 			}
 
@@ -676,7 +676,7 @@ jQuery(function($){
 		<div class="col-md-2 col-sm-6">
 			<div class="form-group">
 				<label for="buycred-pending-payment-amount"><?php esc_html_e( 'Amount', 'mycred' ); ?></label>
-				<input type="text" name="buycred_pending_payment[amount]" id="buycred-pending-payment-amount" class="form-control" value="<?php echo $mycred->number( $pending_payment->amount ); ?>" />
+				<input type="text" name="buycred_pending_payment[amount]" id="buycred-pending-payment-amount" class="form-control" value="<?php echo esc_attr( $mycred->number( $pending_payment->amount ) ); ?>" />
 			</div>
 		</div>
 		<div class="col-md-2 col-sm-6">
@@ -727,7 +727,7 @@ jQuery(function($){
 
 			foreach ( $comments as $comment ) {
 
-				echo '<li><time>' . $comment->comment_date . '</time><p>' . $comment->comment_content . '</p></li>';
+				echo '<li><time>' . esc_html( $comment->comment_date ) . '</time><p>' . esc_html( $comment->comment_content ) . '</p></li>';
 
 			}
 

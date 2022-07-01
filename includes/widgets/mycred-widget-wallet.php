@@ -48,11 +48,11 @@ if ( ! class_exists( 'myCRED_Widget_Wallet' ) ) :
 				if ( ! isset( $account->point_types ) || empty( $account->point_types ) ) return;
 
 				// Start
-				echo $before_widget;
+				echo wp_kses_post( $before_widget );
 
 				// Title
 				if ( ! empty( $instance['title'] ) )
-					echo $before_title . $instance['title'] . $after_title;
+					echo wp_kses_post( $before_title . $instance['title'] . $after_title );
 
 				$current_user = wp_get_current_user();
 
@@ -73,25 +73,25 @@ if ( ! class_exists( 'myCRED_Widget_Wallet' ) ) :
 				}
 
 				// End
-				echo $after_widget;
+				echo wp_kses_post( $after_widget );
 
 			}
 
 			// Visitor
 			elseif ( ! is_user_logged_in() && $instance['show_visitors'] ) {
 
-				echo $before_widget;
+				echo wp_kses_post( $before_widget );
 
 				// Title
 				if ( ! empty( $instance['title'] ) )
-					echo $before_title . $instance['title'] . $after_title;
+					echo wp_kses_post( $before_title . $instance['title'] . $after_title );
 
 				$message = $instance['message'];
 				$message = $mycred->template_tags_general( $message );
 
-				echo '<div class="myCRED-wallet-message"><p>' . wptexturize( $message ) . '</p></div>';
+				echo '<div class="myCRED-wallet-message"><p>' . esc_html( wptexturize( $message ) ) . '</p></div>';
 
-				echo $after_widget;
+				echo wp_kses_post( $after_widget );
 
 			}
 
@@ -128,7 +128,7 @@ if ( ! class_exists( 'myCRED_Widget_Wallet' ) ) :
 <p class="myCRED-widget-field">
 	<label for="<?php echo esc_attr( $this->get_field_id( 'row' ) ); ?>"><?php esc_html_e( 'Row Layout', 'mycred' ); ?>:</label>
 	<textarea name="<?php echo esc_attr( $this->get_field_name( 'row' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'row' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $row_template ); ?></textarea>
-	<small><?php echo $mycred->available_template_tags( array( 'general', 'amount' ) ); ?></small>
+	<small><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'amount' ) ) ); ?></small>
 </p>
 
 <!-- Show to Visitors -->
@@ -139,7 +139,7 @@ if ( ! class_exists( 'myCRED_Widget_Wallet' ) ) :
 	<p class="myCRED-widget-field">
 		<label for="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>"><?php esc_html_e( 'Message', 'mycred' ); ?>:</label>
 		<textarea name="<?php echo esc_attr( $this->get_field_name( 'message' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $message ); ?></textarea>
-		<small><?php echo $mycred->available_template_tags( array( 'general', 'amount' ) ); ?></small>
+		<small><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'amount' ) ) ); ?></small>
 	</p>
 </div>
 <!-- Widget Admin Scripting -->

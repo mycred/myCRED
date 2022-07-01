@@ -103,7 +103,7 @@ if ( ! function_exists( 'mycred_render_shortcode_video' ) ) :
 		if ( is_user_logged_in() ) :
 
 ?>
-<script type="text/javascript">function mycred_vvideo_v<?php echo $video_id; ?>( state ) { duration[ "<?php echo $video_id; ?>" ] = state.target.getDuration(); mycred_view_video( "<?php echo $video_id; ?>", state.data, "<?php echo $logic; ?>", "<?php echo $interval; ?>", "<?php echo $key; ?>", "<?php echo $ctype; ?>" , "<?php echo mycred_encode_values($streaming); ?>" , "<?php echo mycred_encode_values($duration); ?>" );  }</script>
+<script type="text/javascript">function mycred_vvideo_v<?php echo esc_attr( $video_id ); ?>( state ) { duration[ "<?php echo esc_attr( $video_id ); ?>" ] = state.target.getDuration(); mycred_view_video( "<?php echo esc_attr( $video_id ); ?>", state.data, "<?php echo esc_attr( $logic ); ?>", "<?php echo esc_attr( $interval ); ?>", "<?php echo esc_attr( $key ); ?>", "<?php echo esc_attr( $ctype ); ?>" , "<?php echo esc_attr( mycred_encode_values( $streaming ) ); ?>" , "<?php echo esc_attr( mycred_encode_values( $duration ) ); ?>" );  }</script>
 <?php
 
 		endif;

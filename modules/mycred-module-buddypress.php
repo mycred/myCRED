@@ -57,7 +57,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 
 			$this->selected_type = MYCRED_DEFAULT_TYPE_KEY;
 			if ( isset( $_GET['show-ctype'] ) ) {
-				$selected = sanitize_text_field( $_GET['show-ctype'] );
+				$selected = sanitize_text_field( wp_unslash( $_GET['show-ctype'] ) );
 				if ( array_key_exists( $selected, $this->point_types ) )
 					$this->selected_type = $selected;
 			}
@@ -134,7 +134,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 
 			}
 
-			echo apply_filters( 'mycred_bp_profile_details', $output, $balance, $this );
+			echo wp_kses_post( apply_filters( 'mycred_bp_profile_details', $output, $balance, $this ) );
 
 			do_action('mycred_buddypress_profile_details');
 
@@ -195,7 +195,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			
 			}
 
-			echo apply_filters( 'mycred_bp_profile_header', $output, $this->buddypress['balance_template'], $this );
+			echo wp_kses_post( apply_filters( 'mycred_bp_profile_header', $output, $this->buddypress['balance_template'], $this ) );
 
 			do_action('mycred_buddypress_profile_header');
 
@@ -322,7 +322,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			$title  = bp_word_or_name( $me, $others, false, false );
 			$title  = $this->core->template_tags_general( $title );
 
-			echo apply_filters( 'mycred_br_history_page_title', $title, $this );
+			echo wp_kses_post( apply_filters( 'mycred_br_history_page_title', $title, $this ) );
 
 		}
 
@@ -337,8 +337,8 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 
 			$mycred_types = mycred_get_types();
 			$type         = MYCRED_DEFAULT_TYPE_KEY;
-			if ( isset( $_REQUEST['show-ctype'] ) && array_key_exists( $_REQUEST['show-ctype'], $mycred_types ) )
-				$type = $_REQUEST['show-ctype'];
+			if ( isset( $_REQUEST['show-ctype'] ) && array_key_exists( sanitize_text_field( wp_unslash( $_REQUEST['show-ctype'] ) ), $mycred_types ) )
+				$type = sanitize_text_field( wp_unslash( $_REQUEST['show-ctype'] ) );
 
 			$args = array(
 				'user_id' => bp_displayed_user_id(),
@@ -347,7 +347,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			);
 
 			if ( isset( $_GET['paged'] ) && $_GET['paged'] != '' )
-				$args['paged'] = $_GET['paged'];
+				$args['paged'] = sanitize_text_field( wp_unslash( $_GET['paged'] ) );
 
 			if ( isset( $bp->canonical_stack['action'] ) && $bp->canonical_stack['action'] != $this->buddypress['history_url'] )
 				$args['time'] = $bp->canonical_stack['action'];
@@ -395,8 +395,82 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 
 			$output = ob_get_contents();
 			ob_end_clean();
+		
+			$allowed_html = array(
+				'form' 	=> array(
+					'action' 	=> array(),
+					'id'	 	=> array(),
+					'method' 	=> array(),
+					'class'	 	=> array(),
+					'role'	 	=> array()
+				),
+				'label' => array(
+					'for'		 => array(),
+					'class'		 => array()
+				),
+				'input' => array(
+					'type'  	 => array(),
+					'class'		 => array(),
+					'value' 	 => array(),
+					'id'		 => array(),
+					'name'		 => array(),
+					'size'		 => array(),
+					'aria-describedby'		=> array()
+				),
+				'style' => array(
+					'type'  	 => array()
+				),
+				'select' => array(
+					'name'  	 => array(),
+					'id'		 => array(),
+					'style'		 => array()
+				),
+				'option' => array(
+					'value'    	 => array(),
+					'selected' 	 => array()
+				),
+				'div' 	=> array(
+					'class' 	 => array()
+				),
+				'h2' 	=> array(
+					'class'		 => array()
+				),
+				'span' 	=> array(
+					'class'		 => array(),
+					'aria-hidden' => array()
+				),
+				'a'		=> array(
+					'class'		=> array(),
+					'href'		=> array()
+				),
+				'br' 	=> array(
+					'class'		=> array()
+				),
+				'table'	=> array(
+					'class'		 => array(),
+					'cellspacing' => array()	
+				),
+				'thead'	=> array(),
+				'tbody'	=> array(
+					'id'		=> array()
+				),
+				'tr'	=> array(
+					'class'		=> array(),
+					'id'		=> array()
+				),
+				'th'	=> array(
+					'scope'		=> array(),
+					'id'		=> array(),
+					'class'		=> array()
+				),
+				'td'	=> array(
+					'class'	=> array(),
+					'data-colname'	=> array()
+				),
+				'tfoot'	=> array(),
+			);
 
-			echo apply_filters( 'mycred_bp_history_page', $output, $this );
+			echo wp_kses( apply_filters( 'mycred_bp_history_page', $output, $this ), $allowed_html );
 
 		}
 
@@ -433,7 +507,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			}
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><label><?php echo apply_filters( 'mycred_bp_change_text', 'BuddyPress' ); ?></label></h4>
+<h4><span class="dashicons dashicons-admin-plugins static"></span><label><?php echo esc_html( apply_filters( 'mycred_bp_change_text', 'BuddyPress' ) ); ?></label></h4>
 <div class="body" style="display:none;">
 
 	<?php do_action( 'mycred_bp_before_settings', $this ); ?>
@@ -441,14 +515,14 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'balance_location' ); ?>"><?php echo $this->core->template_tags_general( __( '%singular% Balance', 'mycred' ) ); ?></label>
-				<select name="<?php echo $this->field_name( 'balance_location' ); ?>" id="<?php echo $this->field_id( 'balance_location' ); ?>" class="form-control">
+				<label for="<?php echo esc_attr( $this->field_id( 'balance_location' ) ); ?>"><?php echo esc_html( $this->core->template_tags_general( __( '%singular% Balance', 'mycred' ) ) ); ?></label>
+				<select name="<?php echo esc_attr( $this->field_name( 'balance_location' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'balance_location' ) ); ?>" class="form-control">
 <?php
 
 			foreach ( $balance_locations as $location => $description ) { 
-				echo '<option value="' . $location . '"';
+				echo '<option value="' . esc_attr( $location ) . '"';
 				if ( isset( $settings['balance_location'] ) && $settings['balance_location'] == $location ) echo ' selected="selected"';
-				echo '>' . $description . '</option>';
+				echo '>' . esc_html( $description ) . '</option>';
 			}
 
 ?>
@@ -456,15 +530,15 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			</div>
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'visibility' => 'balance' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'visibility' => 'balance' ) ); ?>" id="<?php echo $this->field_id( array( 'visibility' => 'balance' ) ); ?>" <?php checked( $settings['visibility']['balance'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Members and visitors can view other members %_singular% balance.', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'visibility' => 'balance' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'visibility' => 'balance' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'visibility' => 'balance' ) ) ); ?>" <?php checked( $settings['visibility']['balance'], 1 ); ?> value="1" /> <?php echo esc_html( $this->core->template_tags_general( __( 'Members and visitors can view other members %_singular% balance.', 'mycred' ) ) ); ?></label>
 				</div>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'balance_template' ); ?>"><?php esc_html_e( 'Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'balance_template' ); ?>" id="<?php echo $this->field_id( 'balance_template' ); ?>" value="<?php echo esc_attr( $settings['balance_template'] ); ?>" class="form-control" />
-				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'balance' ) ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( 'balance_template' ) ); ?>"><?php esc_html_e( 'Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'balance_template' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'balance_template' ) ); ?>" value="<?php echo esc_attr( $settings['balance_template'] ); ?>" class="form-control" />
+				<p><span class="description"><?php echo wp_kses_post( $this->core->available_template_tags( array( 'general', 'balance' ) ) ); ?></span></p>
 			</div>
 		</div>
 	</div>
@@ -472,34 +546,34 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'history_location' ); ?>"><?php echo $this->core->template_tags_general( __( '%plural% History', 'mycred' ) ); ?></label>
-				<select name="<?php echo $this->field_name( 'history_location' ); ?>" id="<?php echo $this->field_id( 'history_location' ); ?>" class="form-control">
+				<label for="<?php echo esc_attr( $this->field_id( 'history_location' ) ); ?>"><?php echo esc_html( $this->core->template_tags_general( __( '%plural% History', 'mycred' ) ) ); ?></label>
+				<select name="<?php echo esc_attr( $this->field_name( 'history_location' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'history_location' ) ); ?>" class="form-control">
 <?php
 
 			foreach ( $history_locations as $location => $description ) { 
-				echo '<option value="' . $location . '"';
+				echo '<option value="' . esc_attr( $location ) . '"';
 				if ( isset( $settings['history_location'] ) && $settings['history_location'] == $location ) echo ' selected="selected"';
-				echo '>' . $description . '</option>';
+				echo '>' . esc_html( $description ) . '</option>';
 			}
 
 ?>
 				</select>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'visibility' => 'history' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'visibility' => 'history' ) ); ?>" id="<?php echo $this->field_id( array( 'visibility' => 'history' ) ); ?>" <?php checked( $settings['visibility']['history'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Members can view each others %_plural% history.', 'mycred' ) ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'visibility' => 'history' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'visibility' => 'history' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'visibility' => 'history' ) ) ); ?>" <?php checked( $settings['visibility']['history'], 1 ); ?> value="1" /> <?php echo esc_html( $this->core->template_tags_general( __( 'Members can view each others %_plural% history.', 'mycred' ) ) ); ?></label>
 			</div>
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'history_menu_title' => 'me' ) ); ?>"><?php esc_html_e( 'Menu Title', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'history_menu_title' => 'me' ) ); ?>" id="<?php echo $this->field_id( array( 'history_menu_title' => 'me' ) ); ?>" value="<?php echo esc_attr( $settings['history_menu_title']['me'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'history_menu_title' => 'me' ) ) ); ?>"><?php esc_html_e( 'Menu Title', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'history_menu_title' => 'me' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'history_menu_title' => 'me' ) ) ); ?>" value="<?php echo esc_attr( $settings['history_menu_title']['me'] ); ?>" class="form-control" />
 				<p><span class="description"><?php esc_html_e( 'Title shown to me', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 			<div class="form-group">
 				<label>&nbsp;</label>
-				<input type="text" name="<?php echo $this->field_name( array( 'history_menu_title' => 'others' ) ); ?>" id="<?php echo $this->field_id( array( 'history_menu_title' => 'others' ) ); ?>" value="<?php echo esc_attr( $settings['history_menu_title']['others'] ); ?>" class="form-control" />
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'history_menu_title' => 'others' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'history_menu_title' => 'others' ) ) ); ?>" value="<?php echo esc_attr( $settings['history_menu_title']['others'] ); ?>" class="form-control" />
 				<p><span class="description"><?php esc_html_e( 'Title shown to others. Use %s to show the first name.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
@@ -508,22 +582,22 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'history_menu_pos' ); ?>"><?php esc_html_e( 'Menu Position', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'history_menu_pos' ); ?>" id="<?php echo $this->field_id( 'history_menu_pos' ); ?>" value="<?php echo esc_attr( $settings['history_menu_pos'] ); ?>" class="form-control" />
-				<p><span class="description"><?php printf( '%s %s', __( 'Current menu positions:', 'mycred' ), implode( ', ', $bp_nav_positions ) ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( 'history_menu_pos' ) ); ?>"><?php esc_html_e( 'Menu Position', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'history_menu_pos' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'history_menu_pos' ) ); ?>" value="<?php echo esc_attr( $settings['history_menu_pos'] ); ?>" class="form-control" />
+				<p><span class="description"><?php printf( '%s %s', esc_html__( 'Current menu positions:', 'mycred' ) , esc_html( implode( ', ', $bp_nav_positions ) ) ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'history_url' ); ?>"><?php esc_html_e( 'History URL slug', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'history_url' ); ?>" id="<?php echo $this->field_id( 'history_url' ); ?>" value="<?php echo esc_attr( $settings['history_url'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( 'history_url' ) ); ?>"><?php esc_html_e( 'History URL slug', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'history_url' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'history_url' ) ); ?>" value="<?php echo esc_attr( $settings['history_url'] ); ?>" class="form-control" />
 				<p><span class="description"><?php esc_html_e( 'The history page slug. Must be URL friendly.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'history_num' ); ?>"><?php esc_html_e( 'Number of history entries to show', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'history_num' ); ?>" id="<?php echo $this->field_id( 'history_num' ); ?>" value="<?php echo esc_attr( $settings['history_num'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( 'history_num' ) ); ?>"><?php esc_html_e( 'Number of history entries to show', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'history_num' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'history_num' ) ); ?>" value="<?php echo esc_attr( $settings['history_num'] ); ?>" class="form-control" />
 			</div>
 		</div>
 	</div>

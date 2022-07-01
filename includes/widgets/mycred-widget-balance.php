@@ -51,11 +51,11 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 				$mycred  = mycred( $instance['type'] );
 
 				// Start
-				echo $before_widget;
+				echo wp_kses_post( $before_widget );
 
 				// Title
 				if ( ! empty( $instance['title'] ) )
-					echo $before_title . $instance['title'] . $after_title;
+					echo wp_kses_post( $before_title . $instance['title'] . $after_title );
 
 				$layout = $mycred->template_tags_amount( $instance['cred_format'], $balance->current );
 				$layout = $mycred->template_tags_user( $layout, false, wp_get_current_user() );
@@ -79,7 +79,7 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 
 						// Title
 						if ( ! empty( $instance['history_title'] ) )
-							echo $before_title . $mycred->template_tags_general( $instance['history_title'] ) . $after_title;
+							echo wp_kses_post( $before_title . $mycred->template_tags_general( $instance['history_title'] ) . $after_title );
 
 						// Organized List
 						echo '<ol class="myCRED-history">';
@@ -101,7 +101,7 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 							else $class = 'entry-row';
 
 							// Output list item
-							echo '<li class="' . $class . '">' . $layout . '</li>';
+							echo '<li class="' . esc_attr( $class ) . '">' . wp_kses_post( $layout ) . '</li>';
 
 						}
 						echo '</ol>';
@@ -113,7 +113,7 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 				}
 
 				// End
-				echo $after_widget;
+				echo wp_kses_post( $after_widget );
 
 			}
 
@@ -123,21 +123,21 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 				// If we want to show a message, then do so
 				if ( $instance['show_visitors'] ) {
 
-					echo $before_widget;
+					echo wp_kses_post( $before_widget );
 
 					$mycred = mycred( $instance['type'] );
 
 					// Title
 					if ( ! empty( $instance['title'] ) )
-						echo $before_title . $instance['title'] . $after_title;
+						echo wp_kses_post( $before_title . $instance['title'] . $after_title );
 
 					$message = $instance['message'];
 					$message = $mycred->template_tags_general( $message );
 					$message = $mycred->allowed_tags( $message );
 
-					echo '<div class="myCRED-my-balance-message"><p>' . nl2br( $message ) . '</p></div>';
+					echo '<div class="myCRED-my-balance-message"><p>' . wp_kses_post( nl2br( $message ) ) . '</p></div>';
 
-					echo $after_widget;
+					echo wp_kses_post( $after_widget );
 
 				}
 
@@ -191,7 +191,7 @@ div.mycred-hidden.ex-field { display: block; }
 <p class="myCRED-widget-field">
 	<label for="<?php echo esc_attr( $this->get_field_id( 'cred_format' ) ); ?>"><?php esc_html_e( 'Balance Layout', 'mycred' ); ?>:</label>
 	<textarea name="<?php echo esc_attr( $this->get_field_name( 'cred_format' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'cred_format' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $cred_format ); ?></textarea>
-	<small><?php echo $mycred->available_template_tags( array( 'general', 'amount', 'user' ) ); ?></small>
+	<small><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'amount', 'user' ) ) ); ?></small>
 </p>
 <?php if ( MYCRED_ENABLE_LOGGING ) : ?>
 <!-- History -->
@@ -210,7 +210,7 @@ div.mycred-hidden.ex-field { display: block; }
 	<p class="myCRED-widget-field">
 		<label for="<?php echo esc_attr( $this->get_field_id( 'history_format' ) ); ?>"><?php esc_html_e( 'Row layout', 'mycred' ); ?>:</label>
 		<textarea name="<?php echo esc_attr( $this->get_field_name( 'history_format' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'history_format' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $history_entry ); ?></textarea>
-		<small><?php echo $mycred->available_template_tags( array( 'general', 'widget' ) ); ?></small>
+		<small><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'widget' ) ) ); ?></small>
 	</p>
 </div>
 <?php else : ?>
@@ -227,7 +227,7 @@ div.mycred-hidden.ex-field { display: block; }
 	<p class="myCRED-widget-field">
 		<label for="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>"><?php esc_html_e( 'Message', 'mycred' ); ?>:</label>
 		<textarea name="<?php echo esc_attr( $this->get_field_name( 'message' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $message ); ?></textarea>
-		<small><?php echo $mycred->available_template_tags( array( 'general', 'amount' ) ); ?></small>
+		<small><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'amount' ) ) ); ?></small>
 	</p>
 </div>
 <!-- Widget Admin Scripting -->

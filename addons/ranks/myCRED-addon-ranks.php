@@ -1035,16 +1035,25 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 				foreach ( $ranks as $rank ) {
 					$rank_dropdown .= '<option value="' . $rank->post_id . '"';
-					if ( ! empty( $users_rank ) && $users_rank->post_id == $rank->post_id ) echo ' selected="selected"';
+					if ( ! empty( $users_rank ) && $users_rank->post_id == $rank->post_id ) 
+						$rank_dropdown .= ' selected="selected"';
 					$rank_dropdown .= '>' . $rank->title . '</option>';
 				}
 
 				$rank_dropdown .= '</select></div>';
 
 				$allowed_html = array(
-					'div'	 => array(),
-					'select' => array(),
-					'option' => array()
+					'div'	 => array(
+						'class' => array()
+					),
+					'select' => array(
+						'name' => array(),
+						'id' => array()
+					),
+					'option' => array(
+						'value' => array(),
+						'selected' => array()
+					)
 				);
 
 				echo wp_kses( $rank_dropdown, $allowed_html );

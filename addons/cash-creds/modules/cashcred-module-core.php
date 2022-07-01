@@ -144,7 +144,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			$payment_response = array();
 			
 			if( empty( $post_id ) && ! empty( $_POST['post_ID'] ) ) {
-				$post_id = $_POST['post_ID'];
+				$post_id = sanitize_text_field( wp_unslash( $_POST['post_ID'] ) );
 			}
 			
 			if ( empty( $post_id ) ) {
@@ -154,7 +154,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			$this->post_ID = $post_id;
 			
 			if( ! empty( $_POST['cashcred_pay_method'] ) ) {
-				$cashcred_pay_method = $_POST['cashcred_pay_method'];	
+				$cashcred_pay_method = sanitize_text_field( wp_unslash(  $_POST['cashcred_pay_method'] ) );	
 			} 
 			else {
 				return	$this->response( false, array( 'message' => 'Invalid Payment Gateway' ), $auto );
@@ -342,7 +342,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			$format = '%s payment credited';  
 			$entry = sprintf($format, $gateway_name->label); 
 			
-			mycred_subtract( 'cashcred_withdrawal', $user_id, -$points, $entry, $post_id , $log_data, $point_type );
+			mycred_subtract( 'cashcred_withdrawal', $user_id, -$points, apply_filters( 'cashcred_withdraw_request_entry', $entry ), $post_id , $log_data, $point_type );
 			
 			if($manual == true) {
 				update_post_meta( $post_id, 'manual', 'Auto' );
@@ -358,7 +358,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 					'comment_author_email' => $author_email,
 					'comment_content'      => $comment,
 					'comment_type'         => 'cashcred',
-					'comment_author_IP'    => $_SERVER['REMOTE_ADDR'],
+					'comment_author_IP'    => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
 					'comment_date'         => $time,
 					'comment_approved'     => 1,
 					'user_id'              => 0
@@ -449,10 +449,10 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 
 			global $wp;
 			
-			$requested_url 		   = home_url( $wp->request ) . $_SERVER['REQUEST_URI'];	 
-			$point_type			   = sanitize_text_field( $_POST['cashcred_point_type'] );
-			$cashcred_pay_method   = sanitize_text_field( $_POST['cashcred_pay_method'] );
-			$points 			   = sanitize_text_field( $_POST['points'] );
+			$requested_url 		   = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_url( wp_unslash( home_url( $wp->request ) ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';	 
+			$point_type			   = isset( $_POST['cashcred_point_type'] ) ? sanitize_text_field( wp_unslash( $_POST['cashcred_point_type'] ) ) : '';
+			$cashcred_pay_method   = isset( $_POST['cashcred_pay_method'] ) ? sanitize_text_field( wp_unslash( $_POST['cashcred_pay_method'] ) ) : '';
+			$points 			   = isset( $_POST['points'] ) ? sanitize_text_field( wp_unslash( $_POST['points'] ) ) : "";
 			
 			$mycred_pref_cashcreds = mycred_get_option( 'mycred_pref_cashcreds' , false );
 
@@ -519,7 +519,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			if ( $post_id !== NULL && ! is_wp_error( $post_id ) ) {
 				
 				wp_update_post( array( 'ID' => $post_id, 'post_title' => $post_id ) );
-				
+				$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 				//Will store post meta by checking multisite and current blog, Will store in current blog's table
 				check_site_add_post_meta( $post_id, 'point_type',   $point_type, true );
 				check_site_add_post_meta( $post_id, 'gateway', 		$cashcred_pay_method , true );
@@ -528,7 +528,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				check_site_add_post_meta( $post_id, 'cost',         $cost, true );
 				check_site_add_post_meta( $post_id, 'currency',     $currency, true );
 				check_site_add_post_meta( $post_id, 'from',         get_current_user_id(), true );
-				check_site_add_post_meta( $post_id, 'user_ip',      $_SERVER['REMOTE_ADDR'], true );
+				check_site_add_post_meta( $post_id, 'user_ip',      $remote_addr, true );
 				check_site_add_post_meta( $post_id, 'manual',       'Manual', true );
 				
 				if( isset( $mycred_pref_cashcreds['gateway_prefs'][ $cashcred_pay_method ]["allow_auto_withdrawal"] ) && 
@@ -561,7 +561,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				! empty( $_POST['cashcred_point_type'] ) && 
 				! empty( $_POST['cashcred_pay_method'] ) && 
 				! empty( $_POST['cashcred_withdraw_wpnonce'] ) && 
-				wp_verify_nonce( $_POST['cashcred_withdraw_wpnonce'], 'cashCred-withdraw-request' ) 
+				wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cashcred_withdraw_wpnonce'] ) ), 'cashCred-withdraw-request' ) 
 			) {
 				$response = true;
 			}
@@ -577,7 +577,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			if( isset( $_POST['cashcred_save_settings'] ) && 
 				! empty( $_POST['cashcred_user_settings'] ) && 
 				! empty( $_POST['cashcred_settings_wpnonce'] ) && 
-				wp_verify_nonce( $_POST['cashcred_settings_wpnonce'], 'cashCred-payment-settings' ) 
+				wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cashcred_settings_wpnonce'] ) ), 'cashCred-payment-settings' ) 
 			) {
 				$response = true;
 			}
@@ -758,7 +758,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 
 			// Updated settings
 			if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == true )
-				echo '<div class="updated settings-error"><p>' . __( 'Settings Updated', 'mycred' ) . '</p></div>';
+				echo '<div class="updated settings-error"><p>' . esc_html__( 'Settings Updated', 'mycred' ) . '</p></div>';
 
 ?>
 	<form method="post" action="options.php" class="form">
@@ -787,21 +787,21 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 						$column_class = 'col-lg-4 col-md-4 col-sm-12 col-xs-12';
 
 ?>
-			<h4><span class="dashicons <?php echo $data['icon']; ?><?php if ( $this->is_active( $key ) ) { if ( $sandbox_mode ) echo ' debug'; else echo ' active'; } else echo ' static'; ?>"></span><?php echo $this->core->template_tags_general( $data['title'] ); ?></h4>
+			<h4><span class="dashicons <?php echo esc_attr( $data['icon'] ); ?><?php if ( $this->is_active( $key ) ) { if ( $sandbox_mode ) echo ' debug'; else echo ' active'; } else echo ' static'; ?>"></span><?php echo wp_kses_post( $this->core->template_tags_general( $data['title'] ) ); ?></h4>
 			<div class="body" style="display: none;">
 
 				<div class="row">
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="cashcred-gateway-<?php echo $key; ?>"><input type="checkbox" name="mycred_pref_cashcreds[active][]" id="cashcred-gateway-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
+							<label for="cashcred-gateway-<?php echo esc_attr( $key ); ?>"><input type="checkbox" name="mycred_pref_cashcreds[active][]" id="cashcred-gateway-<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $key ); ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
 						</div>
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<?php if ( $has_test_mode ) : ?>
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="cashcred-gateway-<?php echo $key; ?>-sandbox"><input type="checkbox" name="mycred_pref_cashcreds[gateway_prefs][<?php echo $key; ?>][sandbox]" id="cashcred-gateway-<?php echo $key; ?>-sandbox" value="<?php echo $key; ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Sandbox Mode', 'mycred' ); ?></label>
+							<label for="cashcred-gateway-<?php echo esc_attr( $key ); ?>-sandbox"><input type="checkbox" name="mycred_pref_cashcreds[gateway_prefs][<?php echo esc_attr( $key ); ?>][sandbox]" id="cashcred-gateway-<?php echo esc_attr( $key ); ?>-sandbox" value="<?php echo esc_attr( $key ); ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Sandbox Mode', 'mycred' ); ?></label>
 						</div>
 						<?php endif; ?>
 					</div>
@@ -809,7 +809,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 						<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && $has_documentation ) : ?>
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<a href="<?php echo $has_documentation; ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
+							<a href="<?php echo esc_url( $has_documentation ); ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
 						</div>
 						<?php endif; ?>
 					</div>
@@ -818,7 +818,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 
 				<?php $this->call( 'preferences', $data['callback'] ); ?>
 
-				<input type="hidden" name="mycred_pref_cashcreds[installed]" value="<?php echo $key; ?>" />
+				<input type="hidden" name="mycred_pref_cashcreds[installed]" value="<?php echo esc_attr( $key ); ?>" />
 			</div>
 <?php
 
@@ -886,7 +886,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 						<div class='body' style='display:none; padding: 0px; border: none;'>
 					</div>";
 
-					echo $content;
+					echo wp_kses_post( $content );
 				}
 			}
 
@@ -974,13 +974,13 @@ jQuery(function($) {
 					<div class="row">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees' => 'use' ) ); ?>"><input type="checkbox" name="mycred_pref_core[cashcreds][fees][use]" id="<?php echo $this->field_id( array( 'fees' => 'use' ) ); ?>"<?php checked( $cashcred_prefs['fees']['use'], 1 ); ?> value="1" /> <?php esc_html_e( 'Enable this feature', 'mycred' ); ?></label>
+								<label for="<?php echo esc_attr( $this->field_id( array( 'fees' => 'use' ) ) ); ?>"><input type="checkbox" name="mycred_pref_core[cashcreds][fees][use]" id="<?php echo esc_attr( $this->field_id( array( 'fees' => 'use' ) ) ); ?>"<?php checked( $cashcred_prefs['fees']['use'], 1 ); ?> value="1" /> <?php esc_html_e( 'Enable this feature', 'mycred' ); ?></label>
 							</div>
 						</div>
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees' => 'account' ) ); ?>"><?php esc_html_e( 'Fee Account', 'mycred' ); ?></label>
-								<input type="text" class="form-control" name="mycred_pref_core[cashcreds][fees][account]" id="<?php echo $this->field_id( array( 'fees' => 'account' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['account'] ); ?>" />
+								<label for="<?php echo esc_attr( $this->field_id( array( 'fees' => 'account' ) ) ); ?>"><?php esc_html_e( 'Fee Account', 'mycred' ); ?></label>
+								<input type="text" class="form-control" name="mycred_pref_core[cashcreds][fees][account]" id="<?php echo esc_attr( $this->field_id( array( 'fees' => 'account' ) ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['account'] ); ?>" />
 								<p><span class="description"><?php esc_html_e( 'Option to deposit transfer fees into a specific users account. Use zero to disable.', 'mycred' ); ?></span></p>
 							</div>
 						</div>
@@ -1002,22 +1002,22 @@ jQuery(function($) {
 					?>
 					<div class="row">
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<h3><?php printf( __( '%s Transfer Fee', 'mycred' ), $mycred->plural() ); ?></h3>
+							<h3><?php printf( esc_html__( '%s Transfer Fee', 'mycred' ), esc_html( $mycred->plural() ) ); ?></h3>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'amount' ) ); ?>"><?php esc_html_e( 'The Fee', 'mycred' ); ?></label>
+								<label for="<?php echo esc_attr( $this->field_id( array( 'fees', 'types', $key, 'amount' ) ) ); ?>"><?php esc_html_e( 'The Fee', 'mycred' ); ?></label>
 								<div>
-									<input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][amount]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'amount' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['amount'] ); ?>" /> 
-									<select name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][by]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'by' ) ); ?>"><?php
+									<input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo esc_attr( $key ); ?>][amount]" id="<?php echo esc_attr( $this->field_id( array( 'fees', 'types', $key, 'amount' ) ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['amount'] ); ?>" /> 
+									<select name="mycred_pref_core[cashcreds][fees][types][<?php echo esc_attr( $key ); ?>][by]" id="<?php echo esc_attr( $this->field_id( array( 'fees', 'types', $key, 'by' ) ) ); ?>"><?php
 
 										$options = array( 'percent' => __( 'Percent', 'mycred' ), 'sum' => $mycred->plural() );
 										foreach ( $options as $value => $label ) {
-											echo '<option value="' . $value . '"';
+											echo '<option value="' . esc_html( $value ) . '"';
 											if ( $cashcred_prefs['fees']['types'][ $key ]['by'] == $value ) echo ' selected="selected"';
-											echo '>' . $label . '</option>';
+											echo '>' . esc_html( $label ) . '</option>';
 										}
 
 									?></select>
@@ -1027,15 +1027,15 @@ jQuery(function($) {
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'min_cap' ) ); ?>"><?php esc_html_e( 'Minimum Charge', 'mycred' ); ?></label>
-								<div><input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][min_cap]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'min_cap' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['min_cap'] ); ?>" /> <?php echo $mycred->plural(); ?></div>
+								<label for="<?php echo esc_attr( $this->field_id( array( 'fees', 'types', $key, 'min_cap' ) ) ); ?>"><?php esc_html_e( 'Minimum Charge', 'mycred' ); ?></label>
+								<div><input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo esc_attr( $key ); ?>][min_cap]" id="<?php echo esc_attr( $this->field_id( array( 'fees', 'types', $key, 'min_cap' ) ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['min_cap'] ); ?>" /> <?php echo esc_html( $mycred->plural() ); ?></div>
 								<p><span class="description"><?php esc_html_e( 'Option to set a minimum charge. If set, this amount is added on top of the fee. Example 2% fee + 1.30 points. Use zero to disable.', 'mycred' ); ?></span></p>
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'max_cap' ) ); ?>"><?php esc_html_e( 'Maximum Cap', 'mycred' ); ?></label>
-								<div><input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][max_cap]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'max_cap' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['max_cap'] ); ?>" /> <?php echo $mycred->plural(); ?></div>
+								<label for="<?php echo esc_attr( $this->field_id( array( 'fees', 'types', $key, 'max_cap' ) ) ); ?>"><?php esc_html_e( 'Maximum Cap', 'mycred' ); ?></label>
+								<div><input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo esc_attr( $key ); ?>][max_cap]" id="<?php echo esc_attr( $this->field_id( array( 'fees', 'types', $key, 'max_cap' ) ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['max_cap'] ); ?>" /> <?php echo esc_html( $mycred->plural() ); ?></div>
 								<p><span class="description"><?php esc_html_e( 'Optional maximum cap for transfer fees. Use zero to disable.', 'mycred' ); ?></span></p>
 							</div>
 						</div>
@@ -1043,8 +1043,8 @@ jQuery(function($) {
 					<div class="row">
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'presentation' ) ); ?>"><?php esc_html_e( 'Presentation', 'mycred' ); ?></label>
-								<input type="text" class="form-control" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][presentation]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'presentation' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['presentation'] ); ?>" />
+								<label for="<?php echo esc_attr( $this->field_id( array( 'fees', 'types', $key, 'presentation' ) ) ); ?>"><?php esc_html_e( 'Presentation', 'mycred' ); ?></label>
+								<input type="text" class="form-control" name="mycred_pref_core[cashcreds][fees][types][<?php echo esc_attr( $key ); ?>][presentation]" id="<?php echo esc_attr( $this->field_id( array( 'fees', 'types', $key, 'presentation' ) ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['presentation'] ); ?>" />
 								<p><span class="description"><?php esc_html_e( 'Option to set how fees are displayed to your users. Available template tags are: %fee%, %min% and %max% = %total%', 'mycred' ); ?></span></p>
 							</div>
 						</div>

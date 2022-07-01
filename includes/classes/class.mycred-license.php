@@ -58,7 +58,7 @@ if ( ! class_exists( 'myCRED_License' ) ) :
 						$plugin->package = add_query_arg( 
 							array( 
 						        'license_key' => $this->get_license_key(),
-						        'site'        => site_url(),
+						        'site'        => get_bloginfo( 'url' ),
 								'api-key'     => md5( get_bloginfo( 'url' ) ),
 								'slug'        => $plugin->slug
 						    ), 
@@ -201,7 +201,7 @@ if ( ! class_exists( 'myCRED_License' ) ) :
 				$request_args = array(
 					'body' => array(
 						'license_key' => $license_key,
-						'site'        => site_url(),
+						'site'        => get_bloginfo( 'url' ),
 						'api-key'     => md5( get_bloginfo( 'url' ) ),
 						'addons'      => $addons
 					),

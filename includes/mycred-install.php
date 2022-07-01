@@ -75,7 +75,7 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 			// Not empty $message means there are issues
 			if ( ! empty( $message ) ) {
 
-				die( __( 'Sorry but your WordPress installation does not reach the minimum requirements for running myCRED. The following errors were given:', 'mycred' ) . "\n" . implode( "\n", $message ) );
+				die( esc_html__( 'Sorry but your WordPress installation does not reach the minimum requirements for running myCRED. The following errors were given:', 'mycred' ) . "\n" . esc_html( implode( "\n", $message ) ) );
 
 			}
 

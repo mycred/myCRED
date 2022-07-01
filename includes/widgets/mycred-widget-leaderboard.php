@@ -102,16 +102,16 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
                 $args['current'] = $instance['current'];
             }
  
-            echo $before_widget;
+            echo wp_kses_post( $before_widget );
  
             // Title
             if ( ! empty( $instance['title'] ) )
-                echo $before_title . $mycred->template_tags_general( $instance['title'] ) . $after_title;
+                echo wp_kses_post( $before_title . $mycred->template_tags_general( $instance['title'] ) . $after_title );
 
-            echo mycred_render_shortcode_leaderboard( $args );
+            echo wp_kses_post( mycred_render_shortcode_leaderboard( $args ) );
 
             // Footer
-            echo $after_widget;
+            echo wp_kses_post( $after_widget );
  
         }
  
@@ -207,7 +207,7 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
 <p class="myCRED-widget-field">
     <label for="<?php echo esc_attr( $this->get_field_id( 'row_layout' ) ); ?>"><?php esc_html_e( 'Row layout', 'mycred' ); ?>:</label>
     <textarea name="<?php echo esc_attr( $this->get_field_name( 'row_layout' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'row_layout' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $row_layout ); ?></textarea>
-    <small><?php echo $mycred->available_template_tags( array( 'general', 'balance' ) ); ?></small>
+    <small><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'balance' ) ) ); ?></small>
 </p>
 <p class="myCRED-widget-field">
     <label for="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>"><?php esc_html_e( 'Offset', 'mycred' ); ?>:</label>
@@ -225,9 +225,9 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
             );
  
             foreach ( $options as $value => $label ) {
-                echo '<option value="' . $value . '"';
+                echo '<option value="' . esc_attr( $value ) . '"';
                 if ( $order == $value ) echo ' selected="selected"';
-                echo '>' . $label . '</option>';
+                echo '>' . esc_html( $label ) . '</option>';
             }
  
 ?>

@@ -25,7 +25,8 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 		public function __construct() {
 
 			$this->import_page   = MYCRED_SLUG . '-import-cp';
-			$this->delimiter     = empty( $_POST['delimiter'] ) ? ',' : (string) strip_tags( trim( $_POST['delimiter'] ) );
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$this->delimiter     = empty( $_POST['delimiter'] ) ? ',' : (string) strip_tags( trim( sanitize_text_field( $_POST['delimiter'] ) ) );
 			$this->documentation = 'http://codex.mycred.me/chapter-ii/import-data/import-cubepoints/';
 			
 		}
@@ -84,7 +85,7 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 
 			$cubepoints = $wpdb->prefix . 'cp';
 			if ( $wpdb->get_var( "SHOW TABLES LIKE '{$cubepoints}';" ) != $cubepoints ) {
-				echo '<div class="error notice notice-error"><p>' . __( 'Could not find a CubePoints installation.', 'mycred' ) . '</p></div>';
+				echo '<div class="error notice notice-error"><p>' . esc_html__( 'Could not find a CubePoints installation.', 'mycred' ) . '</p></div>';
 				return false;
 			}
 
@@ -161,8 +162,8 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 
 			global $wpdb;
 
-			$action     = $_POST['action'];
-			$point_type = $_POST['type'];
+			$action     = isset( $_POST['action'] ) ? sanitize_key( wp_unslash( $_POST['action'] ) ) : '';
+			$point_type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
 			$cubepoints = $wpdb->prefix . 'cp';
 
 			$show_greet = true;
@@ -345,14 +346,14 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 			// Show Result
 			if ( $this->imported == 0 ) {
 
-				echo '<div class="error notice notice-error is-dismissible"><p>' . ( ( $action == 'balance' ) ? __( 'No balances were imported.', 'mycred' ) : __( 'No log entries were imported!', 'mycred' ) ) . '</p></div>';
+				echo '<div class="error notice notice-error is-dismissible"><p>' . ( ( $action == 'balance' ) ? esc_html__( 'No balances were imported.', 'mycred' ) : esc_html__( 'No log entries were imported!', 'mycred' ) ) . '</p></div>';
 
 			}
 			else {
 
 				$show_greet = false;
-				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( __( 'Import complete - A total of <strong>%d</strong> balances were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), $this->imported, $this->skipped ) . '</p></div>';
-				echo '<p><a href="' . admin_url( 'users.php' ) . '" class="button button-large button-primary">' . __( 'View Users', 'mycred' ) . '</a></p>';
+				echo '<div class="updated notice notice-success is-dismissible"><p>' . sprintf( esc_html__( 'Import complete - A total of <strong>%d</strong> balances were successfully imported. <strong>%d</strong> was skipped.', 'mycred' ), esc_html( $this->imported ), esc_html( $this->skipped ) ) . '</p></div>';
+				echo '<p><a href="' . esc_url( admin_url( 'users.php' ) ) . '" class="button button-large button-primary">' . esc_html__( 'View Users', 'mycred' ) . '</a></p>';
 
 			}
 
@@ -372,7 +373,7 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 			if ( MYCRED_DEFAULT_LABEL === 'myCRED' )
 				$label .= ' <a href="' . $this->documentation . '" target="_blank" class="page-title-action">' . __( 'Documentation', 'mycred' ) . '</a>';
 
-			echo '<div class="wrap"><h1>' . $label . '</h1>';
+			echo '<div class="wrap"><h1>' . wp_kses_post( $label ) . '</h1>';
 
 		}
 

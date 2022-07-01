@@ -173,7 +173,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Reward_Hook' ) ) :
 							<div class="form-group">
 								<label><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
 								<input type="text" name="<?php echo esc_attr( $this->name( $this->mycred_type, 'log' ) ); ?>" placeholder="<?php esc_html_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $hook['log'] ); ?>" class="form-control buycred-reward-log" />
-								<span class="description"><?php echo esc_attr( $this->available_template_tags( array( 'general' ) ) ); ?></span>
+								<span class="description"><?php echo esc_html( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 							</div>
 						</div>
 					</div>

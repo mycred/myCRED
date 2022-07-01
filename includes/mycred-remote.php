@@ -547,13 +547,13 @@ if ( ! function_exists( 'mycred_remote_init' ) ) :
 			if ( $valid === true ) {
 				// Run request
 				$remote->process();
-				die( $remote->reply );
+				die( esc_html( $remote->reply ) );
 			}
 
 			// Request failed validation
 			else {
 				$reply = ( ! $prefs['debug'] ) ? '' : $valid;
-				die( $reply );
+				die( esc_html( $reply ) );
 			}
 
 		}
@@ -586,7 +586,7 @@ if ( ! function_exists( 'mycred_remote_activate_row' ) ) :
 <label class="subheader" for=""><?php esc_html_e( 'Allow Remote Access', 'mycred' ); ?></label>
 <ol id="myCRED-actions-cred">
 	<li>
-		<input type="checkbox" name="mycred_pref_core[allow_remote]" id="myCRED-General-remote"<?php if ( $settings['enabled'] ) echo ' checked="checked"'; echo $block; ?> value="1" /> <?php if ( ! empty( $disabled_message ) ) { ?><span class="description"><?php echo $disabled_message; ?></span><?php } ?></li>
+		<input type="checkbox" name="mycred_pref_core[allow_remote]" id="myCRED-General-remote"<?php if ( $settings['enabled'] ) echo ' checked="checked"'; echo wp_kses_post( $block ); ?> value="1" /> <?php if ( ! empty( $disabled_message ) ) { ?><span class="description"><?php echo esc_html( $disabled_message ); ?></span><?php } ?></li>
 </ol>
 <?php
 
@@ -619,18 +619,18 @@ if ( ! function_exists( 'mycred_remote_settings_page' ) ) :
 		</li>
 		<li>
 			<label><?php esc_html_e( 'Key Length', 'mycred' ); ?></label>
-			<div class="h2" style="line-height: 30px; color:<?php if ( $key_length == 0 ) echo 'gray'; elseif ( $key_length >= 12 ) echo 'green'; ?>">(<span id="mycred-length-counter"><?php echo $key_length; ?></span>)</span></div>
+			<div class="h2" style="line-height: 30px; color:<?php if ( $key_length == 0 ) echo 'gray'; elseif ( $key_length >= 12 ) echo 'green'; ?>">(<span id="mycred-length-counter"><?php echo esc_html( $key_length ); ?></span>)</span></div>
 		</li>
 		<li>
 			<label>&nbsp;</label><br />
 			<input type="button" id="mycred-generate-api-key" value="<?php esc_attr_e( 'Generate New Key', 'mycred' ); ?>" class="button button-large button-primary" />
 		</li>
-		<li class="block"><p><strong><?php esc_html_e( 'Warning!', 'mycred' ); ?></strong> <?php echo $mycred_general->core->template_tags_general( __( 'Keep this key safe! Those you share this key with will be able to remotely deduct / add / transfer %plural%!', 'mycred' ) ); ?></p></li>
+		<li class="block"><p><strong><?php esc_html_e( 'Warning!', 'mycred' ); ?></strong> <?php echo esc_html( $mycred_general->core->template_tags_general( __( 'Keep this key safe! Those you share this key with will be able to remotely deduct / add / transfer %plural%!', 'mycred' ) ) ); ?></p></li>
 	</ol>
 	<label class="subheader"><?php esc_html_e( 'Incoming URI', 'mycred' ); ?></label>
 	<ol id="myCRED-remote-api-uri">
 		<li>
-			<div class="h2"><?php echo site_url() . '/'; ?> <input type="text" name="mycred_pref_core[remote][uri]" id="myCRED-remote-uri" value="<?php echo esc_attr( $settings['uri'] ); ?>" /> /</div>
+			<div class="h2"><?php echo esc_url( site_url() . '/' ); ?> <input type="text" name="mycred_pref_core[remote][uri]" id="myCRED-remote-uri" value="<?php echo esc_attr( $settings['uri'] ); ?>" /> /</div>
 			<span class="description"><?php esc_html_e( 'The incoming call address. Remote calls made to any other URL will be ignored.', 'mycred' ); ?></span>
 		</li>
 	</ol>

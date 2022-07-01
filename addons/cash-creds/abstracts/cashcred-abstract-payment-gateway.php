@@ -156,8 +156,30 @@ if ( ! class_exists( 'myCRED_Cash_Payment_Gateway' ) ) :
 </table>';
 
 			}
+			$allowed_html = 
+				array(
+					'input' => array(
+						'type'  => array(),
+						'value' => array(),
+						'name'  => array(),
+						'id'	=> array(),
+						'size'  => array()
+					),
+					'table' => array(),
+					'tr'	=> array(),
+					'td' 	=> array(
+						'style' => array()
+					),
+					'div'	=> array(
+						'class'	=> array()
+					),
+					'span'	=> array(
+						'class'	=> array()
+					),
+					
+				);
 
-			echo apply_filters( 'mycred_cashcred_exchange_rate_field', $content, $default, $this );
+			echo wp_kses( apply_filters( 'mycred_cashcred_exchange_rate_field', $content, $default, $this ), $allowed_html );
 
 		}
 
@@ -237,7 +259,7 @@ if ( ! class_exists( 'myCRED_Cash_Payment_Gateway' ) ) :
 				$errors[] = $error_message;
 
 ?>
-<div class="gateway-error"><?php echo implode( '<br />', $errors ); ?></div>
+<div class="gateway-error"><?php echo implode( '<br />', esc_html( $errors ) ); ?></div>
 <?php
 
 		}
@@ -283,12 +305,12 @@ if ( ! class_exists( 'myCRED_Cash_Payment_Gateway' ) ) :
 			if ( $js != '' )
 				$js = ' data-update="' . $js . '"';
 
-			echo '<select name="' . $this->field_name( $name ) . '" id="' . $this->field_id( $name ) . '" class="currency form-control"' . $js . '>';
-			echo '<option value="">' . __( 'Select', 'mycred' ) . '</option>';
+			echo '<select name="' . esc_attr( $this->field_name( $name ) ) . '" id="' . esc_attr( $this->field_id( $name ) ) . '" class="currency form-control"' . wp_kses_post( $js ) . '>';
+			echo '<option value="">' . esc_html__( 'Select', 'mycred' ) . '</option>';
 			foreach ( $currencies as $code => $cname ) {
-				echo '<option value="' . $code . '"';
+				echo '<option value="' . esc_attr( $code ) . '"';
 				if ( isset( $this->prefs[ $name ] ) && $this->prefs[ $name ] == $code ) echo ' selected="selected"';
-				echo '>' . $cname . '</option>';
+				echo '>' .  esc_html( $cname ) . '</option>';
 			}
 			echo '</select>';
 
@@ -308,12 +330,12 @@ if ( ! class_exists( 'myCRED_Cash_Payment_Gateway' ) ) :
 			);
 			$types = apply_filters( 'mycred_dropdown_item_types', $types );
 
-			echo '<select name="' . $this->field_name( $name ) . '" id="' . $this->field_id( $name ) . '">';
-			echo '<option value="">' . __( 'Select', 'mycred' ) . '</option>';
+			echo '<select name="' . esc_attr( $this->field_name( $name ) ) . '" id="' . esc_attr( $this->field_id( $name ) ) . '">';
+			echo '<option value="">' . esc_html__( 'Select', 'mycred' ) . '</option>';
 			foreach ( $types as $code => $cname ) {
-				echo '<option value="' . $code . '"';
+				echo '<option value="' . esc_attr( $code ) . '"';
 				if ( isset( $this->prefs[ $name ] ) && $this->prefs[ $name ] == $code ) echo ' selected="selected"';
-				echo '>' . $cname . '</option>';
+				echo '>' . esc_html( $cname ) . '</option>';
 			}
 			echo '</select>';
 

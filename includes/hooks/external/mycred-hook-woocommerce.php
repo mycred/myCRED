@@ -4,6 +4,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
 /**
  * WooCommerce Setup
  * @since 1.5
+ * @since 2.4.6 Added @function `mycred_woo_reward_refund`
  * @version 1.1
  */
 if ( ! function_exists( 'mycred_load_woocommerce_reward' ) ) :
@@ -19,6 +20,9 @@ if ( ! function_exists( 'mycred_load_woocommerce_reward' ) ) :
 		add_action( 'woocommerce_product_after_variable_attributes', 'mycred_woo_add_product_variation_detail', 10, 3 );
 		add_action( 'woocommerce_save_product_variation',            'mycred_woo_save_product_variation_detail' );
 		add_filter( 'mycred_run_this',                               'mycred_woo_refund_points' );
+		add_action( 'woocommerce_order_status_cancelled', 'mycred_woo_reward_refund' );
+		add_action( 'woocommerce_order_status_refunded', 'mycred_woo_reward_refund' );
+		add_action( 'woocommerce_order_status_failed', 'mycred_woo_reward_refund' );
 
 	}
 endif;
@@ -94,9 +98,9 @@ if ( ! function_exists( 'mycred_woo_product_metabox' ) ) :
 				$setup = $prefs[ $point_type ];
 
 	?>
-	<p class="<?php if ( $count == 1 ) echo 'first'; ?>"><label for="mycred-reward-purchase-with-<?php echo $point_type; ?>"><input class="toggle-mycred-reward" data-id="<?php echo $point_type; ?>" <?php if ( $setup != '' ) echo 'checked="checked"'; ?> type="checkbox" name="mycred_reward[<?php echo $point_type; ?>][use]" id="mycred-reward-purchase-with-<?php echo $point_type; ?>" value="1" /> <?php echo $mycred->template_tags_general( __( 'Reward with %plural%', 'mycred' ) ); ?></label></p>
-	<div class="mycred-woo-wrap" id="reward-<?php echo $point_type; ?>" style="display:<?php if ( $setup == '' ) echo 'none'; else echo 'block'; ?>">
-		<label><?php echo $mycred->plural(); ?></label> <input type="text" size="8" name="mycred_reward[<?php echo $point_type; ?>][amount]" value="<?php echo esc_attr( $setup ); ?>" placeholder="<?php echo $mycred->zero(); ?>" />
+	<p class="<?php if ( $count == 1 ) echo 'first'; ?>"><label for="mycred-reward-purchase-with-<?php echo esc_attr( $point_type ); ?>"><input class="toggle-mycred-reward" data-id="<?php echo esc_attr( $point_type ); ?>" <?php if ( $setup != '' ) echo wp_kses_post( 'checked="checked"' ); ?> type="checkbox" name="mycred_reward[<?php echo esc_attr( $point_type ); ?>][use]" id="mycred-reward-purchase-with-<?php echo esc_attr( $point_type ); ?>" value="1" /> <?php echo wp_kses_post( $mycred->template_tags_general( __( 'Reward with %plural%', 'mycred' ) ) ); ?></label></p>
+	<div class="mycred-woo-wrap" id="reward-<?php echo esc_attr( $point_type ); ?>" style="display:<?php if ( $setup == '' ) echo 'none'; else echo 'block'; ?>">
+		<label><?php echo esc_html( $mycred->plural() ); ?></label> <input type="text" size="8" name="mycred_reward[<?php echo esc_attr( $point_type ); ?>][amount]" value="<?php echo esc_attr( $setup ); ?>" placeholder="<?php echo esc_attr( $mycred->zero() ); ?>" />
 	</div>
 	<?php
 
@@ -172,8 +176,8 @@ if ( ! function_exists( 'mycred_woo_add_product_variation_detail' ) ) :
 
 ?>
 		<div class="box">
-			<label for="<?php echo $id; ?>"><?php echo $mycred->template_tags_general( __( 'Reward with %plural%', 'mycred' ) ); ?></label>
-			<input type="text" name="_mycred_reward[<?php echo $variation->ID; ?>][<?php echo $point_type; ?>]" id="<?php echo $id; ?>" class="input-text" placeholder="<?php esc_attr_e( 'Leave empty for no rewards', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $point_type ] ); ?>" />
+			<label for="<?php echo esc_attr( $id ); ?>"><?php echo wp_kses_post( $mycred->template_tags_general( __( 'Reward with %plural%', 'mycred' ) ) ); ?></label>
+			<input type="text" name="_mycred_reward[<?php echo esc_attr( $variation->ID ); ?>][<?php echo esc_attr( $point_type ); ?>]" id="<?php echo esc_attr( $id ); ?>" class="input-text" placeholder="<?php esc_attr_e( 'Leave empty for no rewards', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $point_type ] ); ?>" />
 		</div>
 <?php
 
@@ -279,7 +283,7 @@ endif;
  */
 function mycred_register_woo_reward_ref( $list ) {
 
-    $list['reward'] = 'WooCommerce Purchase reaward';
+    $list['reward'] = 'WooCommerce Purchase Reward';
     return $list;
 
 }
@@ -431,6 +435,68 @@ if ( ! function_exists( 'mycred_get_woo_product_reward' ) ) :
 endif;
 
 /**
+ * Reward Refund
+ *
+ * @since 2.4.6
+ * @version 1.0
+ */
+if ( !function_exists( 'mycred_woo_reward_refund' ) ):
+function mycred_woo_reward_refund( $order_id ) {
+	$product_reward = mycred_woo_get_reward( $order_id );
+	mycred_woo_product_unreward( $product_reward );
+}
+endif;
+
+/**
+ * Delete Product Reward
+ *
+ * @since 2.4.6
+ * @version 1.0
+ */
+if ( !function_exists( 'mycred_woo_get_reward' ) ):
+function mycred_woo_get_reward( $order_id = null ) {
+
+	global $wpdb, $mycred;
+
+	$payment = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %1s WHERE ref = 'reward' AND ref_id = %d;", $mycred->log_table, $order_id ) );
+	if ( ! isset( $payment->user_id ) ) {
+		$payment = false;
+	}
+
+	return $payment;
+
+}
+endif;
+
+/**
+ * Delete Product Reward
+ *
+ * @since 2.4.6
+ * @version 1.0
+ */
+if ( !function_exists( 'mycred_woo_product_unreward' ) ):
+function mycred_woo_product_unreward( $product_reward ) {
+
+	if ( !$product_reward ) return;
+
+	$product_reward->ref = 'order_cancelation';
+	$product_reward->entry = '%plural% deducted for Order Cancelation';
+	$product_reward = apply_filters( 'mycred_woo_product_unreward', $product_reward );
+
+	return mycred_subtract(
+		$product_reward->ref,
+		$product_reward->user_id,
+		$product_reward->creds,
+		$product_reward->entry,
+		$product_reward->id,
+		$product_reward->data,
+		$product_reward->ctype,
+	);
+
+}
+endif;
+
+/**
  * Register Hook
  * @since 1.5
  * @version 1.1
@@ -560,21 +626,46 @@ function mycred_load_woocommerce_hook() {
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'creds' ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'creds' ); ?>" id="<?php echo $this->field_id( 'creds' ); ?>" value="<?php echo $this->core->number( $prefs['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( 'creds' ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'creds' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'creds' ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'limit' ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( 'limit' ), $this->field_id( 'limit' ), $prefs['limit'] ); ?>
+				<label for="<?php echo esc_attr( $this->field_id( 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( 'limit' ), $this->field_id( 'limit' ), $prefs['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						) 
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general', 'post' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>

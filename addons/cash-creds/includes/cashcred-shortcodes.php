@@ -16,9 +16,10 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 			'gateways'     => '',
 			'types'        => '',
 			'amount'       => '',
-			'excluded'     => 'You have excluded from this point type.',
-			'insufficient' => 'Insufficient Points for Withdrawal.'
+			'excluded'     => __( 'You have excluded from this point type', 'mycred' ),
+			'insufficient' => __( 'Insufficient Points for Withdrawal', 'mycred' )
 		), $atts, MYCRED_SLUG . '_cashcred' ) );
+
 
 		// If we are not logged in
 		if ( ! is_user_logged_in() ) return $content;
@@ -54,6 +55,8 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 		ob_start();
 			
 		$pending_withdrawal = cashcred_get_withdraw_requests('Pending');
+
+
 	?>
 <div id="cashcred">
 	<ul class="cashcred-nav-tabs">
@@ -66,32 +69,41 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 		<!--------First tab--------->
 		<div id="tab1c" class="cashcred-tab">
 			<?php cashcred_display_message(); ?>
+
 			
 			<?php if( count( $pending_withdrawal ) > 0 ){ ?>
-			<h4><?php  echo "You have pending withdrawal"; ?></h4>
+			<h4><?php esc_html_e( 'You have pending withdrawal', 'mycred' ); ?></h4>
 			<table>
-				<thead>
+				<thead class="cashcred-table-heading">
 					<tr>
-						<th><span class="nobr">ID</span></th>
-						<th><span class="nobr">Points</span></th>
+						<th>ID</th>
+						<th>Points</th>
 						<?php
 							if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
 								if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
-									<th><span class="nobr">Fee</span></th><?php
+									<th><span class="nobr"><?php esc_html_e( 'Fee', 'mycred' ) ?></span></th><?php
 								}
 							}?>
-						<th><span class="nobr">Amount</span></th>
-						<th><span class="nobr">Point Type</span></th>
-						<th><span class="nobr">Gateway</span></th>
-						<th><span class="nobr">Date</span></th>
+
+
+
+						<th><?php esc_html_e( 'Amount', 'mycred' ) ?></th>
+						<th><?php esc_html_e( 'Point Type', 'mycred' ) ?></th>
+						<th><?php esc_html_e( apply_filters( 'mycred_change_gateway_text', 'Gateway' ), 'mycred' ); ?></th>
+
+						
+						<th class="date-heading">Date</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="cashcred-table-content">
 					<?php foreach( $pending_withdrawal as $post ):?>
-					<tr>
-						<td><?php echo $post->post_name; ?></td>
-						<td><?php echo get_post_meta($post->ID,'points',true);?></td>
+
+						<?php $post->post_date = date('F d, Y, h:i A'); ?>
+					<tr class="cashcred-table-content">
+						<td><?php echo esc_html( $post->post_name ); ?></td>
+						<td><?php echo esc_html( get_post_meta($post->ID,'points',true) );?></td>
 						<?php 
+
 						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
 							
 							if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
@@ -113,25 +125,28 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 									if( $type_data['max_cap'] != 0 && $fee > $type_data['max_cap'] )
 										$fee = $type_data['max_cap'];
 
-									echo $fee; ?>
+									echo esc_html( $fee ); ?>
 								</td><?php
 							} 
 						}?>
 						<td>
-							<?php echo get_post_meta($post->ID,'currency',true). " " .get_post_meta($post->ID,'points',true) * get_post_meta($post->ID,'cost',true); ?>
+
+							<?php echo esc_html( get_post_meta($post->ID,'currency',true). " " .get_post_meta($post->ID,'points',true) * get_post_meta($post->ID,'cost',true) ); ?>
 						</td>
-						<td><?php echo mycred_get_types()[get_post_meta($post->ID,'point_type',true)];?></td>
+						<td><?php echo esc_html( mycred_get_types()[get_post_meta($post->ID,'point_type',true)] );?></td>
 						<td>
 					 		<?php 
 								$gateway = get_post_meta($post->ID,'gateway',true);
 								$installed = $mycred_modules['solo']['cashcred']->get();
 								if ( isset( $installed[ $gateway ] ) )
-									echo $installed[ $gateway ]['title'];
+									echo esc_html( $installed[ $gateway ]['title'] );
 								else
-									echo $gateway;
+									echo esc_html( $gateway );
 							?>
 						</td>
-						<td><?php echo $post->post_date; ?></td>
+						<td class="date-format"><?php echo esc_html( $post->post_date ); ?>
+							
+						</td>
 					</tr>
 					<?php endforeach;?>				
 				</tbody>
@@ -152,7 +167,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 						<select id="cashcred_point_type" name="cashcred_point_type" class="form-control">
 							<?php 
 								foreach( $point_types as $point_type_id => $point_type_obj ) {
-									echo '<option value="' . $point_type_id . '">' . esc_html( $point_type_obj->plural() ) . '</option>'; 
+									echo '<option value="' . esc_attr( $point_type_id ) . '">' . esc_html( $point_type_obj->plural() ) . '</option>'; 
 								}
 							?>
 						</select>
@@ -177,12 +192,12 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 				<?php } ?>
 
 			<div class="form-group">  
-				<label><?php echo sprintf( __('Withdraw %s value', 'mycred'), $point_types[ current(array_keys($point_types)) ]->plural() ); ?></label>
+				<label><?php echo sprintf( esc_html__('Withdraw %s value', 'mycred'), esc_html( $point_types[ current(array_keys($point_types)) ]->plural() ) ); ?></label>
 				<?php 
 					$amount = ! empty( $amount ) ? floatval( $amount ) : 0;
 				?> 
-				<input type="number" id="withdraw_points" name="points" class="form-control" placeholder="0" value="<?php echo ! empty($amount) ? $amount : 0; ?>" required />
-				<p class="cashcred-min"><?php echo __('Minimum Amount: ');?><span></span></p>
+				<input type="number" id="withdraw_points" name="points" class="form-control" placeholder="0" value="<?php echo ! empty($amount) ? esc_attr( $amount ) : 0; ?>" required />
+				<p class="cashcred-min"><?php echo esc_html__('Minimum Amount: ', 'mycred');?><span></span></p>
 				
 				<?php 
 				
@@ -190,7 +205,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 
 				 	if( $cashcred_setting['fees']['use'] == 1 ) { ?>
 					
-						<p class="cashcred-fee" ><?php echo __('Fee : '); ?>
+						<p class="cashcred-fee" ><?php echo esc_html__('Fee : ', 'mycred'); ?>
 							
 							<span></span>
 							
@@ -216,13 +231,15 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 			<div class="mycred-cashcred-withdraw-form-footer">
 				<div id="cashcred_total" class="form-group">
 					<strong>
-						<span class="amount_label">Amount:&nbsp;</span>
+
+						
+						<span class="amount_label"><?php echo esc_html__( 'Amount:', 'mycred' ) . '&nbsp'; ?></span>
 						<span id="cashcred_currency_symbol"></span> 
 						<span id="cashcred_total_amount"></span>
 					</strong>
 				</div>
 				<div id="submit_button" class="form-group">
-					<input type="submit" class="button" value="<?php echo $button_label; ?>" />
+					<input type="submit" class="button" value="<?php echo esc_attr( $button_label ); ?>" />
 				</div>
 				<div class="mycred-clearfix"></div>
 			</div>
@@ -240,25 +257,30 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 			<table>
 				<thead>
 					<tr>
-						<th><span class="nobr">ID</span></th>
-						<th><span class="nobr">Points</span></th>
+						<th>ID</th>
+						<th>Points</th>
 						<?php
 						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
 							if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
 								<th><span class="nobr">Fee</span></th><?php
 							}
 						}?>
-						<th><span class="nobr">Amount</span></th>
-						<th><span class="nobr">Point Type</span></th>
-						<th><span class="nobr">Gateway</span></th>
-						<th><span class="nobr">Date</span></th>
+						<th><?php esc_html_e( 'Amount', 'mycred' ) ?></th>
+						<th><?php esc_html_e( 'Point Type', 'mycred' ) ?></th>
+						<th><?php esc_html_e(apply_filters( 'mycred_change_gateway_text', 'Gateway' ),'mycred'); ?></th>
+						<th>Date</th>
+
+
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach($posts as $post) {?>
+					<?php foreach($posts as $post) {
+						
+						$post->post_date = date('F d, Y, h:i A');
+						?>
 					<tr>
-						<td><?php echo $post->post_name; ?></td>
-						<td><?php echo get_post_meta($post->ID,'points',true);?></td>
+						<td><?php echo esc_html( $post->post_name ); ?></td>
+						<td><?php echo esc_html( get_post_meta($post->ID,'points',true) );?></td>
 						<?php 
 						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
 							
@@ -281,25 +303,25 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 									if( $type_data['max_cap'] != 0 && $fee > $type_data['max_cap'] )
 										$fee = $type_data['max_cap'];
 
-									echo $fee; ?>
+									echo esc_html( $fee ); ?>
 								</td><?php
 							} 
 						}?>
 						<td>
-							<?php echo  get_post_meta($post->ID,'currency',true). " " .get_post_meta($post->ID,'points',true) * get_post_meta($post->ID,'cost',true);?>
+							<?php echo esc_html( get_post_meta($post->ID,'currency',true). " " .get_post_meta($post->ID,'points',true) * get_post_meta($post->ID,'cost',true) );?>
 						</td>
-						<td><?php echo mycred_get_types()[get_post_meta($post->ID,'point_type',true)]; ?></td>
+						<td><?php echo esc_html( mycred_get_types()[get_post_meta($post->ID,'point_type',true)] ); ?></td>
 						<td>
 							<?php 
 								$gateway = get_post_meta($post->ID,'gateway',true);
 								$installed = $mycred_modules['solo']['cashcred']->get();
 								if ( isset( $installed[ $gateway ] ) )
-									echo $installed[ $gateway ]['title'];
+									echo esc_html( $installed[ $gateway ]['title'] );
 								else
-									echo $gateway;
+									echo esc_html( $gateway );
 							?>
 						</td>
-						<td><?php echo $post->post_date; ?></td>
+						<td><?php echo esc_html( $post->post_date ); ?></td>
 					</tr>
 					<?php } ?>
 		 		</tbody>
@@ -313,29 +335,35 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 			<?php
 				$posts = cashcred_get_withdraw_requests('Cancelled');
 			?>
+			
 			<table>
 				<thead>
 					<tr>
-						<th><span class="nobr">ID</span></th>
-						<th><span class="nobr">Points</span></th>
+						<th><span class="nobr"><?php esc_html_e( 'ID', 'mycred' ) ?></span></th>
+						<th><span class="nobr"><?php esc_html_e(  'Points', 'mycred' ) ?></span></th>
 						<?php
 						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
 							if ( $cashcred_setting['fees']['use'] == 1 ) { ?>
 								<th><span class="nobr">Fee</span></th><?php
 							}
 						}?>
-						<th><span class="nobr">Amount</span></th>
-						<th><span class="nobr">Point Type</span></th>
-						<th><span class="nobr">Gateway</span></th>
-						<th><span class="nobr">Date</span></th>
+						<th><?php esc_html_e(  'Amount', 'mycred' ) ?></th>
+						<th><?php esc_html_e(  'Point Type', 'mycred' ) ?></th>
+						<th><?php esc_html_e( apply_filters( 'mycred_change_gateway_text', 'Gateway' ), 'mycred' ); ?></th>
+						<th><?php esc_html_e( 'Date', 'mycred' ) ?></th>
+
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach($posts as $post) {?>
+					<?php foreach($posts as $post) {
+
+						$post->post_date = date('F d, Y, h:i A');
+
+						?>
 					<tr>
-					 	<td><?php echo $post->post_name; ?></td>
+					 	<td><?php echo esc_html( $post->post_name ); ?></td>
 						
-						<td><?php echo get_post_meta($post->ID,'points',true);?></td>
+						<td><?php echo esc_html( get_post_meta($post->ID,'points',true ) );?></td>
 						<?php 
 						if ( ! empty( $cashcred_setting['fees']['types'] ) ) {
 							
@@ -358,25 +386,25 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 									if( $type_data['max_cap'] != 0 && $fee > $type_data['max_cap'] )
 										$fee = $type_data['max_cap'];
 
-									echo $fee; ?>
+									echo esc_html( $fee ); ?>
 								</td><?php
 							} 
 						}?>
 						<td>
-							<?php echo get_post_meta($post->ID,'currency',true). " " .get_post_meta($post->ID,'points',true) * get_post_meta($post->ID,'cost',true);?>
+							<?php echo esc_html( get_post_meta($post->ID,'currency',true). " " .get_post_meta($post->ID,'points',true) * get_post_meta($post->ID,'cost',true) );?>
 						</td>
-						<td><?php echo mycred_get_types()[get_post_meta($post->ID,'point_type',true)];?></td>
+						<td><?php echo esc_html( mycred_get_types()[get_post_meta($post->ID,'point_type',true)] );?></td>
 						<td>
 						<?php 
 							$gateway = get_post_meta($post->ID,'gateway',true);
 							$installed = $mycred_modules['solo']['cashcred']->get();
 							if ( isset( $installed[ $gateway ] ) )
-								echo $installed[ $gateway ]['title'];
+								echo esc_html( $installed[ $gateway ]['title'] );
 							else
-								echo $gateway;
+								echo esc_html( $gateway );
 							?>
 						</td>
-						<td><?php echo $post->post_date; ?></td>
+						<td><?php echo esc_html( $post->post_date ); ?></td>
 					</tr>
 					<?php } ?>
 				</tbody>
@@ -391,7 +419,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					<select class="form-control" name="cashcred_save_settings" id="cashcred_save_settings">
 						<?php 
 							foreach ( $gateways as $key => $active_gateways_value ) {
-								echo '<option value="' . $key . '"> '. $active_gateways_value['title'] .' </option>';
+								echo '<option value="' . esc_attr( $key ). '"> '. esc_html( $active_gateways_value['title'] ) .' </option>';
 							}
 						?>
 					</select>

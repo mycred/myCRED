@@ -38,7 +38,7 @@ if ( ! function_exists( 'cashcred_get_requested_gateway_id' ) ) :
 		$gateway_id = false;
 			
 		if ( isset( $_REQUEST['cashcred_pay_method'] ) && is_user_logged_in() )
-			$gateway_id = trim( $_REQUEST['cashcred_pay_method'] );	
+			$gateway_id = trim( sanitize_text_field( wp_unslash( $_REQUEST['cashcred_pay_method'] ) ) );	
 
 		return apply_filters( 'mycred_gateway_id', $gateway_id );
 
@@ -81,7 +81,7 @@ if ( ! function_exists( 'cashcred_display_message' ) ) :
 		
 		if( ! empty( $cashcred_notice ) ) {?> 
 			<p class="cashcred-notice"> 
-				<?php echo $cashcred_notice; ?> 
+				<?php echo esc_html( $cashcred_notice ); ?> 
 			</p>
 			<?php
 
@@ -345,7 +345,7 @@ if ( ! function_exists( 'cashcred_add_comment' ) ) :
 			'comment_author_email' => $author_email,
 			'comment_content'      => $comment,
 			'comment_type'         => 'cashcred',
-			'comment_author_IP'    => $_SERVER['REMOTE_ADDR'],
+			'comment_author_IP'    => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
 			'comment_date'         => $time,
 			'comment_approved'     => 1,
 			'user_id'              => 0
@@ -441,8 +441,8 @@ if ( ! class_exists( 'CashCred_Gateway_Fields' ) ) :
 			foreach ( $this->gateway_fields as $gateway_field_id => $gateway_field_data ): ?>
 
 			 	<div class="form-group">  
-					<label><?php echo $gateway_field_data['lable']; ?></label>
-					<input type="text" name="<?php echo $this->field_name( $gateway_field_id );?>" class="<?php echo $gateway_field_data['classes']; ?>" placeholder="<?php echo $gateway_field_data['placeholder']; ?>" value="<?php echo $this->{$gateway_field_id};?>">
+					<label><?php echo esc_html( $gateway_field_data['lable'] ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( $gateway_field_id ) );?>" class="<?php echo esc_attr( $gateway_field_data['classes'] ); ?>" placeholder="<?php echo esc_attr( $gateway_field_data['placeholder'] ); ?>" value="<?php echo esc_attr( $this->{$gateway_field_id} );?>">
 				</div>
 
 			<?php

@@ -127,7 +127,7 @@
 					}
 
 					else if ( myCREDTransfer[ response.data ] !== undefined )
-						alert( myCREDTransfer[ response.data ] );
+						alert( myCREDTransfer[ response.data ][ $( formid + ' [name="mycred_new_transfer[ctype]"]' ).val() ] );
 
 				}
 

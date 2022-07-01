@@ -33,6 +33,7 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 		$applicable = array();
 
 		$hooks      = get_option( $prefs_key, false );
+
 		if ( isset( $hooks['active'] ) && ! empty( $hooks['active'] ) ) {
 
 			foreach ( $hooks['active'] as $active_hook_id ) {
@@ -77,7 +78,7 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 
 ?>
 <div class="table-responsive">
-	<table class="table mycred-hook-table hook-table-<?php echo $id; ?>">
+	<table class="table mycred-hook-table hook-table-<?php echo esc_attr( $id ); ?>">
 		<thead>
 			<tr>
 				<th class="column-instance" style="width: 60%;"><?php esc_html_e( 'Instance', 'mycred' ); ?></th>
@@ -85,57 +86,86 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 				<th class="column-limit" style="width: 20%;"><?php esc_html_e( 'Limit', 'mycred' ); ?></th>
 			</tr>
 		</thead>
-		<tbody>
-<?php
+		<tbody><?php
 
 			foreach ( $applicable as $id => $prefs ) {
+			
+				if( is_array( $prefs['creds'] ) ){ ?>
 
-				$log = $mycred->template_tags_general( $prefs['log'] );
-
-				$log = strip_tags( $log );
-				$log = str_replace( array( '%user_id%', '%user_name%', '%user_name_en%', '%display_name%', '%user_profile_url%', '%user_profile_link%', '%user_nicename%', '%user_email%', '%user_url%', '%balance%', '%balance_f%' ), $user, $log );
-				$log = str_replace( array( '%post_title%', '%post_url%', '%link_with_title%', '%post_type%' ), $post, $log );
-				$log = str_replace( array( 'comment_id', 'c_post_id', 'c_post_title', 'c_post_url', 'c_link_with_title' ), $comment, $log );
-				$log = str_replace( array( '%cred%', '%cred_f%' ), $amount, $log );
-				$log = apply_filters( 'mycred_hook_table_log', $log, $id, $prefs, $atts );
-
-				$limit = '';
-				if ( isset( $prefs['limit'] ) )
-					$limit = $prefs['limit'];
+				<tr>
 					
-				if( $id == "approved" ) {
-				    if ( isset( $hooks["hook_prefs"]["comments"]["limits"] ) ) {
-				        $approved_limits = $hooks["hook_prefs"]["comments"]["limits"];
-				        if( (int) $approved_limits["per_post"] > 0 && (int) $approved_limits["per_day"] > 0 ) {
-				        	
-				            $limit = sprintf( __( 'Maximum %s times per post and Maximum %s times per day', 'mycred' ), $approved_limits["per_post"],  $approved_limits["per_day"] );
-				        }
-				        elseif( (int) $approved_limits["per_post"] > 0 && (int) $approved_limits["per_day"] < 1 ) {
-				        	
-				            $limit = sprintf( __( 'Maximum %s times per post', 'mycred' ), $approved_limits["per_post"] );
-				        }
-				        elseif( (int) $approved_limits["per_post"] < 1 && (int) $approved_limits["per_day"] > 0 ) {
+					<?php
+					foreach ( $prefs['log'] as $key => $value ) {
+						
+						$log = $mycred->template_tags_general( $value );
+						$log = strip_tags( $log );
+						$log = str_replace( array( '%user_id%', '%user_name%', '%user_name_en%', '%display_name%', '%user_profile_url%', '%user_profile_link%', '%user_nicename%', '%user_email%', '%user_url%', '%balance%', '%balance_f%' ), $user, $log );
+						$log = str_replace( array( '%post_title%', '%post_url%', '%link_with_title%', '%post_type%' ), $post, $log );
+						$log = str_replace( array( 'comment_id', 'c_post_id', 'c_post_title', 'c_post_url', 'c_link_with_title' ), $comment, $log );
+						$log = str_replace( array( '%cred%', '%cred_f%' ), $amount, $log );
 
-				            $limit = sprintf( __( 'Maximum %s times per day', 'mycred' ), $approved_limits["per_day"] );
-				        }
-				        else {
-				            $limit = __('No limit', 'mycred');
-				        }
-				    }   
-			    }
-			    else {
-			        $limit = mycred_translate_limit_code( $limit, $id, $mycred );
-			    }
+						$cred = $mycred->format_creds( $prefs['creds'][$key] );
+						$limit = '';
+						$limit = mycred_translate_limit_code( $limit, $id, $mycred );?>
+						
+						<tr>
+							<td class="column-instance"><?php echo esc_html( $log ); ?></td>
+							<td class="column-amount"><?php echo esc_html( $cred ); ?></td>
+							<td class="column-limit"><?php echo esc_html( $limit ); ?></td>
+						</tr><?php
+					}
+					?>
+				</tr><?php
 
-				$creds = apply_filters( 'mycred_hook_table_creds', $mycred->format_creds( $prefs['creds'] ), $id, $prefs, $atts );
+				}
+				else {
+					
+					$log = $mycred->template_tags_general( $prefs['log'] );
+					$log = strip_tags( $log );
+					$log = str_replace( array( '%user_id%', '%user_name%', '%user_name_en%', '%display_name%', '%user_profile_url%', '%user_profile_link%', '%user_nicename%', '%user_email%', '%user_url%', '%balance%', '%balance_f%' ), $user, $log );
+					$log = str_replace( array( '%post_title%', '%post_url%', '%link_with_title%', '%post_type%' ), $post, $log );
+					$log = str_replace( array( 'comment_id', 'c_post_id', 'c_post_title', 'c_post_url', 'c_link_with_title' ), $comment, $log );
+					$log = str_replace( array( '%cred%', '%cred_f%' ), $amount, $log );
+					$log = apply_filters( 'mycred_hook_table_log', $log, $id, $prefs, $atts );
 
-?>
-			<tr>
-				<td class="column-instance"><?php echo $log; ?></td>
-				<td class="column-amount"><?php echo $creds; ?></td>
-				<td class="column-limit"><?php echo $limit; ?></td>
-			</tr>
-<?php
+					$limit = '';
+					if ( isset( $prefs['limit'] ) )
+						$limit = $prefs['limit'];
+						
+					if( $id == "approved" ) {
+					    if ( isset( $hooks["hook_prefs"]["comments"]["limits"] ) ) {
+					        $approved_limits = $hooks["hook_prefs"]["comments"]["limits"];
+					        if( (int) $approved_limits["per_post"] > 0 && (int) $approved_limits["per_day"] > 0 ) {
+					        	
+					            $limit = sprintf( __( 'Maximum %s times per post and Maximum %s times per day', 'mycred' ), $approved_limits["per_post"],  $approved_limits["per_day"] );
+					        }
+					        elseif( (int) $approved_limits["per_post"] > 0 && (int) $approved_limits["per_day"] < 1 ) {
+					        	
+					            $limit = sprintf( __( 'Maximum %s times per post', 'mycred' ), $approved_limits["per_post"] );
+					        }
+					        elseif( (int) $approved_limits["per_post"] < 1 && (int) $approved_limits["per_day"] > 0 ) {
+
+					            $limit = sprintf( __( 'Maximum %s times per day', 'mycred' ), $approved_limits["per_day"] );
+					        }
+					        else {
+					            $limit = __('No limit', 'mycred');
+					        }
+					    }   
+				    }
+				    else {
+				        $limit = mycred_translate_limit_code( $limit, $id, $mycred );
+				    } 
+
+				    $creds = apply_filters( 'mycred_hook_table_creds', $mycred->format_creds( $prefs['creds'] ), $id, $prefs, $atts );
+				    ?>
+					<tr>
+						<td class="column-instance"><?php echo esc_html( $log ); ?></td>
+						<td class="column-amount"><?php echo esc_html( $creds ); ?></td>
+						<td class="column-limit"><?php echo esc_html( $limit ); ?></td>
+					</tr>
+					<?php
+
+				}
 
 			}
 
@@ -147,7 +177,7 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 
 		}
 		else {
-			echo '<p>' . $nothing . '</p>';
+			echo '<p>' . esc_html( $nothing ) . '</p>';
 		}
 
 		$content = ob_get_contents();

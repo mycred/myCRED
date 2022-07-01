@@ -432,14 +432,14 @@ if ( ! function_exists( 'mycred_wpecom_gateway_settings_save' ) ) :
 
 		if ( isset( $_POST['mycred_gateway'] ) ) {
 			$new_settings = apply_filters( 'mycred_wpecom_save_settings', array(
-				'log'       => sanitize_text_field( $_POST['mycred_gateway']['log'] ),
-				'type'      => sanitize_key( $_POST['mycred_gateway']['type'] ),
-				'share'     => abs( $_POST['mycred_gateway']['share'] ),
-				'share_log' => sanitize_text_field( $_POST['mycred_gateway']['share_log'] ),
-				'rate'      => sanitize_text_field( $_POST['mycred_gateway']['rate'] ),
-				'visitor'   => sanitize_text_field( $_POST['mycred_gateway']['visitor'] ),
-				'low_funds' => sanitize_text_field( $_POST['mycred_gateway']['low_funds'] ),
-				'message'   => sanitize_text_field( $_POST['mycred_gateway']['message'] )
+				'log'       => ! empty( $_POST['mycred_gateway']['log'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['log'] ) ) : '',
+				'type'      => ! empty( $_POST['mycred_gateway']['type'] ) ? sanitize_key( wp_unslash( $_POST['mycred_gateway']['type'] ) ) : '',
+				'share'     => ! empty( $_POST['mycred_gateway']['share'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['share'] ) ) : '',
+				'share_log' => ! empty( $_POST['mycred_gateway']['share_log'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['share_log'] ) ) : '',
+				'rate'      => ! empty( $_POST['mycred_gateway']['rate'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['rate'] ) ) : '',
+				'visitor'   => ! empty( $_POST['mycred_gateway']['visitor'] ) ?sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['visitor'] ) ) : '',
+				'low_funds' => ! empty( $_POST['mycred_gateway']['low_funds'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['low_funds'] ) ) : '',
+				'message'   => ! empty( $_POST['mycred_gateway']['message'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['message'] ) ) : ''
 			) );
 			update_option( 'mycred_wpecom_settings', $new_settings );
 		}

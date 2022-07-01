@@ -149,14 +149,10 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                     <p>If you need to build a custom feature, simply <a href="https://objectsws.atlassian.net/servicedesk/customer/portal/11/create/92">submit a request</a> on our myCred website.</p>
                     <hr>
                     
-                    <h2>myCred Add-ons Update:</h2>
-                    <p>For our users' convenience and their site optimization, we made a unified license system for individual and membership users. <a href="<?php echo admin_url('options.php?page=mycred-update'); ?>">Click here to update your add-ons</a></p>
-                    <hr>
-                    
                     <h2>myCred Log References:</h2>
                     <div class="row mycred-all-references-list">
                         <?php foreach ( $references as $key => $entry ):?>   
-                        <div class="col-md-6 mb-2"><code><?php echo $key;?></code> - <?php echo $entry;?></div>
+                        <div class="col-md-6 mb-2"><code><?php echo esc_html( $key );?></code> - <?php echo esc_html( $entry );?></div>
                         <?php endforeach;?>
                     </div>
 
@@ -183,7 +179,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                     <div class="themes">
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url( 'assets/images/treasures/badges.png', myCRED_THIS );?>" alt="Treasure Badges">
+                                <img src="<?php echo esc_url( plugins_url( 'assets/images/treasures/badges.png', myCRED_THIS ) );?>" alt="Treasure Badges">
                                 <h3>Badges</h3>
                                 <p>40 unique and beautifully designed Badge designs available in Gold, Silver and Bronze.</p>
                             </div>
@@ -196,7 +192,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url( 'assets/images/treasures/rank.png', myCRED_THIS );?>" alt="Treasure Ranks">
+                                <img src="<?php echo esc_url( plugins_url( 'assets/images/treasures/rank.png', myCRED_THIS ) );?>" alt="Treasure Ranks">
                                 <h3>Ranks</h3>
                                 <p>40 unique and beautifully designed virtual Ranks are available in Red, Silver and Gold.</p>
                             </div>
@@ -209,7 +205,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url( 'assets/images/treasures/currency.png', myCRED_THIS );?>" alt="Treasure Currencies">
+                                <img src="<?php echo esc_url( plugins_url( 'assets/images/treasures/currency.png', myCRED_THIS ) );?>" alt="Treasure Currencies">
                                 <h3>Currency</h3>
                                 <p>17 unique and beautifully designed Currency designs available in Gold, Silver & Bronze.</p>
                             </div>
@@ -222,7 +218,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url( 'assets/images/treasures/learning.png', myCRED_THIS );?>" alt="Treasure Learning">
+                                <img src="<?php echo esc_url( plugins_url( 'assets/images/treasures/learning.png', myCRED_THIS ) );?>" alt="Treasure Learning">
                                 <h3>Learning</h3>
                                 <p>30 unique and beautifully designed Learning icons are available in four different shapes.</p>
                             </div>
@@ -235,7 +231,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url( 'assets/images/treasures/fitness.png', myCRED_THIS );?>" alt="Treasure Fitness">
+                                <img src="<?php echo esc_url( plugins_url( 'assets/images/treasures/fitness.png', myCRED_THIS ) );?>" alt="Treasure Fitness">
                                 <h3>Fitness</h3>
                                 <p>30 unique and beautifully designed Fitness icons are available in three different shapes.</p>
                             </div>
@@ -248,7 +244,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                         </div>
                         <div class="theme active mycred-treasure-pack">
                             <div class="mycred-treasure-pack-content">
-                                <img src="<?php echo plugins_url( 'assets/images/treasures/gems.png', myCRED_THIS );?>" alt="Treasure Gems">
+                                <img src="<?php echo esc_url( plugins_url( 'assets/images/treasures/gems.png', myCRED_THIS ) );?>" alt="Treasure Gems">
                                 <h3>Gems</h3>
                                 <p>500 unique and beautifully designed gem icons are available in four different shapes.</p>
                             </div>
@@ -292,7 +288,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                                 
                         ?>
                         
-                            <input type="text" name="mmc_lincense_key" class="mmc_lincense_key" placeholder="<?php esc_attr_e( 'Add Your License key', 'mycred' ); ?>" value="<?php echo $membership_key?>">
+                            <input type="text" name="mmc_lincense_key" class="mmc_lincense_key" placeholder="<?php esc_attr_e( 'Add Your License key', 'mycred' ); ?>" value="<?php echo esc_attr( $membership_key );?>">
                             <input type="submit" class="mmc_save_license button-primary" value="Save"/>
                             <div class="mmc_license_link"><a href="https://mycred.me/redirect-to-membership/" target="_blank"><span class="dashicons dashicons-editor-help"></span><?php esc_html_e('Click here to get your License Key','mycred') ?></a>
                             </div>
@@ -317,7 +313,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
             
             if( !isset($_POST['mmc_lincense_key']) ) return;
 
-            $license_key = sanitize_text_field( $_POST['mmc_lincense_key'] );
+            $license_key = sanitize_text_field( wp_unslash( $_POST['mmc_lincense_key'] ) );
 
             if( isset( $license_key ) ) {
 

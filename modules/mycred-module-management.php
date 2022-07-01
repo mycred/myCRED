@@ -205,8 +205,8 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 			// Security
 			check_ajax_referer( 'mycred-get-ledger', 'token' );
 
-			$user_id = absint( $_POST['userid'] );
-			$type    = sanitize_key( $_POST['type'] );
+			$user_id = isset( $_POST['userid'] ) ? absint( $_POST['userid'] ) : 0;
+			$type    = isset( $_POST['type'] ) ? sanitize_key( $_POST['type'] ) : '';
 
 			if ( ! mycred_point_type_exists( $type ) )
 				$type = MYCRED_DEFAULT_TYPE_KEY;

@@ -895,7 +895,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 		<div class="row">
 
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<input type="hidden" name="mycred_new_transfer[token]" value="<?php echo wp_create_nonce( 'mycred-new-transfer-' . $this->reference ); ?>" />
+				<input type="hidden" name="mycred_new_transfer[token]" value="<?php echo esc_attr( wp_create_nonce( 'mycred-new-transfer-' . sanitize_key( $this->reference ) ) ); ?>" />
 				<input type="hidden" name="mycred_new_transfer[reference]" value="<?php echo esc_attr( $this->reference ); ?>" />
 				<input type="hidden" name="mycred_new_transfer[transfered_attributes]" value="<?php echo esc_attr( $this->encode( $this->shortcode_attr ) ); ?>" />
 				<button class="mycred-submit-transfer<?php echo ' ' . esc_attr( $this->args['button_class'] ); ?>"><?php echo esc_attr( $this->args['button'] ); ?></button>
@@ -968,7 +968,48 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 				$placeholder = sprintf( apply_filters( 'mycred_transfer_to_placeholder', __( 'recipients %s', 'mycred' ), $this->settings, $this->args ), $placeholder );
 
 			}
-
+			$allowed_html = array(
+				'label'	=> array(
+					'class'			=> array()
+				),
+				'input' => array(
+					'type'  		=> array(),
+					'value' 		=> array(),
+					'name'  		=> array(),
+					'class'			=> array(),
+					'aria-required'	=> array(),
+					'data-form'		=> array(),
+					'placeholder'	=> array(),
+					'autocomplete'	=> array(),
+					'id'			=> array()
+				),
+				'ul' 	=> array(
+					'id'			=> array(),
+					'tabindex'		=> array(),
+					'class'			=> array(),
+					'unselectable'	=> array(),
+					'style'			=> array(),
+				),
+				'li'	=> array(
+					'class'			=> array()
+				),
+				'div'	=> array(
+					'class'			=> array(),
+					'id'			=> array(),
+					'tabindex'		=> array()
+				),
+				'span'	=> array(
+					'class'			=> array()
+				),
+				'select' => array(
+					'name'  		=> array(),
+					'class'			=> array()
+				),
+				'option' => array(
+					'value'    		=> array(),
+					'selected' 		=> array()
+				)
+			);
 			
 
 			$field = '<div class="form-group select-recipient-wrapper">';
@@ -1021,7 +1062,7 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 			if ( $return )
 				return $field;
 
-			echo $field;
+			echo wp_kses( $field, $allowed_html );
 
 		}
 
@@ -1264,13 +1305,20 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 		 */
 		public function encode( $value = array() )
 		{
-			if (!$value) {
-				return false;
-			}
+			if ( empty( $value ) ) return false;
 
 			$value = json_encode( $value );
+
+			$mycred_transfer_salt = mycred_get_option( 'mycred_transfer_salt' );
+
+			if ( empty( $mycred_transfer_salt ) ) {
+			
+				$mycred_transfer_salt = wp_generate_password();
+				mycred_update_option( 'mycred_transfer_salt', $mycred_transfer_salt );
+
+		    }
 	
-			$key = sha1( AUTH_KEY );
+			$key = sha1($mycred_transfer_salt);
 			$strLen = strlen($value);
 			$keyLen = strlen($key);
 			$j = 0;
@@ -1296,11 +1344,11 @@ if ( ! class_exists( 'myCRED_Transfer' ) ) :
 		 */
 		public function decode( $value )
 		{
-			if ( !$value ) {
-				return false;
-			}
+			if ( empty( $value ) ) return false;
+
+			$mycred_transfer_salt = mycred_get_option( 'mycred_transfer_salt' );
 	
-			$key = sha1( AUTH_KEY );
+			$key = sha1($mycred_transfer_salt);
 			$strLen = strlen($value);
 			$keyLen = strlen($key);
 			$j = 0;

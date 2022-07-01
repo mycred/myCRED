@@ -127,7 +127,7 @@ function mycred_load_gravity_forms_hook() {
 
 			// No forms found
 			if ( empty( $forms ) ) {
-				echo '<p>' . __( 'No forms found.', 'mycred' ) . '</p>';
+				echo '<p>' . esc_html__( 'No forms found.', 'mycred' ) . '</p>';
 				return;
 			}
 
@@ -153,25 +153,50 @@ function mycred_load_gravity_forms_hook() {
 
 ?>
 <div class="hook-instance">
-	<h3><?php printf( __( 'Form: %s', 'mycred' ), $form->title ); ?></h3>
+	<h3><?php printf( esc_html__( 'Form: %s', 'mycred' ), esc_html( $form->title ) ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( $form->id, 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( $form->id, 'creds' ) ); ?>" id="<?php echo $this->field_id( array( $form->id, 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs[ $form->id ]['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( $form->id, 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( $form->id, 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( $form->id, 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs[ $form->id ]['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( $form->id, 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
-				<?php echo $this->hook_limit_setting( $this->field_name( array( $form->id, 'limit' ) ), $this->field_id( array( $form->id, 'limit' ) ), $prefs[ $form->id ]['limit'] ); ?>
+				<label for="<?php echo esc_attr( $this->field_id( array( $form->id, 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
+				<?php echo wp_kses(
+						$this->hook_limit_setting( $this->field_name( array( $form->id, 'limit' ) ), $this->field_id( array( $form->id, 'limit' ) ), $prefs[ $form->id ]['limit'] ),
+						array(
+							'div' => array(
+								'class' => array()
+							),
+							'input' => array(
+								'type' => array(),
+								'size' => array(),
+								'class' => array(),
+								'name' => array(),
+								'id' => array(),
+								'value' => array()
+							),
+							'select' => array(
+								'name' => array(),
+								'id' => array(),
+								'class' => array()
+							),
+							'option' => array(
+								'value' => array(),
+								'selected' => array()
+							)
+						) 
+					); 
+				?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( $form->id, 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( $form->id, 'log' ) ); ?>" id="<?php echo $this->field_id( array( $form->id, 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $form->id ]['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( $form->id, 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( $form->id, 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( $form->id, 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $form->id ]['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>

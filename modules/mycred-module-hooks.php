@@ -320,11 +320,11 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 				foreach ( $installed as $key => $data ) {
 
 ?>
-						<div id="widget-mycred-hook_<?php echo $key; ?>" class="widget ui-draggable"<?php if ( $this->is_active( $key ) ) echo ' style="display: none;"'; ?>>
+						<div id="widget-mycred-hook_<?php echo esc_attr( $key ); ?>" class="widget ui-draggable"<?php if ( $this->is_active( $key ) ) echo ' style="display: none;"'; ?>>
 							<div class="widget-top">
 								<div class="widget-title-action"></div>
 								<div class="widget-title ui-draggable-handle">
-									<h3><?php echo $this->core->template_tags_general( $data['title'] ); ?></h3>
+									<h3><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></h3>
 								</div>
 							</div>
 							<div class="widget-inside mycred-metabox">
@@ -334,22 +334,22 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 										<?php $this->call( 'preferences', $data['callback'] ); ?>
 
 									</div>
-									<input type="hidden" name="widget-id" class="widget-id" value="<?php echo $key; ?>" />
-									<input type="hidden" name="id_base" class="id_base" value="<?php echo $key; ?>" />
+									<input type="hidden" name="widget-id" class="widget-id" value="<?php echo esc_attr( $key ); ?>" />
+									<input type="hidden" name="id_base" class="id_base" value="<?php echo esc_attr( $key ); ?>" />
 									<input type="hidden" name="add_new" class="add_new" value="single" />
 									<div class="widget-control-actions">
 										<div class="alignleft">
 											<a class="widget-control-remove" href="#remove"><?php esc_html_e( 'Delete', 'mycred' ); ?></a> | <a class="widget-control-close" href="#close"><?php esc_html_e( 'Close', 'mycred' ); ?></a><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && array_key_exists( 'documentation', $data ) && ! empty( $data['documentation'] ) ) : ?> | <a class="hook-documentation" href="<?php echo esc_url( $data['documentation'] ); ?>" target="_blank">Hook Documentation</a><?php endif; ?>
 										</div>
 										<div class="alignright">
-											<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo $key; ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
+											<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo esc_attr( $key ); ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
 											<span class="spinner"></span>
 										</div>
 										<br class="clear" />
 									</div>
 								</form>
 							</div>
-							<div class="widget-description"><?php echo nl2br( $this->core->template_tags_general( $data['description'] ) ); ?></div>
+							<div class="widget-description"><?php echo wp_kses_post( nl2br( $this->core->template_tags_general( $data['description'] ) ) ); ?></div>
 						</div>
 <?php
 
@@ -438,11 +438,11 @@ jQuery(function($) {
 					if ( ! $this->is_active( $key ) ) continue;
 
 ?>
-				<div id="widget-mycred-hook_<?php echo $key; ?>" class="widget" style="z-index: auto;">
+				<div id="widget-mycred-hook_<?php echo esc_attr( $key ); ?>" class="widget" style="z-index: auto;">
 					<div class="widget-top">
 						<div class="widget-title-action"></div>
 						<div class="widget-title ui-draggable-handle">
-							<h3><?php echo $this->core->template_tags_general( $data['title'] ); ?></h3>
+							<h3><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></h3>
 						</div>
 					</div>
 					<div class="widget-inside mycred-metabox">
@@ -452,22 +452,22 @@ jQuery(function($) {
 								<?php $this->call( 'preferences', $data['callback'] ); ?>
 
 							</div>
-							<input type="hidden" name="widget-id" class="widget-id" value="<?php echo $key; ?>" />
-							<input type="hidden" name="id_base" class="id_base" value="<?php echo $key; ?>" />
+							<input type="hidden" name="widget-id" class="widget-id" value="<?php echo esc_attr( $key ); ?>" />
+							<input type="hidden" name="id_base" class="id_base" value="<?php echo esc_attr( $key ); ?>" />
 							<input type="hidden" name="add_new" class="add_new" value="single" />
 							<div class="widget-control-actions">
 								<div class="alignleft">
 									<a class="widget-control-remove" href="#remove"><?php esc_html_e( 'Delete', 'mycred' ); ?></a> | <a class="widget-control-close" href="#close"><?php esc_html_e( 'Close', 'mycred' ); ?></a><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && array_key_exists( 'documentation', $data ) && ! empty( $data['documentation'] ) ) : ?>  | <a class="hook-documentation" href="<?php echo esc_url( $data['documentation'] ); ?>" target="_blank">Hook Documentation</a><?php endif; ?>
 								</div>
 								<div class="alignright">
-									<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo $key; ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
+									<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo esc_attr( $key ); ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
 									<span class="spinner"></span>
 								</div>
 								<br class="clear" />
 							</div>
 						</form>
 					</div>
-					<div class="widget-description"><?php echo nl2br( $this->core->template_tags_general( $data['description'] ) ); ?></div>
+					<div class="widget-description"><?php echo wp_kses_post( nl2br( $this->core->template_tags_general( $data['description'] ) ) ); ?></div>
 				</div>
 <?php
 
@@ -508,8 +508,8 @@ jQuery(function($) {
 
 			if ( ! isset( $_POST['sidebars'] ) ) die;
 
-			$ctype      = sanitize_key( $_POST['ctype'] );
-			$option_id  = sanitize_key( $_POST['option_id'] );
+			$ctype      = isset( $_POST['ctype'] ) ? sanitize_key( $_POST['ctype'] ) : '';
+			$option_id  = isset( $_POST['option_id'] ) ? sanitize_key( $_POST['option_id'] ) : '';
 			if ( $ctype !== $this->mycred_type ) return;
 
 			$installed  = $this->get();
@@ -583,10 +583,10 @@ jQuery(function($) {
 		    
 			check_ajax_referer( 'manage-mycred-hooks', 'savewidgets' );
 
-			$sidebar    = sanitize_text_field( $_POST['sidebar'] );
-			$hook_id    = sanitize_key( $_POST['id_base'] );
-			$ctype      = sanitize_key( $_POST['ctype'] );
-			$option_id  = sanitize_key( $_POST['option_id'] );
+			$sidebar    = isset( $_POST['sidebar'] ) ? sanitize_text_field( wp_unslash( $_POST['sidebar'] ) ) : '';
+			$hook_id    = isset( $_POST['id_base'] ) ? sanitize_key( $_POST['id_base'] ) : '';
+			$ctype      = isset( $_POST['ctype'] ) ? sanitize_key( $_POST['ctype'] ) : '';
+			$option_id  = isset( $_POST['option_id'] ) ? sanitize_key( $_POST['option_id'] ) : '';
 			$hook_prefs = false;
 
 			if ( $ctype !== $this->mycred_type ) return;

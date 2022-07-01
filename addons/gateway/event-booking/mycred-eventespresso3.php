@@ -118,7 +118,7 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 
 			if (
 				( isset( $_REQUEST['payment_type'] ) && $_REQUEST['payment_type'] == 'mycred' ) &&
-				( isset( $_REQUEST['token'] ) && wp_verify_nonce( $_REQUEST['token'], 'pay-with-mycred' ) ) ) return true;
+				( isset( $_REQUEST['token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['token'] ) ), 'pay-with-mycred' ) ) ) return true;
 
 			return false;
 
@@ -174,7 +174,7 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 			if ( ! is_user_logged_in() ) return $payment_data;
 
 			// Security
-			if ( ! isset( $_REQUEST['token'] ) || ! wp_verify_nonce( $_REQUEST['token'], 'pay-with-mycred' ) ) return $payment_data;
+			if ( ! isset( $_REQUEST['token'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['token'] ) ), 'pay-with-mycred' ) ) return $payment_data;
 
 			// Let others play
 			do_action( 'mycred_espresso_process', $payment_data, $this->prefs, $this->core );
@@ -450,7 +450,7 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 <?php if ( $this->update ) : ?>
 <h2 style="color: green;"><?php esc_html_e( 'Settings Updated', 'mycred' ); ?></h2>
 <?php endif; ?>
-<form method="post" action="<?php echo sanitize_url( $_SERVER['REQUEST_URI'] ); ?>#mycred-gate">
+<form method="post" action="<?php echo esc_url( $_SERVER['REQUEST_URI'] ); ?>#mycred-gate">
 
 	<?php do_action( 'mycred_espresso_before_prefs' ); ?>
 
@@ -565,35 +565,37 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 			$this->label = mycred_label();
 
 			// Security
-			if ( ! wp_verify_nonce( $_REQUEST['mycred-gateway-token'], 'mycred-espresso-update' ) ) return;
+			if ( ! isset( $_REQUEST['mycred-gateway-token'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mycred-gateway-token'] ) ), 'mycred-espresso-update' ) ) 
+				return;
+
 			if ( ! $this->core->user_is_point_admin() ) return;
 
 			// Prep
 			$new_settings = array();
 
-			if ( ! is_array( $_POST['mycred_prefs'] ) || empty( $_POST['mycred_prefs'] ) ) return;
+			if ( empty( $_POST['mycred_prefs'] ) || ! is_array( $_POST['mycred_prefs'] ) ) return;
 
 			// Labels
-			$new_settings['labels']['gateway'] = strip_tags( sanitize_text_field( $_POST['mycred_prefs']['labels']['gateway'] ), '<strong><em><span>' );
-			$new_settings['labels']['payment'] = strip_tags( sanitize_text_field( $_POST['mycred_prefs']['labels']['payment'] ), '<strong><em><span>' );
-			$new_settings['labels']['button']  = isset( $_POST['mycred_prefs']['labels']['button'] ) ? sanitize_text_field( $_POST['mycred_prefs']['labels']['button'] ) : '';
+			$new_settings['labels']['gateway'] = isset( $_POST['mycred_prefs']['labels']['gateway'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['labels']['gateway'] ) ) : '';
+			$new_settings['labels']['payment'] = isset( $_POST['mycred_prefs']['labels']['payment'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['labels']['payment'] ) ) : '';
+			$new_settings['labels']['button']  = isset( $_POST['mycred_prefs']['labels']['button'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['labels']['button'] ) ) : '';
 
 			// Point Type
-			$new_settings['type']  = isset( $_POST['mycred_prefs']['type'] ) ? sanitize_text_field( $_POST['mycred_prefs']['type'] ) : '';
+			$new_settings['type']  = isset( $_POST['mycred_prefs']['type'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['type'] ) ) : '';
 
 			// Exchange Rate
-			$new_settings['rate']  = isset( $_POST['mycred_prefs']['rate'] ) ? sanitize_text_field( $_POST['mycred_prefs']['rate'] ) : '';
+			$new_settings['rate']  = isset( $_POST['mycred_prefs']['rate'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['rate'] ) ) : '';
 			
 			// Profit Share
-			$new_settings['share'] = isset(  $_POST['mycred_prefs']['share'] ) ? abs( $_POST['mycred_prefs']['share'] ) : '';
+			$new_settings['share'] = isset(  $_POST['mycred_prefs']['share'] ) ? abs( sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['share'] ) ) ) : '';
 			
 			// Log
-			$new_settings['log']   = isset(  $_POST['mycred_prefs']['log'] ) ? sanitize_text_field( $_POST['mycred_prefs']['log'] ) : '';
+			$new_settings['log']   = isset(  $_POST['mycred_prefs']['log'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['log'] ) ) : '';
 			
 			// Messages
-			$new_settings['messages']['solvent']   = stripslashes( sanitize_text_field( $_POST['mycred_prefs']['messages']['solvent'] ) );
-			$new_settings['messages']['insolvent'] = stripslashes( sanitize_text_field( $_POST['mycred_prefs']['messages']['insolvent'] ) );
-			$new_settings['messages']['visitors']  = stripslashes( sanitize_text_field( $_POST['mycred_prefs']['messages']['visitors'] ) );
+			$new_settings['messages']['solvent']   = isset( $_POST['mycred_prefs']['messages']['solvent'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['messages']['solvent'] ) ) : '';
+			$new_settings['messages']['insolvent'] = isset( $_POST['mycred_prefs']['messages']['insolvent'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['messages']['insolvent'] ) ) : '';
+			$new_settings['messages']['visitors']  = isset( $_POST['mycred_prefs']['messages']['visitors'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_prefs']['messages']['visitors'] ) ) : '';
 
 			// Let others play
 			$new_settings = apply_filters( 'mycred_espresso_save_pref', $new_settings );

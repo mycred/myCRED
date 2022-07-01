@@ -252,8 +252,8 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 					            global $wp;
 					            echo "
 					            <script>
-					                alert('".$error."');
-					                location.replace( '".home_url( $wp->request )."' );
+					                alert('" . esc_js( $error ) . "');
+					                location.replace( '" . esc_js( home_url( $wp->request ) ) . "' );
 					            </script>
 					            ";
 					        }
@@ -401,7 +401,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 
 					<div class="form-group">
-						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><?php echo $mycred->plural(); ?></label>
+						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><?php echo esc_html( $mycred->plural() ); ?></label>
 						<div class="checkbox" style="padding-top: 4px;">
 							<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><input type="checkbox" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][enabled]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"<?php if ( in_array( $type_id, $settings['types'] ) ) echo ' checked="checked"'; ?> value="<?php echo esc_attr( $type_id ); ?>" /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
 						</div>
@@ -412,7 +412,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 					<div class="form-group">
 						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-min"><?php esc_html_e( 'Minimum Amount', 'mycred' ); ?></label>
-						<input type="text" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][min]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-min" class="form-control" placeholder="<?php echo $mycred->get_lowest_value(); ?>" value="<?php echo esc_attr( $sale_setup['min'] ); ?>" />
+						<input type="text" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][min]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-min" class="form-control" placeholder="<?php echo esc_attr( $mycred->get_lowest_value() ); ?>" value="<?php echo esc_attr( $sale_setup['min'] ); ?>" />
 					</div>
 
 				</div>
@@ -440,7 +440,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 			<hr />
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( 'custom_log' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'custom_log' ); ?>" id="<?php echo $this->field_id( 'custom_log' ); ?>"<?php checked( $settings['custom_log'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Create a dedicated log for purchases.', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( 'custom_log' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'custom_log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'custom_log' ) ); ?>"<?php checked( $settings['custom_log'], 1 ); ?> value="1" /> <?php echo esc_html( $this->core->template_tags_general( __( 'Create a dedicated log for purchases.', 'mycred' ) ) ); ?></label>
 				</div>
 			</div>
 		</div>
@@ -451,15 +451,15 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 				<div class="row">
 					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-center">
-						<label for="<?php echo $this->field_id( 'checkout-full' ); ?>">
-							<img src="<?php echo plugins_url( 'assets/images/checkout-full.png', MYCRED_PURCHASE ); ?>" alt="" style="max-width: 100%; height: auto;" />
-							<input type="radio" name="<?php echo $this->field_name( 'checkout' ); ?>"<?php checked( $settings['checkout'], 'page' ); ?> id="<?php echo $this->field_id( 'checkout-full' ); ?>" value="page" /> Full Page
+						<label for="<?php echo esc_attr( $this->field_id( 'checkout-full' ) ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/checkout-full.png', MYCRED_PURCHASE ) ); ?>" alt="" style="max-width: 100%; height: auto;" />
+							<input type="radio" name="<?php echo esc_attr( $this->field_name( 'checkout' ) ); ?>"<?php checked( $settings['checkout'], 'page' ); ?> id="<?php echo esc_attr( $this->field_id( 'checkout-full' ) ); ?>" value="page" /> Full Page
 						</label>
 					</div>
 					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-center">
-						<label for="<?php echo $this->field_id( 'checkout-popup' ); ?>">
-							<img src="<?php echo plugins_url( 'assets/images/checkout-popup.png', MYCRED_PURCHASE ); ?>" alt="" style="max-width: 100%; height: auto;" />
-							<input type="radio" name="<?php echo $this->field_name( 'checkout' ); ?>"<?php checked( $settings['checkout'], 'popup' ); ?> id="<?php echo $this->field_id( 'checkout-popup' ); ?>" value="popup" /> Popup
+						<label for="<?php echo esc_attr( $this->field_id( 'checkout-popup' ) ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'assets/images/checkout-popup.png', MYCRED_PURCHASE ) ); ?>" alt="" style="max-width: 100%; height: auto;" />
+							<input type="radio" name="<?php echo esc_attr( $this->field_name( 'checkout' ) ); ?>"<?php checked( $settings['checkout'], 'popup' ); ?> id="<?php echo esc_attr( $this->field_id( 'checkout-popup' ) ); ?>" value="popup" /> Popup
 						</label>
 					</div>
 				</div>
@@ -477,7 +477,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 				<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'Where should users be redirected to upon successfully completing a purchase. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'thankyou' => 'page' ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'thankyou' => 'page' ) ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
 <?php
 
 			// Thank you page dropdown
@@ -486,15 +486,29 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 				'id'               => $this->field_id( array( 'thankyou' => 'page' ) ) . '-id',
 				'selected'         => $settings['thankyou']['page'],
 				'show_option_none' => __( 'Select', 'mycred' ),
-				'class'            => 'form-control'
+				'class'            => 'form-control',
+				'echo'             => 0
 			);
-			wp_dropdown_pages( $thankyou_args );
+			echo wp_kses( 
+				wp_dropdown_pages( $thankyou_args ),
+				array(
+					'select' => array(
+						'id' => array(),
+						'name' => array(),
+						'class' => array()
+					),
+					'option' => array(
+						'value' => array(),
+						'selected' => array()
+					)
+				)
+			);
 
 ?>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'thankyou' => 'custom' ) ); ?>"><?php esc_html_e( 'Redirect to URL', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'thankyou' => 'custom' ) ); ?>" id="<?php echo $this->field_id( array( 'thankyou' => 'custom' ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['thankyou']['custom'] ); ?>" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'thankyou' => 'custom' ) ) ); ?>"><?php esc_html_e( 'Redirect to URL', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'thankyou' => 'custom' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'thankyou' => 'custom' ) ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['thankyou']['custom'] ); ?>" />
 			</div>
 			<?php if ( $uses_buddypress ) : ?>
 			<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
@@ -507,7 +521,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 				<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'Where should users be redirected to if they cancel a transaction. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'cancelled' => 'page' ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'cancelled' => 'page' ) ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
 <?php
 
 			// Thank you page dropdown
@@ -516,15 +530,29 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 				'id'               => $this->field_id( array( 'cancelled' => 'page' ) ) . '-id',
 				'selected'         => $settings['cancelled']['page'],
 				'show_option_none' => __( 'Select', 'mycred' ),
-				'class'            => 'form-control'
+				'class'            => 'form-control',
+				'echo'             => 0
 			);
-			wp_dropdown_pages( $thankyou_args );
+			echo wp_kses( 
+				wp_dropdown_pages( $thankyou_args ),
+				array(
+					'select' => array(
+						'id' => array(),
+						'name' => array(),
+						'class' => array()
+					),
+					'option' => array(
+						'value' => array(),
+						'selected' => array()
+					)
+				)
+			);
 
 ?>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'cancelled' => 'custom' ) ); ?>"><?php esc_html_e( 'Redirect to URL', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'cancelled' => 'custom' ) ); ?>" id="<?php echo $this->field_id( array( 'cancelled' => 'custom' ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['cancelled']['custom'] ); ?>" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'cancelled' => 'custom' ) ) ); ?>"><?php esc_html_e( 'Redirect to URL', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'cancelled' => 'custom' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'cancelled' => 'custom' ) ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['cancelled']['custom'] ); ?>" />
 			</div>
 			<?php if ( $uses_buddypress ) : ?>
 			<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
@@ -538,8 +566,8 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'login' ); ?>"><?php esc_html_e( 'Login Message', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'login' ); ?>" id="<?php echo $this->field_id( 'login' ); ?>" class="form-control" value="<?php echo esc_attr( $settings['login'] ); ?>" />
+				<label for="<?php echo esc_attr( $this->field_id( 'login' ) ); ?>"><?php esc_html_e( 'Login Message', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'login' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'login' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['login'] ); ?>" />
 				<p><span class="description"><?php esc_html_e( 'Message to show in shortcodes when viewed by someone who is not logged in.', 'mycred' ); ?></span></p>
 			</div>
 
@@ -547,9 +575,9 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['log'] ); ?>" />
-				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general' ), '%gateway%' ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['log'] ); ?>" />
+				<p><span class="description"><?php echo wp_kses_post( $this->core->available_template_tags( array( 'general' ), '%gateway%' ) ); ?></span></p>
 			</div>
 
 		</div>
@@ -561,10 +589,10 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'gifting' => 'members' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'gifting' => 'members' ) ); ?>" id="<?php echo $this->field_id( array( 'gifting' => 'members' ) ); ?>"<?php checked( $settings['gifting']['members'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Allow users to buy %_plural% for other users.', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'members' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'gifting' => 'members' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'members' ) ) ); ?>"<?php checked( $settings['gifting']['members'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Allow users to buy %_plural% for other users.', 'mycred' ) ) ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'gifting' => 'authors' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'gifting' => 'authors' ) ); ?>" id="<?php echo $this->field_id( array( 'gifting' => 'authors' ) ); ?>"<?php checked( $settings['gifting']['authors'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Allow users to buy %_plural% for content authors.', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'authors' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'gifting' => 'authors' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'authors' ) ) ); ?>"<?php checked( $settings['gifting']['authors'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Allow users to buy %_plural% for content authors.', 'mycred' ) ) ); ?></label>
 				</div>
 			</div>
 
@@ -572,9 +600,9 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'gifting' => 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'gifting' => 'log' ) ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['gifting']['log'] ); ?>" />
-				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ) ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'gifting' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['gifting']['log'] ); ?>" />
+				<p><span class="description"><?php echo wp_kses_post( $this->core->available_template_tags( array( 'general', 'user' ) ) ); ?></span></p>
 			</div>
 
 		</div>
@@ -745,7 +773,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 			// Updated settings
 			if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == true )
-				echo '<div class="updated settings-error"><p>' . __( 'Settings Updated', 'mycred' ) . '</p></div>';
+				echo wp_kses_post( '<div class="updated settings-error"><p>' . __( 'Settings Updated', 'mycred' ) . '</p></div>' );
 
 ?>
 	<form method="post" action="options.php" class="form">
@@ -774,21 +802,21 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 						$column_class = 'col-lg-4 col-md-4 col-sm-12 col-xs-12';
 
 ?>
-			<h4><span class="dashicons <?php echo $data['icon']; ?><?php if ( $this->is_active( $key ) ) { if ( $sandbox_mode ) echo ' debug'; else echo ' active'; } else echo ' static'; ?>"></span><?php echo $this->core->template_tags_general( $data['title'] ); ?></h4>
+			<h4><span class="dashicons <?php echo esc_attr( $data['icon'] ); ?><?php if ( $this->is_active( $key ) ) { if ( $sandbox_mode ) echo ' debug'; else echo ' active'; } else echo ' static'; ?>"></span><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></h4>
 			<div class="body" style="display: none;">
 
 				<div class="row">
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="buycred-gateway-<?php echo $key; ?>"><input type="checkbox" name="mycred_pref_buycreds[active][]" id="buycred-gateway-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
+							<label for="buycred-gateway-<?php echo esc_attr( $key ); ?>"><input type="checkbox" name="mycred_pref_buycreds[active][]" id="buycred-gateway-<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $key ); ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
 						</div>
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<?php if ( $has_test_mode ) : ?>
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="buycred-gateway-<?php echo $key; ?>-sandbox"><input type="checkbox" name="mycred_pref_buycreds[gateway_prefs][<?php echo $key; ?>][sandbox]" id="buycred-gateway-<?php echo $key; ?>-sandbox" value="<?php echo $key; ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Sandbox Mode', 'mycred' ); ?></label>
+							<label for="buycred-gateway-<?php echo esc_attr( $key ); ?>-sandbox"><input type="checkbox" name="mycred_pref_buycreds[gateway_prefs][<?php echo esc_attr( $key ); ?>][sandbox]" id="buycred-gateway-<?php echo esc_attr( $key ); ?>-sandbox" value="<?php echo esc_attr( $key ); ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Sandbox Mode', 'mycred' ); ?></label>
 						</div>
 						<?php endif; ?>
 					</div>
@@ -796,7 +824,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 						<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && $has_documentation ) : ?>
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<a href="<?php echo $has_documentation; ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
+							<a href="<?php echo esc_url( $has_documentation ); ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
 						</div>
 						<?php endif; ?>
 					</div>
@@ -805,7 +833,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 				<?php $this->call( 'preferences', $data['callback'] ); ?>
 
-				<input type="hidden" name="mycred_pref_buycreds[installed]" value="<?php echo $key; ?>" />
+				<input type="hidden" name="mycred_pref_buycreds[installed]" value="<?php echo esc_attr( $key ); ?>" />
 			</div>
 <?php
 
@@ -865,7 +893,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 						<div class='body' style='display:none; padding: 0px; border: none;'>
 					</div>";
 
-					echo $content;
+					echo wp_kses_post( $content );
 				}
 			}
 ?>
@@ -930,7 +958,7 @@ jQuery(function($) {
 
 			if ( empty( $this->purchase_log ) ) return;
 
-			$meta_key = 'mycred_payments_' . str_replace( MYCRED_SLUG . '-purchases-', '', $_GET['page'] );
+			$meta_key = 'mycred_payments_' . str_replace( MYCRED_SLUG . '-purchases-', '', ( isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '' ) );
 
 			if ( isset( $_REQUEST['wp_screen_options']['option'] ) && isset( $_REQUEST['wp_screen_options']['value'] ) ) {
 			
@@ -959,7 +987,7 @@ jQuery(function($) {
 		 */
 		public function purchase_log_page() {
 
-			$point_type           = str_replace( 'mycred-purchases-', '', sanitize_key( $_GET['page'] ) );
+			$point_type           = str_replace( 'mycred-purchases-', '', ( isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '' ) );
 			$installed            = $this->get();
 
 			$mycred               = $this->core;
@@ -1005,17 +1033,17 @@ jQuery(function($) {
 	<?php $log->filter_dates( esc_url( $filter_url ) ); ?>
 
 	<form method="get" action="" name="mycred-buycred-form" novalidate>
-		<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>" />
+		<input type="hidden" name="page" value="<?php echo esc_attr( sanitize_key( wp_unslash( $_GET['page'] ) ) ); ?>" />
 <?php
 
 			if ( array_key_exists( 's', $search_args ) )
 				echo '<input type="hidden" name="s" value="' . esc_attr( $search_args['s'] ) . '" />';
 
 			if ( isset( $_GET['ref'] ) )
-				echo '<input type="hidden" name="show" value="' . esc_attr( $_GET['ref'] ) . '" />';
+				echo '<input type="hidden" name="show" value="' . esc_attr( sanitize_key( wp_unslash( $_GET['ref'] ) ) ) . '" />';
 
 			if ( isset( $_GET['show'] ) )
-				echo '<input type="hidden" name="show" value="' . esc_attr( $_GET['show'] ) . '" />';
+				echo '<input type="hidden" name="show" value="' . esc_attr( sanitize_key( wp_unslash( $_GET['show'] ) ) ) . '" />';
 
 			if ( array_key_exists( 'order', $search_args ) )
 				echo '<input type="hidden" name="order" value="' . esc_attr( $search_args['order'] ) . '" />';
@@ -1040,7 +1068,7 @@ jQuery(function($) {
 <?php
 
 			foreach ( $log->headers as $col_id => $col_title )
-				echo '<th scope="col" id="' . str_replace( 'column-', '', $col_id ) . '" class="manage-column ' . $col_id . '">' . $col_title . '</th>';
+				echo '<th scope="col" id="' . esc_attr( str_replace( 'column-', '', $col_id ) ) . '" class="manage-column ' . esc_attr( $col_id ) . '">' . esc_html( $col_title ) . '</th>';
 
 ?>
 				</tr>
@@ -1050,8 +1078,7 @@ jQuery(function($) {
 <?php
 
 			foreach ( $log->headers as $col_id => $col_title )
-				echo '<th scope="col" class="manage-column ' . $col_id . '">' . $col_title . '</th>';
-
+				echo '<th scope="col" class="manage-column ' . esc_attr( $col_id ) . '">' . esc_html( $col_title ) . '</th>';
 ?>
 				</tr>
 			</tfoot>
@@ -1095,12 +1122,12 @@ jQuery(function($) {
 					elseif ( substr( $log_entry->entry, 0, 4 ) == 'TEST' )
 						$style = ' style="color:orange;"';
 
-					echo '<tr class="myCRED-log-row' . $class . '" id="mycred-log-entry-' . $log_entry->id . '">';
+					echo '<tr class="myCRED-log-row' . esc_attr( $class ) . '" id="mycred-log-entry-' . esc_attr( $log_entry->id ) . '">';
 
 					// Run though columns
 					foreach ( $log->headers as $column_id => $column_name ) {
 
-						echo '<td class="' . $column_id . '"' . $style . '>';
+						echo '<td class="' . esc_attr( $column_id ) . '"' . wp_kses_post( $style ) . '>';
 
 						switch ( $column_id ) {
 
@@ -1108,7 +1135,7 @@ jQuery(function($) {
 							case 'column-gateway' :
 
 								$gateway = str_replace( array( '-', '_' ), ' ', $gateway_name );
-								echo ucwords( $gateway );
+								echo esc_html( ucwords( $gateway ) );
 
 							break;
 
@@ -1117,23 +1144,23 @@ jQuery(function($) {
 
 								$user = get_userdata( $log_entry->user_id );
 								if ( $user === false )
-									echo 'ID: ' . $log_entry->user_id;
+									echo esc_html( 'ID: ' . $log_entry->user_id );
 								else
-									echo $user->display_name . ' <em><small>(ID: ' . $log_entry->user_id . ')</small></em>';
+									echo wp_kses_post( $user->display_name . ' <em><small>(ID: ' . $log_entry->user_id . ')</small></em>' );
 
 							break;
 
 							// Date & Time Column
 							case 'column-date' :
 
-								echo date( $date_format, $log_entry->time );
+								echo esc_html( date( $date_format, $log_entry->time ) );
 
 							break;
 
 							// Amount Column
 							case 'column-amount' :
 
-								echo $mycred->format_creds( $log_entry->creds );
+								echo esc_html( $mycred->format_creds( $log_entry->creds ) );
 
 							break;
 
@@ -1161,7 +1188,7 @@ jQuery(function($) {
 									$rendered_cost = apply_filters( 'mycred_buycred_display_cost', $cost . ' ' . $currency, $sales_data, $log_entry, $gateway_name );
 									$rendered_cost = apply_filters( 'mycred_buycred_display_cost_' . $gateway_name, $rendered_cost, $sales_data, $log_entry );
 
-									echo $rendered_cost;
+									echo esc_html( $rendered_cost );
 
 								}
 
@@ -1179,7 +1206,7 @@ jQuery(function($) {
 								elseif ( isset( $saved_data['transaction_id'] ) )
 									$transaction_id = $saved_data['transaction_id'];
 
-								echo $transaction_id;
+								echo esc_html( $transaction_id );
 
 							break;
 
@@ -1205,7 +1232,7 @@ jQuery(function($) {
 			// No log entry
 			else {
 
-				echo '<tr><td colspan="' . count( $log->headers ) . '" class="no-entries">' . __( 'No purchases found', 'mycred' ) . '</td></tr>';
+				echo '<tr><td colspan="' . esc_attr( count( $log->headers ) ) . '" class="no-entries">' . esc_html__( 'No purchases found', 'mycred' ) . '</td></tr>';
 
 			}
 
@@ -1348,7 +1375,7 @@ jQuery(function($) {
 
 ?>
 					<div class="mycred-wrapper buycred-wrapper disabled-option color-option">
-						<div><?php printf( _x( 'Buying %s', 'Points Name', 'mycred' ), $data['name'] ); ?></div>
+						<div><?php printf( esc_html_x( 'Buying %s', 'Points Name', 'mycred' ), esc_html( $data['name'] ) ); ?></div>
 						<div class="balance-row">
 							<div class="balance-view"><?php esc_html_e( 'Disabled', 'mycred' ); ?></div>
 							<div class="balance-desc"><em><?php esc_html_e( 'This point type is not for sale.', 'mycred' ); ?></em></div>
@@ -1363,10 +1390,10 @@ jQuery(function($) {
 
 ?>
 					<div class="mycred-wrapper buycred-wrapper excluded-option color-option">
-						<div><?php printf( _x( 'Buying %s', 'Buying Points', 'mycred' ), $data['name'] ); ?></div>
+						<div><?php printf( esc_html_x( 'Buying %s', 'Buying Points', 'mycred' ), esc_html( $data['name'] ) ); ?></div>
 						<div class="balance-row">
 							<div class="balance-view"><?php esc_html_e( 'Excluded', 'mycred' ); ?></div>
-							<div class="balance-desc"><em><?php printf( _x( 'User can not buy %s', 'Points Name', 'mycred' ), $data['name'] ); ?></em></div>
+							<div class="balance-desc"><em><?php printf( esc_html_x( 'User can not buy %s', 'Points Name', 'mycred' ), esc_html( $data['name'] ) ); ?></em></div>
 						</div>
 					</div>
 <?php
@@ -1378,9 +1405,9 @@ jQuery(function($) {
 
 ?>
 					<div class="mycred-wrapper buycred-wrapper color-option selected">
-						<div><?php printf( _x( 'Buying %s', 'Buying Points', 'mycred' ), $data['name'] ); ?></div>
+						<div><?php printf( esc_html_x( 'Buying %s', 'Buying Points', 'mycred' ), esc_html( $data['name'] ) ); ?></div>
 						<div class="balance-row">
-							<div class="balance-view"><?php echo $data['before']; ?><input type="text" name="mycred_adjust_users_buyrates[<?php echo $type_id; ?>][<?php echo $gateway_id; ?>]" placeholder="<?php echo $data['default']; ?>" value="<?php if ( $data['override'] ) echo esc_attr( $data['custom'] ); ?>" class="short" size="8" /><?php echo ' ' . $setup['currency']; ?></div>
+							<div class="balance-view"><?php echo esc_html( $data['before'] ); ?><input type="text" name="mycred_adjust_users_buyrates[<?php echo esc_attr( $type_id ); ?>][<?php echo esc_attr( $gateway_id ); ?>]" placeholder="<?php echo esc_attr( $data['default'] ); ?>" value="<?php if ( $data['override'] ) echo esc_attr( $data['custom'] ); ?>" class="short" size="8" /><?php echo esc_html( ' ' . $setup['currency'] ); ?></div>
 							<div class="balance-desc"><em><?php esc_html_e( 'Leave empty to use the default rate.', 'mycred' ); ?></em></div>
 						</div>
 					</div>

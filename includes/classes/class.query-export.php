@@ -531,7 +531,7 @@ if ( ! function_exists( 'mycred_get_export_url' ) ) :
 			if ( $is_admin ) {
 
 				if ( isset( $_GET['page'] ) )
-					$args['page'] = $_GET['page'];
+					$args['page'] = sanitize_key( wp_unslash( $_GET['page'] ) );
 
 				$args['mycred-action'] = 'export';
 				$args['_token']        = wp_create_nonce( 'mycred-export-request-admin' );
@@ -574,9 +574,9 @@ if ( ! function_exists( 'mycred_is_valid_export_url' ) ) :
 
 		if ( is_user_logged_in() ) {
 
-			if ( isset( $_REQUEST['mycred-action'] ) && isset( $_REQUEST['_token'] ) && substr( $_REQUEST['mycred-action'], 0, 6 ) === 'export' ) {
+			if ( isset( $_REQUEST['mycred-action'] ) && isset( $_REQUEST['_token'] ) && substr( sanitize_text_field( wp_unslash( $_REQUEST['mycred-action'] ) ), 0, 6 ) === 'export' ) {
 
-				if ( wp_verify_nonce( $_REQUEST['_token'], $token ) )
+				if ( wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_token'] ) ), $token ) )
 					$valid = true;
 
 			}

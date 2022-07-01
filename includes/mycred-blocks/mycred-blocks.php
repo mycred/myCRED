@@ -57,7 +57,8 @@ final class MyCred_Gutenberg {
                 esc_html__('"%1$s" requires "%2$s" to be installed and activated.', 'mycred'), '<b>' . esc_html__('myCRED for Gutenberg', 'mycred') . '</b>', '<b>' . esc_html__('myCRED', 'mycred') . '</b>'
         );
 
-        printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
+        printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', esc_html( $message ) );
+
     }
 
     public function includes() {
