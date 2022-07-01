@@ -80,9 +80,9 @@ if ( ! function_exists( 'mycred_render_shortcode_hook_table' ) ) :
 	<table class="table mycred-hook-table hook-table-<?php echo $id; ?>">
 		<thead>
 			<tr>
-				<th class="column-instance" style="width: 60%;"><?php _e( 'Instance', 'mycred' ); ?></th>
-				<th class="column-amount" style="width: 20%;"><?php _e( 'Amount', 'mycred' ); ?></th>
-				<th class="column-limit" style="width: 20%;"><?php _e( 'Limit', 'mycred' ); ?></th>
+				<th class="column-instance" style="width: 60%;"><?php esc_html_e( 'Instance', 'mycred' ); ?></th>
+				<th class="column-amount" style="width: 20%;"><?php esc_html_e( 'Amount', 'mycred' ); ?></th>
+				<th class="column-limit" style="width: 20%;"><?php esc_html_e( 'Limit', 'mycred' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>

@@ -215,29 +215,29 @@ function mycred_load_wp_favorite_posts_hook() {
 
 ?>
 <div class="hook-instance">
-	<h3><?php _e( 'Adding Content to Favorites', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Adding Content to Favorites', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'add' => 'creds' ) ); ?>"><?php _e( 'Member', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'add' => 'creds' ) ); ?>"><?php esc_html_e( 'Member', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'add' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'add' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['add']['creds'] ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'add', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'add', 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'add', 'limit' ) ), $this->field_id( array( 'add', 'limit' ) ), $prefs['add']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'added' => 'creds' ) ); ?>"><?php _e( 'Content Author', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'added' => 'creds' ) ); ?>"><?php esc_html_e( 'Content Author', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'added' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'added' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['added']['creds'] ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'added', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'added', 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'added', 'limit' ) ), $this->field_id( array( 'added', 'limit' ) ), $prefs['added']['limit'] ); ?>
 			</div>
 		</div>
@@ -245,33 +245,33 @@ function mycred_load_wp_favorite_posts_hook() {
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'add' => 'log' ) ); ?>"><?php _e( 'Member Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'add' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'add' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['add']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'add' => 'log' ) ); ?>"><?php esc_html_e( 'Member Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'add' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'add' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['add']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'added' => 'log' ) ); ?>"><?php _e( 'Content Author Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'added' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'added' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['added']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'added' => 'log' ) ); ?>"><?php esc_html_e( 'Content Author Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'added' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'added' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['added']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Removing Content from Favorites', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Removing Content from Favorites', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'remove' => 'creds' ) ); ?>"><?php _e( 'Member', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'remove' => 'creds' ) ); ?>"><?php esc_html_e( 'Member', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'remove' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'remove' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['remove']['creds'] ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'remove' => 'log' ) ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'remove' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'remove' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['remove']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'remove' => 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'remove' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'remove' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['remove']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
 			</div>
 		</div>
@@ -279,14 +279,14 @@ function mycred_load_wp_favorite_posts_hook() {
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'removed' => 'creds' ) ); ?>"><?php _e( 'Content Author', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'removed' => 'creds' ) ); ?>"><?php esc_html_e( 'Content Author', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'removed' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'removed' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['removed']['creds'] ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'removed' => 'log' ) ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'removed' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'removed' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['removed']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'removed' => 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'removed' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'removed' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['removed']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
 			</div>
 		</div>

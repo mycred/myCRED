@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 5.9.3
-Stable tag: 2.4.4.4
+Stable tag: 2.4.5
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -303,6 +303,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.5 =
+Code improvement.
+
 = 2.4.4.4 =
 Bug fixes.
 
@@ -371,6 +374,9 @@ The banking module have been replaced by Central deposite module, and interest r
 
 
 == Changelog ==
+
+= 2.4.5 =
+- **TWAEK** - Code improvement.
 
 = 2.4.4.4 =
 * **FIX** - Unable to assign/revoke badges manually, also some HTML elements were not rendered properly in the user edit window under the Badges section.

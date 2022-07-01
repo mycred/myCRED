@@ -430,67 +430,67 @@ function mycred_load_bbpress_hook() {
 
 ?>
 <div class="hook-instance">
-	<h3><?php _e( 'New Forums', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'New Forums', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_forum', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_forum', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_forum', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_forum']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_forum', 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_forum', 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_forum', 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['new_forum']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_forum', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_forum', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_forum', 'limit' ) ), $this->field_id( array( 'new_forum', 'limit' ) ), $prefs['new_forum']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_forum', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_forum', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_forum', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_forum']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_forum', 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_forum', 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_forum', 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_forum']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Deleting Forums', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Deleting Forums', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_forum', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_forum', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_forum', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete_forum']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_forum', 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_forum', 'creds' ) ) ); ?>" id="<?php echo $this->field_id( array( 'delete_forum', 'creds' ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['delete_forum']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_forum', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_forum', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_forum', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_forum']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_forum', 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_forum', 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_forum', 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_forum']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'New Topic', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'New Topic', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_topic']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_topic', 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_topic', 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_topic', 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['new_topic']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_topic', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_topic', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_topic', 'limit' ) ), $this->field_id( array( 'new_topic', 'limit' ) ), $prefs['new_topic']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_topic']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_topic', 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_topic', 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_topic', 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_topic']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -498,74 +498,74 @@ function mycred_load_bbpress_hook() {
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
-					<label for="<?php echo $this->field_id( array( 'new_topic' => 'author' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'new_topic' => 'author' ) ); ?>" id="<?php echo $this->field_id( array( 'new_topic' => 'author' ) ); ?>" <?php checked( $prefs['new_topic']['author'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Forum authors can receive %_plural% for creating new topics.', 'mycred' ) ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'new_topic' => 'author' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'new_topic' => 'author' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_topic' => 'author' ) ) ); ?>" <?php checked( $prefs['new_topic']['author'], 1 ); ?> value="1" /> <?php echo $this->core->template_tags_general( __( 'Forum authors can receive %_plural% for creating new topics.', 'mycred' ) ); ?></label>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Deleted Topic', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Deleted Topic', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_topic', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['delete_topic']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_topic', 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_topic', 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_topic', 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['delete_topic']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_topic', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_topic']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'delete_topic', 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'delete_topic', 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'delete_topic', 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_topic']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Adding Topic to Favorites', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Adding Topic to Favorites', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'fav_topic', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'fav_topic', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'fav_topic', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['fav_topic']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'fav_topic', 'creds' ) ) ); ?>"><?php echo esc_attr( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'fav_topic', 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'fav_topic', 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['fav_topic']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'fav_topic', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'fav_topic', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'fav_topic', 'limit' ) ), $this->field_id( array( 'fav_topic', 'limit' ) ), $prefs['fav_topic']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'fav_topic', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'fav_topic', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'fav_topic', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['fav_topic']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'fav_topic', 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'fav_topic', 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'fav_topic', 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['fav_topic']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Forum Reply', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Forum Reply', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_reply', 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_reply', 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'new_reply', 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['new_reply']['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_reply', 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_reply', 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_reply', 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs['new_reply']['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_reply', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_reply', 'limit' ) ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'new_reply', 'limit' ) ), $this->field_id( array( 'new_reply', 'limit' ) ), $prefs['new_reply']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'new_reply', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'new_reply', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'new_reply', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_reply']['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'new_reply', 'log' ) ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'new_reply', 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'new_reply', 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['new_reply']['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -580,7 +580,7 @@ function mycred_load_bbpress_hook() {
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Deleted Reply', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Deleted Reply', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
@@ -590,8 +590,8 @@ function mycred_load_bbpress_hook() {
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'delete_reply', 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'delete_reply', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_reply', 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_reply']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'delete_reply', 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'delete_reply', 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'delete_reply', 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['delete_reply']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
 			</div>
 		</div>

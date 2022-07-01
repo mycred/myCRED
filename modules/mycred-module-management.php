@@ -222,7 +222,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 ?>
 <div class="row last">
 	<div class="col-xs-12">
-		<p><?php _e( 'No recent activity found.', 'mycred' ); ?></p>
+		<p><?php esc_html_e( 'No recent activity found.', 'mycred' ); ?></p>
 	</div>
 </div>
 <?php
@@ -233,10 +233,10 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 ?>
 <div class="row ledger header">
-	<div class="col-xs-4"><strong><?php _e( 'Date', 'mycred' ); ?></strong></div>
-	<div class="col-xs-4"><strong><?php _e( 'Time', 'mycred' ); ?></strong></div>
-	<div class="col-xs-4"><strong><?php _e( 'Reference', 'mycred' ); ?></strong></div>
-	<div class="col-xs-12"><strong><?php _e( 'Entry', 'mycred' ); ?></strong></div>
+	<div class="col-xs-4"><strong><?php esc_html_e( 'Date', 'mycred' ); ?></strong></div>
+	<div class="col-xs-4"><strong><?php esc_html_e( 'Time', 'mycred' ); ?></strong></div>
+	<div class="col-xs-4"><strong><?php esc_html_e( 'Reference', 'mycred' ); ?></strong></div>
+	<div class="col-xs-12"><strong><?php esc_html_e( 'Entry', 'mycred' ); ?></strong></div>
 </div>
 <?php
 
@@ -278,7 +278,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 ?>
 <div class="row ledger">
 	<div class="col-xs-12">
-		<div style="text-align:center; padding: 12px 0;"><a href="<?php echo esc_url( admin_url( 'admin.php?page=' . $page . '&user=' . $user_id ) ); ?>" style="width: auto !important;" class="button button-large button-secondary"><?php _e( 'View complete history', 'mycred' ); ?></a></div>
+		<div style="text-align:center; padding: 12px 0;"><a href="<?php echo esc_url( admin_url( 'admin.php?page=' . $page . '&user=' . $user_id ) ); ?>" style="width: auto !important;" class="button button-large button-secondary"><?php esc_html_e( 'View complete history', 'mycred' ); ?></a></div>
 	</div>
 </div>
 <?php
@@ -555,10 +555,10 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 <div id="mycred-edit-user-wrapper">
 	<table class="form-table mycred-inline-table">
 		<tr>
-			<th scope="row"><?php _e( 'Balances', 'mycred' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Balances', 'mycred' ); ?></th>
 			<td>
 				<fieldset id="mycred-badge-list" class="badge-list">
-					<legend class="screen-reader-text"><span><?php _e( 'Balance', 'mycred' ); ?></span></legend>
+					<legend class="screen-reader-text"><span><?php esc_html_e( 'Balance', 'mycred' ); ?></span></legend>
 <?php
 
 			// Loop through each point type
@@ -571,7 +571,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 					<div class="mycred-wrapper balance-wrapper disabled-option color-option">
 						<div><?php echo $data['name']; ?></div>
 						<div class="balance-row">
-							<div class="balance-view"><?php _e( 'Excluded', 'mycred' ); ?></div>
+							<div class="balance-view"><?php esc_html_e( 'Excluded', 'mycred' ); ?></div>
 							<div class="balance-edit">&nbsp;</div>
 						</div>
 <?php
@@ -583,7 +583,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 ?>
 					<div class="mycred-wrapper balance-wrapper color-option selected">
-						<?php if ( $data['can_edit'] ) : ?><div class="toggle-mycred-balance-editor"><a href="javascript:void(0);" data-type="<?php echo $point_type; ?>" data-view="<?php _e( 'Edit', 'mycred' ); ?>" data-edit="<?php _e( 'Cancel', 'mycred' ); ?>"><?php _e( 'Edit', 'mycred' ); ?></a></div><?php endif; ?>
+						<?php if ( $data['can_edit'] ) : ?><div class="toggle-mycred-balance-editor"><a href="javascript:void(0);" data-type="<?php echo $point_type; ?>" data-view="<?php esc_attr_e( 'Edit', 'mycred' ); ?>" data-edit="<?php esc_attr_e( 'Cancel', 'mycred' ); ?>"><?php esc_html_e( 'Edit', 'mycred' ); ?></a></div><?php endif; ?>
 						<div><?php echo $data['name']; ?></div>
 						<div class="balance-row" id="mycred-balance-<?php echo $point_type; ?>">
 							<div class="balance-view"><?php echo $data['formatted']; ?></div>
@@ -741,25 +741,25 @@ jQuery(function($){
 			<div class="row">
 				<div class="col-sm-2 col-xs-6">
 					<div class="form-group">
-						<label><?php _e( 'ID', 'mycred' ); ?></label>
+						<label><?php esc_html_e( 'ID', 'mycred' ); ?></label>
 						<div id="mycred-userid-to-show">&nbsp;</div>
 					</div>
 				</div>
 				<div class="col-sm-4 col-xs-6">
 					<div class="form-group">
-						<label><?php _e( 'Username', 'mycred' ); ?></label>
+						<label><?php esc_html_e( 'Username', 'mycred' ); ?></label>
 						<div id="mycred-username-to-show">&nbsp;</div>
 					</div>
 				</div>
 				<div class="col-sm-3 col-xs-6">
 					<div class="form-group">
-						<label><?php _e( 'Current Balance', 'mycred' ); ?></label>
+						<label><?php esc_html_e( 'Current Balance', 'mycred' ); ?></label>
 						<div id="mycred-current-to-show">&nbsp;</div>
 					</div>
 				</div>
 				<div class="col-sm-3 col-xs-6">
 					<div class="form-group">
-						<label><?php _e( 'Total Balance', 'mycred' ); ?></label>
+						<label><?php esc_html_e( 'Total Balance', 'mycred' ); ?></label>
 						<div id="mycred-total-to-show">&nbsp;</div>
 					</div>
 				</div>
@@ -768,14 +768,14 @@ jQuery(function($){
 			<div class="row">
 				<div class="col-sm-2 col-xs-12">
 					<div class="form-group">
-						<label><?php _e( 'Amount', 'mycred' ); ?></label>
+						<label><?php esc_html_e( 'Amount', 'mycred' ); ?></label>
 						<input type="text" name="mycred_manage_balance[amount]" id="mycred-editor-amount" size="8" placeholder="0" value="" />
-						<span class="description"><?php _e( 'A positive or negative value', 'mycred' ); ?>.</span>
+						<span class="description"><?php esc_html_e( 'A positive or negative value', 'mycred' ); ?>.</span>
 					</div>
 				</div>
 				<div class="col-sm-5 col-xs-12">
 					<div class="form-group">
-						<label><?php _e( 'Reference', 'mycred' ); ?></label>
+						<label><?php esc_html_e( 'Reference', 'mycred' ); ?></label>
 						<select name="mycred_manage_balance[ref]" id="mycred-editor-reference">
 <?php
 
@@ -791,23 +791,23 @@ jQuery(function($){
 						</select>
 					</div>
 					<div id="mycred-custom-reference-wrapper" style="display: none;">
-						<input type="text" name="mycred_manage_balance[custom]" id="mycred-editor-custom-reference" placeholder="<?php _e( 'lowercase without empty spaces', 'mycred' ); ?>" class="regular-text" value="" />
+						<input type="text" name="mycred_manage_balance[custom]" id="mycred-editor-custom-reference" placeholder="<?php esc_attr_e( 'lowercase without empty spaces', 'mycred' ); ?>" class="regular-text" value="" />
 					</div>
 				</div>
 				<div class="col-sm-5 col-xs-12">
 					<div class="form-group">
-						<label><?php _e( 'Log Entry', 'mycred' ); ?></label>
-						<input type="text" name="mycred_manage_balance[entry]" id="mycred-editor-entry" placeholder="<?php _e( 'optional', 'mycred' ); ?>" class="regular-text" value="" />
+						<label><?php esc_html_e( 'Log Entry', 'mycred' ); ?></label>
+						<input type="text" name="mycred_manage_balance[entry]" id="mycred-editor-entry" placeholder="<?php esc_attr_e( 'optional', 'mycred' ); ?>" class="regular-text" value="" />
 						<span class="description"><?php echo $mycred->available_template_tags( array( 'general', 'amount' ) ); ?></span>
 					</div>
 				</div>
 			</div>
 
 			<div class="row last">
-				<div class="col-sm-2 col-xs-3"><input type="submit" id="mycred-editor-submit" class="button button-primary button-large" value="<?php _e( 'Update', 'mycred' ); ?>" /></div>
+				<div class="col-sm-2 col-xs-3"><input type="submit" id="mycred-editor-submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Update', 'mycred' ); ?>" /></div>
 				<div class="col-sm-1 col-xs-1"><span id="mycred-editor-indicator" class="spinner"></span></div>
 				<div class="col-sm-6 col-xs-4" id="mycred-editor-results"></div>
-				<div class="col-sm-3 col-xs-4 text-right"><button type="button" class="button button-secondary button-large" id="load-users-mycred-history"><?php _e( 'Recent Activity', 'mycred' ); ?></button></div>
+				<div class="col-sm-3 col-xs-4 text-right"><button type="button" class="button button-secondary button-large" id="load-users-mycred-history"><?php esc_html_e( 'Recent Activity', 'mycred' ); ?></button></div>
 			</div>
 		</form>
 

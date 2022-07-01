@@ -281,7 +281,7 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 		<tbody>
 			<tr>
 				<th>
-					<label for="upload"><?php _e( 'Choose a file from your computer:', 'mycred' ); ?></label>
+					<label for="upload"><?php esc_html_e( 'Choose a file from your computer:', 'mycred' ); ?></label>
 				</th>
 				<td>
 					<input type="file" id="upload" name="import" size="25" />
@@ -292,7 +292,7 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 			</tr>
 			<tr>
 				<th>
-					<label for="file_url"><?php _e( 'OR enter path to file:', 'mycred' ); ?></label>
+					<label for="file_url"><?php esc_html_e( 'OR enter path to file:', 'mycred' ); ?></label>
 				</th>
 				<td>
 					<?php echo ABSPATH . ' '; ?><input type="text" id="file_url" name="file_url" size="25" />
@@ -300,7 +300,7 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 			</tr>
 			<tr>
 				<th>
-					<label for="delimiter"><?php _e( 'Delimiter', 'mycred' ); ?></label>
+					<label for="delimiter"><?php esc_html_e( 'Delimiter', 'mycred' ); ?></label>
 				</th>
 				<td>
 					<input type="text" name="delimiter" id="delimiter" placeholder="," size="2" />
@@ -309,7 +309,7 @@ if ( ! class_exists( 'myCRED_Importer_Log_Entires' ) ) :
 		</tbody>
 	</table>
 	<p class="submit">
-		<input type="submit" class="button button-primary" value="<?php _e( 'Import', 'mycred' ); ?>" />
+		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Import', 'mycred' ); ?>" />
 	</p>
 </form>
 <?php

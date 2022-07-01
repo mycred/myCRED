@@ -162,6 +162,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		 * Returns the current users affiliate ID. Returns an empty
 		 * string if the user is not logged in.
 		 * @since 1.4
+		 * @since 2.4.5 added @filter `mycred_affiliate_user_id`
 		 * @version 1.1
 		 */
 		public function shortcode_affiliate_id( $content, $atts ) {
@@ -182,6 +183,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 			}
 
+			$ref_id = apply_filters( 'mycred_affiliate_user_id', $user_id );
+			
 			return apply_filters( 'mycred_affiliate_id', $ref_id, $atts, $this );
 
 		}
@@ -594,7 +597,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 ?>
 <div class="hook-instance">
-	<h3><?php _e( 'Referring Visitors', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Referring Visitors', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
@@ -604,13 +607,13 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'visit', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'visit', 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'visit', 'limit' ) ), $this->field_id( array( 'visit', 'limit' ) ), $prefs['visit']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'visit' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'visit' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'visit' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'visit' => 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['visit']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
 			</div>
@@ -618,7 +621,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Referring Signups', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Referring Signups', 'mycred' ); ?></h3>
 
 	<?php if ( get_option( 'users_can_register' ) ) : ?>
 
@@ -631,13 +634,13 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'signup', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'signup', 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'signup', 'limit' ) ), $this->field_id( array( 'signup', 'limit' ) ), $prefs['signup']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'signup' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'signup' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'signup' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'signup' => 'log' ) ); ?>" value="<?php echo esc_attr( $prefs['signup']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general' ), '%user_name%' ); ?></span>
 			</div>
@@ -661,17 +664,17 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Referral Links', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Referral Links', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-numeric"><input type="radio" name="<?php echo $this->field_name( array( 'setup' => 'links' ) ); ?>" id="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-numeric" <?php checked( $prefs['setup']['links'], 'numeric' ); ?> value="numeric" /> <?php _e( 'Assign numeric referral IDs to each user.', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-numeric"><input type="radio" name="<?php echo $this->field_name( array( 'setup' => 'links' ) ); ?>" id="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-numeric" <?php checked( $prefs['setup']['links'], 'numeric' ); ?> value="numeric" /> <?php esc_html_e( 'Assign numeric referral IDs to each user.', 'mycred' ); ?></label>
 				<span class="description"><?php printf( '%s: %s', __( 'Example', 'mycred' ), esc_url( add_query_arg( array( $this->ref_key => 1 ), home_url( '/' ) ) ) ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-username"><input type="radio" name="<?php echo $this->field_name( array( 'setup' => 'links' ) ); ?>" id="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-username" <?php checked( $prefs['setup']['links'], 'username' ); ?> value="username" /> <?php _e( 'Assign usernames as IDs for each user.', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-username"><input type="radio" name="<?php echo $this->field_name( array( 'setup' => 'links' ) ); ?>" id="<?php echo $this->field_id( array( 'setup' => 'links' ) ); ?>-username" <?php checked( $prefs['setup']['links'], 'username' ); ?> value="username" /> <?php esc_html_e( 'Assign usernames as IDs for each user.', 'mycred' ); ?></label>
 				<span class="description"><?php printf( '%s: %s', __( 'Example', 'mycred' ), esc_url( add_query_arg( array( $this->ref_key => 'john+doe' ), home_url( '/' ) ) ) ); ?></span>
 			</div>
 		</div>
@@ -679,14 +682,14 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'setup' => 'IP' ) ); ?>"><?php _e( 'IP Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'setup' => 'IP' ) ); ?>"><?php esc_html_e( 'IP Limit', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'setup' => 'IP' ) ); ?>" id="<?php echo $this->field_id( array( 'setup' => 'IP' ) ); ?>" value="<?php echo absint( $prefs['setup']['IP'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->core->template_tags_general( __( 'The number of times each IP address grants %_plural%. Use zero for unlimited.', 'mycred' ) ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label><?php _e( 'Available Shortcodes', 'mycred' ); ?></label>
+				<label><?php esc_html_e( 'Available Shortcodes', 'mycred' ); ?></label>
 				<p class="form-control-static"><a href="http://codex.mycred.me/shortcodes/mycred_affiliate_link/" target="_blank">[mycred_affiliate_link]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_affiliate_id/" target="_blank">[mycred_affiliate_id]</a></p>
 			</div>
 		</div>
@@ -695,12 +698,12 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 <?php if ( function_exists( 'bp_is_active' ) && bp_is_active( 'xprofile' ) ) : ?>
 <div class="hook-instance">
-	<h3><?php _e( 'BuddyPress Profile', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'BuddyPress Profile', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'buddypress' => 'profile' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'buddypress' => 'profile' ) ); ?>" id="<?php echo $this->field_id( array( 'buddypress' => 'profile' ) ); ?>"<?php checked( $prefs['buddypress']['profile'], 1 ); ?> value="1" /> <?php _e( 'Insert referral link in users profiles', 'mycred' ); ?></label>
+					<label for="<?php echo $this->field_id( array( 'buddypress' => 'profile' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'buddypress' => 'profile' ) ); ?>" id="<?php echo $this->field_id( array( 'buddypress' => 'profile' ) ); ?>"<?php checked( $prefs['buddypress']['profile'], 1 ); ?> value="1" /> <?php esc_html_e( 'Insert referral link in users profiles', 'mycred' ); ?></label>
 				</div>
 			</div>
 		</div>
@@ -708,24 +711,24 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 	<div class="row">
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label><?php _e( 'Title', 'mycred' ); ?></label><br />
+				<label><?php esc_html_e( 'Title', 'mycred' ); ?></label><br />
 				<input type="text" name="<?php echo $this->field_name( array( 'buddypress' => 'title' ) ); ?>" id="<?php echo $this->field_id( array( 'buddypress' => 'title' ) ); ?>" value="<?php echo esc_attr( $prefs['buddypress']['title'] ); ?>" class="form-control" />
-				<span class="description"><?php _e( 'Leave empty to hide.', 'mycred' ); ?></span>
+				<span class="description"><?php esc_html_e( 'Leave empty to hide.', 'mycred' ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label><?php _e( 'Profile Positioning', 'mycred' ); ?></label><br />
+				<label><?php esc_html_e( 'Profile Positioning', 'mycred' ); ?></label><br />
 				<input type="text" name="<?php echo $this->field_name( array( 'buddypress' => 'priority' ) ); ?>" id="<?php echo $this->field_id( array( 'buddypress' => 'priority' ) ); ?>" value="<?php echo absint( $prefs['buddypress']['priority'] ); ?>" class="form-control" />
-				<span class="description"><?php _e( 'You can move around the referral link on your users profile by changing the position. Increase to move up, decrease to move down.', 'mycred' ); ?></span>
+				<span class="description"><?php esc_html_e( 'You can move around the referral link on your users profile by changing the position. Increase to move up, decrease to move down.', 'mycred' ); ?></span>
 			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'buddypress' => 'desc' ) ); ?>"><?php _e( 'Description', 'mycred' ); ?></label>
-				<span class="description"><?php _e( 'Optional description to insert under the link.', 'mycred' ); ?></span>
+				<label for="<?php echo $this->field_id( array( 'buddypress' => 'desc' ) ); ?>"><?php esc_html_e( 'Description', 'mycred' ); ?></label>
+				<span class="description"><?php esc_html_e( 'Optional description to insert under the link.', 'mycred' ); ?></span>
 				<textarea name="<?php echo $this->field_name( array( 'buddypress' => 'desc' ) ); ?>" id="<?php echo $this->field_id( array( 'buddypress' => 'desc' ) ); ?>" class="form-control" rows="5" cols="30"><?php echo esc_attr( $prefs['buddypress']['desc'] ); ?></textarea>
 			</div>
 		</div>

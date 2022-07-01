@@ -51,11 +51,17 @@ if ( ! class_exists( 'myCRED_Skrill' ) ) :
 
 			$result = true;
 
-			$check = sanitize_text_field( $_POST['merchant_id'] ) . sanitize_text_field( $_POST['transaction_id'] ) . strtoupper( md5( $this->prefs['word'] ) ) . sanitize_text_field( $_POST['mb_amount'] ) . sanitize_text_field( $_POST['mb_currency'] ) . sanitize_text_field( $_POST['status'] );
-			if ( strtoupper( md5( $check ) ) !== $_POST['md5sig'] )
+			$merchant_id 	= isset( $_POST['merchant_id'] ) ? sanitize_text_field( wp_unslash( $_POST['merchant_id'] ) ) : '';
+			$transaction_id = isset( $_POST['transaction_id'] ) ? sanitize_text_field( wp_unslash( $_POST['transaction_id'] ) ) : '';
+			$mb_amount 		= isset( $_POST['mb_amount'] ) ? sanitize_text_field( wp_unslash( $_POST['mb_amount'] ) ) : '';
+			$mb_currency	= isset( $_POST['mb_currency'] ) ? sanitize_text_field( wp_unslash( $_POST['mb_currency'] ) ) : '';
+			$status 		= isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
+			
+			$check = $merchant_id . $transaction_id . strtoupper( md5( $this->prefs['word'] ) ) . $mb_amount . $mb_currency . $status;
+			if ( isset( $_POST['md5sig'] ) && strtoupper( md5( $check ) ) !== $_POST['md5sig'] )
 				$result = false;
 
-			if ( $_POST['pay_to_email'] != trim( $this->prefs['account'] ) )
+			if ( isset( $_POST['pay_to_email'] ) && $_POST['pay_to_email'] != trim( $this->prefs['account'] ) )
 				$result = false;
 
 			return $result;
@@ -84,20 +90,20 @@ if ( ! class_exists( 'myCRED_Skrill' ) ) :
 						$new_call = array();
 
 						// Check amount paid
-						if ( $_POST['amount'] != $pending_payment->cost ) {
-							$new_call[] = sprintf( __( 'Price mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->cost, $_POST['amount'] );
+						if ( isset( $_POST['amount'] ) && $_POST['amount'] != $pending_payment->cost ) {
+							$new_call[] = sprintf( __( 'Price mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->cost,sanitize_text_field( wp_unslash( $_POST['amount'] ) ) );
 							$errors     = true;
 						}
 
 						// Check currency
-						if ( $_POST['currency'] != $pending_payment->currency ) {
-							$new_call[] = sprintf( __( 'Currency mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->currency, $_POST['currency'] );
+						if ( isset( $_POST['currency'] ) && $_POST['currency'] != $pending_payment->currency ) {
+							$new_call[] = sprintf( __( 'Currency mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->currency, sanitize_text_field( wp_unslash( $_POST['currency'] ) ) );
 							$errors     = true;
 						}
 
 						// Check status
-						if ( $_POST['status'] != '2' ) {
-							$new_call[] = sprintf( __( 'Payment not completed. Received: %s', 'mycred' ), $_POST['status'] );
+						if ( isset( $_POST['status'] ) && $_POST['status'] != '2' ) {
+							$new_call[] = sprintf( __( 'Payment not completed. Received: %s', 'mycred' ), sanitize_text_field( wp_unslash( $_POST['status'] ) ) );
 							$errors     = true;
 						}
 
@@ -105,10 +111,10 @@ if ( ! class_exists( 'myCRED_Skrill' ) ) :
 						if ( $errors === false ) {
 
 							// If account is credited, delete the post and it's comments.
-							if ( $this->complete_payment( $pending_payment, $_POST['transaction_id'] ) )
+							if ( $this->complete_payment( $pending_payment, sanitize_text_field( wp_unslash( $_POST['transaction_id'] ) ) ) )
 								$this->trash_pending_payment( $pending_post_id );
 							else
-								$new_call[] = __( 'Failed to credit users account.', 'mycred' );
+								$new_call[] = esc_html__( 'Failed to credit users account.', 'mycred' );
 
 						}
 
@@ -133,7 +139,7 @@ if ( ! class_exists( 'myCRED_Skrill' ) ) :
 
 			if ( isset( $_GET['transaction_id'] ) && ! empty( $_GET['transaction_id'] ) && isset( $_GET['msid'] ) && ! empty( $_GET['msid'] ) ) {
 				$this->get_page_header( __( 'Success', 'mycred' ), $this->get_thankyou() );
-				echo '<h1>' . __( 'Thank you for your purchase', 'mycred' ) . '</h1>';
+				echo '<h1>' . esc_html__( 'Thank you for your purchase', 'mycred' ) . '</h1>';
 				$this->get_page_footer();
 				exit;
 			}
@@ -249,55 +255,55 @@ if ( ! class_exists( 'myCRED_Skrill' ) ) :
 ?>
 <div class="row">
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Details', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'account' ); ?>"><?php _e( 'Account Email', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'account' ); ?>" id="<?php echo $this->field_id( 'account' ); ?>" value="<?php echo esc_attr( $prefs['account'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'account' ) ); ?>"><?php esc_html_e( 'Account Email', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'account' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'account' ) ); ?>" value="<?php echo esc_attr( $prefs['account'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'word' ); ?>"><?php _e( 'Secret Word', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'word' ); ?>" id="<?php echo $this->field_id( 'word' ); ?>" value="<?php echo esc_attr( $prefs['word'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'word' ) ); ?>"><?php esc_html_e( 'Secret Word', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'word' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'word' ) ); ?>" value="<?php echo esc_attr( $prefs['word'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'item_name' ); ?>"><?php _e( 'Item Name', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'item_name' ); ?>" id="<?php echo $this->field_id( 'item_name' ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>"><?php esc_html_e( 'Item Name', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'item_name' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>"><?php esc_html_e( 'Logo URL', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'logo_url' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'email_receipt' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'email_receipt' ); ?>" id="<?php echo $this->field_id( 'email_receipt' ); ?>" value="1"<?php checked( $prefs['email_receipt'], 1 ); ?> /> <?php _e( 'Ask Skrill to send me a confirmation email for each successful purchase.', 'mycred' ); ?></label>
+			<label for="<?php echo esc_attr( $this->field_id( 'email_receipt' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'email_receipt' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'email_receipt' ) ); ?>" value="1"<?php checked( $prefs['email_receipt'], 1 ); ?> /> <?php esc_html_e( 'Ask Skrill to send me a confirmation email for each successful purchase.', 'mycred' ); ?></label>
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
+			<label for="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>"><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
 
 			<?php $this->currencies_dropdown( 'currency', 'mycred-gateway-skrill-currency' ); ?>
 
 		</div>
 		<div class="form-group">
-			<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'Exchange Rates', 'mycred' ); ?></label>
 
 			<?php $this->exchange_rate_setup(); ?>
 
 		</div>
 	</div>
 </div>
-<h3><?php _e( 'Checkout Page', 'mycred' ); ?></h3>
+<h3><?php esc_html_e( 'Checkout Page', 'mycred' ); ?></h3>
 <div class="row">
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'account_title' ); ?>"><?php _e( 'Title', 'mycred' ); ?></label>
-			<p><span class="description"><?php _e( 'If left empty, your account email is used as title on the Skill Payment Page.', 'mycred' ); ?></span></p>
-			<input type="text" name="<?php echo $this->field_name( 'account_title' ); ?>" id="<?php echo $this->field_id( 'account_title' ); ?>" value="<?php echo esc_attr( $prefs['account_title'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'account_title' ) ); ?>"><?php esc_html_e( 'Title', 'mycred' ); ?></label>
+			<p><span class="description"><?php esc_html_e( 'If left empty, your account email is used as title on the Skill Payment Page.', 'mycred' ); ?></span></p>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'account_title' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'account_title' ) ); ?>" value="<?php echo esc_attr( $prefs['account_title'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'confirmation_note' ); ?>"><?php _e( 'Confirmation Note', 'mycred' ); ?></label>
-			<p><span class="description"><?php _e( 'Optional text to show user once a transaction has been successfully completed. This text is shown by Skrill.', 'mycred' ); ?></span></p>
-			<textarea rows="10" cols="50" name="<?php echo $this->field_name( 'confirmation_note' ); ?>" id="<?php echo $this->field_id( 'confirmation_note' ); ?>" class="form-control"><?php echo esc_html( $prefs['confirmation_note'] ); ?></textarea>
+			<label for="<?php echo esc_attr( $this->field_id( 'confirmation_note' ) ); ?>"><?php esc_html_e( 'Confirmation Note', 'mycred' ); ?></label>
+			<p><span class="description"><?php esc_html_e( 'Optional text to show user once a transaction has been successfully completed. This text is shown by Skrill.', 'mycred' ); ?></span></p>
+			<textarea rows="10" cols="50" name="<?php echo esc_attr( $this->field_name( 'confirmation_note' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'confirmation_note' ) ); ?>" class="form-control"><?php echo esc_html( $prefs['confirmation_note'] ); ?></textarea>
 		</div>
 	</div>
 </div>

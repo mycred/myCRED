@@ -15,7 +15,7 @@ class myCRED_Setup_Import_Export
         ?>
         <input type="hidden" class="request-tab" value="<?php if( isset( $_GET['mycred-tools'] ) ) echo $_GET['mycred-tools'] ?>" />
         <form action="" enctype="multipart/form-data" class="mycred-tools-setup">
-        <h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+        <h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
         <?php
             if( !empty( $this->mycred_tools_import_export->core_point_types ) )
             {
@@ -164,18 +164,18 @@ class myCRED_Setup_Import_Export
             </ul>
 
             <button class="button button-primary" id="export-raw">
-                <span class="dashicons dashicons-database-export v-align-middle"></span> <?php _e( 'Export Setup', 'mycred' ); ?>
+                <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Setup', 'mycred' ); ?>
             </button>
         </form>
 
         <form action="" enctype="multipart/form-data" class="mycred-tools-setup-import">
-            <h3><?php _e( 'Import', 'mycred' ); ?></h3>
+            <h3><?php esc_html_e( 'Import', 'mycred' ); ?></h3>
             <input type="file" id="import-file" name="file" accept=".json" />
             <button class="button button-primary", id="import">
-                <span class="dashicons dashicons-database-import v-align-middle"></span> <?php _e( 'Import Setup','mycred' ); ?>
+                <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import Setup','mycred' ); ?>
             </button>
             <p><i>
-                <?php _e( 'Accepts JSON format.', 'mycred' ); ?>
+                <?php esc_html_e( 'Accepts JSON format.', 'mycred' ); ?>
             </i></p>
         </form>
         <div style="clear: both;"></div>

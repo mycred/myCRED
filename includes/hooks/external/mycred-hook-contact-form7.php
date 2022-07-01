@@ -170,14 +170,14 @@ function mycred_load_contact_form_seven_hook() {
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( $form_id, 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( $form_id, 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( $form_id, 'limit' ) ), $this->field_id( array( $form_id, 'limit' ) ), $prefs[ $form_id ]['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( $form_id, 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( $form_id, 'log' ) ); ?>" id="<?php echo $this->field_id( array( $form_id, 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $form_id ]['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( $form_id, 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( $form_id, 'log' ) ); ?>" id="<?php echo $this->field_id( array( $form_id, 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $form_id ]['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
 			</div>
 		</div>

@@ -904,7 +904,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 
 			if( ! empty( $_REQUEST['er_random'] ) ) {
 				
-				$custom_rate = mycred_decode_values( $_REQUEST['er_random'] );
+				$custom_rate = mycred_decode_values( sanitize_text_field( wp_unslash( $_REQUEST['er_random'] ) ) );
 			
 			}
 
@@ -1217,24 +1217,24 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 	<meta charset="<?php bloginfo( 'charset' ); ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<title><?php echo $site_title; ?></title>
+	<title><?php echo esc_html( $site_title ); ?></title>
 	<meta name="robots" content="noindex, nofollow" />
-	<?php if ( $reload ) echo '<meta http-equiv="refresh" content="2;url=' . $reload . '" />'; ?>
+	<?php if ( $reload ) echo '<meta http-equiv="refresh" content="2;url=' . esc_url( $reload ) . '" />'; ?>
 
-	<link rel="stylesheet" href="<?php echo plugins_url( 'assets/css/gateway.css', MYCRED_PURCHASE ); ?>" type="text/css" media="all" />
-	<link rel="stylesheet" href="<?php echo plugins_url( 'assets/css/bootstrap-grid.css', myCRED_THIS ); ?>" type="text/css" media="all" />
-	<link rel="stylesheet" href="<?php echo plugins_url( 'assets/css/mycred-forms.css', myCRED_THIS ); ?>" type="text/css" media="all" />
+	<link rel="stylesheet" href="<?php echo esc_url( plugins_url( 'assets/css/gateway.css', MYCRED_PURCHASE ) ); ?>" type="text/css" media="all" />
+	<link rel="stylesheet" href="<?php echo esc_url( plugins_url( 'assets/css/bootstrap-grid.css', myCRED_THIS ) ); ?>" type="text/css" media="all" />
+	<link rel="stylesheet" href="<?php echo esc_url( plugins_url( 'assets/css/mycred-forms.css', myCRED_THIS ) ); ?>" type="text/css" media="all" />
 	<?php do_action( 'mycred_buycred_page_header', $title, $reload, $this->id ); ?>
 
 </head>
 <body class="mycred-metabox">
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<?php echo $logo; ?>
+			<?php echo esc_html( $logo ); ?>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 text-right">
-			<h2><?php echo $title; ?></h2>
-			<p><a href="<?php echo $this->get_cancelled( $this->transaction_id ); ?>" id="return-where-we-came-from"><?php _e( 'Cancel', 'mycred' ); ?></a></p>
+			<h2><?php echo esc_html( $title ); ?></h2>
+			<p><a href="<?php echo esc_url( $this->get_cancelled( $this->transaction_id ) ); ?>" id="return-where-we-came-from"><?php esc_html_e( 'Cancel', 'mycred' ); ?></a></p>
 		</div>
 	</div>
 <?php
@@ -1341,7 +1341,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 				$errors[] = $error_message;
 
 ?>
-<div class="gateway-error"><?php echo implode( '<br />', $errors ); ?></div>
+<div class="gateway-error"><?php echo wp_kses( implode( '<br />', $errors ), array( 'br' => array() ) ); ?></div>
 <?php
 
 		}
@@ -1366,15 +1366,15 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 ?>
 <div class="row">
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-		<form name="mycred_<?php echo $id; ?>_request" class="form text-center" action="<?php echo $location; ?>" method="post" id="redirect-form">
-			<?php foreach ( $hidden_fields as $name => $value ) echo '<input type="hidden" name="' . $name . '" value="' . $value . '" />' . "\n"; ?>
-			<img src="<?php echo plugins_url( 'assets/images/loading.gif', MYCRED_PURCHASE ); ?>" alt="Loading" />
-			<noscript><input type="submit" name="submit-form" value="<?php printf( __( 'Continue to %s', 'mycred' ), $this->label ); ?>" /></noscript>
-			<p id="manual-continue"><a href="javascript:void(0);" onclick="document.mycred_<?php echo $id; ?>_request.submit();return false;"><?php _e( 'Click here if you are not automatically redirected', 'mycred' ); ?></a></p>
+		<form name="mycred_<?php echo esc_attr( $id ); ?>_request" class="form text-center" action="<?php echo esc_url( $location ); ?>" method="post" id="redirect-form">
+			<?php foreach ( $hidden_fields as $name => $value ) echo '<input type="hidden" name="' . esc_attr( $name ) . '" value="' . esc_attr( $value ) . '" />' . "\n"; ?>
+			<img src="<?php echo esc_url( plugins_url( 'assets/images/loading.gif', MYCRED_PURCHASE ) ); ?>" alt="Loading" />
+			<noscript><input type="submit" name="submit-form" value="<?php printf( esc_attr__( 'Continue to %s', 'mycred' ), esc_attr( $this->label ) ); ?>" /></noscript>
+			<p id="manual-continue"><a href="javascript:void(0);" onclick="document.mycred_<?php echo esc_attr( $id ); ?>_request.submit();return false;"><?php esc_html_e( 'Click here if you are not automatically redirected', 'mycred' ); ?></a></p>
 		</form>
 	</div>
 </div>
-<script type="text/javascript"><?php if ( $this->sandbox_mode ) echo '//'; ?>setTimeout( "document.mycred_<?php echo $id; ?>_request.submit()",2000 );</script>
+<script type="text/javascript"><?php if ( $this->sandbox_mode ) echo '//'; ?>setTimeout( "document.mycred_<?php echo esc_attr( $id ); ?>_request.submit()",2000 );</script>
 <?php
 
 		}
@@ -1559,12 +1559,12 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			if ( $js != '' )
 				$js = ' data-update="' . $js . '"';
 
-			echo '<select name="' . $this->field_name( $name ) . '" id="' . $this->field_id( $name ) . '" class="currency form-control"' . $js . '>';
-			echo '<option value="">' . __( 'Select', 'mycred' ) . '</option>';
+			echo '<select name="' . esc_attr( $this->field_name( $name ) ) . '" id="' . esc_attr( $this->field_id( $name ) ) . '" class="currency form-control"' . wp_kses_post( $js ) . '>';
+			echo '<option value="">' . esc_html__( 'Select', 'mycred' ) . '</option>';
 			foreach ( $currencies as $code => $cname ) {
-				echo '<option value="' . $code . '"';
+				echo '<option value="' . esc_attr( $code ) . '"';
 				if ( isset( $this->prefs[ $name ] ) && $this->prefs[ $name ] == $code ) echo ' selected="selected"';
-				echo '>' . $cname . '</option>';
+				echo '>' . esc_html( $cname ) . '</option>';
 			}
 			echo '</select>';
 
@@ -1584,12 +1584,12 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			);
 			$types = apply_filters( 'mycred_dropdown_item_types', $types );
 
-			echo '<select name="' . $this->field_name( $name ) . '" id="' . $this->field_id( $name ) . '">';
-			echo '<option value="">' . __( 'Select', 'mycred' ) . '</option>';
+			echo '<select name="' . esc_attr( $this->field_name( $name ) ) . '" id="' . esc_attr( $this->field_id( $name ) ) . '">';
+			echo '<option value="">' . esc_html__( 'Select', 'mycred' ) . '</option>';
 			foreach ( $types as $code => $cname ) {
-				echo '<option value="' . $code . '"';
+				echo '<option value="' . esc_attr( $code ) . '"';
 				if ( isset( $this->prefs[ $name ] ) && $this->prefs[ $name ] == $code ) echo ' selected="selected"';
-				echo '>' . $cname . '</option>';
+				echo '>' . esc_html( $cname ) . '</option>';
 			}
 			echo '</select>';
 
@@ -1847,9 +1847,9 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			$countries = apply_filters( 'mycred_list_option_countries', $countries );
 
 			foreach ( $countries as $code => $cname ) {
-				echo '<option value="' . $code . '"';
+				echo '<option value="' . esc_attr( $code ) . '"';
 				if ( $selected == $code ) echo ' selected="selected"';
-				echo '>' . $cname . '</option>';
+				echo '>' . esc_html( $cname ) . '</option>';
 			}
 
 		}
@@ -1917,13 +1917,13 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			$states = apply_filters( 'mycred_list_option_us', $states );
 
 			$outside = 'Outside US';
-			if ( $non_us == 'top' ) echo '<option value="">' . $outside . '</option>';
+			if ( $non_us == 'top' ) echo '<option value="">' . esc_html( $outside ) . '</option>';
 			foreach ( $states as $code => $cname ) {
-				echo '<option value="' . $code . '"';
+				echo '<option value="' . esc_attr( $code ) . '"';
 				if ( $selected == $code ) echo ' selected="selected"';
-				echo '>' . $cname . '</option>';
+				echo '>' . esc_html( $cname ) . '</option>';
 			}
-			if ( $non_us == 'bottom' ) echo '<option value="">' . $outside . '</option>';
+			if ( $non_us == 'bottom' ) echo '<option value="">' . esc_html( $outside ) . '</option>';
 
 		}
 
@@ -1950,9 +1950,9 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			);
 
 			foreach ( $months as $number => $text ) {
-				echo '<option value="' . $number . '"';
+				echo '<option value="' . esc_attr( $number ) . '"';
 				if ( $selected == $number ) echo ' selected="selected"';
-				echo '>' . $text . '</option>';
+				echo '>' . esc_html( $text ) . '</option>';
 			}
 
 		}
@@ -1980,9 +1980,9 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			}
 
 			foreach ( $options as $key => $value ) {
-				echo '<option value="' . $key . '"';
+				echo '<option value="' . esc_attr( $key ) . '"';
 				if ( $selected == $key ) echo ' selected="selected"';
-				echo '>' . $value . '</option>';
+				echo '>' . esc_html( $value ) . '</option>';
 			}
 
 		}
@@ -2044,11 +2044,11 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		public function IPN_is_valid_sale( $sales_data_key = '', $cost_key = '', $transactionid_key = '', $method = '' ) {
 
 			if ( $method == 'POST' )
-				$post_id = absint( $_POST[ $sales_data_key ] );
+				$post_id = isset( $_POST[ $sales_data_key ] ) ? absint( $_POST[ $sales_data_key ] ) : 0;
 			elseif ( $method == 'GET' )
-				$post_id = absint( $_GET[ $sales_data_key ] );
+				$post_id = isset( $_GET[ $sales_data_key ] ) ? absint( $_GET[ $sales_data_key ] ) : 0;
 			else
-				$post_id = absint( $_REQUEST[ $sales_data_key ] );
+				$post_id = isset( $_REQUEST[ $sales_data_key ] ) ? absint( $_REQUEST[ $sales_data_key ] ) : 0;
 
 			$pending_payment = $this->get_pending_payment( $post_id );
 			if ( $pending_payment === false ) return false;
@@ -2056,11 +2056,11 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			$result = true;
 
 			if ( $method == 'POST' )
-				$price = floatval( $_POST[ $cost_key ] );
+				$price = isset( $_POST[ $cost_key ] ) ? floatval( $_POST[ $cost_key ] ) : 0;
 			elseif ( $method == 'GET' )
-				$price = floatval( $_GET[ $cost_key ] );
+				$price = isset( $_GET[ $cost_key ] ) ? floatval( $_GET[ $cost_key ] ) : 0;
 			else
-				$price = floatval( $_REQUEST[ $cost_key ] );
+				$price = isset( $_REQUEST[ $cost_key ] ) ? floatval( $_REQUEST[ $cost_key ] ) : 0;
 
 			if ( $result === true && $pending_payment['cost'] != $price ) {
 				$result = false;
@@ -2071,11 +2071,11 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			}
 
 			if ( $method == 'POST' )
-				$transaction_id = sanitize_title( $_POST[ $transactionid_key ] );
+				$transaction_id = isset( $_POST[ $transactionid_key ] ) ? sanitize_title( wp_unslash( $_POST[ $transactionid_key ] ) ) : '';
 			elseif ( $method == 'GET' )
-				$transaction_id = sanitize_title( $_GET[ $transactionid_key ] );
+				$transaction_id = isset( $_GET[ $transactionid_key ] ) ? sanitize_title( wp_unslash( $_GET[ $transactionid_key ] ) ) : '';
 			else
-				$transaction_id = sanitize_title( $_REQUEST[ $transactionid_key ] );
+				$transaction_id = isset( $_REQUEST[ $transactionid_key ] ) ? sanitize_title( wp_unslash( $_REQUEST[ $transactionid_key ] ) ) : '';
 
 			if ( $result === true && ! $this->transaction_id_is_unique( $transaction_id ) ) {
 				$result = false;

@@ -26,7 +26,7 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
         ?>
         
         <div class="subsubsub">
-            <a href="<?php echo $points; ?>" class="<?php echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'points' ) ? 'current' : ''; ?>"><?php _e( 'Points','mycred' ); ?></a>
+            <a href="<?php echo $points; ?>" class="<?php echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'points' ) ? 'current' : ''; ?>"><?php esc_html_e( 'Points','mycred' ); ?></a>
             <?php
             if( class_exists( 'myCRED_Badge' ) )
             {
@@ -41,7 +41,7 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
             }
             ?>
 
-            | <a href="<?php echo $setup; ?>" class="<?php echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'setup' ) ? 'current' : ''; ?>"><?php _e( 'Setup','mycred' ); ?></a>
+            | <a href="<?php echo $setup; ?>" class="<?php echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'setup' ) ? 'current' : ''; ?>"><?php esc_html_e( 'Setup','mycred' ); ?></a>
 
             <input type="hidden" class="request-tab" value="<?php echo $_GET['mycred-tools'] ?>" />
         </div>
@@ -91,15 +91,15 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
         ?>
         <div class="mycred-tools-import-export">
-            <h3><?php _e( 'User Points','mycred' ); ?></h3>
+            <h3><?php esc_html_e( 'User Points','mycred' ); ?></h3>
             <table>
                 <tr>
-                    <td><h4><?php _e( 'CSV File','mycred' ); ?></h4></td>
+                    <td><h4><?php esc_html_e( 'CSV File','mycred' ); ?></h4></td>
                     <td>
                         <form method="post" enctype="multipart/form-data">
                             <input type="file" id="import-file" name="file" accept=".csv" />
                             <button class="button button-primary", id="import">
-                                <span class="dashicons dashicons-database-import v-align-middle"></span> <?php _e( 'Import User Points','mycred' ); ?>
+                                <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import User Points','mycred' ); ?>
                             </button>
                         </form>
                     </td>
@@ -110,52 +110,52 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                     </td>
                     <td>
                         <button class="button button-secondary" id="download-raw-template-csv">
-                            <span class="dashicons dashicons-download v-align-middle"></span> <?php _e( 'Download Raw Template','mycred' ); ?>
+                            <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Raw Template','mycred' ); ?>
                         </button>
 
                         <button class="button button-secondary" id="download-formatted-template-csv">
-                            <span class="dashicons dashicons-download v-align-middle"></span> <?php _e( 'Download Formatted Template','mycred' ); ?>
+                            <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Formatted Template','mycred' ); ?>
                         </button>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <i><?php _e( 'Only raw  format can be Import.', 'mycred' ) ?></i>
+                        <i><?php esc_html_e( 'Only raw  format can be Import.', 'mycred' ) ?></i>
                     </td>
                 </tr>
             </table>
-            <h1><?php _e( 'Export','mycred' ); ?></h1>
-            <h3><?php _e( 'User Points','mycred' ); ?></h3>
+            <h1><?php esc_html_e( 'Export','mycred' ); ?></h1>
+            <h3><?php esc_html_e( 'User Points','mycred' ); ?></h3>
             <table>
                 <tr>
                     <td>
-                    <?php _e( 'Select Point Types to be Exported','mycred' ); ?>
+                    <?php esc_html_e( 'Select Point Types to be Exported','mycred' ); ?>
                     </td>
                     <td>
                         <button class="button button-secondary" id="select-all-pt">
-                            <span class="dashicons dashicons-download v-align-middle"></span> <?php _e( 'Select/ Deselect All','mycred' ); ?>
+                            <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Select/ Deselect All','mycred' ); ?>
                         </button>
                     </td>
                 </tr>
             </table>
 
             <div class="mycred-container">
-                <label><?php _e( 'Select Point Types','mycred' ); ?></label>
+                <label><?php esc_html_e( 'Select Point Types','mycred' ); ?></label>
                 <?php echo mycred_create_select2( $pt_options, $pr_attr ) ?>
             </div>
 
             <div class="mycred-container">
-                <label><?php _e( 'User Field in Exported File', 'mycred' ); ?></label>
+                <label><?php esc_html_e( 'User Field in Exported File', 'mycred' ); ?></label>
                 <?php echo mycred_create_select2( $uf_options, $uf_attr ) ?>
             </div>
 
             <div class="mycred-container">
                 <button class="button button-primary" id="export-raw">
-                    <span class="dashicons dashicons-database-export v-align-middle"></span> <?php _e( 'Export Raw', 'mycred' ); ?>
+                    <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Raw', 'mycred' ); ?>
                 </button>
 
                 <button class="button button-primary" id="export-formatted">
-                    <span class="dashicons dashicons-database-export v-align-middle"></span> <?php _e( 'Export Formatted', 'mycred' ); ?>
+                    <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Formatted', 'mycred' ); ?>
                 </button>
             </div>
         </div>
@@ -208,16 +208,16 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
         ?>
         <div class="mycred-tools-import-export">
-            <h3><?php _e( 'User Badges','mycred' ); ?></h3>
+            <h3><?php esc_html_e( 'User Badges','mycred' ); ?></h3>
             <table>
                 <tr>
-                    <td><h4><?php _e( 'CSV File','mycred' ); ?></h4></td>
+                    <td><h4><?php esc_html_e( 'CSV File','mycred' ); ?></h4></td>
                     <td>
                         <form method="post" enctype="multipart/form-data">
                             <input type="file" id="import-file" name="file" accept=".csv" />
                             <?php echo mycred_create_select2( $type_options, $type_attr ) ?>
                             <button class="button button-primary", id="import">
-                                <span class="dashicons dashicons-database-import v-align-middle"></span> <?php _e( 'Import User Badges','mycred' ); ?>
+                                <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import User Badges','mycred' ); ?>
                             </button>
                         </form>
                     </td>
@@ -228,49 +228,49 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                     </td>
                     <td>
                         <button class="button button-secondary" id="download-raw-template-csv">
-                            <span class="dashicons dashicons-download v-align-middle"></span> <?php _e( 'Download Raw Template','mycred' ); ?>
+                            <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Raw Template','mycred' ); ?>
                         </button>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <i><?php _e( 'Only raw format can be Import.', 'mycred' ) ?></i>
+                        <i><?php esc_html_e( 'Only raw format can be Import.', 'mycred' ) ?></i>
                     </td>
                 </tr>
             </table>
-            <h1><?php _e( 'Export','mycred' ); ?></h1>
-            <h3><?php _e( 'User Badges','mycred' ); ?></h3>
+            <h1><?php esc_html_e( 'Export','mycred' ); ?></h1>
+            <h3><?php esc_html_e( 'User Badges','mycred' ); ?></h3>
             <table>
                 <tr>
                     <td>
-                    <?php _e( 'Select Badges to be Exported','mycred' ); ?>
+                    <?php esc_html_e( 'Select Badges to be Exported','mycred' ); ?>
                     </td>
                     <td>
                         <button class="button button-secondary" id="select-all-pt">
-                            <span class="dashicons dashicons-download v-align-middle"></span> <?php _e( 'Select/ Deselect All','mycred' ); ?>
+                            <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Select/ Deselect All','mycred' ); ?>
                         </button>
                     </td>
                 </tr>
             </table>
 
             <div class="mycred-container">
-                <label><?php _e( 'Select Badges','mycred' ); ?></label>
+                <label><?php esc_html_e( 'Select Badges','mycred' ); ?></label>
                 <?php echo mycred_create_select2( $badges_options, $badges_attr ) ?>
             </div>
 
             <div class="mycred-container">
-                <label><?php _e( 'User Field in Exported File', 'mycred' ); ?></label>
+                <label><?php esc_html_e( 'User Field in Exported File', 'mycred' ); ?></label>
                 <?php echo mycred_create_select2( $uf_options, $uf_attr ) ?>
             </div>
 
             <div class="mycred-container">
-                <label><?php _e( 'Badge Fields in Exported File', 'mycred' ); ?></label>
+                <label><?php esc_html_e( 'Badge Fields in Exported File', 'mycred' ); ?></label>
                 <?php echo mycred_create_select2( $badges_fields_options, $badges_fields_attr ) ?>
             </div>
 
             <div class="mycred-container">
                 <button class="button button-primary" id="export-raw">
-                    <span class="dashicons dashicons-database-export v-align-middle"></span> <?php _e( 'Export Raw', 'mycred' ); ?>
+                    <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Raw', 'mycred' ); ?>
                 </button>
             </div>
         </div>
@@ -328,16 +328,16 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
             ?>
             <div class="mycred-tools-import-export">
-                <h3><?php _e( 'User Ranks','mycred' ); ?></h3>
+                <h3><?php esc_html_e( 'User Ranks','mycred' ); ?></h3>
                 <table>
                     <tr>
-                        <td><h4><?php _e( 'CSV File','mycred' ); ?></h4></td>
+                        <td><h4><?php esc_html_e( 'CSV File','mycred' ); ?></h4></td>
                         <td>
                             <form method="post" enctype="multipart/form-data">
                                 <input type="file" id="import-file" name="file" accept=".csv" />
                                 <?php echo mycred_create_select2( $type_options, $type_attr ) ?>
                                 <button class="button button-primary", id="import">
-                                    <span class="dashicons dashicons-database-import v-align-middle"></span> <?php _e( 'Import User Ranks','mycred' ); ?>
+                                    <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import User Ranks','mycred' ); ?>
                                 </button>
                             </form>
                         </td>
@@ -348,49 +348,49 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                         </td>
                         <td>
                             <button class="button button-secondary" id="download-raw-template-csv">
-                                <span class="dashicons dashicons-download v-align-middle"></span> <?php _e( 'Download Raw Template','mycred' ); ?>
+                                <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Raw Template','mycred' ); ?>
                             </button>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <i><?php _e( 'Make sure Ranks\' Behaviour is set to Manual Mode, Only Raw format can be Import.', 'mycred' ) ?></i>
+                            <i><?php esc_html_e( 'Make sure Ranks\' Behaviour is set to Manual Mode, Only Raw format can be Import.', 'mycred' ) ?></i>
                         </td>
                     </tr>
                 </table>
-                <h1><?php _e( 'Export','mycred' ); ?></h1>
-                <h3><?php _e( 'User Ranks','mycred' ); ?></h3>
+                <h1><?php esc_html_e( 'Export','mycred' ); ?></h1>
+                <h3><?php esc_html_e( 'User Ranks','mycred' ); ?></h3>
                 <table>
                     <tr>
                         <td>
-                        <?php _e( 'Select Ranks to be Exported','mycred' ); ?>
+                        <?php esc_html_e( 'Select Ranks to be Exported','mycred' ); ?>
                         </td>
                         <td>
                             <button class="button button-secondary" id="select-all-pt">
-                                <span class="dashicons dashicons-download v-align-middle"></span> <?php _e( 'Select/ Deselect All','mycred' ); ?>
+                                <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Select/ Deselect All','mycred' ); ?>
                             </button>
                         </td>
                     </tr>
                 </table>
 
                 <div class="mycred-container">
-                    <label><?php _e( 'Select Ranks','mycred' ); ?></label>
+                    <label><?php esc_html_e( 'Select Ranks','mycred' ); ?></label>
                     <?php echo mycred_create_select2( $ranks_options, $ranks_attr ) ?>
                 </div>
 
                 <div class="mycred-container">
-                    <label><?php _e( 'User Field in Exported File', 'mycred' ); ?></label>
+                    <label><?php esc_html_e( 'User Field in Exported File', 'mycred' ); ?></label>
                     <?php echo mycred_create_select2( $uf_options, $uf_attr ) ?>
                 </div>
 
                 <div class="mycred-container">
-                    <label><?php _e( 'Rank Fields in Exported File', 'mycred' ); ?></label>
+                    <label><?php esc_html_e( 'Rank Fields in Exported File', 'mycred' ); ?></label>
                     <?php echo mycred_create_select2( $ranks_fields_options, $ranks_fields_attr ) ?>
                 </div>
 
                 <div class="mycred-container">
                     <button class="button button-primary" id="export-raw">
-                        <span class="dashicons dashicons-database-export v-align-middle"></span> <?php _e( 'Export Raw', 'mycred' ); ?>
+                        <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Raw', 'mycred' ); ?>
                     </button>
                 </div>
             </div>

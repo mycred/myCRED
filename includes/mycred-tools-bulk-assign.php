@@ -103,7 +103,7 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
             <table width="" class="mycred-tools-ba-award-table" cellpadding="10">
                 <thead>
                     <tr>
-                        <td><label for=""><?php _e( 'Select Type', 'mycred' ) ?></label></td>
+                        <td><label for=""><?php esc_html_e( 'Select Type', 'mycred' ) ?></label></td>
                         <td><?php echo mycred_create_select2( $award_type, $award_args ); ?></td>
                     </tr>
                 </thead>
@@ -111,7 +111,7 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                 <tbody class="bulk-award-point">
 
                     <tr>
-                        <td><label for=""><?php _e( 'Points to Award/ Revoke', 'mycred' ) ?></label></td>
+                        <td><label for=""><?php esc_html_e( 'Points to Award/ Revoke', 'mycred' ) ?></label></td>
                         <td>
                             <input type="number" name="bulk_award_point">
                         </td>
@@ -121,21 +121,21 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                         <td class="tb-zero-padding"></td>
                         <td class="tb-zero-padding">
                             <p><i>
-                                <?php _e( 'Either set points are Positive to award or in Negative to deduct.', 'mycred' ); ?>
+                                <?php esc_html_e( 'Either set points are Positive to award or in Negative to deduct.', 'mycred' ); ?>
                             </i></p>
                             <p><i>
-                                <?php _e( 'eg. 10 or -100 ', 'mycred' ); ?>
+                                <?php esc_html_e( 'eg. 10 or -100 ', 'mycred' ); ?>
                             </i></p>
                         </td>
                     </tr>
 
                     <tr>
-                        <td><label for=""><?php _e( 'Select Point Type', 'mycred' ) ?></label></td>
+                        <td><label for=""><?php esc_html_e( 'Select Point Type', 'mycred' ) ?></label></td>
                         <td><?php echo mycred_create_select2( $point_types, $pt_args ); ?></td>
                     </tr>
 
                     <tr>
-                        <td><label for=""><?php _e( 'Enable to Log Entry', 'mycred' ) ?></label></td>
+                        <td><label for=""><?php esc_html_e( 'Enable to Log Entry', 'mycred' ) ?></label></td>
                         <td>
                             <label class="mycred-switch1">
                                 <input type="checkbox" value="1" class="log-entry">
@@ -148,17 +148,17 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                         <td class="tb-zero-padding"></td>
                         <td class="tb-zero-padding">
                             <p><i>
-                                <?php _e( 'Check if you want to create log of this entry.', 'mycred' ) ?>
+                                <?php esc_html_e( 'Check if you want to create log of this entry.', 'mycred' ) ?>
                             </i></p>
                         </td>
                     </tr>
 
                     <tr class="log-entry-row">
-                        <td><label for=""><?php _e( 'Log Entry', 'mycred' ) ?></label></td>
+                        <td><label for=""><?php esc_html_e( 'Log Entry', 'mycred' ) ?></label></td>
                         <td>
                             <input type="text" name="log_entry_text">
                             <p><i>
-                                <?php _e( 'Enter Text for log entry.', 'mycred' ) ?>
+                                <?php esc_html_e( 'Enter Text for log entry.', 'mycred' ) ?>
                             </i></p>
                         </td>
                     </tr>
@@ -168,14 +168,14 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
 
                 <tbody class="bulk-award-badge" style="display: none;">
                     <tr>
-                        <td><label for=""><?php _e( 'Select Badge(s)', 'mycred' ) ?></label></td>
+                        <td><label for=""><?php esc_html_e( 'Select Badge(s)', 'mycred' ) ?></label></td>
                         <td><?php echo mycred_create_select2( $badges, $badges_args ); ?></td>
                     </tr>
                 </tbody>
 
                 <tbody class="bulk-award-rank" style="display: none;">
                     <tr>
-                        <td><label for=""><?php _e( 'Select Rank', 'mycred' ) ?></label></td>
+                        <td><label for=""><?php esc_html_e( 'Select Rank', 'mycred' ) ?></label></td>
                         <td>
                             <?php echo mycred_create_select2( $ranks, $ranks_args ); ?>
                         </td>

@@ -538,8 +538,8 @@ jQuery(function($){
 
 		<div id="minor-publishing-actions">
 
-			<div><a href="<?php echo $payout_url; ?>" class="button button-secondary button-block"><?php _e( 'Pay Out', 'mycred' ); ?></a></div>
-			<div><a href="<?php echo $delete_url; ?>" class="button button-secondary button-block"><?php _e( 'Trash', 'mycred' ); ?></a></div>
+			<div><a href="<?php echo $payout_url; ?>" class="button button-secondary button-block"><?php esc_html_e( 'Pay Out', 'mycred' ); ?></a></div>
+			<div><a href="<?php echo $delete_url; ?>" class="button button-secondary button-block"><?php esc_html_e( 'Trash', 'mycred' ); ?></a></div>
 
 		</div>
 
@@ -550,7 +550,7 @@ jQuery(function($){
 		<div id="publishing-action">
 			<span class="spinner"></span>
 
-			<input type="submit" id="publish" class="button button-primary primary button-large" value="<?php _e( 'Save Changes', 'mycred' ); ?>" />
+			<input type="submit" id="publish" class="button button-primary primary button-large" value="<?php esc_attr_e( 'Save Changes', 'mycred' ); ?>" />
 
 		</div>
 		<div class="clear"></div>
@@ -603,13 +603,13 @@ jQuery(function($){
 	<div class="row">
 		<div class="col-md-6">
 			<div class="form-group">
-				<label><?php _e( 'Payer', 'mycred' ); ?></label>
+				<label><?php esc_html_e( 'Payer', 'mycred' ); ?></label>
 				<p class="form-control-static"><?php echo esc_attr( $buyer_name ); ?></p>
 			</div>
 		</div>
 		<div class="col-md-6">
 			<div class="form-group">
-				<label><?php _e( 'Recipient', 'mycred' ); ?></label>
+				<label><?php esc_html_e( 'Recipient', 'mycred' ); ?></label>
 				<p class="form-control-static"><?php echo esc_attr( $recipient_name ); ?></p>
 			</div>
 		</div>
@@ -617,7 +617,7 @@ jQuery(function($){
 	<div class="row">
 		<div class="col-md-3 col-sm-6">
 			<div class="form-group">
-				<label for="buycred-pending-payment-point_type"><?php _e( 'Point Type', 'mycred' ); ?></label>
+				<label for="buycred-pending-payment-point_type"><?php esc_html_e( 'Point Type', 'mycred' ); ?></label>
 <?php
 
 			// Just one point type is set for sale. No need for a dropdown menu
@@ -656,7 +656,7 @@ jQuery(function($){
 		</div>
 		<div class="col-md-3 col-sm-6">
 			<div class="form-group">
-				<label for="buycred-pending-payment-gateway"><?php _e( 'Gateway', 'mycred' ); ?></label>
+				<label for="buycred-pending-payment-gateway"><?php esc_html_e( 'Gateway', 'mycred' ); ?></label>
 				<select name="buycred_pending_payment[gateway]" id="buycred-pending-payment-gateway" class="form-control">
 <?php
 
@@ -675,19 +675,19 @@ jQuery(function($){
 		</div>
 		<div class="col-md-2 col-sm-6">
 			<div class="form-group">
-				<label for="buycred-pending-payment-amount"><?php _e( 'Amount', 'mycred' ); ?></label>
+				<label for="buycred-pending-payment-amount"><?php esc_html_e( 'Amount', 'mycred' ); ?></label>
 				<input type="text" name="buycred_pending_payment[amount]" id="buycred-pending-payment-amount" class="form-control" value="<?php echo $mycred->number( $pending_payment->amount ); ?>" />
 			</div>
 		</div>
 		<div class="col-md-2 col-sm-6">
 			<div class="form-group">
-				<label for="buycred-pending-payment-cost"><?php _e( 'Cost', 'mycred' ); ?></label>
+				<label for="buycred-pending-payment-cost"><?php esc_html_e( 'Cost', 'mycred' ); ?></label>
 				<input type="text" name="buycred_pending_payment[cost]" id="buycred-pending-payment-cost" class="form-control" value="<?php echo esc_attr( $pending_payment->cost ); ?>" />
 			</div>
 		</div>
 		<div class="col-md-2 col-sm-6">
 			<div class="form-group">
-				<label for="buycred-pending-payment-currency"><?php _e( 'Currency', 'mycred' ); ?></label>
+				<label for="buycred-pending-payment-currency"><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
 				<input type="text" name="buycred_pending_payment[currency]" id="buycred-pending-payment-currency" class="form-control" value="<?php echo esc_attr( $pending_payment->currency ); ?>" />
 			</div>
 		</div>

@@ -407,20 +407,20 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 		<tbody>
 			<tr>
 				<th>
-					<label for="import-action"><?php _e( 'Import', 'mycred' ); ?></label>
+					<label for="import-action"><?php esc_html_e( 'Import', 'mycred' ); ?></label>
 				</th>
 				<td>
 					<select name="action" id="import-action">
-						<option value=""><?php _e( 'Select what to import', 'mycred' ); ?></option>
-						<option value="log"><?php _e( 'Log Entries Only', 'mycred' ); ?></option>
-						<option value="balance"><?php _e( 'CubePoints Balances Only', 'mycred' ); ?></option>
-						<option value="both"><?php _e( 'Log Entries and Balances', 'mycred' ); ?></option>
+						<option value=""><?php esc_html_e( 'Select what to import', 'mycred' ); ?></option>
+						<option value="log"><?php esc_html_e( 'Log Entries Only', 'mycred' ); ?></option>
+						<option value="balance"><?php esc_html_e( 'CubePoints Balances Only', 'mycred' ); ?></option>
+						<option value="both"><?php esc_html_e( 'Log Entries and Balances', 'mycred' ); ?></option>
 					</select>
 				</td>
 			</tr>
 			<tr>
 				<th>
-					<label for="mycred-type"><?php _e( 'Point Type', 'mycred' ); ?></label>
+					<label for="mycred-type"><?php esc_html_e( 'Point Type', 'mycred' ); ?></label>
 				</th>
 				<td>
 
@@ -431,7 +431,7 @@ if ( ! class_exists( 'myCRED_Importer_CubePoints' ) ) :
 		</tbody>
 	</table>
 	<p class="submit">
-		<input type="submit" class="button button-primary" value="<?php _e( 'Import', 'mycred' ); ?>" />
+		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Import', 'mycred' ); ?>" />
 	</p>
 </form>
 <?php

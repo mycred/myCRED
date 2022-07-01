@@ -198,7 +198,7 @@ function mycred_load_events_manager_light_hook() {
 
 ?>
 <div class="hook-instance">
-	<h3><?php _e( 'Attending Event', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Attending Event', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
@@ -208,21 +208,21 @@ function mycred_load_events_manager_light_hook() {
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'attend' => 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'attend' => 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'attend' => 'limit' ) ), $this->field_id( array( 'attend' => 'limit' ) ), $prefs['attend']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'attend' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'attend' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'attend' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['attend']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'attend' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'attend' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'attend' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['attend']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Cancelling Attendance', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Cancelling Attendance', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
@@ -232,8 +232,8 @@ function mycred_load_events_manager_light_hook() {
 		</div>
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'cancel' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'cancel' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'cancel' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['cancel']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'cancel' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'cancel' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'cancel' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['cancel']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
 			</div>
 		</div>

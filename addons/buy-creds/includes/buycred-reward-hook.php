@@ -165,29 +165,29 @@ if ( ! class_exists( 'myCRED_buyCRED_Reward_Hook' ) ) :
 					<div class="row">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label>Reward <?php echo $this->core->plural(); ?></label>
-								<input type="text" name="<?php echo $this->name( $this->mycred_type, 'creds' ); ?>" value="<?php echo $this->core->number( $hook['creds'] ); ?>" class="form-control buycred-reward-creds" />
+								<label>Reward <?php echo esc_html( $this->core->plural() ); ?></label>
+								<input type="text" name="<?php echo esc_attr( $this->name( $this->mycred_type, 'creds' ) ); ?>" value="<?php echo esc_attr( $this->core->number( $hook['creds'] ) ); ?>" class="form-control buycred-reward-creds" />
 							</div>
 						</div>
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label><?php _e( 'Log Template', 'mycred' ); ?></label>
-								<input type="text" name="<?php echo $this->name( $this->mycred_type, 'log' ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $hook['log'] ); ?>" class="form-control buycred-reward-log" />
-								<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
+								<label><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+								<input type="text" name="<?php echo esc_attr( $this->name( $this->mycred_type, 'log' ) ); ?>" placeholder="<?php esc_html_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $hook['log'] ); ?>" class="form-control buycred-reward-log" />
+								<span class="description"><?php echo esc_attr( $this->available_template_tags( array( 'general' ) ) ); ?></span>
 							</div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label><?php _e( 'Minimum', 'mycred' ); ?></label>
-								<input type="text" name="<?php echo $this->name( $this->mycred_type, 'min' ); ?>" value="<?php echo $this->core->number( $hook['min'] ); ?>" class="form-control buycred-reward-min" />
+								<label><?php esc_html_e( 'Minimum', 'mycred' ); ?></label>
+								<input type="text" name="<?php echo esc_attr( $this->name( $this->mycred_type, 'min' ) ); ?>" value="<?php echo esc_attr( $this->core->number( $hook['min'] ) ); ?>" class="form-control buycred-reward-min" />
 							</div>
 						</div>
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label><?php _e( 'Maximium', 'mycred' ); ?></label>
-								<input type="text" name="<?php echo $this->name( $this->mycred_type, 'max' ); ?>" value="<?php echo $this->core->number( $hook['max'] ); ?>" class="form-control buycred-reward-max" />
+								<label><?php esc_html_e( 'Maximium', 'mycred' ); ?></label>
+								<input type="text" name="<?php echo esc_attr( $this->name( $this->mycred_type, 'max' ) ); ?>" value="<?php echo esc_attr( $this->core->number( $hook['max'] ) ); ?>" class="form-control buycred-reward-max" />
 							</div>
 						</div>
 					</div>

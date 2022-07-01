@@ -388,7 +388,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 	<div class="row">
 		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Sale Setup', 'mycred' ); ?></h3>
+			<h3><?php esc_html_e( 'Sale Setup', 'mycred' ); ?></h3>
 <?php
 
 			foreach ( $this->point_types as $type_id => $label ) {
@@ -403,7 +403,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 					<div class="form-group">
 						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><?php echo $mycred->plural(); ?></label>
 						<div class="checkbox" style="padding-top: 4px;">
-							<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><input type="checkbox" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][enabled]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"<?php if ( in_array( $type_id, $settings['types'] ) ) echo ' checked="checked"'; ?> value="<?php echo esc_attr( $type_id ); ?>" /> <?php _e( 'Enable', 'mycred' ); ?></label>
+							<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><input type="checkbox" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][enabled]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"<?php if ( in_array( $type_id, $settings['types'] ) ) echo ' checked="checked"'; ?> value="<?php echo esc_attr( $type_id ); ?>" /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
 						</div>
 					</div>
 
@@ -411,7 +411,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 
 					<div class="form-group">
-						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-min"><?php _e( 'Minimum Amount', 'mycred' ); ?></label>
+						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-min"><?php esc_html_e( 'Minimum Amount', 'mycred' ); ?></label>
 						<input type="text" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][min]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-min" class="form-control" placeholder="<?php echo $mycred->get_lowest_value(); ?>" value="<?php echo esc_attr( $sale_setup['min'] ); ?>" />
 					</div>
 
@@ -419,10 +419,10 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 					<div class="form-group">
-						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-max"><?php _e( 'Maximum', 'mycred' ); ?></label>
+						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-max"><?php esc_html_e( 'Maximum', 'mycred' ); ?></label>
 						<div class="row">
 							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-								<input type="text" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][max]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-max" class="form-control" placeholder="<?php _e( 'No limit', 'mycred' ); ?>" value="<?php echo esc_attr( $sale_setup['max'] ); ?>" />
+								<input type="text" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][max]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-max" class="form-control" placeholder="<?php esc_attr_e( 'No limit', 'mycred' ); ?>" value="<?php echo esc_attr( $sale_setup['max'] ); ?>" />
 							</div>
 							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 								<?php mycred_purchase_limit_dropdown( 'mycred_pref_core[buy_creds][types][' . $type_id . '][time]', 'buycred-type-' . $type_id . '-time', $sale_setup['time'] ); ?>
@@ -445,7 +445,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Checkout', 'mycred' ); ?></h3>
+			<h3><?php esc_html_e( 'Checkout', 'mycred' ); ?></h3>
 
 			<div class="form-group">
 
@@ -469,15 +469,15 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 		</div>
 	</div>
 
-	<h3><?php _e( 'Redirects', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Redirects', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 			<div class="form-group">
-				<p style="margin-top: 0;"><span class="description"><?php _e( 'Where should users be redirected to upon successfully completing a purchase. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
+				<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'Where should users be redirected to upon successfully completing a purchase. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'thankyou' => 'page' ) ); ?>"><?php _e( 'Redirect to Page', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'thankyou' => 'page' ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
 <?php
 
 			// Thank you page dropdown
@@ -493,21 +493,21 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 ?>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'thankyou' => 'custom' ) ); ?>"><?php _e( 'Redirect to URL', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'thankyou' => 'custom' ) ); ?>"><?php esc_html_e( 'Redirect to URL', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'thankyou' => 'custom' ) ); ?>" id="<?php echo $this->field_id( array( 'thankyou' => 'custom' ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['thankyou']['custom'] ); ?>" />
 			</div>
 			<?php if ( $uses_buddypress ) : ?>
-			<p style="margin-top: 0;"><span class="description"><?php _e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
+			<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
 			<?php endif; ?>
 
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 			<div class="form-group">
-				<p style="margin-top: 0;"><span class="description"><?php _e( 'Where should users be redirected to if they cancel a transaction. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
+				<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'Where should users be redirected to if they cancel a transaction. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'cancelled' => 'page' ) ); ?>"><?php _e( 'Redirect to Page', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'cancelled' => 'page' ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
 <?php
 
 			// Thank you page dropdown
@@ -523,39 +523,39 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 ?>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'cancelled' => 'custom' ) ); ?>"><?php _e( 'Redirect to URL', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'cancelled' => 'custom' ) ); ?>"><?php esc_html_e( 'Redirect to URL', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'cancelled' => 'custom' ) ); ?>" id="<?php echo $this->field_id( array( 'cancelled' => 'custom' ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['cancelled']['custom'] ); ?>" />
 			</div>
 			<?php if ( $uses_buddypress ) : ?>
-			<p style="margin-top: 0;"><span class="description"><?php _e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
+			<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
 			<?php endif; ?>
 
 		</div>
 	</div>
 
-	<h3><?php _e( 'Templates', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Templates', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'login' ); ?>"><?php _e( 'Login Message', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( 'login' ); ?>"><?php esc_html_e( 'Login Message', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( 'login' ); ?>" id="<?php echo $this->field_id( 'login' ); ?>" class="form-control" value="<?php echo esc_attr( $settings['login'] ); ?>" />
-				<p><span class="description"><?php _e( 'Message to show in shortcodes when viewed by someone who is not logged in.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'Message to show in shortcodes when viewed by someone who is not logged in.', 'mycred' ); ?></span></p>
 			</div>
 
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['log'] ); ?>" />
+				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['log'] ); ?>" />
 				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general' ), '%gateway%' ); ?></span></p>
 			</div>
 
 		</div>
 	</div>
 
-	<h3><?php _e( 'Gifting', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Gifting', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
@@ -572,15 +572,15 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'gifting' => 'log' ) ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'gifting' => 'log' ) ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['gifting']['log'] ); ?>" />
+				<label for="<?php echo $this->field_id( array( 'gifting' => 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'gifting' => 'log' ) ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['gifting']['log'] ); ?>" />
 				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ) ); ?></span></p>
 			</div>
 
 		</div>
 	</div>
 
-	<h3 style="margin-bottom: 0;"><?php _e( 'Available Shortcodes', 'mycred' ); ?></h3>
+	<h3 style="margin-bottom: 0;"><?php esc_html_e( 'Available Shortcodes', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<p><a href="http://codex.mycred.me/shortcodes/mycred_buy/" target="_blank">[mycred_buy]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_buy_form/" target="_blank">[mycred_buy_form]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_buy_pending/" target="_blank">[mycred_buy_pending]</a></p>
@@ -740,7 +740,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php _e( 'buyCred Payment Gateways', 'mycred' ); ?></h1>
+	<h1><?php esc_html_e( 'buyCred Payment Gateways', 'mycred' ); ?></h1>
 <?php
 
 			// Updated settings
@@ -781,14 +781,14 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="buycred-gateway-<?php echo $key; ?>"><input type="checkbox" name="mycred_pref_buycreds[active][]" id="buycred-gateway-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php _e( 'Enable', 'mycred' ); ?></label>
+							<label for="buycred-gateway-<?php echo $key; ?>"><input type="checkbox" name="mycred_pref_buycreds[active][]" id="buycred-gateway-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
 						</div>
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<?php if ( $has_test_mode ) : ?>
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="buycred-gateway-<?php echo $key; ?>-sandbox"><input type="checkbox" name="mycred_pref_buycreds[gateway_prefs][<?php echo $key; ?>][sandbox]" id="buycred-gateway-<?php echo $key; ?>-sandbox" value="<?php echo $key; ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php _e( 'Sandbox Mode', 'mycred' ); ?></label>
+							<label for="buycred-gateway-<?php echo $key; ?>-sandbox"><input type="checkbox" name="mycred_pref_buycreds[gateway_prefs][<?php echo $key; ?>][sandbox]" id="buycred-gateway-<?php echo $key; ?>-sandbox" value="<?php echo $key; ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Sandbox Mode', 'mycred' ); ?></label>
 						</div>
 						<?php endif; ?>
 					</div>
@@ -796,7 +796,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 						<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && $has_documentation ) : ?>
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<a href="<?php echo $has_documentation; ?>" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a>
+							<a href="<?php echo $has_documentation; ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
 						</div>
 						<?php endif; ?>
 					</div>
@@ -1000,7 +1000,7 @@ jQuery(function($) {
 
 ?>
 <div class="wrap list" id="myCRED-wrap">
-	<h1><?php _e( 'Purchase Log', 'mycred' ); ?></h1>
+	<h1><?php esc_html_e( 'Purchase Log', 'mycred' ); ?></h1>
 
 	<?php $log->filter_dates( esc_url( $filter_url ) ); ?>
 
@@ -1327,7 +1327,7 @@ jQuery(function($) {
 			if ( empty( $available_options ) ) return;
 
 ?>
-<p class="mycred-p"><?php _e( 'Users exchange rate when buying points.', 'mycred' ); ?></p>
+<p class="mycred-p"><?php esc_html_e( 'Users exchange rate when buying points.', 'mycred' ); ?></p>
 <table class="form-table mycred-inline-table">
 <?php
 
@@ -1338,7 +1338,7 @@ jQuery(function($) {
 		<th scope="row"><?php echo esc_attr( $setup['name'] ); ?></th>
 		<td>
 			<fieldset id="mycred-buycred-list" class="buycred-list">
-				<legend class="screen-reader-text"><span><?php _e( 'buyCRED Exchange Rates', 'mycred' ); ?></span></legend>
+				<legend class="screen-reader-text"><span><?php esc_html_e( 'buyCRED Exchange Rates', 'mycred' ); ?></span></legend>
 <?php
 
 				foreach ( $setup['types'] as $type_id => $data ) {
@@ -1350,8 +1350,8 @@ jQuery(function($) {
 					<div class="mycred-wrapper buycred-wrapper disabled-option color-option">
 						<div><?php printf( _x( 'Buying %s', 'Points Name', 'mycred' ), $data['name'] ); ?></div>
 						<div class="balance-row">
-							<div class="balance-view"><?php _e( 'Disabled', 'mycred' ); ?></div>
-							<div class="balance-desc"><em><?php _e( 'This point type is not for sale.', 'mycred' ); ?></em></div>
+							<div class="balance-view"><?php esc_html_e( 'Disabled', 'mycred' ); ?></div>
+							<div class="balance-desc"><em><?php esc_html_e( 'This point type is not for sale.', 'mycred' ); ?></em></div>
 						</div>
 					</div>
 <?php
@@ -1365,7 +1365,7 @@ jQuery(function($) {
 					<div class="mycred-wrapper buycred-wrapper excluded-option color-option">
 						<div><?php printf( _x( 'Buying %s', 'Buying Points', 'mycred' ), $data['name'] ); ?></div>
 						<div class="balance-row">
-							<div class="balance-view"><?php _e( 'Excluded', 'mycred' ); ?></div>
+							<div class="balance-view"><?php esc_html_e( 'Excluded', 'mycred' ); ?></div>
 							<div class="balance-desc"><em><?php printf( _x( 'User can not buy %s', 'Points Name', 'mycred' ), $data['name'] ); ?></em></div>
 						</div>
 					</div>
@@ -1381,7 +1381,7 @@ jQuery(function($) {
 						<div><?php printf( _x( 'Buying %s', 'Buying Points', 'mycred' ), $data['name'] ); ?></div>
 						<div class="balance-row">
 							<div class="balance-view"><?php echo $data['before']; ?><input type="text" name="mycred_adjust_users_buyrates[<?php echo $type_id; ?>][<?php echo $gateway_id; ?>]" placeholder="<?php echo $data['default']; ?>" value="<?php if ( $data['override'] ) echo esc_attr( $data['custom'] ); ?>" class="short" size="8" /><?php echo ' ' . $setup['currency']; ?></div>
-							<div class="balance-desc"><em><?php _e( 'Leave empty to use the default rate.', 'mycred' ); ?></em></div>
+							<div class="balance-desc"><em><?php esc_html_e( 'Leave empty to use the default rate.', 'mycred' ); ?></em></div>
 						</div>
 					</div>
 <?php

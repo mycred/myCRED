@@ -30,9 +30,9 @@ if ( ! function_exists( 'mycred_render_shortcode_load_coupon' ) ) :
 		$output  = '<div class="mycred-coupon-form">';
 
 		// On submits
-		if ( isset( $_POST['mycred_coupon_load']['token'] ) && wp_verify_nonce( $_POST['mycred_coupon_load']['token'], 'mycred-load-coupon' . $user_id ) ) {
+		if ( isset( $_POST['mycred_coupon_load']['token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mycred_coupon_load']['token'] ) ), 'mycred-load-coupon' . $user_id ) ) {
 
-			$coupon_code = sanitize_text_field( $_POST['mycred_coupon_load']['couponkey'] );
+			$coupon_code = isset( $_POST['mycred_coupon_load']['couponkey'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_coupon_load']['couponkey'] ) ) : '';
 			$coupon_post = mycred_get_coupon_post( $coupon_code );
 			if ( isset( $coupon_post->ID ) ) {
 

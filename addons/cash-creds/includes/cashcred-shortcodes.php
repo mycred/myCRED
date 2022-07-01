@@ -57,10 +57,10 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 	?>
 <div id="cashcred">
 	<ul class="cashcred-nav-tabs">
-		<li id="tab1" class="active"><?php _e( 'Withdraw Request', 'mycred' ); ?></li>
-		<li id="tab2"><?php _e( 'Approved Requests', 'mycred' ); ?></li>
-		<li id="tab3"><?php _e( 'Cancelled Requests', 'mycred' ); ?></li>
-		<li id="tab4"><?php _e( 'Payment Settings', 'mycred' ); ?></li>
+		<li id="tab1" class="active"><?php esc_html_e( 'Withdraw Request', 'mycred' ); ?></li>
+		<li id="tab2"><?php esc_html_e( 'Approved Requests', 'mycred' ); ?></li>
+		<li id="tab3"><?php esc_html_e( 'Cancelled Requests', 'mycred' ); ?></li>
+		<li id="tab4"><?php esc_html_e( 'Payment Settings', 'mycred' ); ?></li>
 	</ul>
 	<div id="cashcred_tab_content">
 		<!--------First tab--------->
@@ -140,7 +140,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
                 $mycred_cashcred_gateway_notice = apply_filters( 'mycred_cashcred_gateway_notice', 'Selected gateway details are incomplete.' );
 			    ?>
 
-			<div class="cashcred_gateway_notice"><?php _e( $mycred_cashcred_gateway_notice, 'mycred' ) ?></div>
+			<div class="cashcred_gateway_notice"><?php esc_html_e( $mycred_cashcred_gateway_notice, 'mycred' ) ?></div>
 
 			<form method="post" class="mycred-cashcred-form" action="">
 
@@ -148,7 +148,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 				
 				<?php if( count( $point_types ) > 1 ) {?>
 					<div class="form-group"> 
-						<label for="gateway"><?php _e( 'Withdraw Point Type', 'mycred' ); ?></label>
+						<label for="gateway"><?php esc_html_e( 'Withdraw Point Type', 'mycred' ); ?></label>
 						<select id="cashcred_point_type" name="cashcred_point_type" class="form-control">
 							<?php 
 								foreach( $point_types as $point_type_id => $point_type_obj ) {
@@ -163,7 +163,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 
 				<?php if ( count( $gateways ) > 1 ) { ?>
 					<div class="form-group"> 
-						<label for="gateway"><?php _e( 'Withdrawal Payment Method', 'mycred' ); ?></label>
+						<label for="gateway"><?php esc_html_e( 'Withdrawal Payment Method', 'mycred' ); ?></label>
 						<select id="cashcred_pay_method" name="cashcred_pay_method" class="form-control">
 							<?php 
 								foreach ( $gateways as $gateway_id => $gateway_data ) {

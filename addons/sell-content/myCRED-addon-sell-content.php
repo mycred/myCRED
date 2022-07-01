@@ -241,10 +241,10 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 			if ( is_user_logged_in() && ! mycred_is_admin() ) {
 
-				if ( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-buy-content' && isset( $_POST['postid'] ) && isset( $_POST['token'] )  && wp_verify_nonce( $_POST['token'], 'mycred-buy-this-content' ) ) {
+				if ( isset( $_POST['action'] ) && sanitize_text_field( wp_unslash( $_POST['action'] ) ) == 'mycred-buy-content' && isset( $_POST['postid'] ) && isset( $_POST['token'] )  && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['token'] ) ), 'mycred-buy-this-content' ) ) {
 
 					$post_id    = absint( $_POST['postid'] );
-					$point_type = sanitize_key( $_POST['ctype'] );
+					$point_type = ( !empty( $_POST['ctype'] ) ? sanitize_key( $_POST['ctype'] ) : '' );
 					$buying_cred = $this->sell_content['type'];
                     $point_types    = mycred_get_types( true );
 					global $mycred_types;
@@ -516,8 +516,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 		public function bbp_template_before_single() {
 			
-			echo $this->bbp_content;
-
+			echo wp_kses_post( $this->bbp_content );
 		}
 
 		public function bbp_remove_breadcrumb( $is_front ) {
@@ -602,13 +601,13 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			if ( empty( $available_options ) ) return;
 
 ?>
-<p class="mycred-p"><?php _e( 'Users profit share when their content is purchased.', 'mycred' ); ?></p>
+<p class="mycred-p"><?php esc_html_e( 'Users profit share when their content is purchased.', 'mycred' ); ?></p>
 <table class="form-table mycred-inline-table">
 	<tr>
-		<th scope="row"><?php _e( 'Profit Share', 'mycred' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Profit Share', 'mycred' ); ?></th>
 		<td>
 			<fieldset id="mycred-badge-list" class="badge-list">
-				<legend class="screen-reader-text"><span><?php _e( 'Profit Share', 'mycred' ); ?></span></legend>
+				<legend class="screen-reader-text"><span><?php esc_html_e( 'Profit Share', 'mycred' ); ?></span></legend>
 <?php
 
 			foreach ( $available_options as $point_type => $data ) {
@@ -618,10 +617,10 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 ?>
 				<div class="mycred-wrapper buycred-wrapper disabled-option color-option">
-					<div><?php printf( _x( '%s Profit Share', 'Points Name', 'mycred' ), $data['name'] ); ?></div>
+					<div><?php printf( esc_html( _x( '%s Profit Share', 'Points Name', 'mycred' ), $data['name'] ) ); ?></div>
 					<div class="balance-row">
-						<div class="balance-view"><?php _e( 'Disabled', 'mycred' ); ?></div>
-						<div class="balance-desc"><em><?php _e( 'Not accepted as payment.', 'mycred' ); ?></em></div>
+						<div class="balance-view"><?php esc_html_e( 'Disabled', 'mycred' ); ?></div>
+						<div class="balance-desc"><em><?php esc_html_e( 'Not accepted as payment.', 'mycred' ); ?></em></div>
 					</div>
 				</div>
 <?php
@@ -633,10 +632,10 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 ?>
 				<div class="mycred-wrapper buycred-wrapper disabled-option color-option">
-					<div><?php printf( _x( '%s Profit Share', 'Points Name', 'mycred' ), $data['name'] ); ?></div>
+					<div><?php printf( esc_html( _x( '%s Profit Share', 'Points Name', 'mycred' ), $data['name'] ) ); ?></div>
 					<div class="balance-row">
-						<div class="balance-view"><?php _e( 'Excluded', 'mycred' ); ?></div>
-						<div class="balance-desc"><em><?php printf( _x( 'User can not pay using %s', 'Points Name', 'mycred' ), $data['name'] ); ?></em></div>
+						<div class="balance-view"><?php esc_html_e( 'Excluded', 'mycred' ); ?></div>
+						<div class="balance-desc"><em><?php printf( esc_html( _x( 'User can not pay using %s', 'Points Name', 'mycred' ), $data['name'] ) ); ?></em></div>
 					</div>
 				</div>
 <?php
@@ -648,10 +647,10 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 ?>
 				<div class="mycred-wrapper buycred-wrapper color-option selected">
-					<div><?php printf( _x( '%s Profit Share', 'Buying Points', 'mycred' ), $data['name'] ); ?></div>
+					<div><?php printf( esc_html( _x( '%s Profit Share', 'Buying Points', 'mycred' ), $data['name'] ) ); ?></div>
 					<div class="balance-row">
-						<div class="balance-view"><input type="text" size="8" name="mycred_sell_this[<?php echo $point_type; ?>]" class="half" placeholder="<?php echo esc_attr( $data['default'] ); ?>" value="<?php if ( $data['override'] ) echo esc_attr( $data['custom'] ); ?>" /> %</div>
-						<div class="balance-desc"><em><?php _e( 'Leave empty to use the default.', 'mycred' ); ?></em></div>
+						<div class="balance-view"><input type="text" size="8" name="mycred_sell_this[<?php echo esc_attr( $point_type ); ?>]" class="half" placeholder="<?php echo esc_attr( $data['default'] ); ?>" value="<?php if ( $data['override'] ) echo esc_attr( $data['custom'] ); ?>" /> %</div>
+						<div class="balance-desc"><em><?php esc_html_e( 'Leave empty to use the default.', 'mycred' ); ?></em></div>
 					</div>
 				</div>
 <?php
@@ -682,7 +681,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 			if ( isset( $_POST['mycred_sell_this'] ) && ! empty( $_POST['mycred_sell_this'] ) ) {
 
-				foreach ( $_POST['mycred_sell_this'] as $point_type => $share ) {
+				foreach ( sanitize_text_field( wp_unslash( $_POST['mycred_sell_this'] ) ) as $point_type => $share ) {
 
 					$share = sanitize_text_field( $share );
 
@@ -732,11 +731,11 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			$point_types    = mycred_get_types( true );
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Sell Content', 'mycred' ); ?></h4>
+<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Sell Content', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
 
-	<h3><?php _e( 'Post Types', 'mycred' ); ?></h3>
-	<p><?php _e( 'Which post type(s) content field do you want to sell access to?', 'mycred' ); ?></p>
+	<h3><?php esc_html_e( 'Post Types', 'mycred' ); ?></h3>
+	<p><?php esc_html_e( 'Which post type(s) content field do you want to sell access to?', 'mycred' ); ?></p>
 	<div id="mycred-sell-this-post-type-filter">
 <?php
 
@@ -755,15 +754,15 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 	<div class="row">
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="checkbox">
-				<label for="<?php echo $this->field_id( array( 'post_types' => $post_type ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'post_types' => $post_type ) ); ?>"<?php echo $selected; ?> id="<?php echo $this->field_id( array( 'post_types' => $post_type ) ); ?>" class="mycred-check-count" data-type="<?php echo $post_type; ?>" value="<?php echo $post_type; ?>" /> <?php echo esc_attr( $post_type_label ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'post_types' => $post_type ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'post_types' => $post_type ) ) ); ?>"<?php echo esc_attr( $selected ); ?> id="<?php echo esc_attr( $this->field_id( array( 'post_types' => $post_type ) ) ); ?>" class="mycred-check-count" data-type="<?php echo esc_attr( $post_type ); ?>" value="<?php echo esc_attr( $post_type ); ?>" /> <?php echo esc_attr( $post_type_label ); ?></label>
 			</div>
 		</div>
 		<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-			<div id="<?php echo $this->field_id( array( 'post_types' => $post_type ) ); ?>-wrap" style="display: <?php echo $show_options; ?>;">
+			<div id="<?php echo esc_attr( $this->field_id( array( 'post_types' => $post_type ) ) ); ?>-wrap" style="display: <?php echo esc_attr( $show_options ); ?>;">
 				<div class="row">
 					<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
 						<div class="form-group">
-							<select name="<?php echo $this->field_name( array( 'filters' => $post_type ) ); ?>[by]" class="form-control toggle-filter-menu" data-type="<?php echo $post_type; ?>">
+							<select name="<?php echo esc_attr( $this->field_name( array( 'filters' => $post_type ) ) ); ?>[by]" class="form-control toggle-filter-menu" data-type="<?php echo esc_attr( $post_type ); ?>">
 <?php
 
 					$settings = array( 'by' => 'all', 'list' => '' );
@@ -772,24 +771,23 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 					$options = mycred_get_post_type_options( $post_type );
 					if ( ! empty( $options ) ) {
-						foreach ( $options as $value => $option ) {
-
-							echo '<option value="' . $value . '"';
+						foreach ( $options as $value => $option ) { ?>
+							<option value="<?php echo esc_attr( $value ); ?>"
+							<?php
 							if ( $value == $settings['by'] ) echo ' selected="selected"';
-							if ( $option['data'] != '' ) echo ' data-place="' . $option['data'] . '"';
-							echo '>' . $option['label'] . '</option>';
-
+							if ( $option['data'] != '' ) echo ' data-place="' . esc_attr( $option['data'] ) . '"';?>
+							> <?php echo esc_html( $option['label'] );?> </option>
+							<?php
 						}
 					}
-
 ?>
 							</select>
 						</div>
 					</div>
 					<div class="col-lg-7 col-md-7 col-sm-6 col-xs-12">
-						<div id="post-type-filter-<?php echo $post_type; ?>" style="display: <?php if ( ! in_array( $settings['by'], array( 'all', 'manual' ) ) ) echo 'block'; else echo 'none'; ?>;">
+						<div id="post-type-filter-<?php echo esc_attr( $post_type ); ?>" style="display: <?php if ( ! in_array( $settings['by'], array( 'all', 'manual' ) ) ) echo 'block'; else echo 'none'; ?>;">
 							<div class="form-group">
-								<input type="text" name="<?php echo $this->field_name( array( 'filters' => $post_type ) ); ?>[list]" value="<?php echo esc_attr( $settings['list'] ); ?>" placeholder="<?php if ( array_key_exists( $settings['by'], $options ) ) echo esc_attr( $options[ $settings['by'] ]['data'] ); ?>" class="form-control" />
+								<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'filters' => $post_type ) ) ); ?>[list]" value="<?php echo esc_attr( $settings['list'] ); ?>" placeholder="<?php if ( array_key_exists( $settings['by'], $options ) ) echo esc_attr( $options[ $settings['by'] ]['data'] ); ?>" class="form-control" />
 							</div>
 						</div>
 					</div>
@@ -805,8 +803,8 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 ?>
 	</div>
 
-	<h3><?php _e( 'Point Types', 'mycred' ); ?></h3>
-	<p><?php _e( 'Which point type(s) can be used as payment for accessing content?', 'mycred' ); ?></p>
+	<h3><?php esc_html_e( 'Point Types', 'mycred' ); ?></h3>
+	<p><?php esc_html_e( 'Which point type(s) can be used as payment for accessing content?', 'mycred' ); ?></p>
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 <?php
@@ -823,7 +821,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 ?>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'type' => $point_type ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'type' => $point_type ) ); ?>"<?php echo $selected; ?> id="<?php echo $this->field_id( array( 'type' => $point_type ) ); ?>" class="mycred-check-count" data-type="<?php echo $point_type; ?>" value="<?php echo $point_type; ?>" /> <?php echo esc_attr( $point_type_label ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( array( 'type' => $point_type ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'type' => $point_type ) ) ); ?>"<?php echo esc_attr( $selected ); ?> id="<?php echo esc_attr( $this->field_id( array( 'type' => $point_type ) ) ); ?>" class="mycred-check-count" data-type="<?php echo esc_attr( $point_type ); ?>" value="<?php echo esc_attr( $point_type ); ?>" /> <?php echo esc_attr( $point_type_label ); ?></label>
 			</div>
 <?php
 
@@ -862,67 +860,67 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 					$expiration_label = apply_filters( 'mycred_sell_exp_title', __( 'Hour(s)', 'mycred' ), $point_type );
 
 ?>
-	<div id="mycred-sell-<?php echo $point_type; ?>-wrap" style="display: <?php echo $selected; ?>;">
-		<h3><?php printf( __( '%s Setup', 'mycred' ), $point_type_label ); ?></h3>
+	<div id="mycred-sell-<?php echo esc_attr( $point_type ); ?>-wrap" style="display: <?php echo esc_attr( $selected ); ?>;">
+		<h3><?php printf( esc_html( __( '%s Setup', 'mycred' ), $point_type_label ) ); ?></h3>
 		<div class="row">
 			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-status' ) ); ?>"><?php _e( 'Default Status', 'mycred' ); ?></label>
-					<select name="<?php echo $this->field_name( array( 'post_type_setup' => $point_type ) ); ?>[status]" id="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-status' ) ); ?>" class="form-control">
-						<?php echo $this->enabled_options( $type_setup['status'] ); ?>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-status' ) ) ); ?>"><?php esc_html_e( 'Default Status', 'mycred' ); ?></label>
+					<select name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[status]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-status' ) ) ); ?>" class="form-control">
+						<?php echo esc_attr( $this->enabled_options( $type_setup['status'] ) ); ?>
 					</select>
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-price' ) ); ?>"><?php _e( 'Default Price', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( array( 'post_type_setup' => $point_type ) ); ?>[price]" id="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-price' ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['price'] ); ?>" />
+					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-price' ) ) ); ?>"><?php esc_html_e( 'Default Price', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[price]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-price' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['price'] ); ?>" />
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-expire' ) ); ?>"><?php _e( 'Expiration', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( array( 'post_type_setup' => $point_type ) ); ?>[expire]" id="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-expire' ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['expire'] ); ?>" />
-					<p><span class="description"><?php printf( __( 'Option to automatically expire purchases after certain number of %s. Use zero to disable.', 'mycred' ), $expiration_label ); ?></span></p>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-expire' ) ) ); ?>"><?php esc_html_e( 'Expiration', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[expire]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-expire' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['expire'] ); ?>" />
+					<p><span class="description"><?php printf( esc_html( __( 'Option to automatically expire purchases after certain number of %s. Use zero to disable.', 'mycred' ), $expiration_label ) ); ?></span></p>
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-profit-share' ) ); ?>"><?php _e( 'Profit Share', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( array( 'post_type_setup' => $point_type ) ); ?>[profit_share]" id="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-profit-share' ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['profit_share'] ); ?>" />
-					<p><span class="description"><?php printf( __( 'Option to pay a percentage of each sale with the content author.', 'mycred' ), $expiration_label ); ?></span></p>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-profit-share' ) ) ); ?>"><?php esc_html_e( 'Profit Share', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[profit_share]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-profit-share' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['profit_share'] ); ?>" />
+					<p><span class="description"><?php printf( esc_html( __( 'Option to pay a percentage of each sale with the content author.', 'mycred' ), $expiration_label ) ); ?></span></p>
 				</div>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-button' ) ); ?>"><?php _e( 'Button Label', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( array( 'post_type_setup' => $point_type ) ); ?>[button_label]" id="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-button' ) ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $type_setup['button_label'] ); ?>" />
-					<p><span class="description"><?php echo $this->core->available_template_tags( array(), '%price%' ); ?></span></p>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-button' ) ) ); ?>"><?php esc_html_e( 'Button Label', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[button_label]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-button' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $type_setup['button_label'] ); ?>" />
+					<p><span class="description"><?php echo esc_html( $this->core->available_template_tags( array(), '%price%' ) ); ?></span></p>
 				</div>
 			</div>
 			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-css' ) ); ?>"><?php _e( 'Button CSS Classes', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( array( 'post_type_setup' => $point_type ) ); ?>[button_classes]" id="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-css' ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['button_classes'] ); ?>" />
+					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-css' ) ) ); ?>"><?php esc_html_e( 'Button CSS Classes', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[button_classes]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-css' ) ) ); ?>" class="form-control" value="<?php echo esc_attr( $type_setup['button_classes'] ); ?>" />
 				</div>
 			</div>
 		</div>
-		<h3><?php _e( 'Log Templates', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Log Templates', 'mycred' ); ?></h3>
 		<div class="row">
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-log-pay' ) ); ?>"><?php _e( 'Payment log entry template', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( array( 'post_type_setup' => $point_type ) ); ?>[log_payment]" id="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-log-pay' ) ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $type_setup['log_payment'] ); ?>" />
-					<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'post' ) ); ?></span></p>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-log-pay' ) ) ); ?>"><?php esc_html_e( 'Payment log entry template', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[log_payment]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-log-pay' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $type_setup['log_payment'] ); ?>" />
+					<p><span class="description"><?php echo esc_html( $this->core->available_template_tags( array( 'general', 'post' ) ) ); ?></span></p>
 				</div>
 			</div>
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-log-share' ) ); ?>"><?php _e( 'Profit Share payout log entry template', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( array( 'post_type_setup' => $point_type ) ); ?>[log_sale]" id="<?php echo $this->field_id( array( 'post_type_setup' => $point_type . '-log-share' ) ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $type_setup['log_sale'] ); ?>" />
-					<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'post' ) ); ?></span></p>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-log-share' ) ) ); ?>"><?php esc_html_e( 'Profit Share payout log entry template', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'post_type_setup' => $point_type ) ) ); ?>[log_sale]" id="<?php echo esc_attr( $this->field_id( array( 'post_type_setup' => $point_type . '-log-share' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $type_setup['log_sale'] ); ?>" />
+					<p><span class="description"><?php echo esc_html( $this->core->available_template_tags( array( 'general', 'post' ) ) ); ?></span></p>
 				</div>
 			</div>
 		</div>
@@ -934,26 +932,26 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 ?>
 
-	<h3><?php _e( 'Transactions', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Transactions', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<div class="checkbox">
-				<label for="<?php echo $this->field_id( 'reload' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'reload' ); ?>" id="<?php echo $this->field_id( 'reload' ); ?>" <?php checked( $this->sell_content['reload'], 1 ); ?> value="1" /> <?php _e( 'Reload page after successful payments.', 'mycred' ); ?></label>
+				<label for="<?php echo esc_attr( $this->field_id( 'reload' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'reload' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'reload' ) ); ?>" <?php esc_attr( checked( $this->sell_content['reload'], 1 ) ); ?> value="1" /> <?php esc_html_e( 'Reload page after successful payments.', 'mycred' ); ?></label>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'working' ); ?>"><?php _e( 'Button Label', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'working' ); ?>" id="<?php echo $this->field_id( 'working' ); ?>" class="form-control" placeholder="<?php _e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->sell_content['working'] ); ?>" />
-				<p><span class="description"><?php _e( 'Option to show a custom button label while the payment is being processed. HTML is allowed.', 'mycred' ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( 'working' ) ); ?>"><?php esc_html_e( 'Button Label', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'working' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'working' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->sell_content['working'] ); ?>" />
+				<p><span class="description"><?php esc_html_e( 'Option to show a custom button label while the payment is being processed. HTML is allowed.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Purchase Template', 'mycred' ); ?></h3>
-			<p><span class="description"><?php _e( 'The content will be replaced with this template when viewed by a user that has not paid for the content but can afford to pay.', 'mycred' ); ?></span></p>
+			<h3><?php esc_html_e( 'Purchase Template', 'mycred' ); ?></h3>
+			<p><span class="description"><?php esc_html_e( 'The content will be replaced with this template when viewed by a user that has not paid for the content but can afford to pay.', 'mycred' ); ?></span></p>
 <?php
 
 			wp_editor( $this->sell_content['templates']['members'], $this->field_id( array( 'templates' => 'members' ) ), array(
@@ -961,7 +959,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 				'textarea_rows' => 10
 			) );
 
-			echo '<p>' . $this->core->available_template_tags( array( 'post' ), '%buy_button%' ) . '</p>';
+			echo '<p>' . esc_html( $this->core->available_template_tags( array( 'post' ), '%buy_button%' ) ) . '</p>';
 
 ?>
 		</div>
@@ -969,8 +967,8 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Insufficient Funds Template', 'mycred' ); ?></h3>
-			<p><span class="description"><?php _e( 'The content will be replaced with this template when viewed by a user that has not paid for the content and can not afford to pay.', 'mycred' ); ?></span></p>
+			<h3><?php esc_html_e( 'Insufficient Funds Template', 'mycred' ); ?></h3>
+			<p><span class="description"><?php esc_html_e( 'The content will be replaced with this template when viewed by a user that has not paid for the content and can not afford to pay.', 'mycred' ); ?></span></p>
 <?php
 
 			wp_editor( $this->sell_content['templates']['cantafford'], $this->field_id( array( 'templates' => 'cantafford' ) ), array(
@@ -978,7 +976,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 				'textarea_rows' => 10
 			) );
 
-			echo '<p>' . $this->core->available_template_tags( array( 'post' ), '%price%' ) . '</p>';
+			echo '<p>' . esc_html( $this->core->available_template_tags( array( 'post' ), '%price%' ) ) . '</p>';
 
 ?>
 		</div>
@@ -986,8 +984,8 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Visitors Template', 'mycred' ); ?></h3>
-			<p><span class="description"><?php _e( 'The content will be replaced with this template when viewed by someone who is not logged in on your website.', 'mycred' ); ?></span></p>
+			<h3><?php esc_html_e( 'Visitors Template', 'mycred' ); ?></h3>
+			<p><span class="description"><?php esc_html_e( 'The content will be replaced with this template when viewed by someone who is not logged in on your website.', 'mycred' ); ?></span></p>
 <?php
 
 			wp_editor( $this->sell_content['templates']['visitors'], $this->field_id( array( 'templates' => 'visitors' ) ), array(
@@ -995,7 +993,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 				'textarea_rows' => 10
 			) );
 
-			echo '<p>' . $this->core->available_template_tags( array( 'post' ) ) . '</p>';
+			echo '<p>' . esc_html( $this->core->available_template_tags( array( 'post' ) ) ) . '</p>';
 
 ?>
 		</div>
@@ -1003,7 +1001,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Sales Count', 'mycred' ); ?></h3>
+			<h3><?php esc_html_e( 'Sales Count', 'mycred' ); ?></h3>
 			<button class="button button-primary" id="update-sales-count"><span class="dashicons dashicons-update mycred-update-sells-count" style="-webkit-animation: spin 2s linear infinite;animation: spin 2s linear infinite;display: none;vertical-align: middle;"></span>Update Sales Count</button>
 		</div>
 	</div>
@@ -1264,7 +1262,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 #mycred-sell-content-types .point-type-setup:last-child .cover { border-bottom: none; }
 </style>
 <div id="mycred-sell-content-types" class="container-fluid">
-	<input type="hidden" name="mycred-sell-this-setup-token" value="<?php echo wp_create_nonce( 'mycred-sell-this-content' ); ?>" />
+	<input type="hidden" name="mycred-sell-this-setup-token" value="<?php echo esc_html( wp_create_nonce( 'mycred-sell-this-content' ) ); ?>" />
 <?php
 
 			if ( ! empty( $settings['type'] ) ) {
@@ -1299,22 +1297,22 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 		<div class="row row-narrow">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="form-group slim">
-					<label for="mycred-sell-this-<?php echo $point_type; ?>-status" class="slim"><input type="checkbox" name="mycred_sell_this[<?php echo $point_type; ?>][status]" id="mycred-sell-this-<?php echo $point_type; ?>-status"<?php if ( $sale_setup['status'] === 'enabled' ) echo ' checked="checked"'; ?> value="enabled" class="toggle-setup" data-type="<?php echo $point_type; ?>" /> <?php printf( __( 'Sell using %s', 'Point types name', 'mycred' ), $mycred->plural() ); ?></label>
+					<label for="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-status" class="slim"><input type="checkbox" name="mycred_sell_this[<?php echo esc_attr( $point_type ); ?>][status]" id="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-status"<?php if ( $sale_setup['status'] === 'enabled' ) echo ' checked="checked"'; ?> value="enabled" class="toggle-setup" data-type="<?php echo esc_attr( $point_type ); ?>" /> <?php printf( esc_html( __( 'Sell using %s', 'Point types name', 'mycred' ), $mycred->plural() ) ); ?></label>
 				</div>
 			</div>
 		</div>
 		<div class="cover">
-			<div class="row row-narrow padded-row mycred-sell-setup-container" id="mycred-sell-content-<?php echo $point_type; ?>-wrap" style="display: <?php if ( $sale_setup['status'] === 'enabled' ) echo 'block'; else echo 'none'; ?>;">
+			<div class="row row-narrow padded-row mycred-sell-setup-container" id="mycred-sell-content-<?php echo esc_attr( $point_type ); ?>-wrap" style="display: <?php if ( $sale_setup['status'] === 'enabled' ) echo 'block'; else echo 'none'; ?>;">
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 					<div class="form-group slim">
-						<label for="mycred-sell-this-<?php echo $point_type; ?>-price"><?php _e( 'Price', 'mycred' ); ?></label>
-						<input type="text" name="mycred_sell_this[<?php echo $point_type; ?>][price]" id="mycred-sell-this-<?php echo $point_type; ?>-price" class="form-control" value="<?php echo esc_attr( $sale_setup['price'] ); ?>" />
+						<label for="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-price"><?php esc_html_e( 'Price', 'mycred' ); ?></label>
+						<input type="text" name="mycred_sell_this[<?php echo esc_attr( $point_type ); ?>][price]" id="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-price" class="form-control" value="<?php echo esc_attr( $sale_setup['price'] ); ?>" />
 					</div>
 				</div>
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 					<div class="form-group slim">
-						<label for="mycred-sell-this-<?php echo $point_type; ?>-expire"><?php _e( 'Expiration', 'mycred' ); ?></label>
-						<input type="text" name="mycred_sell_this[<?php echo $point_type; ?>][expire]" id="mycred-sell-this-<?php echo $point_type; ?>-expire" class="form-control" value="<?php echo absint( $sale_setup['expire'] ); ?>" />
+						<label for="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-expire"><?php esc_html_e( 'Expiration', 'mycred' ); ?></label>
+						<input type="text" name="mycred_sell_this[<?php echo esc_attr( $point_type ); ?>][expire]" id="mycred-sell-this-<?php echo esc_attr( $point_type ); ?>-expire" class="form-control" value="<?php echo absint( $sale_setup['expire'] ); ?>" />
 					</div>
 				</div>
 			</div>
@@ -1358,7 +1356,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 			if ( ! isset( $_POST['mycred_sell_this'] ) || ! is_array( $_POST['mycred_sell_this'] ) || empty( $_POST['mycred_sell_this'] ) ) return;
 
 			// Verify nonce
-			if ( isset( $_POST['mycred-sell-this-setup-token'] ) && wp_verify_nonce( $_POST['mycred-sell-this-setup-token'], 'mycred-sell-this-content' ) ) {
+			if ( isset( $_POST['mycred-sell-this-setup-token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mycred-sell-this-setup-token'] ) ), 'mycred-sell-this-content' ) ) {
 
 				$settings   = mycred_sell_content_settings();
 
@@ -1374,7 +1372,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 							'status' => 'disabled',
 							'price'  => 0,
 							'expire' => 0
-						), $_POST['mycred_sell_this'][ $point_type ] );
+						), sanitize_text_field( wp_unslash( $_POST['mycred_sell_this'][ $point_type ] ) ) );
 
 						if ( $submission['status'] == '' ) $submission['status'] = 'disabled';
 

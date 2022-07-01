@@ -141,20 +141,20 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 						$new_call = array();
 
 						// Check amount paid
-						if ( $_POST['mc_gross'] != $pending_payment->cost ) {
-							$new_call[] = sprintf( __( 'Price mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->cost, $_POST['mc_gross'] );
+						if ( ! empty( $_POST['mc_gross'] ) && $_POST['mc_gross'] != $pending_payment->cost ) {
+							$new_call[] = sprintf( __( 'Price mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->cost, sanitize_text_field( wp_unslash( $_POST['mc_gross'] ) ) );
 							$errors     = true;
 						}
 
 						// Check currency
-						if ( $_POST['mc_currency'] != $pending_payment->currency ) {
-							$new_call[] = sprintf( __( 'Currency mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->currency, $_POST['mc_currency'] );
+						if ( ! empty( $_POST['mc_currency'] ) && $_POST['mc_currency'] != $pending_payment->currency ) {
+							$new_call[] = sprintf( __( 'Currency mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->currency, sanitize_text_field( wp_unslash( $_POST['mc_currency'] ) ) );
 							$errors     = true;
 						}
 
 						// Check status
-						if ( $_POST['payment_status'] != 'Completed' ) {
-							$new_call[] = sprintf( __( 'Payment not completed. Received: %s', 'mycred' ), $_POST['payment_status'] );
+						if ( ! empty( $_POST['payment_status'] ) && $_POST['payment_status'] != 'Completed' ) {
+							$new_call[] = sprintf( __( 'Payment not completed. Received: %s', 'mycred' ), sanitize_text_field( wp_unslash( $_POST['payment_status'] ) ) );
 							$errors     = true;
 						}
 
@@ -162,10 +162,10 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 						if ( $errors === false ) {
 
 							// If account is credited, delete the post and it's comments.
-							if ( $this->complete_payment( $pending_payment, $_POST['txn_id'] ) )
+							if ( $this->complete_payment( $pending_payment,sanitize_text_field( wp_unslash(  $_POST['txn_id'] ) ) ) )
 								$this->trash_pending_payment( $pending_post_id );
 							else
-								$new_call[] = __( 'Failed to credit users account.', 'mycred' );
+								$new_call[] = esc_html__( 'Failed to credit users account.', 'mycred' );
 
 						}
 
@@ -190,7 +190,7 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 
 			if ( isset( $_REQUEST['tx'] ) && isset( $_REQUEST['st'] ) && $_REQUEST['st'] == 'Completed' ) {
 				$this->get_page_header( __( 'Success', 'mycred' ), $this->get_thankyou() );
-				echo '<h1 style="text-align:center;">' . __( 'Thank you for your purchase', 'mycred' ) . '</h1>';
+				echo '<h1 style="text-align:center;">' . esc_html__( 'Thank you for your purchase', 'mycred' ) . '</h1>';
 				$this->get_page_footer();
 				exit;
 			}
@@ -283,30 +283,30 @@ if ( ! class_exists( 'myCRED_PayPal_Standard' ) ) :
 ?>
 <div class="row">
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Details', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'account' ); ?>"><?php _e( 'Account Email', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'account' ); ?>" id="<?php echo $this->field_id( 'account' ); ?>" value="<?php echo esc_attr( $prefs['account'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'account' ) ); ?>"><?php esc_html_e( 'Account Email', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'account' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'account' ) ); ?>" value="<?php echo esc_attr( $prefs['account'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'item_name' ); ?>"><?php _e( 'Item Name', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'item_name' ); ?>" id="<?php echo $this->field_id( 'item_name' ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>"><?php esc_html_e( 'Item Name', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'item_name' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>"><?php esc_html_e( 'Logo URL', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'logo_url' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
+			<label for="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>"><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
 
 			<?php $this->currencies_dropdown( 'currency', 'mycred-gateway-paypal-standard-currency' ); ?>
 
 		</div>
 		<div class="form-group">
-			<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'Exchange Rates', 'mycred' ); ?></label>
 
 			<?php $this->exchange_rate_setup(); ?>
 

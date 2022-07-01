@@ -88,42 +88,42 @@ if ( ! class_exists( 'myCRED_Widget_Transfer' ) ) :
 ?>
 <!-- Widget Options -->
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Title', 'mycred' ); ?>:</label>
-	<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" placeholder="<?php _e( 'optional', 'mycred' ); ?>" value="<?php echo esc_attr( $title ); ?>" class="widefat" />
+	<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'mycred' ); ?>:</label>
+	<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" placeholder="<?php esc_attr_e( 'optional', 'mycred' ); ?>" value="<?php echo esc_attr( $title ); ?>" class="widefat" />
 </p>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'show_balance' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'show_balance' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'show_balance' ) ); ?>" value="1"<?php checked( $show_balance, true ); ?> class="checkbox" /> <?php _e( 'Show users balance', 'mycred' ); ?></label>
+	<label for="<?php echo esc_attr( $this->get_field_id( 'show_balance' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'show_balance' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'show_balance' ) ); ?>" value="1"<?php checked( $show_balance, true ); ?> class="checkbox" /> <?php esc_html_e( 'Show users balance', 'mycred' ); ?></label>
 </p>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'show_limit' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'show_limit' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'show_limit' ) ); ?>" value="1"<?php checked( $show_balance, true ); ?> class="checkbox" /> <?php _e( 'Show users limit', 'mycred' ); ?></label>
+	<label for="<?php echo esc_attr( $this->get_field_id( 'show_limit' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'show_limit' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'show_limit' ) ); ?>" value="1"<?php checked( $show_balance, true ); ?> class="checkbox" /> <?php esc_html_e( 'Show users limit', 'mycred' ); ?></label>
 </p>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'button' ) ); ?>"><?php _e( 'Button Label', 'mycred' ); ?>:</label>
-	<input id="<?php echo esc_attr( $this->get_field_id( 'button' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'button' ) ); ?>" type="text" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $button ); ?>" class="widefat" />
+	<label for="<?php echo esc_attr( $this->get_field_id( 'button' ) ); ?>"><?php esc_html_e( 'Button Label', 'mycred' ); ?>:</label>
+	<input id="<?php echo esc_attr( $this->get_field_id( 'button' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'button' ) ); ?>" type="text" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $button ); ?>" class="widefat" />
 </p>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'amount' ) ); ?>"><?php _e( 'Amount', 'mycred' ); ?>:</label>
-	<input id="<?php echo esc_attr( $this->get_field_id( 'amount' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'amount' ) ); ?>" type="text" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $amount ); ?>" class="widefat" />
+	<label for="<?php echo esc_attr( $this->get_field_id( 'amount' ) ); ?>"><?php esc_html_e( 'Amount', 'mycred' ); ?>:</label>
+	<input id="<?php echo esc_attr( $this->get_field_id( 'amount' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'amount' ) ); ?>" type="text" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $amount ); ?>" class="widefat" />
 </p>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'reference' ) ); ?>"><?php _e( 'Reference', 'mycred' ); ?>:</label>
-	<input id="<?php echo esc_attr( $this->get_field_id( 'reference' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'reference' ) ); ?>" type="text" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $reference ); ?>" class="widefat" />
+	<label for="<?php echo esc_attr( $this->get_field_id( 'reference' ) ); ?>"><?php esc_html_e( 'Reference', 'mycred' ); ?>:</label>
+	<input id="<?php echo esc_attr( $this->get_field_id( 'reference' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'reference' ) ); ?>" type="text" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $reference ); ?>" class="widefat" />
 </p>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'pay_to' ) ); ?>"><?php _e( 'Recipient', 'mycred' ); ?>:</label>
-	<input id="<?php echo esc_attr( $this->get_field_id( 'pay_to' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'pay_to' ) ); ?>" type="text" placeholder="<?php _e( 'optional', 'mycred' ); ?>" value="<?php echo esc_attr( $recipient ); ?>" class="widefat" />
+	<label for="<?php echo esc_attr( $this->get_field_id( 'pay_to' ) ); ?>"><?php esc_html_e( 'Recipient', 'mycred' ); ?>:</label>
+	<input id="<?php echo esc_attr( $this->get_field_id( 'pay_to' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'pay_to' ) ); ?>" type="text" placeholder="<?php esc_attr_e( 'optional', 'mycred' ); ?>" value="<?php echo esc_attr( $recipient ); ?>" class="widefat" />
 </p>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'placeholder' ) ); ?>"><?php _e( 'Recipient Placeholder', 'mycred' ); ?>:</label>
-	<input id="<?php echo esc_attr( $this->get_field_id( 'placeholder' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'placeholder' ) ); ?>" type="text" placeholder="<?php _e( 'optional', 'mycred' ); ?>" value="<?php echo esc_attr( $placeholder ); ?>" class="widefat" />
+	<label for="<?php echo esc_attr( $this->get_field_id( 'placeholder' ) ); ?>"><?php esc_html_e( 'Recipient Placeholder', 'mycred' ); ?>:</label>
+	<input id="<?php echo esc_attr( $this->get_field_id( 'placeholder' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'placeholder' ) ); ?>" type="text" placeholder="<?php esc_attr_e( 'optional', 'mycred' ); ?>" value="<?php echo esc_attr( $placeholder ); ?>" class="widefat" />
 </p>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'types' ) ); ?>"><?php _e( 'Point Types', 'mycred' ); ?>:</label>
-	<input id="<?php echo esc_attr( $this->get_field_id( 'types' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'types' ) ); ?>" type="text" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $point_types ); ?>" class="widefat" />
+	<label for="<?php echo esc_attr( $this->get_field_id( 'types' ) ); ?>"><?php esc_html_e( 'Point Types', 'mycred' ); ?>:</label>
+	<input id="<?php echo esc_attr( $this->get_field_id( 'types' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'types' ) ); ?>" type="text" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $point_types ); ?>" class="widefat" />
 </p>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'excluded' ) ); ?>"><?php _e( 'Message for Excluded Users', 'mycred' ); ?>:</label>
-	<input id="<?php echo esc_attr( $this->get_field_id( 'excluded' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'excluded' ) ); ?>" placeholder="<?php _e( 'optional', 'mycred' ); ?>" type="text" value="<?php echo esc_attr( $excluded ); ?>" class="widefat" />
+	<label for="<?php echo esc_attr( $this->get_field_id( 'excluded' ) ); ?>"><?php esc_html_e( 'Message for Excluded Users', 'mycred' ); ?>:</label>
+	<input id="<?php echo esc_attr( $this->get_field_id( 'excluded' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'excluded' ) ); ?>" placeholder="<?php esc_attr_e( 'optional', 'mycred' ); ?>" type="text" value="<?php echo esc_attr( $excluded ); ?>" class="widefat" />
 </p>
 <?php
 

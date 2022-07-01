@@ -202,7 +202,7 @@ function mycred_load_invite_anyone_hook() {
 
 ?>
 <div class="hook-instance">
-	<h3><?php _e( 'Sending Invites', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Sending Invites', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
@@ -212,21 +212,21 @@ function mycred_load_invite_anyone_hook() {
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'send_invite' => 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'send_invite' => 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'send_invite' => 'limit' ) ), $this->field_id( array( 'send_invite' => 'limit' ) ), $prefs['send_invite']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'send_invite' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'send_invite' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'send_invite' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['send_invite']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'send_invite' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'send_invite' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'send_invite' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['send_invite']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="hook-instance">
-	<h3><?php _e( 'Accepted Invites', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Accepted Invites', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
@@ -236,14 +236,14 @@ function mycred_load_invite_anyone_hook() {
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'accept_invite' => 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'accept_invite' => 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'accept_invite' => 'limit' ) ), $this->field_id( array( 'accept_invite' => 'limit' ) ), $prefs['accept_invite']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'accept_invite' => 'log' ) ); ?>"><?php _e( 'Log template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'accept_invite' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'accept_invite' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['accept_invite']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'accept_invite' => 'log' ) ); ?>"><?php esc_html_e( 'Log template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'accept_invite' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'accept_invite' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['accept_invite']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general' ) ); ?></span>
 			</div>
 		</div>

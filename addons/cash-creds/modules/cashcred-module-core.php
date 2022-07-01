@@ -342,7 +342,6 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			$format = '%s payment credited';  
 			$entry = sprintf($format, $gateway_name->label); 
 			
-
 			mycred_subtract( 'cashcred_withdrawal', $user_id, -$points, $entry, $post_id , $log_data, $point_type );
 			
 			if($manual == true) {
@@ -754,7 +753,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php _e( 'cashCred Payment Gateways', 'mycred' ); ?></h1>
+	<h1><?php esc_html_e( 'cashCred Payment Gateways', 'mycred' ); ?></h1>
 <?php
 
 			// Updated settings
@@ -795,14 +794,14 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="cashcred-gateway-<?php echo $key; ?>"><input type="checkbox" name="mycred_pref_cashcreds[active][]" id="cashcred-gateway-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php _e( 'Enable', 'mycred' ); ?></label>
+							<label for="cashcred-gateway-<?php echo $key; ?>"><input type="checkbox" name="mycred_pref_cashcreds[active][]" id="cashcred-gateway-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
 						</div>
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<?php if ( $has_test_mode ) : ?>
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<label for="cashcred-gateway-<?php echo $key; ?>-sandbox"><input type="checkbox" name="mycred_pref_cashcreds[gateway_prefs][<?php echo $key; ?>][sandbox]" id="cashcred-gateway-<?php echo $key; ?>-sandbox" value="<?php echo $key; ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php _e( 'Sandbox Mode', 'mycred' ); ?></label>
+							<label for="cashcred-gateway-<?php echo $key; ?>-sandbox"><input type="checkbox" name="mycred_pref_cashcreds[gateway_prefs][<?php echo $key; ?>][sandbox]" id="cashcred-gateway-<?php echo $key; ?>-sandbox" value="<?php echo $key; ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Sandbox Mode', 'mycred' ); ?></label>
 						</div>
 						<?php endif; ?>
 					</div>
@@ -810,7 +809,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 						<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && $has_documentation ) : ?>
 						<div class="form-group">
 							<div>&nbsp;</div>
-							<a href="<?php echo $has_documentation; ?>" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a>
+							<a href="<?php echo $has_documentation; ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
 						</div>
 						<?php endif; ?>
 					</div>
@@ -960,29 +959,29 @@ jQuery(function($) {
 					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 
 						<div class="form-group">
-							<label for="mycred_pref_core_cashcreds_debugging"><?php _e( 'Payment Debugging Log', 'mycred' ); ?></label>
+							<label for="mycred_pref_core_cashcreds_debugging"><?php esc_html_e( 'Payment Debugging Log', 'mycred' ); ?></label>
 							<select class="form-control" name="mycred_pref_core[cashcreds][debugging]" id="mycred_pref_core_cashcreds_debugging">
 								<option value="disable" <?php echo $cashcred_prefs['debugging'] != 'enable' ? 'selected="selected"' : ''; ?>>Disabled</option>
 								<option value="enable" <?php echo $cashcred_prefs['debugging'] == 'enable' ? 'selected="selected"' : ''; ?>>Enable</option>
 							</select>
-							<p><span class="description"><?php _e( 'Payment Debugging log for developers.', 'mycred' ); ?></span></p>
+							<p><span class="description"><?php esc_html_e( 'Payment Debugging log for developers.', 'mycred' ); ?></span></p>
 						</div>
 
 					</div>
 				</div>
 
-				<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+				<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
 					<div class="row">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees' => 'use' ) ); ?>"><input type="checkbox" name="mycred_pref_core[cashcreds][fees][use]" id="<?php echo $this->field_id( array( 'fees' => 'use' ) ); ?>"<?php checked( $cashcred_prefs['fees']['use'], 1 ); ?> value="1" /> <?php _e( 'Enable this feature', 'mycred' ); ?></label>
+								<label for="<?php echo $this->field_id( array( 'fees' => 'use' ) ); ?>"><input type="checkbox" name="mycred_pref_core[cashcreds][fees][use]" id="<?php echo $this->field_id( array( 'fees' => 'use' ) ); ?>"<?php checked( $cashcred_prefs['fees']['use'], 1 ); ?> value="1" /> <?php esc_html_e( 'Enable this feature', 'mycred' ); ?></label>
 							</div>
 						</div>
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees' => 'account' ) ); ?>"><?php _e( 'Fee Account', 'mycred' ); ?></label>
+								<label for="<?php echo $this->field_id( array( 'fees' => 'account' ) ); ?>"><?php esc_html_e( 'Fee Account', 'mycred' ); ?></label>
 								<input type="text" class="form-control" name="mycred_pref_core[cashcreds][fees][account]" id="<?php echo $this->field_id( array( 'fees' => 'account' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['account'] ); ?>" />
-								<p><span class="description"><?php _e( 'Option to deposit transfer fees into a specific users account. Use zero to disable.', 'mycred' ); ?></span></p>
+								<p><span class="description"><?php esc_html_e( 'Option to deposit transfer fees into a specific users account. Use zero to disable.', 'mycred' ); ?></span></p>
 							</div>
 						</div>
 					</div>
@@ -1009,7 +1008,7 @@ jQuery(function($) {
 					<div class="row">
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'amount' ) ); ?>"><?php _e( 'The Fee', 'mycred' ); ?></label>
+								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'amount' ) ); ?>"><?php esc_html_e( 'The Fee', 'mycred' ); ?></label>
 								<div>
 									<input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][amount]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'amount' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['amount'] ); ?>" /> 
 									<select name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][by]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'by' ) ); ?>"><?php
@@ -1023,30 +1022,30 @@ jQuery(function($) {
 
 									?></select>
 								</div>
-								<p><span class="description"><?php _e( 'Use zero for no fee.', 'mycred' ); ?></span></p>
+								<p><span class="description"><?php esc_html_e( 'Use zero for no fee.', 'mycred' ); ?></span></p>
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'min_cap' ) ); ?>"><?php _e( 'Minimum Charge', 'mycred' ); ?></label>
+								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'min_cap' ) ); ?>"><?php esc_html_e( 'Minimum Charge', 'mycred' ); ?></label>
 								<div><input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][min_cap]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'min_cap' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['min_cap'] ); ?>" /> <?php echo $mycred->plural(); ?></div>
-								<p><span class="description"><?php _e( 'Option to set a minimum charge. If set, this amount is added on top of the fee. Example 2% fee + 1.30 points. Use zero to disable.', 'mycred' ); ?></span></p>
+								<p><span class="description"><?php esc_html_e( 'Option to set a minimum charge. If set, this amount is added on top of the fee. Example 2% fee + 1.30 points. Use zero to disable.', 'mycred' ); ?></span></p>
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'max_cap' ) ); ?>"><?php _e( 'Maximum Cap', 'mycred' ); ?></label>
+								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'max_cap' ) ); ?>"><?php esc_html_e( 'Maximum Cap', 'mycred' ); ?></label>
 								<div><input type="text" size="8" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][max_cap]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'max_cap' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['max_cap'] ); ?>" /> <?php echo $mycred->plural(); ?></div>
-								<p><span class="description"><?php _e( 'Optional maximum cap for transfer fees. Use zero to disable.', 'mycred' ); ?></span></p>
+								<p><span class="description"><?php esc_html_e( 'Optional maximum cap for transfer fees. Use zero to disable.', 'mycred' ); ?></span></p>
 							</div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'presentation' ) ); ?>"><?php _e( 'Presentation', 'mycred' ); ?></label>
+								<label for="<?php echo $this->field_id( array( 'fees', 'types', $key, 'presentation' ) ); ?>"><?php esc_html_e( 'Presentation', 'mycred' ); ?></label>
 								<input type="text" class="form-control" name="mycred_pref_core[cashcreds][fees][types][<?php echo $key; ?>][presentation]" id="<?php echo $this->field_id( array( 'fees', 'types', $key, 'presentation' ) ); ?>" value="<?php echo esc_attr( $cashcred_prefs['fees']['types'][ $key ]['presentation'] ); ?>" />
-								<p><span class="description"><?php _e( 'Option to set how fees are displayed to your users. Available template tags are: %fee%, %min% and %max% = %total%', 'mycred' ); ?></span></p>
+								<p><span class="description"><?php esc_html_e( 'Option to set how fees are displayed to your users. Available template tags are: %fee%, %min% and %max% = %total%', 'mycred' ); ?></span></p>
 							</div>
 						</div>
 					</div>

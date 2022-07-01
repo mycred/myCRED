@@ -66,13 +66,13 @@ if ( ! function_exists( 'mycred_render_shortcode_exchange' ) ) :
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mycred-exchange-current-amount">
 				<div class="form-group">
-					<label for="mycred-exchange-amount"><?php _e( 'Amount', 'mycred' ); ?></label>
+					<label for="mycred-exchange-amount"><?php esc_html_e( 'Amount', 'mycred' ); ?></label>
 					<input type="text" size="20" placeholder="<?php printf( __( 'Minimum %s', 'mycred' ), $mycred_from->format_creds( $min ) ); ?>" value="" class="form-control" id="mycred-exchange-amount" name="mycred_exchange[amount]" />
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mycred-exchange-current-rate">
 				<div class="form-group">
-					<label><?php _e( 'Exchange Rate', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Exchange Rate', 'mycred' ); ?></label>
 					<p class="form-control-static"><?php printf( __( '1 %s = <span class="rate">%s</span> %s', 'mycred' ), $mycred_from->singular(), $rate, ( ( $rate == 1 ) ? $mycred_to->singular() : $mycred_to->plural() ) ); ?></p>
 				</div>
 			</div>

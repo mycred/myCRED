@@ -71,7 +71,7 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 			foreach ( (array) $notices as $notice ) {
 
 				$notice = str_replace( array( "\r", "\n", "\t" ), '', $notice );
-				echo '<!-- Notice --><script type="text/javascript">(function(jQuery){jQuery.noticeAdd({ text: "' . $notice . '",stay: ' . $stay . '});})(jQuery);</script>';
+				echo '<!-- Notice --><script type="text/javascript">(function(jQuery){jQuery.noticeAdd({ text: "' . wp_kses_post( $notice ) . '",stay: ' . esc_js( $stay ) . '});})(jQuery);</script>';
 
 			}
 
@@ -187,32 +187,32 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 			$prefs = $this->notifications;
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Notifications', 'mycred' ); ?></h4>
+<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Notifications', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
 
-	<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'template' ); ?>"><?php _e( 'Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'template' ); ?>" id="<?php echo $this->field_id( 'template' ); ?>" value="<?php echo esc_attr( $prefs['template'] ); ?>" class="form-control" />
-				<p><span class="description"><?php _e( 'Use %entry% to show the log entry in the notice and %amount% for the amount.', 'mycred' ); ?></span> <a href="javascript:void(0);" id="retore-default-notice"><?php _e( 'Restore to default', 'mycred' ); ?></a></p>
+				<label for="<?php echo esc_attr( $this->field_id( 'template' ) ); ?>"><?php esc_html_e( 'Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'template' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'template' ) ); ?>" value="<?php echo esc_attr( $prefs['template'] ); ?>" class="form-control" />
+				<p><span class="description"><?php esc_html_e( 'Use %entry% to show the log entry in the notice and %amount% for the amount.', 'mycred' ); ?></span> <a href="javascript:void(0);" id="retore-default-notice"><?php esc_html_e( 'Restore to default', 'mycred' ); ?></a></p>
 			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'life' ); ?>"><?php _e( 'Transient Lifespan', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'life' ); ?>" id="<?php echo $this->field_id( 'life' ); ?>" value="<?php echo absint( $prefs['life'] ); ?>" class="form-control" />
-				<p><span class="description"><?php _e( 'The number of days a users notification is saved before being automatically deleted.', 'mycred' ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( 'life' ) ); ?>"><?php esc_html_e( 'Transient Lifespan', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'life' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'life' ) ); ?>" value="<?php echo absint( $prefs['life'] ); ?>" class="form-control" />
+				<p><span class="description"><?php esc_html_e( 'The number of days a users notification is saved before being automatically deleted.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'duration' ); ?>"><?php _e( 'Duration', 'mycred' ); ?></label>
-				<input type="number" name="<?php echo $this->field_name( 'duration' ); ?>" id="<?php echo $this->field_id( 'duration' ); ?>" value="<?php echo absint( $prefs['duration'] ); ?>" class="form-control" min="0" max="60" />
-				<p><span class="description"><?php _e( 'Number of seconds before a notice is automatically removed after being shown to user. Use zero to disable.', 'mycred' ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( 'duration' ) ); ?>"><?php esc_html_e( 'Duration', 'mycred' ); ?></label>
+				<input type="number" name="<?php echo esc_attr( $this->field_name( 'duration' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'duration' ) ); ?>" value="<?php echo absint( $prefs['duration'] ); ?>" class="form-control" min="0" max="60" />
+				<p><span class="description"><?php esc_html_e( 'Number of seconds before a notice is automatically removed after being shown to user. Use zero to disable.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 	</div>
@@ -220,7 +220,7 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( 'use_css' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'use_css' ); ?>" id="<?php echo $this->field_id( 'use_css' ); ?>" <?php checked( $prefs['use_css'], 1 ); ?> value="1" /> <?php _e( 'Use the included CSS Styling for notifications.', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( 'use_css' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'use_css' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'use_css' ) ); ?>" <?php checked( $prefs['use_css'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use the included CSS Styling for notifications.', 'mycred' ); ?></label>
 				</div>
 			</div>
 		</div>
@@ -239,7 +239,7 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 jQuery(function($) {
 
 	$( '#retore-default-notice' ).click(function(){
-		$( '#<?php echo $this->field_id( 'template' ); ?>' ).val( '<?php echo $this->default_prefs['template']; ?>' );
+		$( '#<?php echo esc_attr( $this->field_id( 'template' ) ); ?>' ).val( '<?php echo esc_attr( $this->default_prefs['template'] ); ?>' );
 	});
 
 });

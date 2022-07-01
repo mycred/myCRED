@@ -281,8 +281,8 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 		</div>
 		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'user' ), '%url%, %title% or %id%' ); ?></span>
 			</div>
 		</div>
@@ -290,7 +290,7 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for=""><?php _e( 'Limits', 'mycred' ); ?></label>
+				<label for=""><?php esc_html_e( 'Limits', 'mycred' ); ?></label>
 <?php 
 
 			add_filter( 'mycred_hook_impose_limits', array( $this, 'custom_limit' ) );
@@ -301,7 +301,7 @@ if ( ! class_exists( 'myCRED_Hook_Click_Links' ) ) :
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label><?php _e( 'Available Shortcode', 'mycred' ); ?></label>
+				<label><?php esc_html_e( 'Available Shortcode', 'mycred' ); ?></label>
 				<p class="form-control-static"><a href="http://codex.mycred.me/shortcodes/mycred_link/" target="_blank">[mycred_link]</a></p>
 			</div>
 		</div>

@@ -105,33 +105,33 @@ if ( ! class_exists( 'myCRED_cashcred_Bank_Transfer' ) ) :
 ?>
 <div class="row">
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Details', 'mycred' ); ?></h3>
 		
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'minimum_amount' ); ?>"><?php _e( 'Minimum Points Withdrawal', 'mycred' ); ?></label>
+			<label for="<?php echo $this->field_id( 'minimum_amount' ); ?>"><?php esc_html_e( 'Minimum Points Withdrawal', 'mycred' ); ?></label>
 			<input type="number" name="<?php echo $this->field_name( 'minimum_amount' ); ?>" id="<?php echo $this->field_id( 'minimum_amount' ); ?>"  min="1" value="<?php echo esc_attr( $prefs['minimum_amount'] ); ?>" class="form-control" />
 		</div>
 		 
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'maximum_amount' ); ?>"><?php _e( 'Maximum Points Withdrawal', 'mycred' ); ?></label>
+			<label for="<?php echo $this->field_id( 'maximum_amount' ); ?>"><?php esc_html_e( 'Maximum Points Withdrawal', 'mycred' ); ?></label>
 			<input type="number" name="<?php echo $this->field_name( 'maximum_amount' ); ?>" id="<?php echo $this->field_id( 'maximum_amount' ); ?>" value="<?php echo esc_attr( $prefs['maximum_amount'] ); ?>" class="form-control" />
 		</div>
 		
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'enable_additional_notes' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'enable_additional_notes' ); ?>" id="<?php echo $this->field_id( 'enable_additional_notes' ); ?>" value="1"<?php checked( $prefs['enable_additional_notes'], 1 ); ?> /> <?php _e( 'Enable Additional Notes', 'mycred' ); ?></label>
+			<label for="<?php echo $this->field_id( 'enable_additional_notes' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'enable_additional_notes' ); ?>" id="<?php echo $this->field_id( 'enable_additional_notes' ); ?>" value="1"<?php checked( $prefs['enable_additional_notes'], 1 ); ?> /> <?php esc_html_e( 'Enable Additional Notes', 'mycred' ); ?></label>
 		</div>
 		
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
 		
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
+			<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
 			<input type="text" name="<?php echo $this->field_name( 'currency' ); ?>" id="<?php echo $this->field_id( 'currency' ); ?>" value="<?php echo esc_attr( $prefs['currency'] ); ?>" class="form-control" />
 		</div>
 		
 		<div class="form-group">
-			<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'Exchange Rates', 'mycred' ); ?></label>
 
 			<?php $this->exchange_rate_setup(); ?>
 
@@ -143,7 +143,7 @@ if ( ! class_exists( 'myCRED_cashcred_Bank_Transfer' ) ) :
 <div class="row" id="additional_notes_show">
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 		<div class="form-group">
-			<label for="cashcredbanktransferaccount"><?php _e( 'Additional notes', 'mycred' ); ?></label>
+			<label for="cashcredbanktransferaccount"><?php esc_html_e( 'Additional notes', 'mycred' ); ?></label>
 			<?php wp_editor( $prefs['additional_notes'], 'cashcredbanktransferaccount', array( 'textarea_name' => $this->field_name( 'additional_notes' ), 'textarea_rows' => 10 ) ); ?>
 		</div>
 	</div>

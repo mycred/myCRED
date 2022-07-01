@@ -147,13 +147,13 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
  
 ?>
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Title', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" class="widefat" />
 </p>
  
 <?php if ( count( $mycred_types ) > 1 ) : ?>
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>"><?php _e( 'Point Type', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>"><?php esc_html_e( 'Point Type', 'mycred' ); ?>:</label>
     <?php mycred_types_select_from_dropdown( $this->get_field_name( 'type' ), $this->get_field_id( 'type' ), $type ); ?>
 </p>
 <?php else : ?>
@@ -161,33 +161,33 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
 <?php endif; ?>
  
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'based_on' ) ); ?>"><?php _e( 'Based On', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'based_on' ) ); ?>"><?php esc_html_e( 'Based On', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'based_on' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'based_on' ) ); ?>" type="text" value="<?php echo esc_attr( $based_on ); ?>" class="widefat" />
-    <small><?php _e( 'Use "balance" to base the leaderboard on your users current balances or use a specific reference.', 'mycred' ); ?> <a href="http://codex.mycred.me/chapter-vi/log-references/" target="_blank"><?php _e( 'Reference Guide', 'mycred' ); ?></a></small>
+    <small><?php esc_html_e( 'Use "balance" to base the leaderboard on your users current balances or use a specific reference.', 'mycred' ); ?> <a href="http://codex.mycred.me/chapter-vi/log-references/" target="_blank"><?php esc_html_e( 'Reference Guide', 'mycred' ); ?></a></small>
 </p>
  
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'total' ) ); ?>"><?php _e( 'Total', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'total' ) ); ?>"><?php esc_html_e( 'Total', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'total' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'total' ) ); ?>" type="text" value="<?php echo esc_attr( $total ); ?>" class="widefat" />
-    <small><?php _e( 'When showing a leaderboard based on balances, you can select to use users total balance (1) instead of their current balance (0).', 'mycred' ); ?> </small>
+    <small><?php esc_html_e( 'When showing a leaderboard based on balances, you can select to use users total balance (1) instead of their current balance (0).', 'mycred' ); ?> </small>
 </p>
  
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'wrap' ) ); ?>"><?php _e( 'Wrap', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'wrap' ) ); ?>"><?php esc_html_e( 'Wrap', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'wrap' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'wrap' ) ); ?>" type="text" value="<?php echo esc_attr( $wrap ); ?>" class="widefat" />
-    <small><?php _e( 'The wrapping element to use for the list. By default the leaderboard renders an organized list (ol) and each item uses a list element (li).', 'mycred' ); ?> </small>
+    <small><?php esc_html_e( 'The wrapping element to use for the list. By default the leaderboard renders an organized list (ol) and each item uses a list element (li).', 'mycred' ); ?> </small>
 </p>
  
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'nothing' ) ); ?>"><?php _e( 'Nothing', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'nothing' ) ); ?>"><?php esc_html_e( 'Nothing', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'nothing' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'nothing' ) ); ?>" type="text" value="<?php echo esc_attr( $nothing ); ?>" class="widefat" />
-    <small><?php _e( 'The message to show users when the leaderboard is empty.', 'mycred' ); ?></small>
+    <small><?php esc_html_e( 'The message to show users when the leaderboard is empty.', 'mycred' ); ?></small>
 </p>
  
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'exclude_zero' ) ); ?>"><?php _e( 'Exclude Zero', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'exclude_zero' ) ); ?>"><?php esc_html_e( 'Exclude Zero', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'exclude_zero' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'exclude_zero' ) ); ?>" type="text" value="<?php echo esc_attr( $exclude_zero ); ?>" class="widefat" />
-    <small><?php _e( 'Option to filter out users with zero balances / results. Use 1 to enable and 0 to disable.', 'mycred' ); ?> </small>
+    <small><?php esc_html_e( 'Option to filter out users with zero balances / results. Use 1 to enable and 0 to disable.', 'mycred' ); ?> </small>
 </p>
  
 <p class="myCRED-widget-field">
@@ -198,24 +198,24 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
 
            
 
-        <?php _e( 'Visible to non-members', 'mycred' ); ?></label>
+        <?php esc_html_e( 'Visible to non-members', 'mycred' ); ?></label>
 </p>
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>"><?php _e( 'Number of users', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>"><?php esc_html_e( 'Number of users', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'number' ) ); ?>" type="text" value="<?php echo absint( $number ); ?>" size="3" class="widefat" />
 </p>
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'row_layout' ) ); ?>"><?php _e( 'Row layout', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'row_layout' ) ); ?>"><?php esc_html_e( 'Row layout', 'mycred' ); ?>:</label>
     <textarea name="<?php echo esc_attr( $this->get_field_name( 'row_layout' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'row_layout' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $row_layout ); ?></textarea>
     <small><?php echo $mycred->available_template_tags( array( 'general', 'balance' ) ); ?></small>
 </p>
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>"><?php _e( 'Offset', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>"><?php esc_html_e( 'Offset', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'offset' ) ); ?>" type="text" value="<?php echo absint( $offset ); ?>" size="3" class="widefat" />
-    <small><?php _e( 'Optional offset of order. Use zero to return the first in the list.', 'mycred' ); ?></small>
+    <small><?php esc_html_e( 'Optional offset of order. Use zero to return the first in the list.', 'mycred' ); ?></small>
 </p>
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'order' ) ); ?>"><?php _e( 'Order', 'mycred' ); ?>:</label> 
+    <label for="<?php echo esc_attr( $this->get_field_id( 'order' ) ); ?>"><?php esc_html_e( 'Order', 'mycred' ); ?>:</label> 
     <select name="<?php echo esc_attr( $this->get_field_name( 'order' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'order' ) ); ?>">
 <?php
  
@@ -239,18 +239,18 @@ if ( ! class_exists( 'myCRED_Widget_Leaderboard' ) ) :
 
         
 
-     <?php _e( 'Append current users position', 'mycred' ); ?></label><br />
-    <small><?php _e( 'If the current user is not in this leaderboard, you can select to append them at the end with their current position.', 'mycred' ); ?></small>
+     <?php esc_html_e( 'Append current users position', 'mycred' ); ?></label><br />
+    <small><?php esc_html_e( 'If the current user is not in this leaderboard, you can select to append them at the end with their current position.', 'mycred' ); ?></small>
 </p>
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'timeframe' ) ); ?>"><?php _e( 'Timeframe', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'timeframe' ) ); ?>"><?php esc_html_e( 'Timeframe', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'timeframe' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'timeframe' ) ); ?>" type="text" value="<?php echo esc_attr( $timeframe ); ?>" size="3" class="widefat" />
-    <small><?php _e( 'Option to limit the leaderboard based on a specific timeframe. Leave empty if not used.', 'mycred' ); ?></small>
+    <small><?php esc_html_e( 'Option to limit the leaderboard based on a specific timeframe. Leave empty if not used.', 'mycred' ); ?></small>
 </p>
 <p class="myCRED-widget-field">
-    <label for="<?php echo esc_attr( $this->get_field_id( 'exclude' ) ); ?>"><?php _e( 'Exclude Users', 'mycred' ); ?>:</label>
+    <label for="<?php echo esc_attr( $this->get_field_id( 'exclude' ) ); ?>"><?php esc_html_e( 'Exclude Users', 'mycred' ); ?>:</label>
     <input id="<?php echo esc_attr( $this->get_field_id( 'exclude' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'exclude' ) ); ?>" type="text" value="<?php echo esc_attr( $exclude ); ?>" size="3" class="widefat" />
-    <small><?php _e( 'Option to exclude users from leaderboard based on a specific role or id. Leave empty if not used. Use comma seperated values for Role or ID', 'mycred' ); ?></small>
+    <small><?php esc_html_e( 'Option to exclude users from leaderboard based on a specific role or id. Leave empty if not used. Use comma seperated values for Role or ID', 'mycred' ); ?></small>
 </p>
 <?php
  

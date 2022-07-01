@@ -108,7 +108,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				?>
 				<select name="Status" id="Status">
 					<option value="all" <?php selected( 'all', $current_plugin ); ?>>
-						<?php _e( 'All Status', 'mycred' ); ?>
+						<?php esc_html_e( 'All Status', 'mycred' ); ?>
 					</option>
 					<?php foreach( $status as $key => $value ) { ?>
 					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $current_plugin ); ?>>
@@ -124,7 +124,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				?>
 				<select name="gateway" id="gateway">
 					<option value="all" <?php selected( 'all', $current_selected ); ?>>
-						<?php _e( 'All Gateway', 'mycred' ); ?>
+						<?php esc_html_e( 'All Gateway', 'mycred' ); ?>
 					</option>
 					<?php 
 					foreach ( $mycred_modules['solo']['cashcred']->get() as $gateway_id => $info ) { ?> 
@@ -142,7 +142,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 				?>
 				<select name="user_id" id="user_id">
 					<option value="all" <?php selected( 'all', $current_user ); ?>>
-						<?php _e( 'All Users', 'mycred' ); ?>
+						<?php esc_html_e( 'All Users', 'mycred' ); ?>
 					</option>
 					<?php 
 					foreach ( $users as $user ) { ?> 
@@ -923,20 +923,20 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 		
 				<select name="status">
 					<option value="Pending" <?php echo $status  == "Pending" ? "selected" : "" ?>>
-						<?php _e('Pending', 'cashcred'); ?>
+						<?php esc_html_e('Pending', 'cashcred'); ?>
 					</option>		
 					<option value="Approved" <?php echo $status  == "Approved" ? "selected" : "" ?>>
-						<?php _e('Approved', 'cashcred'); ?>
+						<?php esc_html_e('Approved', 'cashcred'); ?>
 					</option>
 					<option value="Cancelled" <?php echo $status  == "Cancelled" ? "selected" : "" ?>>
-						<?php _e('Cancelled', 'cashcred'); ?>
+						<?php esc_html_e('Cancelled', 'cashcred'); ?>
 					</option>
 				</select>
 				
 			</div>	 
 		 
 			<div>
-				<a href="<?php echo $delete_url; ?>" class="button button-secondary button-block"><?php _e( 'Trash', 'mycred' ); ?></a>
+				<a href="<?php echo $delete_url; ?>" class="button button-secondary button-block"><?php esc_html_e( 'Trash', 'mycred' ); ?></a>
 			</div>
 
 		</div>
@@ -948,7 +948,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 		<div id="publishing-action">
 			<span class="spinner"></span>
 
-			<input type="submit" id="publish" class="button button-primary primary button-large" value="<?php _e( 'Save Changes', 'mycred' ); ?>" />
+			<input type="submit" id="publish" class="button button-primary primary button-large" value="<?php esc_attr_e( 'Save Changes', 'mycred' ); ?>" />
 
 		</div>
 		<div class="clear"></div>
@@ -1015,7 +1015,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 	<div class="row">
 		<div class="col-md-2 col-sm-6">
 			<div class="form-group">
-				<label for="cashcred-pending-payment-point_type"><?php _e( 'Point Type', 'mycred' ); ?></label>
+				<label for="cashcred-pending-payment-point_type"><?php esc_html_e( 'Point Type', 'mycred' ); ?></label>
  
 				<select name="cashcred_pending_payment[point_type]" <?php echo $disabled; ?> id="cashcred-pending-payment-point_type" class="form-control disabled_fields">
 				<?php
@@ -1035,7 +1035,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 		</div>
 		<div class="col-md-2 col-sm-6">
 			<div class="form-group">
-				<label for="cashcred-pending-payment-gateway"><?php _e( 'Gateway', 'mycred' ); ?></label>
+				<label for="cashcred-pending-payment-gateway"><?php esc_html_e( 'Gateway', 'mycred' ); ?></label>
 				<select name="cashcred_pending_payment[gateway]" <?php echo $disabled; ?> id="cashcred-pending-payment-gateway" class="form-control disabled_fields">
 <?php
 
@@ -1054,7 +1054,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 		</div>
 		<div class="<?php echo $cashcred_setting['fees']['use'] == 1 ? 'col-md-1 col-sm-5' : 'col-md-2 col-sm-6' ?>">
 			<div class="form-group">
-				<label for="cashcred-pending-payment-points"><?php _e( 'Points', 'mycred' ); ?></label>
+				<label for="cashcred-pending-payment-points"><?php esc_html_e( 'Points', 'mycred' ); ?></label>
 				<input type="text" <?php echo $readonly; ?> name="cashcred_pending_payment[points]" id="cashcred-pending-payment-points" class="form-control readonly_fields" value="<?php echo $mycred->number( $pending_payment->points ); ?>" />
 			</div>
 		</div>
@@ -1064,7 +1064,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			if( $cashcred_setting['fees']['use'] == 1 ) { ?>
 				<div class="col-md-1 col-sm-5">
 					<div class="form-group">
-						<label for="cashcred-pending-payment-fee"><?php _e( 'Fee', 'mycred' ); ?></label>
+						<label for="cashcred-pending-payment-fee"><?php esc_html_e( 'Fee', 'mycred' ); ?></label>
 						<input type="text" <?php echo $readonly; ?> name="cashcred_pending_payment[fee]" id="cashcred-pending-payment-fee" class="form-control readonly_fields" value="<?php echo esc_attr( $fee ); ?>" readonly/>
 					</div>
 				</div><?php
@@ -1073,13 +1073,13 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 		?>
 		<div class="<?php echo $cashcred_setting['fees']['use'] == 1 ? 'col-md-1 col-sm-5' : 'col-md-2 col-sm-6'; ?>">
 			<div class="form-group">
-				<label for="cashcred-pending-payment-cost"><?php _e( 'Cost', 'mycred' ); ?></label>
+				<label for="cashcred-pending-payment-cost"><?php esc_html_e( 'Cost', 'mycred' ); ?></label>
 				<input type="text" <?php echo $readonly; ?> name="cashcred_pending_payment[cost]" id="cashcred-pending-payment-cost" class="form-control readonly_fields" value="<?php echo esc_attr( $pending_payment->cost ); ?>" />
 			</div>
 		</div>
 		<div class="<?php echo $cashcred_setting['fees']['use'] == 1 ? 'col-md-1 col-sm-5' : 'col-md-2 col-sm-6'; ?>">
 			<div class="form-group">
-				<label for="cashcred-pending-payment-currency"><?php _e( 'Currency', 'mycred' ); ?></label>
+				<label for="cashcred-pending-payment-currency"><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
 				<input type="text" <?php echo $readonly; ?> name="cashcred_pending_payment[currency]" id="cashcred-pending-payment-currency" class="form-control readonly_fields" value="<?php echo esc_attr( $pending_payment->currency ); ?>" />
 			</div>
 		</div>

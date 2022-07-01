@@ -495,7 +495,7 @@ $premium_addons_url = get_mycred_addon_page_url('premium_addons');
 <div class="wrap" id="myCRED-wrap">
 	<div class="mycred-addon-outer">	
 		<div class="myCRED-addon-heading">
-			<h1><?php _e( 'Add-ons', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+			<h1><?php esc_html_e( 'Add-ons', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 		</div>
 		 <?php
 		if( !isset( $_GET['mycred_addons'] ) ){ ?>
@@ -505,7 +505,7 @@ $premium_addons_url = get_mycred_addon_page_url('premium_addons');
 				  <input type="checkbox" name="mycred-addons-checkbox" id="mycred-addons-checkbox" <?php echo $this->check_all_addons() ? 'checked' : ''; ?> >
 				  <span class="slider round"></span>
 				</label>
-				<p class="mycred-activate"><?php _e( 'Activate/Deactivate All Add-ons', 'mycred' ); ?> </p>
+				<p class="mycred-activate"><?php esc_html_e( 'Activate/Deactivate All Add-ons', 'mycred' ); ?> </p>
 			</div>
 <?php 	} ?>
 		
@@ -715,7 +715,7 @@ else
 
 				<?php endif; ?>
 
-				<a class="more-details" id="<?php echo $aria_action; ?>" href="<?php echo $data['addon_url']; ?>" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a>
+				<a class="more-details" id="<?php echo $aria_action; ?>" href="<?php echo $data['addon_url']; ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
 
 				<div class="theme-id-container">
 

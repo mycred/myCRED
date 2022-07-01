@@ -405,7 +405,7 @@ if ( ! class_exists( 'myCRED_Chart' ) ) :
 
 				$element_id    = $this->generate_element_id();
 				$element_style = $this->get_canvas_styling();
-				$output        = '<div class="chart-container ' . MYCRED_SLUG . '-chart-container"><canvas class="' . MYCRED_SLUG . '-chart-canvas" ' . $element_style . ' id="' . $element_id . '"></canvas></div>';
+				$output        = '<div class="chart-container ' . MYCRED_SLUG . '-chart-container"><canvas class="' . MYCRED_SLUG . '-chart-canvas" ' . $element_style . ' id="' . $element_id . '" height="'. $this->args['height'] .  ' "></canvas></div>';
 
 				$mycred_charts[ $element_id ] = $chart;
 

@@ -635,7 +635,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 ?>
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php _e( 'Log', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/the-log/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<h1><?php esc_html_e( 'Log', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/the-log/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 <?php
 
 			// This requirement is only checked on activation. If the library is disabled
@@ -979,11 +979,11 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			<div class="row">
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<label><?php _e( 'User', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'User', 'mycred' ); ?></label>
 					<div id="mycred-user-to-show"></div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<label><?php _e( 'Date', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Date', 'mycred' ); ?></label>
 					<div id="mycred-date-to-show"></div>
 				</div>
 				<div class="col-lg-2 col-md-2 col-sm-4 col-xs-12">
@@ -991,18 +991,18 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 					<input type="text" name="mycred_manage_log[creds]" id="mycred-creds-to-show" class="form-control" placeholder="" value="" />
 				</div>
 				<div class="col-lg-4 col-md-4 col-sm-8 col-xs-12">
-					<label><?php _e( 'Reference', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Reference', 'mycred' ); ?></label>
 					<select name="mycred_manage_log[ref]" id="mycred-referece-to-show"></select>
 				</div>
 			</div>
 
 			<div class="row">
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" id="mycred-old-entry-to-show-wrapper">
-					<label><?php _e( 'Original Entry', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Original Entry', 'mycred' ); ?></label>
 					<div id="mycred-old-entry-to-show"></div>
 				</div>
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" id="mycred-new-entry-to-show-wrapper">
-					<label><?php _e( 'Log Entry', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Log Entry', 'mycred' ); ?></label>
 					<input type="text" name="mycred_manage_log[entry]" id="mycred-new-entry-to-show" class="form-control" placeholder="" value="" />
 					<span class="description" id="available-template-tags" style="display:none;"></span>
 				</div>
@@ -1010,12 +1010,12 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			<div class="row last">
 				<div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 text-center">
-					<a href="javascript:void(0);" class="button button-primary button-large mycred-delete-row" id="mycred-delete-entry-in-editor" data-id=""><?php _e( 'Delete Entry', 'mycred' ); ?></a>
+					<a href="javascript:void(0);" class="button button-primary button-large mycred-delete-row" id="mycred-delete-entry-in-editor" data-id=""><?php esc_html_e( 'Delete Entry', 'mycred' ); ?></a>
 				</div>
 				<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12"><span id="mycred-editor-indicator" class="spinner"></span></div>
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" id="mycred-editor-results"></div>
 				<div class="col-lg-3 col-md-2 col-sm-11 col-xs-12 text-right">
-					<input type="submit" id="mycred-editor-submit" class="button button-secondary button-large" value="<?php _e( 'Update Entry', 'mycred' ); ?>" />
+					<input type="submit" id="mycred-editor-submit" class="button button-secondary button-large" value="<?php esc_attr_e( 'Update Entry', 'mycred' ); ?>" />
 				</div>
 			</div>
 		</form>

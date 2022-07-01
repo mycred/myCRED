@@ -186,21 +186,21 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Circulation' ) ) :
 				<thead>
 					<tr>
 						<th class="rowtitle"></th>
-						<th class="doublecell" colspan="2"><?php _e( 'Today', 'mycred' ); ?></th>
-						<th class="doublecell" colspan="2"><?php _e( 'This Week', 'mycred' ); ?></th>
-						<th class="doublecell" colspan="2"><?php _e( 'This Month', 'mycred' ); ?></th>
-						<th class="doublecell" colspan="2"><?php _e( 'This Year', 'mycred' ); ?></th>
+						<th class="doublecell" colspan="2"><?php esc_html_e( 'Today', 'mycred' ); ?></th>
+						<th class="doublecell" colspan="2"><?php esc_html_e( 'This Week', 'mycred' ); ?></th>
+						<th class="doublecell" colspan="2"><?php esc_html_e( 'This Month', 'mycred' ); ?></th>
+						<th class="doublecell" colspan="2"><?php esc_html_e( 'This Year', 'mycred' ); ?></th>
 					</tr>
 					<tr class="subheader">
 						<th class="rowtitle"></th>
-						<th class="cell"><?php _e( 'Gained', 'mycred' ); ?></th>
-						<th class="cell"><?php _e( 'Lost', 'mycred' ); ?></th>
-						<th class="cell"><?php _e( 'Gained', 'mycred' ); ?></th>
-						<th class="cell"><?php _e( 'Lost', 'mycred' ); ?></th>
-						<th class="cell"><?php _e( 'Gained', 'mycred' ); ?></th>
-						<th class="cell"><?php _e( 'Lost', 'mycred' ); ?></th>
-						<th class="cell"><?php _e( 'Gained', 'mycred' ); ?></th>
-						<th class="cell last"><?php _e( 'Lost', 'mycred' ); ?></th>
+						<th class="cell"><?php esc_html_e( 'Gained', 'mycred' ); ?></th>
+						<th class="cell"><?php esc_html_e( 'Lost', 'mycred' ); ?></th>
+						<th class="cell"><?php esc_html_e( 'Gained', 'mycred' ); ?></th>
+						<th class="cell"><?php esc_html_e( 'Lost', 'mycred' ); ?></th>
+						<th class="cell"><?php esc_html_e( 'Gained', 'mycred' ); ?></th>
+						<th class="cell"><?php esc_html_e( 'Lost', 'mycred' ); ?></th>
+						<th class="cell"><?php esc_html_e( 'Gained', 'mycred' ); ?></th>
+						<th class="cell last"><?php esc_html_e( 'Lost', 'mycred' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -316,21 +316,21 @@ jQuery(function($) {
 			<thead>
 				<tr>
 					<th class="rowtitle"></th>
-					<th class="doublecell" colspan="2"><?php _e( 'Today', 'mycred' ); ?></th>
-					<th class="doublecell" colspan="2"><?php _e( 'This Week', 'mycred' ); ?></th>
-					<th class="doublecell" colspan="2"><?php _e( 'This Month', 'mycred' ); ?></th>
-					<th class="doublecell" colspan="2"><?php _e( 'This Year', 'mycred' ); ?></th>
+					<th class="doublecell" colspan="2"><?php esc_html_e( 'Today', 'mycred' ); ?></th>
+					<th class="doublecell" colspan="2"><?php esc_html_e( 'This Week', 'mycred' ); ?></th>
+					<th class="doublecell" colspan="2"><?php esc_html_e( 'This Month', 'mycred' ); ?></th>
+					<th class="doublecell" colspan="2"><?php esc_html_e( 'This Year', 'mycred' ); ?></th>
 				</tr>
 				<tr class="subheader">
 					<th class="rowtitle"></th>
-					<th class="cell"><?php _e( 'Gained', 'mycred' ); ?></th>
-					<th class="cell"><?php _e( 'Lost', 'mycred' ); ?></th>
-					<th class="cell"><?php _e( 'Gained', 'mycred' ); ?></th>
-					<th class="cell"><?php _e( 'Lost', 'mycred' ); ?></th>
-					<th class="cell"><?php _e( 'Gained', 'mycred' ); ?></th>
-					<th class="cell"><?php _e( 'Lost', 'mycred' ); ?></th>
-					<th class="cell"><?php _e( 'Gained', 'mycred' ); ?></th>
-					<th class="cell last"><?php _e( 'Lost', 'mycred' ); ?></th>
+					<th class="cell"><?php esc_html_e( 'Gained', 'mycred' ); ?></th>
+					<th class="cell"><?php esc_html_e( 'Lost', 'mycred' ); ?></th>
+					<th class="cell"><?php esc_html_e( 'Gained', 'mycred' ); ?></th>
+					<th class="cell"><?php esc_html_e( 'Lost', 'mycred' ); ?></th>
+					<th class="cell"><?php esc_html_e( 'Gained', 'mycred' ); ?></th>
+					<th class="cell"><?php esc_html_e( 'Lost', 'mycred' ); ?></th>
+					<th class="cell"><?php esc_html_e( 'Gained', 'mycred' ); ?></th>
+					<th class="cell last"><?php esc_html_e( 'Lost', 'mycred' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>

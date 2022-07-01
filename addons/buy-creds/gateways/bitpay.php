@@ -171,8 +171,8 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 
 			check_ajax_referer( 'buycred-pair-bitpay', 'token' );
 
-			$pairing_code = sanitize_text_field( $_POST['code'] );
-			$network      = sanitize_text_field( $_POST['network'] );
+			$pairing_code = isset( $_POST['code'] ) ? sanitize_text_field( wp_unslash( $_POST['code'] ) ) : '';
+			$network      = isset( $_POST['network'] ) ? sanitize_text_field( wp_unslash( $_POST['network'] ) ) : '';
 
 			try {
 
@@ -343,13 +343,13 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 		 */
 		public function checkout_page_body() {
 
-			echo $this->checkout_header();
-			echo $this->checkout_logo( false );
+			echo wp_kses_post( $this->checkout_header() );
+			echo wp_kses_post( $this->checkout_logo( false ) );
 
-			echo $this->checkout_order();
-			echo $this->checkout_cancel();
+			echo wp_kses_post( $this->checkout_order() );
+			echo wp_kses_post( $this->checkout_cancel() );
 
-			echo $this->checkout_footer();
+			echo wp_kses_post( $this->checkout_footer() );
 
 		}
 
@@ -365,12 +365,12 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 ?>
 <div class="row">
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Details', 'mycred' ); ?></h3>
 
 		<?php if ( ! $this->is_ready ) : ?>
 
 		<div class="form-group">
-			<label><?php _e( 'API Token', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'API Token', 'mycred' ); ?></label>
 			<div class="form-inline" id="bitpay-pairing-wrapper">
 				<input type="text" id="bitpay-pair-code" class="form-control" placeholder="Pairing Code" value="" /> 
 				<select id="bitpay-pair-network" class="form-control">
@@ -395,12 +395,12 @@ jQuery(function($){
 			type     : "POST",
 			data     : {
 				action  : 'buycred-bitpay-pairing',
-				token   : '<?php echo wp_create_nonce( 'buycred-pair-bitpay' ); ?>',
+				token   : '<?php echo esc_attr( wp_create_nonce( 'buycred-pair-bitpay' ) ); ?>',
 				code    : $( '#bitpay-pair-code' ).val(),
 				network : $( '#bitpay-pair-network' ).find( ':selected' ).val(),
 			},
 			dataType : "JSON",
-			url      : '<?php echo admin_url( 'admin-ajax.php' ); ?>',
+			url      : '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
 			beforeSend : function() {
 
 				$( '#sync-bitpay-pairing-code' ).attr( 'disabled', 'disabled' );
@@ -448,14 +448,14 @@ jQuery(function($){
 		<?php else : ?>
 
 		<div class="form-group">
-			<label><?php _e( 'API Token', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'API Token', 'mycred' ); ?></label>
 			<p class="form-control-static"><?php echo esc_attr( $prefs['api_label'] ); ?></p>
 			<button type="button" id="bitpay-cancel-pair" class="button button-secondary">Revoke Token</button>
-			<input type="hidden" class="reset-api" name="<?php echo $this->field_name( 'api_secret' ); ?>" value="<?php echo esc_attr( $prefs['api_secret'] ); ?>" />
-			<input type="hidden" class="reset-api" name="<?php echo $this->field_name( 'api_public' ); ?>" value="<?php echo esc_attr( $prefs['api_public'] ); ?>" />
-			<input type="hidden" class="reset-api" name="<?php echo $this->field_name( 'api_sign' ); ?>" value="<?php echo esc_attr( $prefs['api_sign'] ); ?>" />
-			<input type="hidden" class="reset-api" name="<?php echo $this->field_name( 'api_token' ); ?>" value="<?php echo esc_attr( $prefs['api_token'] ); ?>" />
-			<input type="hidden" class="reset-api" name="<?php echo $this->field_name( 'api_label' ); ?>" value="<?php echo esc_attr( $prefs['api_label'] ); ?>" />
+			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_secret' ) ); ?>" value="<?php echo esc_attr( $prefs['api_secret'] ); ?>" />
+			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_public' ) ); ?>" value="<?php echo esc_attr( $prefs['api_public'] ); ?>" />
+			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_sign' ) ); ?>" value="<?php echo esc_attr( $prefs['api_sign'] ); ?>" />
+			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_token' ) ); ?>" value="<?php echo esc_attr( $prefs['api_token'] ); ?>" />
+			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_label' ) ); ?>" value="<?php echo esc_attr( $prefs['api_label'] ); ?>" />
 		</div>
 <script type="text/javascript">
 jQuery(function($){
@@ -479,18 +479,18 @@ jQuery(function($){
 		<?php endif; ?>
 
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'item_name' ); ?>"><?php _e( 'Item Name', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'item_name' ); ?>" id="<?php echo $this->field_id( 'item_name' ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>"><?php esc_html_e( 'Item Name', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'item_name' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>"><?php esc_html_e( 'Logo URL', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'logo_url' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
 		</div>
 		<div class="row">
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( 'speed' ); ?>"><?php _e( 'Transaction Speed', 'mycred' ); ?></label>
-					<select name="<?php echo $this->field_name( 'speed' ); ?>" id="<?php echo $this->field_id( 'speed' ); ?>" class="form-control">
+					<label for="<?php echo esc_attr( $this->field_id( 'speed' ) ); ?>"><?php esc_html_e( 'Transaction Speed', 'mycred' ); ?></label>
+					<select name="<?php echo esc_attr( $this->field_name( 'speed' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'speed' ) ); ?>" class="form-control">
 <?php
 
 			$options = array(
@@ -509,8 +509,8 @@ jQuery(function($){
 			</div>
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( 'notifications' ); ?>"><?php _e( 'Full Notifications', 'mycred' ); ?></label>
-					<select name="<?php echo $this->field_name( 'notifications' ); ?>" id="<?php echo $this->field_id( 'notifications' ); ?>" class="form-control">
+					<label for="<?php echo esc_attr( $this->field_id( 'notifications' ) ); ?>"><?php esc_html_e( 'Full Notifications', 'mycred' ); ?></label>
+					<select name="<?php echo esc_attr( $this->field_name( 'notifications' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'notifications' ) ); ?>" class="form-control">
 <?php
 
 			$options = array(
@@ -529,14 +529,14 @@ jQuery(function($){
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'currency' ); ?>" id="<?php echo $this->field_id( 'currency' ); ?>" value="<?php echo $prefs['currency']; ?>" class="form-control" maxlength="3" placeholder="<?php _e( 'Currency Code', 'mycred' ); ?>" />
+			<label for="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>"><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'currency' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>" value="<?php echo esc_attr( $prefs['currency'] ); ?>" class="form-control" maxlength="3" placeholder="<?php esc_html_e( 'Currency Code', 'mycred' ); ?>" />
 
 		</div>
 		<div class="form-group">
-			<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'Exchange Rates', 'mycred' ); ?></label>
 
 			<?php $this->exchange_rate_setup(); ?>
 

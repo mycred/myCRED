@@ -351,18 +351,18 @@ jQuery(function($){
 			if ( empty( $prefs['color_negative'] ) ) $prefs['color_negative'] = $colors['negative'];
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Statistics', 'mycred' ); ?></h4>
+<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Statistics', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
 
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
-			<h3><?php _e( 'Statistics Color', 'mycred' ); ?></h3>
+			<h3><?php esc_html_e( 'Statistics Color', 'mycred' ); ?></h3>
 			<div class="row">
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 					<div class="form-group">
-						<label for="<?php echo $this->field_id( 'color_positive' ); ?>"><?php _e( 'Positive Values', 'mycred' ); ?></label>
+						<label for="<?php echo $this->field_id( 'color_positive' ); ?>"><?php esc_html_e( 'Positive Values', 'mycred' ); ?></label>
 						<input type="text" name="<?php echo $this->field_name( 'color_positive' ); ?>" id="<?php echo $this->field_id( 'color_positive' ); ?>" value="<?php echo esc_attr( $prefs['color_positive'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
 					</div>
 
@@ -370,7 +370,7 @@ jQuery(function($){
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 					<div class="form-group">
-						<label for="<?php echo $this->field_id( 'color_negative' ); ?>"><?php _e( 'Negative Values', 'mycred' ); ?></label>
+						<label for="<?php echo $this->field_id( 'color_negative' ); ?>"><?php esc_html_e( 'Negative Values', 'mycred' ); ?></label>
 						<input type="text" name="<?php echo $this->field_name( 'color_negative' ); ?>" id="<?php echo $this->field_id( 'color_negative' ); ?>" value="<?php echo esc_attr( $prefs['color_negative'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
 					</div>
 
@@ -388,14 +388,14 @@ jQuery(function($){
 
 ?>
 
-			<h3><?php _e( 'Optimization', 'mycred' ); ?></h3>
-			<p><span class="description"><?php _e( 'Disabling these features can improve render time of your charts, especially if you are showing a large number of charts on a single page. You can also select to disable these features when using the chart shortcodes.', 'mycred' ); ?></span></p>
+			<h3><?php esc_html_e( 'Optimization', 'mycred' ); ?></h3>
+			<p><span class="description"><?php esc_html_e( 'Disabling these features can improve render time of your charts, especially if you are showing a large number of charts on a single page. You can also select to disable these features when using the chart shortcodes.', 'mycred' ); ?></span></p>
 			<div class="row">
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
 					<div class="form-group">
 						<div class="checkbox">
-							<label for="<?php echo $this->field_id( 'animate' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'animate' ); ?>" id="<?php echo $this->field_id( 'animate' ); ?>"<?php checked( $prefs['animate'], 1 ); ?> value="1" /> <?php _e( 'Animate Charts', 'mycred' ); ?></label>
+							<label for="<?php echo $this->field_id( 'animate' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'animate' ); ?>" id="<?php echo $this->field_id( 'animate' ); ?>"<?php checked( $prefs['animate'], 1 ); ?> value="1" /> <?php esc_html_e( 'Animate Charts', 'mycred' ); ?></label>
 						</div>
 					</div>
 
@@ -404,7 +404,7 @@ jQuery(function($){
 
 					<div class="form-group">
 						<div class="checkbox">
-							<label for="<?php echo $this->field_id( 'bezier' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'bezier' ); ?>" id="<?php echo $this->field_id( 'bezier' ); ?>"<?php checked( $prefs['bezier'], 1 ); ?> value="1" /> <?php _e( 'Use Bezier Curves', 'mycred' ); ?></label>
+							<label for="<?php echo $this->field_id( 'bezier' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'bezier' ); ?>" id="<?php echo $this->field_id( 'bezier' ); ?>"<?php checked( $prefs['bezier'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use Bezier Curves', 'mycred' ); ?></label>
 						</div>
 					</div>
 
@@ -412,7 +412,7 @@ jQuery(function($){
 			</div>
 
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'caching' ); ?>"><?php _e( 'Caching', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( 'caching' ); ?>"><?php esc_html_e( 'Caching', 'mycred' ); ?></label>
 				<select name="<?php echo $this->field_name( 'caching' ); ?>" id="<?php echo $this->field_id( 'caching' ); ?>" class="form-control">
 <?php
 

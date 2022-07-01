@@ -285,7 +285,7 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 		<tbody>
 			<tr>
 				<th>
-					<label for="upload"><?php _e( 'Choose a file from your computer:', 'mycred' ); ?></label>
+					<label for="upload"><?php esc_html_e( 'Choose a file from your computer:', 'mycred' ); ?></label>
 				</th>
 				<td>
 					<input type="file" id="upload" name="import" size="25" />
@@ -296,7 +296,7 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 			</tr>
 			<tr>
 				<th>
-					<label for="file_url"><?php _e( 'OR enter path to file:', 'mycred' ); ?></label>
+					<label for="file_url"><?php esc_html_e( 'OR enter path to file:', 'mycred' ); ?></label>
 				</th>
 				<td>
 					<?php echo ABSPATH . ' '; ?><input type="text" id="file_url" name="file_url" size="25" />
@@ -304,7 +304,7 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 			</tr>
 			<tr>
 				<th>
-					<label for="delimiter"><?php _e( 'Delimiter', 'mycred' ); ?></label>
+					<label for="delimiter"><?php esc_html_e( 'Delimiter', 'mycred' ); ?></label>
 				</th>
 				<td>
 					<input type="text" name="delimiter" id="delimiter" placeholder="," size="2" />
@@ -312,19 +312,19 @@ if ( ! class_exists( 'myCRED_Importer_Balances' ) ) :
 			</tr>
 			<tr>
 				<th>
-					<label><?php _e( 'Method', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Method', 'mycred' ); ?></label>
 				</th>
 				<td>
 					<select name="method">
-						<option value=""><?php _e( 'Replace current balances with the amount in this CSV file', 'mycred' ); ?></option>
-						<option value="add"><?php _e( 'Adjust current balances according to the amount in this CSV file', 'mycred' ); ?></option>
+						<option value=""><?php esc_html_e( 'Replace current balances with the amount in this CSV file', 'mycred' ); ?></option>
+						<option value="add"><?php esc_html_e( 'Adjust current balances according to the amount in this CSV file', 'mycred' ); ?></option>
 					</select>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 	<p class="submit">
-		<input type="submit" class="button button-primary" value="<?php _e( 'Import', 'mycred' ); ?>" />
+		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Import', 'mycred' ); ?>" />
 	</p>
 </form>
 <?php

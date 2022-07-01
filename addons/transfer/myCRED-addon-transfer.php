@@ -262,14 +262,14 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 				$settings['types'] = $this->default_prefs['types'];
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Transfers', 'mycred' ); ?></h4>
+<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Transfers', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
 
-	<h3><?php _e( 'Features', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Features', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="mycred-transfer-type"><?php _e( 'Point Types', 'mycred' ); ?></label>
+				<label for="mycred-transfer-type"><?php esc_html_e( 'Point Types', 'mycred' ); ?></label>
 
 				<?php if ( count( $this->point_types ) > 1 ) : ?>
 
@@ -286,7 +286,7 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'reload' ); ?>"><?php _e( 'Reload', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( 'reload' ); ?>"><?php esc_html_e( 'Reload', 'mycred' ); ?></label>
 				<select name="<?php echo $this->field_name( 'reload' ); ?>" id="<?php echo $this->field_id( 'reload' ); ?>" class="form-control">
 <?php
 
@@ -296,19 +296,19 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 ?>
 				</select>
-				<p><span class="description"><?php _e( 'Should the page reload once a transfer has been completed?', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'Should the page reload once a transfer has been completed?', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'message' ); ?>"><?php _e( 'Message Length', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( 'message' ); ?>"><?php esc_html_e( 'Message Length', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( 'message' ); ?>" id="<?php echo $this->field_id( 'message' ); ?>" class="form-control" value="<?php echo absint( $settings['message'] ); ?>" />
-				<p><span class="description"><?php _e( 'The maximum length of messages users can attach to a transfer. Use zero to disable.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'The maximum length of messages users can attach to a transfer. Use zero to disable.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'autofill' ); ?>"><?php _e( 'Autofill Recipient', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( 'autofill' ); ?>"><?php esc_html_e( 'Autofill Recipient', 'mycred' ); ?></label>
 				<select name="<?php echo $this->field_name( 'autofill' ); ?>" id="<?php echo $this->field_id( 'autofill' ); ?>" class="form-control">
 <?php
 
@@ -320,14 +320,14 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 
 ?>
 				</select>
-				<p><span class="description"><?php _e( 'Select what user details recipients should be autofilled by.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'Select what user details recipients should be autofilled by.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'limit' => 'none' ) ); ?>"><?php _e( 'Limits', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'limit' => 'none' ) ); ?>"><?php esc_html_e( 'Limits', 'mycred' ); ?></label>
 <?php
 
 			// Loop though limits
@@ -346,58 +346,58 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'limit' => 'amount' ) ); ?>"><?php _e( 'Limit Amount', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'limit' => 'amount' ) ); ?>"><?php esc_html_e( 'Limit Amount', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'limit' => 'amount' ) ); ?>" id="<?php echo $this->field_id( array( 'limit' => 'amount' ) ); ?>" class="form-control" value="<?php echo $this->core->number( $settings['limit']['amount'] ); ?>" />
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'templates' => 'button' ) ); ?>"><?php _e( 'Default Button Label', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'templates' => 'button' ) ); ?>"><?php esc_html_e( 'Default Button Label', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'templates' => 'button' ) ); ?>" id="<?php echo $this->field_id( array( 'templates' => 'button' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['templates']['button'] ); ?>" />
-				<p><span class="description"><?php _e( 'The default transfer button label. You can override this in the shortcode or widget if needed.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'The default transfer button label. You can override this in the shortcode or widget if needed.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 	</div>
 
-	<h3><?php _e( 'Log Templates', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Log Templates', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'logs' => 'sending' ) ); ?>"><?php _e( 'Log template for sending', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'logs' => 'sending' ) ); ?>"><?php esc_html_e( 'Log template for sending', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'logs' => 'sending' ) ); ?>" id="<?php echo $this->field_id( array( 'logs' => 'sending' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['logs']['sending'] ); ?>" />
 				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ), '%transfer_message%' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'logs' => 'receiving' ) ); ?>"><?php _e( 'Log template for receiving', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'logs' => 'receiving' ) ); ?>"><?php esc_html_e( 'Log template for receiving', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'logs' => 'receiving' ) ); ?>" id="<?php echo $this->field_id( array( 'logs' => 'receiving' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['logs']['receiving'] ); ?>" />
 				<p><span class="description"><?php echo $this->core->available_template_tags( array( 'general', 'user' ), '%transfer_message%' ); ?></span></p>
 			</div>
 		</div>
 	</div>
 
-	<h3><?php _e( 'Warning Messages', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Warning Messages', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'errors' => 'low' ) ); ?>"><?php _e( 'Insufficient Funds Warning', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'errors' => 'low' ) ); ?>"><?php esc_html_e( 'Insufficient Funds Warning', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'errors' => 'low' ) ); ?>" id="<?php echo $this->field_id( array( 'errors' => 'low' ) ); ?>" value="<?php echo esc_attr( $settings['errors']['low'] ); ?>" class="form-control" />
-				<p><span class="description"><?php _e( 'Message to show the user if they try to send more then they can afford.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'Message to show the user if they try to send more then they can afford.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="mycred-transfer-log-receiving"><?php _e( 'Limit Reached Warning', 'mycred' ); ?></label>
+				<label for="mycred-transfer-log-receiving"><?php esc_html_e( 'Limit Reached Warning', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'errors' => 'over' ) ); ?>" id="<?php echo $this->field_id( array( 'errors' => 'over' ) ); ?>" value="<?php echo esc_attr( $settings['errors']['over'] ); ?>" class="form-control" />
-				<p><span class="description"><?php _e( 'Message to show the user once they reach their transfer limit. Ignored if no limits are enforced.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'Message to show the user once they reach their transfer limit. Ignored if no limits are enforced.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Visitors Template', 'mycred' ); ?></h3>
-			<p><span class="description"><?php _e( 'The template to use when the transfer shortcode or widget is viewed by someone who is not logged in.', 'mycred' ); ?></span></p>
+			<h3><?php esc_html_e( 'Visitors Template', 'mycred' ); ?></h3>
+			<p><span class="description"><?php esc_html_e( 'The template to use when the transfer shortcode or widget is viewed by someone who is not logged in.', 'mycred' ); ?></span></p>
 <?php
 
 			wp_editor( $settings['templates']['login'], $this->field_id( array( 'templates' => 'login' ) ), array(
@@ -410,8 +410,8 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 	</div>
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Limit Template', 'mycred' ); ?></h3>
-			<p><span class="description"><?php _e( 'The template to use if you select to show the transfer limit in the transfer shortcode or widget. Ignored if there is no limit enforced.', 'mycred' ); ?></span></p>
+			<h3><?php esc_html_e( 'Limit Template', 'mycred' ); ?></h3>
+			<p><span class="description"><?php esc_html_e( 'The template to use if you select to show the transfer limit in the transfer shortcode or widget. Ignored if there is no limit enforced.', 'mycred' ); ?></span></p>
 <?php
 
 			wp_editor( $settings['templates']['limit'], $this->field_id( array( 'templates' => 'limit' ) ), array(
@@ -426,8 +426,8 @@ if ( ! class_exists( 'myCRED_Transfer_Module' ) ) :
 	</div>
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Balance Template', 'mycred' ); ?></h3>
-			<p><span class="description"><?php _e( 'The template to use if you select to show the users balance in the transfer shortcode or widget. Ignored if balances are not shown.', 'mycred' ); ?></span></p>
+			<h3><?php esc_html_e( 'Balance Template', 'mycred' ); ?></h3>
+			<p><span class="description"><?php esc_html_e( 'The template to use if you select to show the users balance in the transfer shortcode or widget. Ignored if balances are not shown.', 'mycred' ); ?></span></p>
 <?php
 
 			wp_editor( $settings['templates']['balance'], $this->field_id( array( 'templates' => 'balance' ) ), array(

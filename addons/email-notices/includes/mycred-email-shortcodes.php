@@ -24,10 +24,10 @@ if ( ! function_exists( 'mycred_render_email_subscriptions' ) ) :
 
 		// Save
 		$saved           = false;
-		if ( isset( $_REQUEST['do'] ) && $_REQUEST['do'] == 'mycred-unsubscribe' && wp_verify_nonce( $_REQUEST['token'], 'update-mycred-email-subscriptions' ) ) {
+		if ( isset( $_REQUEST['do'] ) && $_REQUEST['do'] == 'mycred-unsubscribe' && isset( $_REQUEST['token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['token'] ) ), 'update-mycred-email-subscriptions' ) ) {
 
 			if ( isset( $_POST['mycred_email_unsubscribe'] ) && ! empty( $_POST['mycred_email_unsubscribe'] ) )
-				$new_selection = sanitize_email( $_POST['mycred_email_unsubscribe'] );
+				$new_selection = sanitize_email( wp_unslash( $_POST['mycred_email_unsubscribe'] ) );
 			else
 				$new_selection = array();
 
@@ -53,7 +53,7 @@ if ( ! function_exists( 'mycred_render_email_subscriptions' ) ) :
 		ob_start();
 
 		if ( $saved )
-			echo '<p class="updated-email-subscriptions">' . $success . '</p>';
+			echo '<p class="updated-email-subscriptions">' . esc_html( $success ) . '</p>';
 
 			$url             = add_query_arg( array( 'do' => 'mycred-unsubscribe', 'user' => get_current_user_id(), 'token' => wp_create_nonce( 'update-mycred-email-subscriptions' ) ) );
 
@@ -62,8 +62,8 @@ if ( ! function_exists( 'mycred_render_email_subscriptions' ) ) :
 	<table class="table">
 		<thead>
 			<tr>
-				<th class="check"><?php _e( 'Unsubscribe', 'mycred' ); ?></th>
-				<th class="notice-title"><?php _e( 'Email Notice', 'mycred' ); ?></th>
+				<th class="check"><?php esc_html_e( 'Unsubscribe', 'mycred' ); ?></th>
+				<th class="notice-title"><?php esc_html_e( 'Email Notice', 'mycred' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -75,7 +75,7 @@ if ( ! function_exists( 'mycred_render_email_subscriptions' ) ) :
 			<?php if ( $settings['recipient'] == 'admin' ) continue; ?>
 
 			<tr>
-				<td class="check"><input type="checkbox" name="mycred_email_unsubscribe[]"<?php if ( in_array( $notice->ID, $unsubscriptions ) ) echo ' checked="checked"'; ?> value="<?php echo $notice->ID; ?>" /></td>
+				<td class="check"><input type="checkbox" name="mycred_email_unsubscribe[]"<?php if ( in_array( $notice->ID, $unsubscriptions ) ) echo ' checked="checked"'; ?> value="<?php echo esc_attr( $notice->ID ); ?>" /></td>
 				<td class="notice-title"><?php echo esc_html( $settings['label'] ); ?></td>
 			</tr>
 
@@ -84,14 +84,14 @@ if ( ! function_exists( 'mycred_render_email_subscriptions' ) ) :
 		<?php else : ?>
 
 			<tr>
-				<td colspan="2"><?php _e( 'There are no email notifications yet.', 'mycred' ); ?></td>
+				<td colspan="2"><?php esc_html_e( 'There are no email notifications yet.', 'mycred' ); ?></td>
 			</tr>
 
 		<?php endif; ?>
 
 		</tbody>
 	</table>
-	<input type="submit" class="btn btn-primary button button-primary pull-right" value="<?php _e( 'Save Changes', 'mycred' ); ?>" />
+	<input type="submit" class="btn btn-primary button button-primary pull-right" value="<?php esc_html_e( 'Save Changes', 'mycred' ); ?>" />
 </form>
 <?php
 

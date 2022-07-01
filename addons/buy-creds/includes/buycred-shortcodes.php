@@ -203,7 +203,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 		if ( ! empty( $buycred_instance->gateway->errors ) ) {
 
 			foreach ( $buycred_instance->gateway->errors as $error )
-				echo '<div class="alert alert-warnng"><p>' . $error . '</p></div>';
+				echo '<div class="alert alert-warnng"><p>' . esc_html( $error ) . '</p></div>';
 
 		}
 
@@ -216,7 +216,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 				if( count( $point_types ) > 1 ){ ?>
 					<select name="ctype" class="mycred-change-pointtypes">
 						<?php foreach ( $point_types as $key => $value ) :?>
-							<option value="<?php echo $value[0]; ?>"><?php echo $value[1]; ?></option><?php endforeach;?>
+							<option value="<?php echo esc_attr( $value[0] ); ?>"><?php echo esc_html( $value[1] ); ?></option><?php endforeach;?>
 					</select><?php 
 				}else{ ?>
 					<input type="hidden" name="ctype" value="<?php echo esc_attr( $point_types[0][0] ); ?>" /><?php 
@@ -228,7 +228,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 			<input type="hidden" name="er_random" value="<?php echo esc_attr( $e_rate ); ?>" />
 			<?php } ?>			
 			<div class="form-group">
-				<label class="mycred-point-type"><?php echo $point_types[0][1]; ?></label>
+				<label class="mycred-point-type"><?php echo esc_html( $point_types[0][1] ); ?></label>
 <?php
 
 		// No amount given - user must nominate the amount
@@ -282,7 +282,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 
 ?>
 				<div class="form-group">
-					<label for="gift_to"><?php _e( 'Recipient', 'mycred' ); ?></label>
+					<label for="gift_to"><?php esc_html_e( 'Recipient', 'mycred' ); ?></label>
 					<p class="form-control-static"><?php echo esc_html( $user->display_name ); ?></p>
 					<input type="hidden" name="<?php if ( $gift_to == 'author' ) echo 'post_id'; else echo 'gift_to'; ?>" value="<?php echo absint( $recipient_id ); ?>" />
 				</div>
@@ -295,7 +295,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 
 ?>
 				<div class="form-group">
-					<label for="gateway"><?php _e( 'Pay Using', 'mycred' ); ?></label>
+					<label for="gateway"><?php esc_html_e( 'Pay Using', 'mycred' ); ?></label>
 					<select name="mycred_buy" class="form-control">
 <?php
 
@@ -375,12 +375,12 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 	<table class="table">
 		<thead>
 			<tr>
-				<th class="column-transaction-id"><?php _e( 'Transaction ID', 'mycred' ); ?></th>
-				<th class="column-gateway"><?php _e( 'Gateway', 'mycred' ); ?></th>
-				<th class="column-amount"><?php _e( 'Amount', 'mycred' ); ?></th>
-				<th class="column-cost"><?php _e( 'Cost', 'mycred' ); ?></th>
-				<?php if ( $ctype == '' ) : ?><th class="column-ctype"><?php _e( 'Point Type', 'mycred' ); ?></th><?php endif; ?>
-				<th class="column-actions"><?php _e( 'Actions', 'mycred' ); ?></th>
+				<th class="column-transaction-id"><?php esc_html_e( 'Transaction ID', 'mycred' ); ?></th>
+				<th class="column-gateway"><?php esc_html_e( 'Gateway', 'mycred' ); ?></th>
+				<th class="column-amount"><?php esc_html_e( 'Amount', 'mycred' ); ?></th>
+				<th class="column-cost"><?php esc_html_e( 'Cost', 'mycred' ); ?></th>
+				<?php if ( $ctype == '' ) : ?><th class="column-ctype"><?php esc_html_e( 'Point Type', 'mycred' ); ?></th><?php endif; ?>
+				<th class="column-actions"><?php esc_html_e( 'Actions', 'mycred' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -448,7 +448,7 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 
 ?>
 			<tr>
-				<td colspan="<?php if ( $ctype == '' ) echo '6'; else echo '5'; ?>"><?php _e( 'No pending payments found', 'mycred' ); ?></td>
+				<td colspan="<?php if ( $ctype == '' ) echo '6'; else echo '5'; ?>"><?php esc_html_e( 'No pending payments found', 'mycred' ); ?></td>
 			</tr>
 <?php
 

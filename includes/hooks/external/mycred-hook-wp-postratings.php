@@ -158,29 +158,29 @@ function mycred_load_wp_postratings_hook() {
 
 ?>
 <div class="hook-instance">
-	<h3><?php _e( 'Content Rating', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Content Rating', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'rating' => 'creds' ) ); ?>"><?php _e( 'Member', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'rating' => 'creds' ) ); ?>"><?php esc_html_e( 'Member', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'rating' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'rating' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['rating']['creds'] ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'rating', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'rating', 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'rating', 'limit' ) ), $this->field_id( array( 'rating', 'limit' ) ), $prefs['rating']['limit'] ); ?>
 			</div>
 		</div>
 		<div class="col-lg-2 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'rated' => 'creds' ) ); ?>"><?php _e( 'Content Author', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'rated' => 'creds' ) ); ?>"><?php esc_html_e( 'Content Author', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo $this->field_name( array( 'rated' => 'creds' ) ); ?>" id="<?php echo $this->field_id( array( 'rated' => 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs['rated']['creds'] ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'rated', 'limit' ) ); ?>"><?php _e( 'Limit', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'rated', 'limit' ) ); ?>"><?php esc_html_e( 'Limit', 'mycred' ); ?></label>
 				<?php echo $this->hook_limit_setting( $this->field_name( array( 'rated', 'limit' ) ), $this->field_id( array( 'rated', 'limit' ) ), $prefs['rated']['limit'] ); ?>
 			</div>
 		</div>
@@ -189,14 +189,14 @@ function mycred_load_wp_postratings_hook() {
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'rating', 'value' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'rating', 'value' ) ); ?>" id="<?php echo $this->field_id( array( 'rating', 'value' ) ); ?>" <?php checked( $prefs['rating']['value'], 1 ); ?> value="1" /> <?php _e( 'Use the Rating Value instead of the amount set here.', 'mycred' ); ?></label>
+					<label for="<?php echo $this->field_id( array( 'rating', 'value' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'rating', 'value' ) ); ?>" id="<?php echo $this->field_id( array( 'rating', 'value' ) ); ?>" <?php checked( $prefs['rating']['value'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use the Rating Value instead of the amount set here.', 'mycred' ); ?></label>
 				</div>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'rated', 'value' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'rated', 'value' ) ); ?>" id="<?php echo $this->field_id( array( 'rated', 'value' ) ); ?>" <?php checked( $prefs['rated']['value'], 1 ); ?> value="1" /> <?php _e( 'Use the Rating Value instead of the amount set here.', 'mycred' ); ?></label>
+					<label for="<?php echo $this->field_id( array( 'rated', 'value' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'rated', 'value' ) ); ?>" id="<?php echo $this->field_id( array( 'rated', 'value' ) ); ?>" <?php checked( $prefs['rated']['value'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use the Rating Value instead of the amount set here.', 'mycred' ); ?></label>
 				</div>
 			</div>
 		</div>
@@ -204,15 +204,15 @@ function mycred_load_wp_postratings_hook() {
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'rating' => 'log' ) ); ?>"><?php _e( 'Member Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'rating' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'rating' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['rating']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'rating' => 'log' ) ); ?>"><?php esc_html_e( 'Member Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'rating' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'rating' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['rating']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'rated' => 'log' ) ); ?>"><?php _e( 'Content Author Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( 'rated' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'rated' => 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['rated']['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( array( 'rated' => 'log' ) ); ?>"><?php esc_html_e( 'Content Author Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( array( 'rated' => 'log' ) ); ?>" id="<?php echo $this->field_id( array( 'rated' => 'log' ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['rated']['log'] ); ?>" class="form-control" />
 				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
 			</div>
 		</div>

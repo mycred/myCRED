@@ -293,17 +293,17 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 .form .radio { margin-bottom: 12px; }
 </style>
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php _e( 'Hooks', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-ii/setup-hooks/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<h1><?php esc_html_e( 'Hooks', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-ii/setup-hooks/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 	<div class="widget-liquid-left">
 		<div id="widgets-left">
 			<div id="available-widgets" class="widgets-holder-wrap">
 				<div class="sidebar-name">
 					<div class="sidebar-name-arrow"><br /></div>
-					<h2><?php _e( 'Available Hooks' ); ?> <span id="removing-widget"><?php _ex( 'Deactivate', 'removing-widget' ); ?> <span></span></span></h2>
+					<h2><?php esc_html_e( 'Available Hooks' ); ?> <span id="removing-widget"><?php esc_html_x( 'Deactivate', 'removing-widget' ); ?> <span></span></span></h2>
 				</div>
 				<div class="widget-holder">
 					<div class="sidebar-description">
-						<p class="description"><?php _e( 'To activate a hook drag it to a sidebar or click on it. To deactivate a hook and delete its settings, drag it back.' ); ?></p>
+						<p class="description"><?php esc_html_e( 'To activate a hook drag it to a sidebar or click on it. To deactivate a hook and delete its settings, drag it back.' ); ?></p>
 					</div>
 					<div id="widget-list">
 <?php
@@ -339,10 +339,10 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 									<input type="hidden" name="add_new" class="add_new" value="single" />
 									<div class="widget-control-actions">
 										<div class="alignleft">
-											<a class="widget-control-remove" href="#remove"><?php _e( 'Delete', 'mycred' ); ?></a> | <a class="widget-control-close" href="#close"><?php _e( 'Close', 'mycred' ); ?></a><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && array_key_exists( 'documentation', $data ) && ! empty( $data['documentation'] ) ) : ?> | <a class="hook-documentation" href="<?php echo esc_url( $data['documentation'] ); ?>" target="_blank">Hook Documentation</a><?php endif; ?>
+											<a class="widget-control-remove" href="#remove"><?php esc_html_e( 'Delete', 'mycred' ); ?></a> | <a class="widget-control-close" href="#close"><?php esc_html_e( 'Close', 'mycred' ); ?></a><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && array_key_exists( 'documentation', $data ) && ! empty( $data['documentation'] ) ) : ?> | <a class="hook-documentation" href="<?php echo esc_url( $data['documentation'] ); ?>" target="_blank">Hook Documentation</a><?php endif; ?>
 										</div>
 										<div class="alignright">
-											<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo $key; ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php _e( 'Save', 'mycred' ); ?>" />
+											<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo $key; ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
 											<span class="spinner"></span>
 										</div>
 										<br class="clear" />
@@ -379,8 +379,8 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 <div class="widgets-chooser">
 	<ul class="widgets-chooser-sidebars"></ul>
 	<div class="widgets-chooser-actions">
-		<button class="button-secondary"><?php _e( 'Cancel', 'mycred' ); ?></button>
-		<button class="button-primary"><?php _e( 'Add Hook', 'mycred' ); ?></button>
+		<button class="button-secondary"><?php esc_html_e( 'Cancel', 'mycred' ); ?></button>
+		<button class="button-primary"><?php esc_html_e( 'Add Hook', 'mycred' ); ?></button>
 	</div>
 </div>
 
@@ -419,10 +419,10 @@ jQuery(function($) {
 			<div id="sidebar-active" class="widgets-sortables ui-droppable ui-sortable">
 				<div class="sidebar-name">
 					<div class="sidebar-name-arrow"><br /></div>
-					<h2><?php _e( 'Active Hooks', 'mycred' ); ?></h2>
+					<h2><?php esc_html_e( 'Active Hooks', 'mycred' ); ?></h2>
 				</div>
 				<div class="sidebar-description">
-					<p class="description"><?php _e( 'The following hooks are used for all users.', 'mycred' ); ?></p>
+					<p class="description"><?php esc_html_e( 'The following hooks are used for all users.', 'mycred' ); ?></p>
 				</div>
 <?php
 
@@ -457,10 +457,10 @@ jQuery(function($) {
 							<input type="hidden" name="add_new" class="add_new" value="single" />
 							<div class="widget-control-actions">
 								<div class="alignleft">
-									<a class="widget-control-remove" href="#remove"><?php _e( 'Delete', 'mycred' ); ?></a> | <a class="widget-control-close" href="#close"><?php _e( 'Close', 'mycred' ); ?></a><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && array_key_exists( 'documentation', $data ) && ! empty( $data['documentation'] ) ) : ?>  | <a class="hook-documentation" href="<?php echo esc_url( $data['documentation'] ); ?>" target="_blank">Hook Documentation</a><?php endif; ?>
+									<a class="widget-control-remove" href="#remove"><?php esc_html_e( 'Delete', 'mycred' ); ?></a> | <a class="widget-control-close" href="#close"><?php esc_html_e( 'Close', 'mycred' ); ?></a><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && array_key_exists( 'documentation', $data ) && ! empty( $data['documentation'] ) ) : ?>  | <a class="hook-documentation" href="<?php echo esc_url( $data['documentation'] ); ?>" target="_blank">Hook Documentation</a><?php endif; ?>
 								</div>
 								<div class="alignright">
-									<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo $key; ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php _e( 'Save', 'mycred' ); ?>" />
+									<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo $key; ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
 									<span class="spinner"></span>
 								</div>
 								<br class="clear" />
@@ -499,7 +499,8 @@ jQuery(function($) {
 		 * AJAX: Save Hook Activations
 		 * Either saves the hook order (no use) or saves hooks being activated or deactivated.
 		 * @since 1.7
-		 * @version 1.0.1
+		 * @since 2.4.5 @filter added `mycred_before_hooks_activation_save`
+		 * @version 1.0.2
 		 */
 		public function ajax_hook_activation() {
 
@@ -557,11 +558,13 @@ jQuery(function($) {
 							$option_id = $option_id . '_' . $ctype;
 						}
 
+						$hooks_update = apply_filters( 'mycred_before_hooks_activation_save', $this, $option_id );
+
 						// Update our settings to activate the hook(s)
 						mycred_update_option( $option_id, array(
-							'active'     => $this->active,
+							'active'     => $hooks_update->active,
 							'installed'  => $installed,
-							'hook_prefs' => $this->hook_prefs
+							'hook_prefs' => $hooks_update->hook_prefs
 						) );
 
 					}

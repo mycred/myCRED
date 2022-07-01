@@ -217,7 +217,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 <?php
 
 		foreach ( $columns as $column_id => $column_label )
-			echo '<th class="mycred-sell-' . $column_id . ' ' . $column_id . '">' . $column_label . '</th>';
+			echo '<th class="mycred-sell-' . esc_attr( $column_id ) . ' ' . esc_attr( $column_id ) . '">' . esc_html( $column_label ) . '</th>';
 
 ?>
 		</thead>
@@ -239,13 +239,13 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
   		
 
 					if ( $column_id == 'col-date' )
-						echo '<td class="' . $column_id . '">'.date( $date_format, $entry->time ).'</td>';
+						echo '<td class="' . esc_attr( $column_id ) . '">'. esc_html( date( $date_format, $entry->time ) ).'</td>';
 
 					elseif ( $column_id == 'col-title' )
-						echo '<td class="' . $column_id . '"><a href="' . mycred_get_permalink( $entry->ref_id ) . '">' . mycred_get_the_title( $entry->ref_id ) . '</a></td>';
+						echo '<td class="' . esc_attr( $column_id ) . '"><a href="' . esc_attr( mycred_get_permalink( $entry->ref_id ) ) . '">' . esc_html( mycred_get_the_title( $entry->ref_id ) ) . '</a></td>';
 
 					elseif ( $column_id == 'col-amount' )
-						echo '<td class="' . $column_id . '">' . $mycred->format_creds( abs( $entry->creds ) ) . '</td>';
+						echo '<td class="' . esc_attr( $column_id ) . '">' . esc_attr( $mycred->format_creds( abs( $entry->creds ) ) ) . '</td>';
 
 					elseif ( $column_id == 'col-expires' ) {
 
@@ -270,7 +270,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 
 						}
 					
-						echo '<td class="' . $column_id . '">' . $expires . '</td>';
+						echo '<td class="' . esc_attr( $column_id ) . '">' . esc_html( $expires ) . '</td>';
 
 					}
 					else {
@@ -288,7 +288,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 		}
 		else {
 
-			echo '<tr><td class="no-results" colspan="' . count( $columns ) . '">' . $nothing . '</td></tr>';
+			echo '<tr><td class="no-results" colspan="' . count( $columns ) . '">' . esc_html( $nothing ) . '</td></tr>';
 
 		}
 

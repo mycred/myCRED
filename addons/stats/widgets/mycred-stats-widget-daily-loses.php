@@ -124,7 +124,7 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Daily_Loses' ) ) :
 
 ?>
 <div id="" class="clear clearfix">
-	<h1><?php _e( 'Loses in the last 10 days', 'mycred' ); ?></h1>
+	<h1><?php esc_html_e( 'Loses in the last 10 days', 'mycred' ); ?></h1>
 	<p><span class="description"><?php echo $lose_label; ?></span></p>
 <?php
 
@@ -148,7 +148,7 @@ if ( ! class_exists( 'myCRED_Stats_Widget_Daily_Loses' ) ) :
 ?>
 <li>
 	<strong style="color:<?php echo $this->colors[ $item->type ]['negative']; ?>;"><?php echo $label; ?></strong>
-	<span class="view"><a href="<?php echo esc_url( $url ); ?>"><?php _e( 'View', 'mycred' ); ?></a></span>
+	<span class="view"><a href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'View', 'mycred' ); ?></a></span>
 	<ul>
 		<li><?php echo number_format( $item->total, 0, '.', ' ' ); ?></li>
 		<li><?php echo $item->count; ?></li>

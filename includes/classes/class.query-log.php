@@ -1156,7 +1156,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 ?>
 	</select>
-	<input type="submit" class="button action" id="doaction" value="<?php _e( 'Apply', 'mycred' ); ?>" />
+	<input type="submit" class="button action" id="doaction" value="<?php esc_html_e( 'Apply', 'mycred' ); ?>" />
 </div>
 <?php
 
@@ -1260,7 +1260,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			if ( ! $this->render_mode ) return;
 
 ?>
-<h2 class="screen-reader-text sr-only"><?php _e( 'Log entries navigation', 'mycred' ); ?></h2>
+<h2 class="screen-reader-text sr-only"><?php esc_html_e( 'Log entries navigation', 'mycred' ); ?></h2>
 <div class="tablenav-pages<?php if ( $this->max_num_pages == 1 ) echo ' one-page'; ?>">
 
 	<?php $this->pagination( $location, $id ); ?>
@@ -1806,7 +1806,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				}
 
 ?>
-	<p><span class="description"><?php _e( 'Log entries are exported to a CSV file and depending on the number of entries selected, the process may take a few seconds.', 'mycred' ); ?></span></p>
+	<p><span class="description"><?php esc_html_e( 'Log entries are exported to a CSV file and depending on the number of entries selected, the process may take a few seconds.', 'mycred' ); ?></span></p>
 <?php
 
 			}
@@ -1846,9 +1846,9 @@ jQuery(function($) {
 
 ?>
 <p class="search-box">
-	<label class="screen-reader-text"><?php _e( 'Search Log', 'mycred' ); ?>:</label>
-	<input type="search" name="s" value="<?php echo esc_attr( $serarch_string ); ?>" placeholder="<?php _e( 'search log entries', 'mycred' ); ?>" />
-	<input type="submit" id="search-submit" class="button button-medium button-secondary" value="<?php _e( 'Search Log', 'mycred' ); ?>" />
+	<label class="screen-reader-text"><?php esc_html_e( 'Search Log', 'mycred' ); ?>:</label>
+	<input type="search" name="s" value="<?php echo esc_attr( $serarch_string ); ?>" placeholder="<?php esc_attr_e( 'search log entries', 'mycred' ); ?>" />
+	<input type="submit" id="search-submit" class="button button-medium button-secondary" value="<?php esc_attr_e( 'Search Log', 'mycred' ); ?>" />
 </p>
 <?php
 

@@ -117,7 +117,7 @@ if ( ! class_exists( 'myCRED_Bank_Transfer' ) ) :
 		 */
 		public function checkout_page_title() {
 
-			echo $this->checkout_logo();
+			echo wp_kses_post( $this->checkout_logo() );
 
 		}
 
@@ -130,22 +130,22 @@ if ( ! class_exists( 'myCRED_Bank_Transfer' ) ) :
 
 			$this->toggle_id = 'buycred-checkout-step2';
 
-			echo $this->checkout_header();
-			echo $this->checkout_logo( false );
+			echo wp_kses_post( $this->checkout_header() );
+			echo wp_kses_post( $this->checkout_logo( false ) );
 
 			echo '<div id="buycred-checkout-step1">';
 
-			echo $this->checkout_order();
-			echo $this->checkout_cancel();
+			echo wp_kses_post( $this->checkout_order() );
+			echo wp_kses_post( $this->checkout_cancel() );
 
 			echo '</div><div id="buycred-checkout-step2" style="display: none;">';
 
-			echo $this->checkout_transaction_id();
-			echo wptexturize( wpautop( $this->prefs['account'] ) );
+			echo wp_kses_post( $this->checkout_transaction_id() );
+			echo wp_kses_post( wptexturize( wpautop( $this->prefs['account'] ) ) );
 
 			echo '</div>';
 
-			echo $this->checkout_footer();
+			echo wp_kses_post( $this->checkout_footer() );
 
 		}
 
@@ -161,24 +161,24 @@ if ( ! class_exists( 'myCRED_Bank_Transfer' ) ) :
 ?>
 <div class="row">
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Details', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'title' ); ?>"><?php _e( 'Title', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'title' ); ?>" id="<?php echo $this->field_id( 'title' ); ?>" value="<?php echo esc_attr( $prefs['title'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'title' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'title' ) ); ?>" value="<?php echo esc_attr( $prefs['title'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>"><?php esc_html_e( 'Logo URL', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'logo_url' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'currency' ); ?>" id="<?php echo $this->field_id( 'currency' ); ?>" value="<?php echo esc_attr( $prefs['currency'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>"><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'currency' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>" value="<?php echo esc_attr( $prefs['currency'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'Exchange Rates', 'mycred' ); ?></label>
 
 			<?php $this->exchange_rate_setup(); ?>
 
@@ -188,7 +188,7 @@ if ( ! class_exists( 'myCRED_Bank_Transfer' ) ) :
 <div class="row">
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 		<div class="form-group">
-			<label for="buycredbanktransferaccount"><?php _e( 'Bank Account Information', 'mycred' ); ?></label>
+			<label for="buycredbanktransferaccount"><?php esc_html_e( 'Bank Account Information', 'mycred' ); ?></label>
 			<?php wp_editor( $prefs['account'], 'buycredbanktransferaccount', array( 'textarea_name' => $this->field_name( 'account' ), 'textarea_rows' => 10 ) ); ?>
 		</div>
 	</div>

@@ -80,13 +80,26 @@ if ( ! class_exists( 'myCRED_Badge_Secondary' ) ) :
 
 		    <?php
 		    	if( class_exists('RGFormsModel') ) {
+					$select_parm = array(
+						'div' => array(
+							'class' => array(),
+						),
+						'select' => array(
+							'name'	=> array(),
+							'class' => array(),
+							'data-row' => array(),
+						),
+						'option' => array(
+							'value' => array()
+						),
+					);
 					$gravityforms = RGFormsModel::get_forms();
 					$form_list = '<option>Any</option>';
 					foreach ( $gravityforms as $form ) {
 						$form_list .= '<option value="'.$form->id.'">'. htmlentities( $form->title, ENT_QUOTES ) .'</option>';
 					}
 					$data = '<div class="form-group"><select name="{{element_name}}" class="form-control specific" data-row="{{reqlevel}}" >'.$form_list.'</select></div>';
-					echo "var mycred_badge_gravity_form_submission = '" . $data . "';";
+					echo "var mycred_badge_gravity_form_submission = '" . wp_kses( $data, $select_parm ) . "';";
 				}
 		    ?>
 		    </script>

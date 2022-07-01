@@ -327,20 +327,20 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 		</div>
 		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
+				<label for="<?php echo $this->field_id( 'log' ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo $this->field_name( 'log' ); ?>" id="<?php echo $this->field_id( 'log' ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" class="form-control" />
 			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( 'logic' => 'play' ) ); ?>"><?php _e( 'Award Logic', 'mycred' ); ?></label>
+				<label for="<?php echo $this->field_id( array( 'logic' => 'play' ) ); ?>"><?php esc_html_e( 'Award Logic', 'mycred' ); ?></label>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'logic' => 'play' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'logic' ); ?>" id="<?php echo $this->field_id( array( 'logic' => 'play' ) ); ?>"<?php checked( $prefs['logic'], 'play' ); ?> value="play" class="toggle-hook-option" /> <?php _e( 'Play - As soon as video starts playing.', 'mycred' ); ?></label>
+					<label for="<?php echo $this->field_id( array( 'logic' => 'play' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'logic' ); ?>" id="<?php echo $this->field_id( array( 'logic' => 'play' ) ); ?>"<?php checked( $prefs['logic'], 'play' ); ?> value="play" class="toggle-hook-option" /> <?php esc_html_e( 'Play - As soon as video starts playing.', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'logic' => 'full' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'logic' ); ?>" id="<?php echo $this->field_id( array( 'logic' => 'full' ) ); ?>"<?php checked( $prefs['logic'], 'full' ); ?> value="full" class="toggle-hook-option" /> <?php _e( 'Full - First when the entire video has played.', 'mycred' ); ?></label>
+					<label for="<?php echo $this->field_id( array( 'logic' => 'full' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'logic' ); ?>" id="<?php echo $this->field_id( array( 'logic' => 'full' ) ); ?>"<?php checked( $prefs['logic'], 'full' ); ?> value="full" class="toggle-hook-option" /> <?php esc_html_e( 'Full - First when the entire video has played.', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
 					<label for="<?php echo $this->field_id( array( 'logic' => 'interval' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'logic' ); ?>" id="<?php echo $this->field_id( array( 'logic' => 'interval' ) ); ?>"<?php checked( $prefs['logic'], 'interval' ); ?> value="interval" class="toggle-hook-option" /> <?php echo $this->core->template_tags_general( __( 'Interval - For each x number of seconds watched.', 'mycred' ) ); ?></label>
@@ -350,16 +350,16 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 		<div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
 			<div id="<?php echo $this->field_id( array( 'logic-option-interval' ) ); ?>"<?php if ( $prefs['logic'] != 'interval' ) echo ' style="display: none;"';?>>
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( 'interval' ); ?>"><?php _e( 'Intervals', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( 'interval' ); ?>" id="<?php echo $this->field_id( 'interval' ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['interval'] ); ?>" class="form-control" />
+					<label for="<?php echo $this->field_id( 'interval' ); ?>"><?php esc_html_e( 'Intervals', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo $this->field_name( 'interval' ); ?>" id="<?php echo $this->field_id( 'interval' ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['interval'] ); ?>" class="form-control" />
 					<span class="description"><?php printf( __( 'The number of seconds a user must watch in order to get %s.', 'mycred' ), $this->core->plural() ); ?></span>
 				</div>
 			</div>
 			<div id="<?php echo $this->field_id( array( 'logic-option-full' ) ); ?>"<?php if ( $prefs['logic'] != 'full' ) echo ' style="display: none;"';?>>
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( 'leniency' ); ?>"><?php _e( 'Leniency', 'mycred' ); ?></label>
-					<input type="text" name="<?php echo $this->field_name( 'leniency' ); ?>" id="<?php echo $this->field_id( 'leniency' ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['leniency'] ); ?>" class="form-control" />
-					<span class="description"><?php _e( 'Do not set this value to zero! A lot of thing can happen while a user watches a movie and sometimes a few seconds can drop of the counter due to buffering or play back errors.', 'mycred' ); ?></span>
+					<label for="<?php echo $this->field_id( 'leniency' ); ?>"><?php esc_html_e( 'Leniency', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo $this->field_name( 'leniency' ); ?>" id="<?php echo $this->field_id( 'leniency' ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['leniency'] ); ?>" class="form-control" />
+					<span class="description"><?php esc_html_e( 'Do not set this value to zero! A lot of thing can happen while a user watches a movie and sometimes a few seconds can drop of the counter due to buffering or play back errors.', 'mycred' ); ?></span>
 				</div>
 			</div>
 		</div>
@@ -367,7 +367,7 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label><?php _e( 'Available Shortcode', 'mycred' ); ?></label>
+				<label><?php esc_html_e( 'Available Shortcode', 'mycred' ); ?></label>
 				<p class="form-control-static"><a href="http://codex.mycred.me/shortcodes/mycred_video/" target="_blank">[mycred_video]</a></p>
 			</div>
 		</div>

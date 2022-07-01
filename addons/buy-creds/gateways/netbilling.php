@@ -53,14 +53,20 @@ if ( ! class_exists( 'myCRED_NETbilling' ) ) :
 
 			$result  = true;
 
+			$account_data = isset( $_REQUEST['Ecom_Ezic_AccountAndSitetag'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['Ecom_Ezic_AccountAndSitetag'] ) ) : '';
+
 			// Accounts Match
-			$account = explode( ':', sanitize_text_field( $_REQUEST['Ecom_Ezic_AccountAndSitetag'] ) );
+			$account = explode( ':', $account_data );
 			if ( $account[0] != $this->prefs['account'] || $account[1] != $this->prefs['site_tag'] )
 				$result = false;
 
+			$cost_total = isset( $_REQUEST['Ecom_Cost_Total'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['Ecom_Cost_Total'] ) ) : '';
+			$cost_description = isset( $_REQUEST['Ecom_Receipt_Description'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['Ecom_Receipt_Description'] ) ) : '';
+
 			// Crypto Check
-			$crypto_check = md5( $this->prefs['cryptokey'] . sanitize_text_field( $_REQUEST['Ecom_Cost_Total'] ) . sanitize_text_field( $_REQUEST['Ecom_Receipt_Description'] ) );
-			if ( $crypto_check != $_REQUEST['Ecom_Ezic_Security_HashValue_MD5'] )
+			$crypto_check = md5( $this->prefs['cryptokey'] . $cost_total . $cost_description );
+
+			if ( ! isset( $_REQUEST['Ecom_Ezic_Security_HashValue_MD5'] ) || $crypto_check != $_REQUEST['Ecom_Ezic_Security_HashValue_MD5'] )
 				$result = false;
 
 			return $result;
@@ -90,12 +96,12 @@ if ( ! class_exists( 'myCRED_NETbilling' ) ) :
 
 						// Check amount paid
 						if ( $_REQUEST['Ecom_Cost_Total'] != $pending_payment->cost ) {
-							$new_call[] = sprintf( __( 'Price mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->cost, $_REQUEST['Ecom_Cost_Total'] );
+							$new_call[] = sprintf( __( 'Price mismatch. Expected: %s Received: %s', 'mycred' ), $pending_payment->cost, sanitize_text_field( wp_unslash( $_REQUEST['Ecom_Cost_Total'] ) ) );
 							$errors     = true;
 						}
 
 						// Check status
-						if ( $_REQUEST['Ecom_Ezic_Response_StatusCode'] != 1 ) {
+						if ( ! empty( $_REQUEST['Ecom_Ezic_Response_StatusCode'] ) && $_REQUEST['Ecom_Ezic_Response_StatusCode'] != 1 ) {
 							$new_call[] = sprintf( __( 'Payment not completed. Received: %s', 'mycred' ), absint( $_REQUEST['Ecom_Ezic_Response_StatusCode'] ) );
 							$errors     = true;
 						}
@@ -104,7 +110,7 @@ if ( ! class_exists( 'myCRED_NETbilling' ) ) :
 						if ( $errors === false ) {
 
 							// If account is credited, delete the post and it's comments.
-							if ( $this->complete_payment( $pending_payment, sanitize_title( $_REQUEST['Ecom_Ezic_Response_TransactionID'] ) ) )
+							if ( $this->complete_payment( $pending_payment, sanitize_title( wp_unslash( $_REQUEST['Ecom_Ezic_Response_TransactionID'] ) ) ) )
 								$this->trash_pending_payment( $pending_post_id );
 							else
 								$new_call[] = __( 'Failed to credit users account.', 'mycred' );
@@ -217,45 +223,45 @@ if ( ! class_exists( 'myCRED_NETbilling' ) ) :
 ?>
 <div class="row">
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Details', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'account' ); ?>"><?php _e( 'Account ID', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'account' ); ?>" id="<?php echo $this->field_id( 'account' ); ?>" value="<?php echo esc_attr( $prefs['account'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'account' ) ); ?>"><?php esc_html_e( 'Account ID', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'account' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'account' ) ); ?>" value="<?php echo esc_attr( $prefs['account'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'site_tag' ); ?>"><?php _e( 'Site Tag', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'site_tag' ); ?>" id="<?php echo $this->field_id( 'site_tag' ); ?>" value="<?php echo esc_attr( $prefs['site_tag'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'site_tag' ) ); ?>"><?php esc_html_e( 'Site Tag', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'site_tag' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'site_tag' ) ); ?>" value="<?php echo esc_attr( $prefs['site_tag'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'cryptokey' ); ?>"><?php _e( 'Order Integrity Key', 'mycred' ); ?></label>
-			<input type="password" name="<?php echo $this->field_name( 'cryptokey' ); ?>" id="<?php echo $this->field_id( 'cryptokey' ); ?>" value="<?php echo esc_attr( $prefs['cryptokey'] ); ?>" class="form-control" />
-			<p><span class="description"><?php _e( 'Found under Step 12 on the Fraud Defense page.', 'mycred' ); ?></span></p>
+			<label for="<?php echo esc_attr( $this->field_id( 'cryptokey' ) ); ?>"><?php esc_html_e( 'Order Integrity Key', 'mycred' ); ?></label>
+			<input type="password" name="<?php echo esc_attr( $this->field_name( 'cryptokey' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'cryptokey' ) ); ?>" value="<?php echo esc_attr( $prefs['cryptokey'] ); ?>" class="form-control" />
+			<p><span class="description"><?php esc_html_e( 'Found under Step 12 on the Fraud Defense page.', 'mycred' ); ?></span></p>
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'item_name' ); ?>"><?php _e( 'Item Name', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'item_name' ); ?>" id="<?php echo $this->field_id( 'item_name' ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>"><?php esc_html_e( 'Item Name', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'item_name' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>"><?php esc_html_e( 'Logo URL', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'logo_url' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label><?php _e( 'Currency', 'mycred' ); ?></label>
-			<input type="text" readonly="readonly" class="form-control" name="<?php echo $this->field_name( 'currency' ); ?>" value="USD" />
+			<label><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
+			<input type="text" readonly="readonly" class="form-control" name="<?php echo esc_attr( $this->field_name( 'currency' ) ); ?>" value="USD" />
 		</div>
 		<div class="form-group">
-			<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'Exchange Rates', 'mycred' ); ?></label>
 
 			<?php $this->exchange_rate_setup(); ?>
 
 		</div>
 		<div class="form-group">
-			<label><?php _e( 'Postback CGI URL', 'mycred' ); ?></label>
-			<code style="padding: 12px;display:block;"><?php echo $this->callback_url(); ?></code>
-			<p><?php _e( 'For this gateway to work, you must login to your NETbilling account and edit your site. Under "Default payment form settings" make sure the Postback CGI URL is set to the above address and "Return method" is set to POST.', 'mycred' ); ?></p>
+			<label><?php esc_html_e( 'Postback CGI URL', 'mycred' ); ?></label>
+			<code style="padding: 12px;display:block;"><?php echo esc_url( $this->callback_url() ); ?></code>
+			<p><?php esc_html_e( 'For this gateway to work, you must login to your NETbilling account and edit your site. Under "Default payment form settings" make sure the Postback CGI URL is set to the above address and "Return method" is set to POST.', 'mycred' ); ?></p>
 		</div>
 	</div>
 </div>

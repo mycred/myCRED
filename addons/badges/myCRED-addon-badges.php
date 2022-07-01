@@ -502,7 +502,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             }
 
-            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BADGE_KEY ) {
+            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( sanitize_text_field( wp_unslash( $_GET['post'] ) ) ) == MYCRED_BADGE_KEY ) {
 
                 return MYCRED_MAIN_SLUG;
 
@@ -534,7 +534,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             }
 
-            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_BADGE_KEY ) {
+            elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( sanitize_text_field( wp_unslash( $_GET['post'] ) ) ) == MYCRED_BADGE_KEY ) {
 
                 return 'edit.php?post_type=' . MYCRED_BADGE_KEY;
 
@@ -1099,6 +1099,42 @@ th#badge-users { width: 10%; }
             <div id="badge-levels">
                 <?php
 
+                    $esc_param = array(
+                        'div' => array(
+                            'class'      => array(),
+                            'id'         => array(),
+                            'data-level' => array(),
+                            'style'      => array(),
+                        ),
+                        'button' => array(
+                            'type'  => array(),
+                            'class' => array(),
+                            'id'    => array(),
+                        ),
+                        'img' => array(
+                            'alt'    => array(),
+                            'class'  => array(),
+                            'height' => array(),
+                            'src'    => array(),
+                            'width'  => array(),
+                        ),
+                        'input' => array(
+                            'type' => array(),
+                            'name' => array(),
+                            'value' => array(),
+                            'placeholder' => array(),
+                            'class' => array(),
+                        ),
+                        'select' => array(
+                            'name'	=> array(),
+                            'class' => array(),
+                            'data_row' => array(),
+                        ),
+                        'option' => array(
+                            'value' => array()
+                        ),
+                    );
+
                 // Loop through each badge level
                 $level_counter = 0;
                 foreach ( $badge->levels as $level => $setup ) {
@@ -1275,7 +1311,7 @@ th#badge-users { width: 10%; }
 
                     $js_level           = str_replace( '{{rewards}}',       $rewards, $js_level );
 
-                    echo  $template;
+                    echo $template;
 
                     $level_counter++;
 
@@ -1286,9 +1322,9 @@ th#badge-users { width: 10%; }
                 ?>
             </div>
             <script type="text/javascript">
-                var BadgeLevel         = '<?php echo $js_level; ?>';
-                var BadgeNewRequrement = '<?php echo $js_requirement; ?>';
-                var BadgeRequirement   = '<?php echo $js_requirement_clone; ?>';
+                var BadgeLevel         = '<?php echo wp_kses( $js_level, $esc_param ); ?>';
+                var BadgeNewRequrement = '<?php echo wp_kses( $js_requirement, $esc_param ); ?>';
+                var BadgeRequirement   = '<?php echo wp_kses( $js_requirement_clone, $esc_param ); ?>';
             </script>
             <?php
 
@@ -1304,7 +1340,7 @@ th#badge-users { width: 10%; }
             if ( $post === NULL || ! $this->core->user_is_point_editor() || ! isset( $_POST['mycred_badge'] ) ) return $post_id;
 
             // Main image (used when a user has not earned a badge
-            $main_image = $_POST['mycred_badge']['main_image'];
+            $main_image = ! empty( $_POST['mycred_badge']['main_image'] ) ? absint( $_POST['mycred_badge']['main_image'] ) : '';
 
             // If we are using an attachment
             if ( absint( $main_image ) > 0 )
@@ -1312,7 +1348,7 @@ th#badge-users { width: 10%; }
 
             // Else we are using a URL (old setup)
             else
-                $image = sanitize_text_field( $_POST['mycred_badge']['main_image_url'] );
+                $image = ! empty( $_POST['mycred_badge']['main_image_url'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_badge']['main_image_url'] ) ) : '';
 
             $manual = 0;
             if ( isset( $_POST['mycred_badge']['manual'] ) )
@@ -1324,15 +1360,15 @@ th#badge-users { width: 10%; }
 
             $congratulation_msg = '';
             if ( isset( $_POST['mycred_badge']['congratulation_msg'] ) )
-                $congratulation_msg = sanitize_text_field( $_POST['mycred_badge']['congratulation_msg'] );
+                $congratulation_msg = sanitize_text_field( wp_unslash( $_POST['mycred_badge']['congratulation_msg'] ) );
 
             $badge_align = '';
             if ( isset( $_POST['mycred_badge']['mycred_badge_align'] ) )
-                $badge_align = sanitize_text_field( $_POST['mycred_badge']['mycred_badge_align'] );
+                $badge_align = sanitize_text_field( wp_unslash( $_POST['mycred_badge']['mycred_badge_align'] ) );
 
             $layout = '';
             if ( isset( $_POST['mycred_badge']['mycred_layout_check'] ) )
-                $layout = sanitize_text_field( $_POST['mycred_badge']['mycred_layout_check'] );
+                $layout = sanitize_text_field( wp_unslash( $_POST['mycred_badge']['mycred_layout_check'] ) );
 
             $badge_levels       = array();
             $badge_requirements = array();
@@ -1755,7 +1791,7 @@ th#badge-users { width: 10%; }
                                     <div class="badge-wrapper<?php if ( ! mycred_is_admin() ) echo ' badge-wrapper-center'; ?> color-option<?php if ( $earned === 1 ) echo ' selected'; ?>" id="mycred-badge<?php echo esc_attr( $badge_id ); ?>-wrapper">
                                         <div>
                                             <?php if ( mycred_is_admin() ):?>
-                                            <label for="mycred-badge<?php echo esc_attr( $badge_id ); ?>"><input type="checkbox" name="mycred_badge_manual[badges][<?php echo $badge_id; ?>][has]" class="toggle-badge" id="mycred-badge<?php echo esc_attr( $badge_id ); ?>" <?php checked( $earned, 1 );?> value="1" /> <?php esc_html_e( 'Earned', 'mycred' ); ?></label>
+                                            <label for="mycred-badge<?php echo esc_attr( $badge_id ); ?>"><input type="checkbox" name="mycred_badge_manual[badges][<?php echo esc_attr( $badge_id ); ?>][has]" class="toggle-badge" id="mycred-badge<?php echo esc_attr( $badge_id ); ?>" <?php checked( $earned, 1 );?> value="1" /> <?php esc_html_e( 'Earned', 'mycred' ); ?></label>
                                             <?php endif; ?>
                                             <div class="badge-image-wrap">
 
@@ -1791,7 +1827,7 @@ th#badge-users { width: 10%; }
 
                                             <?php if ( $badge->open_badge && array_key_exists( $badge_id, $users_badges ) ):?>
                                             <div class="badge-image-wrap">
-                                                <a href="<?php echo $badge->get_earned_image( $user_id ); ?> " class="button button-primary button-large mycred-open-badge-download" download>Download</a>
+                                                <a href="<?php echo esc_url( $badge->get_earned_image( $user_id ) ); ?> " class="button button-primary button-large mycred-open-badge-download" download>Download</a>
                                             </div>
                                             <?php endif; ?>
                                         </div>
@@ -1902,7 +1938,7 @@ th#badge-users { width: 10%; }
 
             check_ajax_referer( 'mycred-assign-badge', 'token' );
 
-            $badge_id = absint( $_POST['badge_id'] );
+            $badge_id = ! empty( $_POST['badge_id'] ) ? absint( $_POST['badge_id'] ) : '';
             if ( $badge_id === 0 ) wp_send_json_error();
 
             // Get the badge object
@@ -1929,7 +1965,7 @@ th#badge-users { width: 10%; }
 
             check_ajax_referer( 'mycred-remove-badge-connection', 'token' );
 
-            $badge_id = absint( $_POST['badge_id'] );
+            $badge_id = ! empty( $_POST['badge_id'] ) ? absint( $_POST['badge_id'] ) : '';
             if ( $badge_id === 0 ) wp_send_json_error();
 
             // Get the badge object
@@ -1956,13 +1992,7 @@ th#badge-users { width: 10%; }
 
             $user_id = bbp_get_displayed_user_id();
             if ( isset( $this->badges['show_all_bb'] ) && $this->badges['show_all_bb'] == 1 )
-                echo mycred_render_my_badges( array(
-                    'show'    => 'all',
-                    'width'   => MYCRED_BADGE_WIDTH,
-                    'height'  => MYCRED_BADGE_HEIGHT,
-                    'user_id' => $user_id
-                ) );
-
+                echo do_shortcode( "[mycred_my_badges show=all width=".MYCRED_BADGE_WIDTH." height=".MYCRED_BADGE_HEIGHT." user_id={$user_id}]" );    
             else
                 mycred_display_users_badges( $user_id );
 
@@ -1980,13 +2010,7 @@ th#badge-users { width: 10%; }
             if ( $user_id > 0 ) {
 
                 if ( isset( $this->badges['show_all_bb'] ) && $this->badges['show_all_bb'] == 1 )
-                    echo mycred_render_my_badges( array(
-                        'show'    => 'all',
-                        'width'   => MYCRED_BADGE_WIDTH,
-                        'height'  => MYCRED_BADGE_HEIGHT,
-                        'user_id' => $user_id
-                    ) );
-
+                    echo do_shortcode( "[mycred_my_badges show=all width=".MYCRED_BADGE_WIDTH." height=".MYCRED_BADGE_HEIGHT." user_id={$user_id}]" );    
                 else
                     mycred_display_users_badges( $user_id );
 
@@ -2003,12 +2027,7 @@ th#badge-users { width: 10%; }
 
             $user_id = bp_displayed_user_id();
             if ( isset( $this->badges['show_all_bp'] ) && $this->badges['show_all_bp'] == 1 )
-                echo mycred_render_my_badges( array(
-                    'show'    => 'all',
-                    'width'   => MYCRED_BADGE_WIDTH,
-                    'height'  => MYCRED_BADGE_HEIGHT,
-                    'user_id' => $user_id
-                ) );
+                echo do_shortcode( "[mycred_my_badges show=all width=".MYCRED_BADGE_WIDTH." height=".MYCRED_BADGE_HEIGHT." user_id={$user_id}]" );    
 
             else
                 mycred_display_users_badges( $user_id );

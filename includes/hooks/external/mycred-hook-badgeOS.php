@@ -121,7 +121,7 @@ function mycred_load_badgeos_hook() {
 				if ( ! $this->is_main_type )
 					$page = MYCRED_SLUG . '_' . $this->mycred_type . '-hooks';
 
-				echo '<p>' . sprintf( __( 'Please setup your <a href="%s">default settings</a> before using this feature.', 'mycred' ), admin_url( 'admin.php?page=' . $page ) ) . '</p>';
+				echo '<p>' . sprintf( esc_html__( 'Please setup your <a href="%s">default settings</a> before using this feature.', 'mycred' ), admin_url( 'admin.php?page=' . $page ) ) . '</p>';
 				return;
 
 			}
@@ -137,14 +137,14 @@ function mycred_load_badgeos_hook() {
 ?>
 <p><strong><?php echo $this->core->template_tags_general( __( '%plural% to Award', 'mycred' ) ); ?></strong></p>
 <p>
-	<label class="screen-reader-text" for="mycred-values-<?php echo $this->mycred_type; ?>-creds"><?php echo $this->core->template_tags_general( __( '%plural% to Award', 'mycred' ) ); ?></label>
-	<input type="text" name="<?php echo $post_key; ?>[creds]" id="mycred-values-<?php echo $this->mycred_type; ?>-creds" value="<?php echo $this->core->number( $achievement_data['creds'] ); ?>" size="8" />
-	<span class="description"><?php _e( 'Use zero to disable', 'mycred' ); ?></span>
+	<label class="screen-reader-text" for="mycred-values-<?php echo esc_attr( $this->mycred_type ); ?>-creds"><?php echo $this->core->template_tags_general( __( '%plural% to Award', 'mycred' ) ); ?></label>
+	<input type="text" name="<?php echo esc_attr( $post_key ); ?>[creds]" id="mycred-values-<?php echo esc_attr( $this->mycred_type ); ?>-creds" value="<?php echo esc_attr( $this->core->number( $achievement_data['creds'] ) ); ?>" size="8" />
+	<span class="description"><?php esc_html_e( 'Use zero to disable', 'mycred' ); ?></span>
 </p>
-<p><strong><?php _e( 'Log Template', 'mycred' ); ?></strong></p>
+<p><strong><?php esc_html_e( 'Log Template', 'mycred' ); ?></strong></p>
 <p>
-	<label class="screen-reader-text" for="mycred-values-<?php echo $this->mycred_type; ?>-log"><?php _e( 'Log Template', 'mycred' ); ?></label>
-	<input type="text" name="<?php echo $post_key; ?>[log]" id="mycred-values-<?php echo $this->mycred_type; ?>-log" value="<?php echo esc_attr( $achievement_data['log'] ); ?>" style="width:99%;" />
+	<label class="screen-reader-text" for="mycred-values-<?php echo esc_attr( $this->mycred_type ); ?>-log"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+	<input type="text" name="<?php echo esc_attr( $post_key ); ?>[log]" id="mycred-values-<?php echo esc_attr( $this->mycred_type ); ?>-log" value="<?php echo esc_attr( $achievement_data['log'] ); ?>" style="width:99%;" />
 </p>
 <?php
 
@@ -152,10 +152,10 @@ function mycred_load_badgeos_hook() {
 			if ( $this->prefs[ $post->post_type ]['deduct'] == 1 ) {
 
 ?>
-<p><strong><?php _e( 'Deduction Log Template', 'mycred' ); ?></strong></p>
+<p><strong><?php esc_html_e( 'Deduction Log Template', 'mycred' ); ?></strong></p>
 <p>
-	<label class="screen-reader-text" for="mycred-values-<?php echo $this->mycred_type; ?>-log"><?php _e( 'Log Template', 'mycred' ); ?></label>
-	<input type="text" name="<?php echo $post_key; ?>[deduct_log]" id="mycred-values-deduct-<?php echo $this->mycred_type; ?>-log" value="<?php echo esc_attr( $achievement_data['deduct_log'] ); ?>" style="width:99%;" />
+	<label class="screen-reader-text" for="mycred-values-<?php echo esc_attr( $this->mycred_type ); ?>-log"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+	<input type="text" name="<?php echo esc_attr( $post_key ); ?>[deduct_log]" id="mycred-values-deduct-<?php echo esc_attr( $this->mycred_type ); ?>-log" value="<?php echo esc_attr( $achievement_data['deduct_log'] ); ?>" style="width:99%;" />
 </p>
 <?php
 
@@ -314,19 +314,19 @@ function mycred_load_badgeos_hook() {
 
 ?>
 <div class="hook-instance">
-	<h3><?php printf( __( 'Earning: %s', 'mycred' ), $post_type_object->labels->singular_name ); ?></h3>
+	<h3><?php printf( esc_html__( 'Earning: %s', 'mycred' ), $post_type_object->labels->singular_name ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( $post_type, 'creds' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( $post_type, 'creds' ) ); ?>" id="<?php echo $this->field_id( array( $post_type, 'creds' ) ); ?>" value="<?php echo $this->core->number( $prefs[ $post_type ]['creds'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( $post_type, 'creds' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( $post_type, 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( $post_type, 'creds' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs[ $post_type ]['creds'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( $post_type, 'log' ) ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( $post_type, 'log' ) ); ?>" id="<?php echo $this->field_id( array( $post_type, 'log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $post_type ]['log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( $post_type, 'log' ) ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( $post_type, 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( $post_type, 'log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $post_type ]['log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general', 'post' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>
@@ -336,15 +336,15 @@ function mycred_load_badgeos_hook() {
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( $post_type, 'deduct' ) ); ?>"><?php echo $this->core->plural(); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( $post_type, 'deduct' ) ); ?>" id="<?php echo $this->field_id( array( $post_type, 'deduct' ) ); ?>" value="<?php echo $this->core->number( $prefs[ $post_type ]['deduct'] ); ?>" class="form-control" />
+				<label for="<?php echo esc_attr( $this->field_id( array( $post_type, 'deduct' ) ) ); ?>"><?php echo esc_html( $this->core->plural() ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( $post_type, 'deduct' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( $post_type, 'deduct' ) ) ); ?>" value="<?php echo esc_attr( $this->core->number( $prefs[ $post_type ]['deduct'] ) ); ?>" class="form-control" />
 			</div>
 		</div>
 		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( array( $post_type, 'deduct_log' ) ); ?>"><?php _e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( array( $post_type, 'deduct_log' ) ); ?>" id="<?php echo $this->field_id( array( $post_type, 'deduct_log' ) ); ?>" placeholder="<?php _e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $post_type ]['deduct_log'] ); ?>" class="form-control" />
-				<span class="description"><?php echo $this->available_template_tags( array( 'general', 'post' ) ); ?></span>
+				<label for="<?php echo esc_attr( $this->field_id( array( $post_type, 'deduct_log' ) ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( array( $post_type, 'deduct_log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( $post_type, 'deduct_log' ) ) ); ?>" placeholder="<?php esc_attr_e( 'required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs[ $post_type ]['deduct_log'] ); ?>" class="form-control" />
+				<span class="description"><?php echo wp_kses_post( $this->available_template_tags( array( 'general', 'post' ) ) ); ?></span>
 			</div>
 		</div>
 	</div>

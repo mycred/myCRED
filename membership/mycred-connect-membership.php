@@ -278,7 +278,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
             <div class="wrap">
                 <div class="mmc_welcome">
                     <div class="mmc_welcome_content">
-                        <div class="mmc_title"><?php _e( 'Welcome to myCred Premium Club', 'mycred' ); ?></div>
+                        <div class="mmc_title"><?php esc_html_e( 'Welcome to myCred Premium Club', 'mycred' ); ?></div>
                         <form action="#" method="post">
                         <?php 
                             if(mycred_is_valid_license_key( $membership_key )) {
@@ -292,9 +292,9 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                                 
                         ?>
                         
-                            <input type="text" name="mmc_lincense_key" class="mmc_lincense_key" placeholder="<?php _e( 'Add Your License key', 'mycred' ); ?>" value="<?php echo $membership_key?>">
+                            <input type="text" name="mmc_lincense_key" class="mmc_lincense_key" placeholder="<?php esc_attr_e( 'Add Your License key', 'mycred' ); ?>" value="<?php echo $membership_key?>">
                             <input type="submit" class="mmc_save_license button-primary" value="Save"/>
-                            <div class="mmc_license_link"><a href="https://mycred.me/redirect-to-membership/" target="_blank"><span class="dashicons dashicons-editor-help"></span><?php _e('Click here to get your License Key','mycred') ?></a>
+                            <div class="mmc_license_link"><a href="https://mycred.me/redirect-to-membership/" target="_blank"><span class="dashicons dashicons-editor-help"></span><?php esc_html_e('Click here to get your License Key','mycred') ?></a>
                             </div>
                             <div class="mmc_license_link">
                                 
