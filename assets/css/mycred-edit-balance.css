@@ -62,24 +62,23 @@ p.mycred-p { margin: 12px 0 0 0; }
 .balance-row input.half { width: 60% !important; display: inline-block !important; margin-right: 6px; }
 .balance-row input.short { width: 30% !important; display: inline-block !important; margin: 0 3px; }
 #mycred-edit-user-wrapper h2 { margin: 12px 0 6px 0; }
+#edit-mycred-balance, #mycred-custom-reference-wrapper, #mycred-users-mini-ledger { display: none; }
 
 @media screen and (max-width: 782px) {
 
-    .balance-row { display: block; height: auto; line-height: 1.5em; font-size: 18px; }
-    .balance-row > div { height: auto; line-height: 42px; font-size: inherit; vertical-align: top; }
+	.balance-row { display: block; height: auto; line-height: 1.5em; font-size: 18px; }
+	.balance-row > div { height: auto; line-height: 42px; font-size: inherit; vertical-align: top; }
 
 }
 
 @media screen and (max-width: 520px) {
 
-    .mycred-wrapper.color-option { width: 100%; }
-
+	.mycred-wrapper.color-option { width: 100%; }
 
 }
 
 @media screen and (min-width: 1400px) {
 
-    .mycred-wrapper.color-option { width: 24% !important; }
-
+	.mycred-wrapper.color-option { width: 24% !important; }
 
 }

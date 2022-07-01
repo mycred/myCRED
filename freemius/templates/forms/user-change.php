@@ -1,21 +1,21 @@
 <?php
     /**
-     * @package   Freemius
-     * @copyright Copyright (c) 2015, Freemius, Inc.
-     * @license   https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
-     * @since     2.3.2
-     */
+    * @package   Freemius
+    * @copyright Copyright (c) 2015, Freemius, Inc.
+    * @license   https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
+    * @since     2.3.2
+    */
 
-if (! defined('ABSPATH') ) {
-    exit;
-}
+    if ( ! defined( 'ABSPATH' ) ) {
+        exit;
+    }
 
     /**
      * @var array    $VARS
      *
      * @var Freemius $fs
      */
-    $fs   = freemius($VARS['id']);
+    $fs   = freemius( $VARS['id'] );
     $slug = $fs->get_slug();
 
     /**
@@ -23,11 +23,11 @@ if (! defined('ABSPATH') ) {
      */
     $license_owners = $VARS['license_owners'];
 
-    $change_user_message                  = fs_text_inline('By changing the user, you agree to transfer the account ownership to:', 'change-user--message', $slug);
-    $header_title                         = fs_text_inline('Change User', 'change-user', $slug);
-    $user_change_button_text              = fs_text_inline('I Agree - Change User', 'agree-change-user', $slug);
-    $other_text                           = fs_text_inline('Other', 'other', $slug);
-    $enter_email_address_placeholder_text = fs_text_inline('Enter email address', 'enter-email-address', $slug);
+    $change_user_message                  = fs_text_inline( 'By changing the user, you agree to transfer the account ownership to:', 'change-user--message', $slug );
+    $header_title                         = fs_text_inline( 'Change User', 'change-user', $slug );
+    $user_change_button_text              = fs_text_inline( 'I Agree - Change User', 'agree-change-user', $slug );
+    $other_text                           = fs_text_inline( 'Other', 'other', $slug );
+    $enter_email_address_placeholder_text = fs_text_inline( 'Enter email address', 'enter-email-address', $slug );
 
     $user_change_options_html = <<< HTML
     <div class="fs-user-change-options-container">
@@ -35,14 +35,14 @@ if (! defined('ABSPATH') ) {
             <tbody>
 HTML;
 
-foreach ( $license_owners as $license_owner ) {
-    $user_change_options_html .= <<< HTML
+        foreach ( $license_owners as $license_owner ) {
+            $user_change_options_html .= <<< HTML
                 <tr class="fs-email-address-container">
                     <td><input id="fs_email_address_{$license_owner->id}" type="radio" name="fs_email_address" value="{$license_owner->id}"></td>
                     <td><label for="fs_email_address_{$license_owner->id}">{$license_owner->email}</label></td>
                 </tr>
 HTML;
-}
+        }
 
         $user_change_options_html .= <<< HTML
                 <tr>
@@ -67,27 +67,27 @@ HTML;
     {$user_change_options_html}
 HTML;
 
-    fs_enqueue_local_style('fs_dialog_boxes', '/admin/dialog-boxes.css');
+    fs_enqueue_local_style( 'fs_dialog_boxes', '/admin/dialog-boxes.css' );
 ?>
 <script type="text/javascript">
 (function( $ ) {
     $( document ).ready(function() {
-        var modalContentHtml            = <?php echo json_encode($modal_content_html) ?>,
+        var modalContentHtml            = <?php echo json_encode( $modal_content_html ) ?>,
             modalHtml                   =
                 '<div class="fs-modal fs-modal-change-user fs-modal-change-user-<?php echo $fs->get_unique_affix() ?>">'
-                + '    <div class="fs-modal-dialog">'
-                + '        <div class="fs-modal-header">'
-                + '            <h4><?php echo esc_js($header_title) ?></h4>'
-                + '         <a href="!#" class="fs-close"><i class="dashicons dashicons-no" title="<?php echo esc_js(fs_text_x_inline('Dismiss', 'close window', 'dismiss', $slug)) ?>"></i></a>'
-                + '        </div>'
-                + '        <div class="fs-modal-body">'
-                + '            <div class="fs-modal-panel active">' + modalContentHtml + '</div>'
-                + '        </div>'
-                + '        <div class="fs-modal-footer">'
-                + '            <button class="button button-secondary button-close" tabindex="4"><?php fs_esc_js_echo_inline('Cancel', 'cancel', $slug) ?></button>'
-                + '            <button class="button button-primary fs-user-change-button" tabindex="3"><?php echo esc_js($user_change_button_text) ?></button>'
-                + '        </div>'
-                + '    </div>'
+                + '	<div class="fs-modal-dialog">'
+                + '		<div class="fs-modal-header">'
+                + '		    <h4><?php echo esc_js( $header_title ) ?></h4>'
+                + '         <a href="!#" class="fs-close"><i class="dashicons dashicons-no" title="<?php echo esc_js( fs_text_x_inline( 'Dismiss', 'close window', 'dismiss', $slug ) ) ?>"></i></a>'
+                + '		</div>'
+                + '		<div class="fs-modal-body">'
+                + '			<div class="fs-modal-panel active">' + modalContentHtml + '</div>'
+                + '		</div>'
+                + '		<div class="fs-modal-footer">'
+                + '			<button class="button button-secondary button-close" tabindex="4"><?php fs_esc_js_echo_inline( 'Cancel', 'cancel', $slug ) ?></button>'
+                + '			<button class="button button-primary fs-user-change-button" tabindex="3"><?php echo esc_js( $user_change_button_text ) ?></button>'
+                + '		</div>'
+                + '	</div>'
                 + '</div>',
             $modal                      = $( modalHtml ),
             $userChangeButton           = $modal.find( '.fs-user-change-button' ),
@@ -197,15 +197,15 @@ HTML;
                     url       : ajaxurl,
                     method    : 'POST',
                     data      : {
-                        action       : '<?php echo $fs->get_ajax_action('change_user') ?>',
-                        security     : '<?php echo $fs->get_ajax_security('change_user') ?>',
+                        action       : '<?php echo $fs->get_ajax_action( 'change_user' ) ?>',
+                        security     : '<?php echo $fs->get_ajax_security( 'change_user' ) ?>',
                         email_address: emailAddress,
                         user_id      : licenseOwnerID,
                         module_id    : '<?php echo $fs->get_id() ?>'
                     },
                     beforeSend: function () {
                         $userChangeButton
-                            .text( '<?php fs_esc_js_echo_inline('Changing user, please wait', 'changing-user-please-wait', $slug) ?>...' )
+                            .text( '<?php fs_esc_js_echo_inline( 'Changing user, please wait', 'changing-user-please-wait', $slug ) ?>...' )
                             .prepend('<i class="fs-ajax-spinner"></i>');
 
                         $(document.body).css({'cursor': 'wait'});
@@ -224,7 +224,7 @@ HTML;
                     error     : function () {
                         $(document.body).css({'cursor': 'auto'});
 
-                        showError( '<?php fs_esc_js_echo_inline('Unexpected error, try again in 5 minutes. If the error persists, please contact support.', 'unexpected-error', $slug) ?>' );
+                        showError( '<?php fs_esc_js_echo_inline( 'Unexpected error, try again in 5 minutes. If the error persists, please contact support.', 'unexpected-error', $slug ) ?>' );
 
                         resetUserChangeButton();
                     }
@@ -267,7 +267,7 @@ HTML;
 
         function resetUserChangeButton() {
             enableUserChangeButton();
-            $userChangeButton.text( <?php echo json_encode($user_change_button_text) ?> );
+            $userChangeButton.text( <?php echo json_encode( $user_change_button_text ) ?> );
         }
 
         function resetModal() {

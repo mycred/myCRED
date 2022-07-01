@@ -1065,7 +1065,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		 */
 		public function no_entries() {
 
-			echo $this->get_no_entries();
+			echo esc_html( $this->get_no_entries() );
 
 		}
 
@@ -1152,11 +1152,11 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 <?php
 
 	foreach ( $bulk_actions as $action_id => $label )
-		echo '<option value="' . $action_id . '">' . $label . '</option>';
+		echo '<option value="' . esc_attr( $action_id ) . '">' . esc_html( $label ) . '</option>';
 
 ?>
 	</select>
-	<input type="submit" class="button action" id="doaction" value="<?php _e( 'Apply', 'mycred' ); ?>" />
+	<input type="submit" class="button action" id="doaction" value="<?php esc_html_e( 'Apply', 'mycred' ); ?>" />
 </div>
 <?php
 
@@ -1177,10 +1177,10 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			// Filter by reference
 			if ( ! empty( $this->references ) ) {
 
-				echo '<select name="ref" id="myCRED-reference-filter"><option value="">' . __( 'Show all references', 'mycred' ) . '</option>';
+				echo '<select name="ref" id="myCRED-reference-filter"><option value="">' . esc_html__( 'Show all references', 'mycred' ) . '</option>';
 				foreach ( $this->references as $ref_id => $ref_label ) {
 
-					echo '<option value="' . $ref_id . '"';
+					echo '<option value="' . esc_attr( $ref_id ) . '"';
 					if ( isset( $_GET['ref'] ) && $_GET['ref'] == $ref_id ) echo ' selected="selected"';
 					echo '>' . esc_html( $ref_label ) . '</option>';
 
@@ -1193,7 +1193,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			// Filter by user
 			if ( $this->core->user_is_point_editor() && ! $is_profile && $this->num_rows > 0 ) {
 
-				echo '<input type="text" class="form-control" name="user" id="myCRED-user-filter" size="22" placeholder="' . __( 'User ID, Username, Email or Nicename', 'mycred' ) . '" value="' . ( ( isset( $_GET['user'] ) ) ? esc_attr( $_GET['user'] ) : '' ) . '" /> ';
+				echo '<input type="text" class="form-control" name="user" id="myCRED-user-filter" size="22" placeholder="' . esc_attr__( 'User ID, Username, Email or Nicename', 'mycred' ) . '" value="' . ( ( isset( $_GET['user'] ) ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['user'] ) ) ) : '' ) . '" /> ';
 				$show = true;
 
 			}
@@ -1201,13 +1201,13 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			// Filter Order
 			if ( $this->num_rows > 0 ) {
 
-				echo '<select name="order" id="myCRED-order-filter"><option value="">' . __( 'Show in order', 'mycred' ) . '</option>';
+				echo '<select name="order" id="myCRED-order-filter"><option value="">' . esc_html__( 'Show in order', 'mycred' ) . '</option>';
 				foreach ( array( 'ASC' => __( 'Ascending', 'mycred' ), 'DESC' => __( 'Descending', 'mycred' ) ) as $value => $label ) {
 
-					echo '<option value="' . $value . '"';
+					echo '<option value="' . esc_attr( $value ) . '"';
 					if ( ! isset( $_GET['order'] ) && $value == 'DESC' ) echo ' selected="selected"';
 					elseif ( isset( $_GET['order'] ) && $_GET['order'] == $value ) echo ' selected="selected"';
-					echo '>' . $label . '</option>';
+					echo '>' . esc_html( $label ) . '</option>';
 
 				}
 				echo '</select>';
@@ -1222,7 +1222,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			}
 
 			if ( $show === true )
-				echo '<input type="submit" class="btn btn-default button button-secondary" value="' . __( 'Filter', 'mycred' ) . '" />';
+				echo '<input type="submit" class="btn btn-default button button-secondary" value="' . esc_attr__( 'Filter', 'mycred' ) . '" />';
 
 			echo '</div>';
 
@@ -1239,7 +1239,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			if ( ! $this->have_entries() || $this->max_num_pages == 1 || ! $this->render_mode ) return;
 
 ?>
-<div class="row pagination-<?php echo $location; ?>">
+<div class="row pagination-<?php echo esc_attr( $location ); ?>">
 	<div class="col-xs-12">
 
 		<?php $this->front_pagination( $pagination ); ?>
@@ -1260,7 +1260,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			if ( ! $this->render_mode ) return;
 
 ?>
-<h2 class="screen-reader-text sr-only"><?php _e( 'Log entries navigation', 'mycred' ); ?></h2>
+<h2 class="screen-reader-text sr-only"><?php esc_html_e( 'Log entries navigation', 'mycred' ); ?></h2>
 <div class="tablenav-pages<?php if ( $this->max_num_pages == 1 ) echo ' one-page'; ?>">
 
 	<?php $this->pagination( $location, $id ); ?>
@@ -1285,8 +1285,9 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$current              = $this->get_pagenum();
 
 			$removable_query_args = wp_removable_query_args();
+			$url     = ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) ? set_url_scheme( sanitize_text_field( wp_unslash( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) ) : '';
 
-			$current_url          = set_url_scheme( sanitize_url('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) );
+			$current_url          = $url;
 			$current_url          = remove_query_arg( $removable_query_args, $current_url );
 			$current_url          = str_replace( '/' . $current . '/', '/', $current_url );
 			$current_url          = apply_filters( 'mycred_log_front_nav_url', $current_url, $this );
@@ -1366,7 +1367,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				);
 			}
 
-			echo '<nav><ul class="pagination">' . implode( '', $page_links ) . '</ul></nav>';
+			echo '<nav><ul class="pagination">' . wp_kses_post( implode( '', $page_links ) ) . '</ul></nav>';
 
 		}
 
@@ -1383,7 +1384,8 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$output             = '';
 			$total_pages        = $this->max_num_pages;
 			$current            = $this->get_pagenum();
-			$current_url        = set_url_scheme( sanitize_url('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) );
+			$url     			= ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) ? set_url_scheme( sanitize_text_field( wp_unslash( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) ) : '';
+			$current_url        = $url;
 
 			if ( ! $this->is_admin )
 				$current_url = str_replace( '/page/' . $current . '/', '/', $current_url );
@@ -1478,7 +1480,35 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				$page_class = ' no-pages';
 			}
 	
-			echo $output;
+			echo wp_kses( 
+				$output,
+				array(
+					'div' => array(
+						'class' => array()
+					),
+					'span' => array(
+						'class' => array(),
+						'aria-hidden' => array()
+					),
+					'a' => array(
+						'class' => array(),
+						'href' => array()
+					),
+					'label' => array(
+						'for' => array(),
+						'class' => array()
+					),
+					'input' => array(
+						'id' => array(),
+						'type' => array(),
+						'name' => array(),
+						'value' => array(),
+						'size' => array(),
+						'aria-describedby' => array(),
+						'class' => array()
+					)
+				) 
+			);
 
 		}
 
@@ -1490,7 +1520,67 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		public function display() {
 
 			if ( $this->render_mode )
-				echo $this->get_display();
+				echo wp_kses( 
+					$this->get_display(),
+					array(
+						'div' => array(
+							'class' => array()
+						),
+						'table' => array(
+							'class' => array(),
+							'cellspacing' => array(),
+							'cellpadding' => array()
+						),
+						'thead' => array(),
+						'tbody' => array(
+							'id' => array()
+						),
+						'tfoot' => array(),
+						'tr' => array(
+							'class' => array(),
+							'id' => array()
+						),
+						'td' => array(
+							'colspan' => array(),
+							'class' => array(),
+							'id' => array(),
+							'data-colname' => array(),
+							'data-raw' => array()
+						),
+						'th' => array(
+							'scope' => array(),
+							'class' => array(),
+							'id' => array()
+						),
+						'label' => array(
+							'class' => array(),
+							'for' => array()
+						),
+						'input' => array(
+							'id' => array(),
+							'type' => array(),
+							'name' => array(),
+							'value' => array(),
+							'size' => array(),
+							'class' => array(),
+							'placeholder' => array()
+						),
+						'strong' => array(),
+						'span' => array(
+							'class' => array()
+						),
+						'a' => array(
+							'href' => array(),
+							'data-id' => array(),
+							'data-ref' => array(),
+							'class' => array()
+						),
+						'button' => array(
+							'type' => array(),
+							'class' => array()
+						)
+					) 
+				);
 
 		}
 
@@ -1515,7 +1605,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 				$output .= '<div class="table-responsive">';
 
 			$output .= '
-<table class="' . apply_filters( 'mycred_log_table_classes', $table_class, $this ) . '" cellspacing="0" cellspacing="0">
+<table class="' . apply_filters( 'mycred_log_table_classes', $table_class, $this ) . '" cellspacing="0" cellpadding="0">
 	<thead>
 		<tr>';
 
@@ -1604,7 +1694,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 		public function the_entry( $log_entry, $wrap = 'td' ) {
 
 			if ( $this->render_mode )
-				echo $this->get_the_entry( $log_entry, $wrap );
+				echo wp_kses_post( $this->get_the_entry( $log_entry, $wrap ) );
 
 		}
 
@@ -1681,8 +1771,13 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 						$content = $time = apply_filters( 'mycred_log_date', date_i18n( $date_format, $log_entry->time ), $log_entry->time, $log_entry );
 						$content = '<time>' . $content . '</time>';
 
-						if ( $this->is_admin )
-							$content .= '<div class="row-actions"><span class="view"><a href="' . add_query_arg( array( 'page' => $_REQUEST['page'], 'time' => $this->get_time_for_filter( $log_entry->time ) ), admin_url( 'admin.php' ) ) . '">' . __( 'Filter by Date', 'mycred' ) . '</a></span></div>';
+						if ( $this->is_admin && empty( $_REQUEST['time'] ) ) {
+
+							$request_page = isset( $_REQUEST['page'] ) ? sanitize_key( wp_unslash( $_REQUEST['page'] ) ) : 'mycred';
+
+							$content .= '<div class="row-actions"><span class="view"><a href="' . esc_url( add_query_arg( array( 'page' => $request_page, 'time' => $this->get_time_for_filter( $log_entry->time ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Filter by Date', 'mycred' ) . '</a></span></div>';
+
+						}
 
 					break;
 
@@ -1737,11 +1832,15 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 			$actions = array();
 
-			if ( ! isset( $_REQUEST['user'] ) || $_REQUEST['user'] == '' )
-				$actions['view']   = '<a href="' . add_query_arg( array( 'page' => $_REQUEST['page'], 'user' => $entry->user_id ), admin_url( 'admin.php' ) ) . '">' . $filter_label . '</a>';
+			if ( ! isset( $_REQUEST['user'] ) || $_REQUEST['user'] == '' ) {
 
-			$actions['edit']   = '<a href="javascript:void(0);" class="mycred-open-log-entry-editor" data-id="' . $entry->id . '" data-ref="' . $entry->ref . '">' . __( 'Edit', 'mycred' ) . '</a>';
-			$actions['delete'] = '<a href="javascript:void(0);" class="mycred-delete-row" data-id="' . $entry->id . '">' . __( 'Delete', 'mycred' ) . '</a>';
+				$request_page = isset( $_REQUEST['page'] ) ? sanitize_key( wp_unslash( $_REQUEST['page'] ) ) : 'mycred';
+
+				$actions['view']   = '<a href="' . add_query_arg( array( 'page' => $request_page, 'user' => $entry->user_id ), admin_url( 'admin.php' ) ) . '">' . $filter_label . '</a>';
+			}
+
+			$actions['edit']   = '<a href="#" class="mycred-open-log-entry-editor" data-id="' . $entry->id . '" data-ref="' . $entry->ref . '">' . __( 'Edit', 'mycred' ) . '</a>';
+			$actions['delete'] = '<a href="#" class="mycred-delete-row" data-id="' . $entry->id . '">' . __( 'Delete', 'mycred' ) . '</a>';
 
 			if ( ! empty( $actions ) ) {
 
@@ -1785,7 +1884,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 ?>
 <div style="display:none;" class="clear" id="export-log-history">
-	<?php if ( ! empty( $title ) ) : ?><h3 class="group-title"><?php echo $title; ?></h3><?php endif; ?>
+	<?php if ( ! empty( $title ) ) : ?><h3 class="group-title"><?php echo esc_html( $title ); ?></h3><?php endif; ?>
 <?php
 
 			if ( ! empty( $exports ) ) {
@@ -1801,19 +1900,19 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 					$url = mycred_get_export_url( $id );
 					if ( $url === false ) continue;
 
-					echo '<a href="" class="' . $data['class'] . '">' . $label . '</a> ';
+					echo '<a href="" class="' . esc_attr( $data['class'] ) . '">' . esc_html( $label ) . '</a> ';
 
 				}
 
 ?>
-	<p><span class="description"><?php _e( 'Log entries are exported to a CSV file and depending on the number of entries selected, the process may take a few seconds.', 'mycred' ); ?></span></p>
+	<p><span class="description"><?php esc_html_e( 'Log entries are exported to a CSV file and depending on the number of entries selected, the process may take a few seconds.', 'mycred' ); ?></span></p>
 <?php
 
 			}
 
 			else {
 
-				echo '<p>' . __( 'No export options available.', 'mycred' ) . '</p>';
+				echo '<p>' . esc_html__( 'No export options available.', 'mycred' ) . '</p>';
 
 			}
 
@@ -1840,15 +1939,15 @@ jQuery(function($) {
 			if ( ! $this->render_mode ) return;
 
 			if ( isset( $_GET['s'] ) && $_GET['s'] != '' )
-				$serarch_string = sanitize_text_field( $_GET['s'] );
+				$serarch_string = sanitize_text_field( wp_unslash( $_GET['s'] ) );
 			else
 				$serarch_string = '';
 
 ?>
 <p class="search-box">
-	<label class="screen-reader-text"><?php _e( 'Search Log', 'mycred' ); ?>:</label>
-	<input type="search" name="s" value="<?php echo esc_attr( $serarch_string ); ?>" placeholder="<?php _e( 'search log entries', 'mycred' ); ?>" />
-	<input type="submit" id="search-submit" class="button button-medium button-secondary" value="<?php _e( 'Search Log', 'mycred' ); ?>" />
+	<label class="screen-reader-text"><?php esc_html_e( 'Search Log', 'mycred' ); ?>:</label>
+	<input type="search" name="s" value="<?php echo esc_attr( $serarch_string ); ?>" placeholder="<?php esc_attr_e( 'search log entries', 'mycred' ); ?>" />
+	<input type="submit" id="search-submit" class="button button-medium button-secondary" value="<?php esc_attr_e( 'Search Log', 'mycred' ); ?>" />
 </p>
 <?php
 
@@ -1882,21 +1981,21 @@ jQuery(function($) {
 
 					$count = $count+1;
 
-					echo '<li class="' . $sorting_id . '"><a href="';
+					echo '<li class="' . esc_attr( $sorting_id ) . '"><a href="';
 
 					// Build Query Args
 					$url_args = array();
 					if ( isset( $_GET['user_id'] ) && $_GET['user_id'] != '' )
-						$url_args['user_id'] = $_GET['user_id'];
+						$url_args['user_id'] = absint( $_GET['user_id'] );
 
 					if ( isset( $_GET['ref'] ) && $_GET['ref'] != '' )
-						$url_args['ref'] = $_GET['ref'];
+						$url_args['ref'] = sanitize_text_field( wp_unslash( $_GET['ref'] ) );
 
 					if ( isset( $_GET['order'] ) && $_GET['order'] != '' )
-						$url_args['order'] = $_GET['order'];
+						$url_args['order'] = sanitize_text_field( wp_unslash( $_GET['order'] ) );
 
 					if ( isset( $_GET['s'] ) && $_GET['s'] != '' )
-						$url_args['s'] = $_GET['s'];
+						$url_args['s'] = sanitize_text_field( wp_unslash( $_GET['s'] ) );
 
 					if ( $sorting_id != '' )
 						$url_args['show'] = $sorting_id;
@@ -1913,7 +2012,7 @@ jQuery(function($) {
 					if ( isset( $_GET['show'] ) && $_GET['show'] == $sorting_id ) echo ' class="current"';
 					elseif ( ! isset( $_GET['show'] ) && $sorting_id == '' ) echo ' class="current"';
 
-					echo '>' . $sorting_name . '</a>';
+					echo '>' . esc_html( $sorting_name ) . '</a>';
 					if ( $count != $total ) echo ' | ';
 					echo '</li>';
 
@@ -1931,7 +2030,7 @@ jQuery(function($) {
 		 */
 		protected function get_time_for_filter( $timestamp ) {
 
-			$start = strtotime( date( 'Y-m-d 00:00:00' ), $timestamp );
+			$start = strtotime( date( 'Y-m-d 00:00:00', $timestamp ) );
 			$end   = $start + ( DAY_IN_SECONDS - 1 );
 
 			return $start . ',' . $end;

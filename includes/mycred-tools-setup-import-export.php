@@ -13,169 +13,141 @@ class myCRED_Setup_Import_Export
     {
         $this->mycred_tools_import_export = new myCRED_Tools_Import_Export();
         ?>
-        <input type="hidden" class="request-tab" value="<?php if( isset( $_GET['mycred-tools'] ) ) echo $_GET['mycred-tools'] ?>" />
+        <input type="hidden" class="request-tab" value="<?php if( isset( $_GET['mycred-tools'] ) ) echo sanitize_key( $_GET['mycred-tools'] );?>" />
         <form action="" enctype="multipart/form-data" class="mycred-tools-setup">
-        <h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+        <h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
         <?php
-            if( !empty( $this->mycred_tools_import_export->core_point_types ) )
-            {
-            ?> 
-           
+            if( ! empty( $this->mycred_tools_import_export->core_point_types ) ) :?> 
                 <div>
                     <div>
-                        <label class='mycred-switch1'>
-                            <input type='checkbox' value='all-points' name='all_points' id='all-points'>
-                            <span class='slider round'></span>
+                        <label class="mycred-switch1">
+                            <input type="checkbox" value="all-points" name="all_points" id="all-points">
+                            <span class="slider round"></span>
                         </label> 
                         <label for="all-points"><b>All Point Types</b></label>
                     </div>
-                
-                    <?php
-                    foreach( $this->mycred_tools_import_export->core_point_types as $key => $value )
-                    {
-                        echo "
+                    <?php foreach( $this->mycred_tools_import_export->core_point_types as $key => $value ):?>
                         <ol>
                             <li>
-                                <label class='mycred-switch1'>
-                                    <input type='checkbox' value='{$key}' name='point_type' id='{$key}-point'>
-                                    <span class='slider round'></span>
+                                <label class="mycred-switch1">
+                                    <input type="checkbox" value="<?php echo esc_attr( $key );?>" name="point_type" id="<?php echo esc_attr( $key );?>-point">
+                                    <span class="slider round"></span>
                                 </label> 
-                                <label for='{$key}-point'><b>{$value}</b></labal>
+                                <label for="<?php echo esc_attr( $key );?>-point"><b><?php echo esc_html( $value );?></b></labal>
                             </li>
                             <ol>
                                 <li>
-                                    <label class='mycred-switch1'>
-                                        <input type='checkbox' value='{$key}' name='hooks' id='{$key}-hooks'>
-                                        <span class='slider round'></span>
+                                    <label class="mycred-switch1">
+                                        <input type="checkbox" value="<?php echo esc_attr( $key );?>" name="hooks" id="<?php echo esc_attr( $key );?>-hooks">
+                                        <span class="slider round"></span>
                                     </label> 
-                                    <label for='{$key}-hooks'>Hooks</labal>
+                                    <label for="<?php echo esc_attr( $key );?>-hooks">Hooks</labal>
                                 </li>
                                 <li>
-                                    <label class='mycred-switch1'>
-                                        <input type='checkbox' value='{$key}' name='ranks' id='{$key}-ranks'>
-                                        <span class='slider round'></span>
+                                    <label class="mycred-switch1">
+                                        <input type="checkbox" value="<?php echo esc_attr( $key );?>" name="ranks" id="<?php echo esc_attr( $key );?>-ranks">
+                                        <span class="slider round"></span>
                                     </label> 
-                                    <label for='{$key}-ranks'>Ranks</labal>
+                                    <label for="<?php echo esc_attr( $key );?>-ranks">Ranks</labal>
                                 </li>
                             </ol>
                         </ol>
-                        ";
-                    }
-            }
-            ?>
-            </div>
-            <ul>
-                <?php
-                
-                if( !empty( $this->mycred_tools_import_export->get_badge_categories() ) )
-                {
-                    echo "
+                    <?php endforeach;?>
+                </div>
+            <?php endif;?>
+
+            <?php if( !empty( $this->mycred_tools_import_export->get_badge_categories() ) ):?>
+                <ul>
                     <li>
-                        <label class='mycred-switch1'>
-                            <input type='checkbox' value='all-achievements' name='all_achievements' id='all-achievements'>
-                            <span class='slider round'></span>
+                        <label class="mycred-switch1">
+                            <input type="checkbox" value="all-achievements" name="all_achievements" id="all-achievements">
+                            <span class="slider round"></span>
                         </label> 
-                        <label for='all-achievements'><b>All Achievement Types</b></label>
+                        <label for="all-achievements"><b>All Achievement Types</b></label>
                     </li>
-                    ";
-                    echo "<ol>";
-                    foreach( $this->mycred_tools_import_export->get_badge_categories() as $category )
-                    {
-                        echo 
-                            "<li>
-                                <label class='mycred-switch1'>
-                                    <input type='checkbox' value='{$category->cat_ID}' name='achievements' id='cate-{$category->cat_ID}'>
-                                    <span class='slider round'></span>
-                                </label> 
-                                <label for='cate-{$category->cat_ID}'><b>{$category->name}</b></label>
-                            </li>";
+                    <ol>
+                    <?php foreach( $this->mycred_tools_import_export->get_badge_categories() as $category ):?>
+                        <li>
+                            <label class="mycred-switch1">
+                                <input type="checkbox" value="<?php echo esc_attr( $category->cat_ID );?>" name="achievements" id="cate-<?php echo esc_attr( $category->cat_ID );?>">
+                                <span class="slider round"></span>
+                            </label> 
+                            <label for="cate-<?php echo esc_attr( $category->cat_ID );?>"><b><?php echo esc_html( $category->name );?></b></label>
+                        </li>
+                        <?php 
 
                         $badges = mycred_get_badges_by_term_id( $category->cat_ID );
 
-                        foreach( $badges as $badge )
-                        {
-                            echo 
-                            "<ol>
-                                <li>
-                                    <label class='mycred-switch1'>
-                                        <input type='checkbox' value='{$badge->ID}' name='badge_{$category->cat_ID}' id='badge-{$badge->ID}-{$category->cat_ID}'>
-                                        <span class='slider round'></span>
-                                    </label> 
-                                    <label for='badge-{$badge->ID}-{$category->cat_ID}'><b>{$badge->post_title}</b></label>
-                                </li>
-                                <li>
-                                    <label class='mycred-switch1'>
-                                        <input type='checkbox' value='{$badge->ID}' name='levels_{$category->cat_ID}' id='level-{$badge->ID}-{$category->cat_ID}'>
-                                        <span class='slider round'></span>
-                                    </label> 
-                                    <label for='level-{$badge->ID}-{$category->cat_ID}'>Levels</label>
-                                </li>
-                            </ol>";
-                        }
-                    }
-                    echo "</ol>";
-                }
-                
-                ?>
+                        foreach( $badges as $badge ):?>
+                        <ol>
+                            <li>
+                                <label class="mycred-switch1">
+                                    <input type="checkbox" value="<?php echo esc_attr( $badge->ID );?>" name="badge_<?php echo esc_attr( $category->cat_ID );?>" id="badge-<?php echo esc_attr( $badge->ID );?>-<?php echo esc_attr( $category->cat_ID );?>">
+                                    <span class="slider round"></span>
+                                </label> 
+                                <label for="badge-<?php echo esc_attr( $badge->ID );?>-<?php echo esc_attr( $category->cat_ID );?>"><b><?php echo esc_html( $badge->post_title );?></b></label>
+                            </li>
+                            <li>
+                                <label class="mycred-switch1">
+                                    <input type="checkbox" value="<?php echo esc_attr( $badge->ID );?>" name="levels_<?php echo esc_attr( $category->cat_ID );?>" id="level-<?php echo esc_attr( $badge->ID );?>-<?php echo esc_attr( $category->cat_ID );?>">
+                                    <span class="slider round"></span>
+                                </label> 
+                                <label for="level-<?php echo esc_attr( $badge->ID );?>-<?php echo esc_attr( $category->cat_ID );?>">Levels</label>
+                            </li>
+                        </ol>
+                        <?php endforeach;?>
+                    <?php endforeach;?>
+                    </ol>
                 </ul>
+            <?php endif;?>
+
+            <?php
+
+            $un_cat_badges = $this->mycred_tools_import_export->get_uncat_badge_ids();
+
+            if ( ! empty( $un_cat_badges ) ):?>
                 <ul>
-                
-                <?php
-
-                $un_cat_badges = $this->mycred_tools_import_export->get_uncat_badge_ids();
-
-                if( !empty( $un_cat_badges ) )
-                {
-                    echo "
                     <li>
-                        <label class='mycred-switch1'>
-                            <input type='checkbox' value='uncat-achievements' name='uncat_achievements' id='uncat-achievements'>
-                            <span class='slider round'></span>
+                        <label class="mycred-switch1">
+                            <input type="checkbox" value="uncat-achievements" name="uncat_achievements" id="uncat-achievements">
+                            <span class="slider round"></span>
                         </label> 
-                        <label for='uncat-achievements'><b>Uncategorized Achievements</b></label>
+                        <label for="uncat-achievements"><b>Uncategorized Achievements</b></label>
                     </li>
-                    ";
-                    foreach( $un_cat_badges as $data )
-                    {
-                        $id = $data['ID'];
-                        $title = get_the_title( $id );
-                        echo 
-                        "<ol>
-                            <li>
-                                <label class='mycred-switch1'>
-                                    <input type='checkbox' value='{$id}' name='badge' id='uncat-badge-{$id}'>
-                                    <span class='slider round'></span>
-                                </label> 
-                                <label for='uncat-badge-{$id}'><b>{$title}</b></label>
-                            </li>
-                            <li>
-                                <label class='mycred-switch1'>
-                                    <input type='checkbox' value='{$id}' name='levels' id='uncat-level-{$id}'>
-                                    <span class='slider round'></span>
-                                </label> 
-                                <label for='uncat-level-{$id}'>Levels</label>
-                            </li>
-                        </ol>";
-                    }
-                }
-
-                
-                ?>
-            </ul>
+                    <?php foreach( $un_cat_badges as $data ):?>
+                    <ol>
+                        <li>
+                            <label class="mycred-switch1">
+                                <input type="checkbox" value="<?php echo esc_attr( $data['ID'] ); ?>" name="badge" id="uncat-badge-<?php echo esc_attr( $data['ID'] ); ?>">
+                                <span class="slider round"></span>
+                            </label> 
+                            <label for="uncat-badge-<?php echo esc_attr( $data['ID'] ); ?>"><b><?php echo esc_html( get_the_title( $data['ID'] ) ); ?></b></label>
+                        </li>
+                        <li>
+                            <label class="mycred-switch1">
+                                <input type="checkbox" value="<?php echo esc_attr( $data['ID'] ); ?>" name="levels" id="uncat-level-<?php echo esc_attr( $data['ID'] ); ?>">
+                                <span class="slider round"></span>
+                            </label> 
+                            <label for="uncat-level-<?php echo esc_attr( $data['ID'] ); ?>">Levels</label>
+                        </li>
+                    </ol>
+                    <?php endforeach;?>
+                </ul>
+            <?php endif;?>
 
             <button class="button button-primary" id="export-raw">
-                <span class="dashicons dashicons-database-export v-align-middle"></span> <?php _e( 'Export Setup', 'mycred' ); ?>
+                <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Setup', 'mycred' ); ?>
             </button>
         </form>
 
         <form action="" enctype="multipart/form-data" class="mycred-tools-setup-import">
-            <h3><?php _e( 'Import', 'mycred' ); ?></h3>
+            <h3><?php esc_html_e( 'Import', 'mycred' ); ?></h3>
             <input type="file" id="import-file" name="file" accept=".json" />
             <button class="button button-primary", id="import">
-                <span class="dashicons dashicons-database-import v-align-middle"></span> <?php _e( 'Import Setup','mycred' ); ?>
+                <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import Setup','mycred' ); ?>
             </button>
             <p><i>
-                <?php _e( 'Accepts JSON format.', 'mycred' ); ?>
+                <?php esc_html_e( 'Accepts JSON format.', 'mycred' ); ?>
             </i></p>
         </form>
         <div style="clear: both;"></div>

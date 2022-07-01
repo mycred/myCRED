@@ -77,7 +77,7 @@ if ( ! function_exists( 'mycred_render_buy_points' ) ) :
 		if ( empty( $classes ) || ! in_array( 'mycred-buy-link', $classes ) )
 			$classes[] = 'mycred-buy-link';
 
-		$current_url        = set_url_scheme( sanitize_url('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) );
+		$current_url        = ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) ? set_url_scheme( sanitize_text_field( wp_unslash( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) ) : '';( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) ? set_url_scheme( sanitize_text_field( wp_unslash( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) ) ) : '';
 		if ( is_ssl() )
 			$current_url = str_replace( 'http://', 'https://', $current_url );
 
@@ -203,39 +203,39 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 		if ( ! empty( $buycred_instance->gateway->errors ) ) {
 
 			foreach ( $buycred_instance->gateway->errors as $error )
-				echo '<div class="alert alert-warnng"><p>' . $error . '</p></div>';
+				echo '<div class="alert alert-warnng"><p>' . esc_html( $error ) . '</p></div>';
 
 		}
 
 ?>
 <div class="row">
 	<div class="col-xs-12">
-		<form method="post" class="form<?php if ( $inline == 1 ) echo '-inline'; ?> <?php echo implode( ' ', $classes ); ?>" action="">
-			<input type="hidden" name="token" value="<?php echo wp_create_nonce( 'mycred-buy-creds' ); ?>" />
+		<form method="post" class="form<?php if ( $inline == 1 ) echo esc_attr( '-inline' ); ?> <?php echo esc_attr( implode( ' ', $classes ) ); ?>" action="">
+			<input type="hidden" name="token" value="<?php echo esc_attr( wp_create_nonce( 'mycred-buy-creds' ) ); ?>" />
 				<?php
 				if( count( $point_types ) > 1 ){ ?>
 					<select name="ctype" class="mycred-change-pointtypes">
 						<?php foreach ( $point_types as $key => $value ) :?>
-							<option value="<?php echo $value[0]; ?>"><?php echo $value[1]; ?></option><?php endforeach;?>
+							<option value="<?php echo esc_attr( $value[0] ); ?>"><?php echo esc_html( $value[1] ); ?></option><?php endforeach;?>
 					</select><?php 
 				}else{ ?>
 					<input type="hidden" name="ctype" value="<?php echo esc_attr( $point_types[0][0] ); ?>" /><?php 
 				} 
 
-				if( isset($e_rate) && !empty($e_rate)){ 
-					$e_rate=mycred_encode_values($e_rate);
+				if( ! empty( $e_rate ) ) { 
+					$e_rate = mycred_encode_values( $e_rate );
 				?>
-			<input type="hidden" name="er_random" value="<?php echo esc_attr($e_rate); ?>" />
+			<input type="hidden" name="er_random" value="<?php echo esc_attr( $e_rate ); ?>" />
 			<?php } ?>			
 			<div class="form-group">
-				<label class="mycred-point-type"><?php echo $point_types[0][1]; ?></label>
+				<label class="mycred-point-type"><?php echo esc_html( $point_types[0][1] ); ?></label>
 <?php
 
 		// No amount given - user must nominate the amount
 		if ( count( $amounts ) == 0 ) {
 
 ?>
-				<input type="text" name="amount" class="form-control" placeholder="<?php echo $mycred->format_creds( $minimum ); ?>" min="<?php echo $minimum; ?>" value="" />
+				<input type="text" name="amount" class="form-control" placeholder="<?php echo esc_attr( $mycred->format_creds( $minimum ) ); ?>" min="<?php echo esc_attr( $minimum );?>" value="" />
 <?php
 
 		}
@@ -244,7 +244,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 		elseif ( count( $amounts ) == 1 ) {
 
 ?>
-				<p class="form-control-static"><?php echo $mycred->format_creds( $amounts[0] ); ?></p>
+				<p class="form-control-static"><?php echo esc_html( $mycred->format_creds( $amounts[0] ) ); ?></p>
 				<input type="hidden" name="amount" value="<?php echo esc_attr( $amounts[0] ); ?>" />
 <?php
 
@@ -265,7 +265,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 					// disable the option
 					if ( $remaining !== true && $remaining < $amount ) echo ' disabled="disabled"';
 
-					echo '>' . $mycred->format_creds( $amount ) . '</option>';
+					echo '>' . esc_html( $mycred->format_creds( $amount ) ) . '</option>';
 
 				}
 
@@ -282,7 +282,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 
 ?>
 				<div class="form-group">
-					<label for="gift_to"><?php _e( 'Recipient', 'mycred' ); ?></label>
+					<label for="gift_to"><?php esc_html_e( 'Recipient', 'mycred' ); ?></label>
 					<p class="form-control-static"><?php echo esc_html( $user->display_name ); ?></p>
 					<input type="hidden" name="<?php if ( $gift_to == 'author' ) echo 'post_id'; else echo 'gift_to'; ?>" value="<?php echo absint( $recipient_id ); ?>" />
 				</div>
@@ -295,7 +295,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 
 ?>
 				<div class="form-group">
-					<label for="gateway"><?php _e( 'Pay Using', 'mycred' ); ?></label>
+					<label for="gateway"><?php esc_html_e( 'Pay Using', 'mycred' ); ?></label>
 					<select name="mycred_buy" class="form-control">
 <?php
 
@@ -327,7 +327,7 @@ if ( ! function_exists( 'mycred_render_buy_form_points' ) ) :
 				</div>
 
 				<div class="form-group">
-					<button class="button btn btn-block btn-lg" ><?php echo $button_label; ?></button>
+					<button class="button btn btn-block btn-lg" ><?php echo esc_html( $button_label ); ?></button>
 				</div>
 
 		</form>
@@ -371,16 +371,16 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 		ob_start();
 
 ?>
-<div id="pending-buycred-payments-<?php echo $ctype; ?>">
+<div id="pending-buycred-payments-<?php echo esc_attr( $ctype ); ?>">
 	<table class="table">
 		<thead>
 			<tr>
-				<th class="column-transaction-id"><?php _e( 'Transaction ID', 'mycred' ); ?></th>
-				<th class="column-gateway"><?php _e( 'Gateway', 'mycred' ); ?></th>
-				<th class="column-amount"><?php _e( 'Amount', 'mycred' ); ?></th>
-				<th class="column-cost"><?php _e( 'Cost', 'mycred' ); ?></th>
-				<?php if ( $ctype == '' ) : ?><th class="column-ctype"><?php _e( 'Point Type', 'mycred' ); ?></th><?php endif; ?>
-				<th class="column-actions"><?php _e( 'Actions', 'mycred' ); ?></th>
+				<th class="column-transaction-id"><?php esc_html_e( 'Transaction ID', 'mycred' ); ?></th>
+				<th class="column-gateway"><?php esc_html_e( 'Gateway', 'mycred' ); ?></th>
+				<th class="column-amount"><?php esc_html_e( 'Amount', 'mycred' ); ?></th>
+				<th class="column-cost"><?php esc_html_e( 'Cost', 'mycred' ); ?></th>
+				<?php if ( $ctype == '' ) : ?><th class="column-ctype"><?php esc_html_e( 'Point Type', 'mycred' ); ?></th><?php endif; ?>
+				<th class="column-actions"><?php esc_html_e( 'Actions', 'mycred' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -399,16 +399,16 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 
 ?>
 			<tr>
-				<td class="column-transaction-id"><?php echo esc_attr( $entry->public_id ); ?></td>
-				<td class="column-gateway"><?php echo $buycred->adjust_column_content( 'gateway', $entry->payment_id ); ?></td>
-				<td class="column-amount"><?php echo $buycred->adjust_column_content( 'amount', $entry->payment_id ); ?></td>
-				<td class="column-cost"><?php echo $buycred->adjust_column_content( 'cost', $entry->payment_id ); ?></td>
-				<td class="column-ctype"><?php echo mycred_get_point_type_name( $entry->point_type, false ); ?></td>
+				<td class="column-transaction-id"><?php echo esc_html( $entry->public_id ); ?></td>
+				<td class="column-gateway"><?php echo esc_html( $buycred->adjust_column_content( 'gateway', $entry->payment_id ) ); ?></td>
+				<td class="column-amount"><?php echo esc_html( $buycred->adjust_column_content( 'amount', $entry->payment_id ) ); ?></td>
+				<td class="column-cost"><?php echo esc_html( $buycred->adjust_column_content( 'cost', $entry->payment_id ) ); ?></td>
+				<td class="column-ctype"><?php echo esc_html( mycred_get_point_type_name( $entry->point_type, false ) ); ?></td>
 				<td class="column-actions">
 					<?php if( $entry->gateway_id != 'bank' ):?>
-						<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo $pay_now; ?></a> &bull; 
+						<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo esc_html( $pay_now ); ?></a> &bull; 
 					<?php endif; ?>
-					<a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo $cancel; ?></a>
+					<a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo esc_html( $cancel ); ?></a>
 				</td>
 			</tr>
 <?php
@@ -426,15 +426,15 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 
 ?>
 			<tr>
-				<td class="column-transaction-id"><?php echo esc_attr( $entry->public_id ); ?></td>
-				<td class="column-gateway"><?php echo $buycred->adjust_column_content( 'gateway', $entry->payment_id ); ?></td>
-				<td class="column-amount"><?php echo $buycred->adjust_column_content( 'amount', $entry->payment_id ); ?></td>
-				<td class="column-cost"><?php echo $buycred->adjust_column_content( 'cost', $entry->payment_id ); ?></td>
+				<td class="column-transaction-id"><?php echo esc_html( $entry->public_id ); ?></td>
+				<td class="column-gateway"><?php echo esc_html( $buycred->adjust_column_content( 'gateway', $entry->payment_id ) ); ?></td>
+				<td class="column-amount"><?php echo esc_html( $buycred->adjust_column_content( 'amount', $entry->payment_id ) ); ?></td>
+				<td class="column-cost"><?php echo esc_html( $buycred->adjust_column_content( 'cost', $entry->payment_id ) ); ?></td>
 				<td class="column-actions">
 					<?php if( $entry->gateway_id != 'bank' ):?>
-						<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo $pay_now; ?></a> &bull; 
+						<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo esc_html( $pay_now ); ?></a> &bull; 
 					<?php endif; ?>
-					<a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo $cancel; ?></a>
+					<a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo esc_html( $cancel ); ?></a>
 				</td>
 			</tr>
 <?php
@@ -448,7 +448,7 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 
 ?>
 			<tr>
-				<td colspan="<?php if ( $ctype == '' ) echo '6'; else echo '5'; ?>"><?php _e( 'No pending payments found', 'mycred' ); ?></td>
+				<td colspan="<?php if ( $ctype == '' ) echo '6'; else echo '5'; ?>"><?php esc_html_e( 'No pending payments found', 'mycred' ); ?></td>
 			</tr>
 <?php
 

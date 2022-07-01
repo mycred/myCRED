@@ -44,10 +44,10 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		public function module_admin_init() {
 
 			// Handle actions
-			if ( isset( $_GET['addon_action'] ) && isset( $_GET['addon_id'] ) && isset( $_GET['_token'] ) && wp_verify_nonce( $_GET['_token'], 'mycred-activate-deactivate-addon' ) && $this->core->user_is_point_admin() ) {
+			if ( isset( $_GET['addon_action'] ) && isset( $_GET['addon_id'] ) && isset( $_GET['_token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_token'] ) ), 'mycred-activate-deactivate-addon' ) && $this->core->user_is_point_admin() ) {
 
-				$addon_id = sanitize_text_field( $_GET['addon_id'] );
-				$action   = sanitize_text_field( $_GET['addon_action'] );
+				$addon_id = sanitize_text_field( wp_unslash( $_GET['addon_id'] ) );
+				$action   = sanitize_text_field( wp_unslash( $_GET['addon_action'] ) );
 
 				$this->get();
 				if ( array_key_exists( $addon_id, $this->installed ) ) {
@@ -95,9 +95,9 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 		public function all_activate_deactivate() {
 
 			// Handle actions
-			if ( isset( $_GET['addon_all_action'] ) && isset( $_GET['_token'] ) && wp_verify_nonce( $_GET['_token'], 'mycred-activate-deactivate-addon') && $this->core->user_is_point_admin() ) {
+			if ( isset( $_GET['addon_all_action'] ) && isset( $_GET['_token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_token'] ) ), 'mycred-activate-deactivate-addon') && $this->core->user_is_point_admin() ) {
 
-				$action = sanitize_text_field( $_GET['addon_all_action'] );
+				$action = sanitize_text_field( wp_unslash( $_GET['addon_all_action'] ) );
 
 				if ( $action == 'activate' ) {
 
@@ -495,26 +495,26 @@ $premium_addons_url = get_mycred_addon_page_url('premium_addons');
 <div class="wrap" id="myCRED-wrap">
 	<div class="mycred-addon-outer">	
 		<div class="myCRED-addon-heading">
-			<h1><?php _e( 'Add-ons', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+			<h1><?php esc_html_e( 'Add-ons', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 		</div>
 		 <?php
 		if( !isset( $_GET['mycred_addons'] ) ){ ?>
-			<div class="mycred-addon-switch" data-activation-url="<?php echo $activate_url ?>" data-deactivation-url="<?php echo $deactivate_url ?>">
+			<div class="mycred-addon-switch" data-activation-url="<?php echo esc_url( $activate_url ); ?>" data-deactivation-url="<?php echo esc_attr( $deactivate_url ); ?>">
 				<!-- Rounded switch -->
 				<label for="mycred-addons-checkbox" class="mycred-addons-switch">
 				  <input type="checkbox" name="mycred-addons-checkbox" id="mycred-addons-checkbox" <?php echo $this->check_all_addons() ? 'checked' : ''; ?> >
 				  <span class="slider round"></span>
 				</label>
-				<p class="mycred-activate"><?php _e( 'Activate/Deactivate All Add-ons', 'mycred' ); ?> </p>
+				<p class="mycred-activate"><?php esc_html_e( 'Activate/Deactivate All Add-ons', 'mycred' ); ?> </p>
 			</div>
 <?php 	} ?>
 		
 		<div class="clear"></div>
 		<div class="addons-main-nav">
 			<h2 class="nav-tab-wrapper">
-				<a href="<?php echo admin_url('admin.php?page=mycred-addons') ?>" class="nav-tab <?php echo !isset( $_GET['mycred_addons'] ) ? 'nav-tab-active' : ''; ?>">Built-in Addons</a>
-				<a href="<?php echo $free_addons_url ?>" class="nav-tab <?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'free_addons' ) ? 'nav-tab-active' : ''; ?>">Free Addons</a>
-				<a href="<?php echo $premium_addons_url ?>" class="nav-tab <?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'premium_addons' ) ? 'nav-tab-active' : ''; ?>">Premium Addons</a>
+				<a href="<?php echo esc_url( admin_url('admin.php?page=mycred-addons') ); ?>" class="nav-tab <?php echo !isset( $_GET['mycred_addons'] ) ? 'nav-tab-active' : ''; ?>">Built-in Addons</a>
+				<a href="<?php echo esc_url( $free_addons_url ); ?>" class="nav-tab <?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'free_addons' ) ? 'nav-tab-active' : ''; ?>">Free Addons</a>
+				<a href="<?php echo esc_url( $premium_addons_url ); ?>" class="nav-tab <?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'premium_addons' ) ? 'nav-tab-active' : ''; ?>">Premium Addons</a>
 			</h2>
 		</div>
 	</div>
@@ -524,10 +524,10 @@ $premium_addons_url = get_mycred_addon_page_url('premium_addons');
 			if ( isset( $_GET['activated'] ) ) {
 
 				if ( $_GET['activated'] == 1 )
-					echo '<div id="message" class="updated"><p>' . __( 'Add-on Activated', 'mycred' ) . '</p></div>';
+					echo '<div id="message" class="updated"><p>' . esc_html__( 'Add-on Activated', 'mycred' ) . '</p></div>';
 
 				elseif ( $_GET['activated'] == 0 )
-					echo '<div id="message" class="error"><p>' . __( 'Add-on Deactivated', 'mycred' ) . '</p></div>';
+					echo '<div id="message" class="error"><p>' . esc_html__( 'Add-on Deactivated', 'mycred' ) . '</p></div>';
 
 			}
 
@@ -591,16 +591,16 @@ if ( isset( $_GET['mycred_addons'] ) )
 				<div class="theme inactive" tabindex="0" aria-describedby="badges-action badges-name">
 					
 					<div class="theme-screenshot">
-						<img src="<?php echo $data['screenshot']; ?>" width="384px" height="288px" alt="">
+						<img src="<?php echo esc_url( $data['screenshot'] ); ?>" width="384px" height="288px" alt="">
 					</div>
 
 					<div class="theme-id-container">
 						
-						<h2 class="theme-name" id="badges-name"><?php echo $data['name']; ?></h2>
+						<h2 class="theme-name" id="badges-name"><?php echo esc_html( $data['name'] ); ?></h2>
 						
 						<div class="theme-actions">
 
-						<a href="<?php echo $data['addon_url']; ?>" title="Install" target="_blank" class="button button-primary mycred-action badges">Install</a>
+						<a href="<?php echo esc_url( $data['addon_url'] ); ?>" title="Install" target="_blank" class="button button-primary mycred-action badges">Install</a>
 						</div>
 
 					</div>
@@ -667,16 +667,16 @@ if ( isset( $_GET['mycred_addons'] ) )
 				<div class="theme inactive" tabindex="0" aria-describedby="badges-action badges-name">
 				
 					<div class="theme-screenshot">
-						<img src="<?php echo $data['screenshot']; ?>" width="384px" height="288px" alt="">
+						<img src="<?php echo esc_url( $data['screenshot'] ); ?>" width="384px" height="288px" alt="">
 					</div>
 
 					<div class="theme-id-container">
 						
-						<h2 class="theme-name" id="badges-name"><?php echo $data['name']; ?></h2>
+						<h2 class="theme-name" id="badges-name"><?php echo esc_html( $data['name'] ); ?></h2>
 	
 						<div class="theme-actions">
 
-						<a href="<?php echo $data['addon_url']; ?>" title="Install" target="_blank" class="button button-primary mycred-action badges">Install</a>
+						<a href="<?php echo esc_url( $data['addon_url'] ); ?>" title="Install" target="_blank" class="button button-primary mycred-action badges">Install</a>
 						</div>
 
 					</div>
@@ -697,16 +697,16 @@ else
 
 				foreach ( $installed as $key => $data ) {
 
-					$aria_action = esc_attr( $key . '-action' );
-					$aria_name   = esc_attr( $key . '-name' );
+					$aria_action = $key . '-action';
+					$aria_name   = $key . '-name';
 
 ?>
-			<div class="theme<?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' inactive'; ?>" tabindex="0" aria-describedby="<?php echo $aria_action . ' ' . $aria_name; ?>">
+			<div class="theme<?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' inactive'; ?>" tabindex="0" aria-describedby="<?php echo esc_attr( $aria_action ) . ' ' . esc_attr( $aria_name ); ?>">
 
 				<?php if ( $data['screenshot'] != '' ) : ?>
 
 				<div class="theme-screenshot">
-					<img src="<?php echo $data['screenshot']; ?>" alt="" />
+					<img src="<?php echo esc_url( $data['screenshot'] ); ?>" alt="" />
 				</div>
 
 				<?php else : ?>
@@ -715,23 +715,23 @@ else
 
 				<?php endif; ?>
 
-				<a class="more-details" id="<?php echo $aria_action; ?>" href="<?php echo $data['addon_url']; ?>" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a>
+				<a class="more-details" id="<?php echo esc_attr( $aria_action ); ?>" href="<?php echo esc_url( $data['addon_url'] ); ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
 
 				<div class="theme-id-container">
 
 					<?php if ( $this->is_active( $key ) ) : ?>
 
-					<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
+					<h2 class="theme-name" id="<?php echo esc_attr( $aria_name ); ?>"><?php echo esc_html( $this->core->template_tags_general( $data['name'] ) ); ?></h2>
 
 					<?php else : ?>
 
-					<h2 class="theme-name" id="<?php echo $aria_name; ?>"><?php echo $this->core->template_tags_general( $data['name'] ); ?></h2>
+					<h2 class="theme-name" id="<?php echo esc_attr( $aria_name ); ?>"><?php echo esc_html( $this->core->template_tags_general( $data['name'] ) ); ?></h2>
 
 					<?php endif; ?>
 
 					<div class="theme-actions">
 
-						<?php echo $this->activate_deactivate( $key ); ?>
+						<?php echo wp_kses_post( $this->activate_deactivate( $key ) ); ?>
 
 					</div>
 

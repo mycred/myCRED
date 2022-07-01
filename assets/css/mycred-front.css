@@ -1,6 +1,13 @@
 .widget .myCRED-rank {
     float: right;
 }
+.item-meta > #mycred-my-ranks {
+    display: none;
+}
+.item-meta > .mycred-balance {
+    display:none;
+
+}
 .widget .myCRED-rank span {
     padding-right: 4px;
     color: gray;
@@ -10,13 +17,6 @@
     margin-bottom: 24px;
     text-align: center;
     font-size: larger;
-}
-.item-meta > #mycred-my-ranks {
-    display: none;
-}
-.item-meta > .mycred-balance {
-    display:none;
-
 }
 .widget .myCRED-leaderboard .cred {
     float: right;

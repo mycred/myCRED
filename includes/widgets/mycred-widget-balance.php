@@ -51,11 +51,11 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 				$mycred  = mycred( $instance['type'] );
 
 				// Start
-				echo $before_widget;
+				echo wp_kses_post( $before_widget );
 
 				// Title
 				if ( ! empty( $instance['title'] ) )
-					echo $before_title . $instance['title'] . $after_title;
+					echo wp_kses_post( $before_title . $instance['title'] . $after_title );
 
 				$layout = $mycred->template_tags_amount( $instance['cred_format'], $balance->current );
 				$layout = $mycred->template_tags_user( $layout, false, wp_get_current_user() );
@@ -79,7 +79,7 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 
 						// Title
 						if ( ! empty( $instance['history_title'] ) )
-							echo $before_title . $mycred->template_tags_general( $instance['history_title'] ) . $after_title;
+							echo wp_kses_post( $before_title . $mycred->template_tags_general( $instance['history_title'] ) . $after_title );
 
 						// Organized List
 						echo '<ol class="myCRED-history">';
@@ -101,7 +101,7 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 							else $class = 'entry-row';
 
 							// Output list item
-							echo '<li class="' . $class . '">' . $layout . '</li>';
+							echo '<li class="' . esc_attr( $class ) . '">' . wp_kses_post( $layout ) . '</li>';
 
 						}
 						echo '</ol>';
@@ -113,7 +113,7 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 				}
 
 				// End
-				echo $after_widget;
+				echo wp_kses_post( $after_widget );
 
 			}
 
@@ -123,21 +123,21 @@ if ( ! class_exists( 'myCRED_Widget_Balance' ) ) :
 				// If we want to show a message, then do so
 				if ( $instance['show_visitors'] ) {
 
-					echo $before_widget;
+					echo wp_kses_post( $before_widget );
 
 					$mycred = mycred( $instance['type'] );
 
 					// Title
 					if ( ! empty( $instance['title'] ) )
-						echo $before_title . $instance['title'] . $after_title;
+						echo wp_kses_post( $before_title . $instance['title'] . $after_title );
 
 					$message = $instance['message'];
 					$message = $mycred->template_tags_general( $message );
 					$message = $mycred->allowed_tags( $message );
 
-					echo '<div class="myCRED-my-balance-message"><p>' . nl2br( $message ) . '</p></div>';
+					echo '<div class="myCRED-my-balance-message"><p>' . wp_kses_post( nl2br( $message ) ) . '</p></div>';
 
-					echo $after_widget;
+					echo wp_kses_post( $after_widget );
 
 				}
 
@@ -173,14 +173,14 @@ div.mycred-hidden.ex-field { display: block; }
 
 <!-- Widget Options -->
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Title', 'mycred' ); ?>:</label>
+	<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', 'mycred' ); ?>:</label>
 	<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" class="widefat" />
 </p>
 
 <!-- Point Type -->
 <?php if ( count( $mycred_types ) > 1 ) : ?>
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>"><?php _e( 'Point Type', 'mycred' ); ?>:</label>
+	<label for="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>"><?php esc_html_e( 'Point Type', 'mycred' ); ?>:</label>
 	<?php mycred_types_select_from_dropdown( $this->get_field_name( 'type' ), $this->get_field_id( 'type' ), $type ); ?>
 </p>
 <?php else : ?>
@@ -189,28 +189,28 @@ div.mycred-hidden.ex-field { display: block; }
 
 <!-- Balance layout -->
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'cred_format' ) ); ?>"><?php _e( 'Balance Layout', 'mycred' ); ?>:</label>
+	<label for="<?php echo esc_attr( $this->get_field_id( 'cred_format' ) ); ?>"><?php esc_html_e( 'Balance Layout', 'mycred' ); ?>:</label>
 	<textarea name="<?php echo esc_attr( $this->get_field_name( 'cred_format' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'cred_format' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $cred_format ); ?></textarea>
-	<small><?php echo $mycred->available_template_tags( array( 'general', 'amount', 'user' ) ); ?></small>
+	<small><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'amount', 'user' ) ) ); ?></small>
 </p>
 <?php if ( MYCRED_ENABLE_LOGGING ) : ?>
 <!-- History -->
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'show_history' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'show_history' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'show_history' ) ); ?>" value="1"<?php checked( $show_history, 1 ); ?> class="checkbox" /> <?php _e( 'Include history', 'mycred' ); ?></label>
+	<label for="<?php echo esc_attr( $this->get_field_id( 'show_history' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'show_history' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'show_history' ) ); ?>" value="1"<?php checked( $show_history, 1 ); ?> class="checkbox" /> <?php esc_html_e( 'Include history', 'mycred' ); ?></label>
 </p>
 <div id="<?php echo esc_attr( $this->get_field_id( 'show_history' ) ); ?>-details" class="mycred-hidden<?php if ( $show_history == 1 ) echo ' ex-field'; ?>">
 	<p class="myCRED-widget-field">
-		<label for="<?php echo esc_attr( $this->get_field_id( 'history_title' ) ); ?>"><?php _e( 'History Title', 'mycred' ); ?>:</label>
+		<label for="<?php echo esc_attr( $this->get_field_id( 'history_title' ) ); ?>"><?php esc_html_e( 'History Title', 'mycred' ); ?>:</label>
 		<input id="<?php echo esc_attr( $this->get_field_id( 'history_title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'history_title' ) ); ?>" type="text" value="<?php echo esc_attr( $history_title ); ?>" class="widefat" />
 	</p>
 	<p class="myCRED-widget-field">
-		<label for="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>"><?php _e( 'Number of entires', 'mycred' ); ?>:</label>
+		<label for="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>"><?php esc_html_e( 'Number of entires', 'mycred' ); ?>:</label>
 		<input id="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'number' ) ); ?>" type="text" value="<?php echo absint( $history_length ); ?>" size="3" class="widefat" /><br />
 	</p>
 	<p class="myCRED-widget-field">
-		<label for="<?php echo esc_attr( $this->get_field_id( 'history_format' ) ); ?>"><?php _e( 'Row layout', 'mycred' ); ?>:</label>
+		<label for="<?php echo esc_attr( $this->get_field_id( 'history_format' ) ); ?>"><?php esc_html_e( 'Row layout', 'mycred' ); ?>:</label>
 		<textarea name="<?php echo esc_attr( $this->get_field_name( 'history_format' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'history_format' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $history_entry ); ?></textarea>
-		<small><?php echo $mycred->available_template_tags( array( 'general', 'widget' ) ); ?></small>
+		<small><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'widget' ) ) ); ?></small>
 	</p>
 </div>
 <?php else : ?>
@@ -221,13 +221,13 @@ div.mycred-hidden.ex-field { display: block; }
 <?php endif; ?>
 <!-- Show to Visitors -->
 <p class="myCRED-widget-field">
-	<label for="<?php echo esc_attr( $this->get_field_id( 'show_visitors' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'show_visitors' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'show_visitors' ) ); ?>" value="1"<?php checked( $show_visitors, 1 ); ?> class="checkbox" /> <?php _e( 'Show message when not logged in', 'mycred' ); ?></label>
+	<label for="<?php echo esc_attr( $this->get_field_id( 'show_visitors' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'show_visitors' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'show_visitors' ) ); ?>" value="1"<?php checked( $show_visitors, 1 ); ?> class="checkbox" /> <?php esc_html_e( 'Show message when not logged in', 'mycred' ); ?></label>
 </p>
 <div id="<?php echo esc_attr( $this->get_field_id( 'show_visitors' ) ); ?>-details" class="mycred-hidden<?php if ( $show_visitors == 1 ) echo ' ex-field'; ?>">
 	<p class="myCRED-widget-field">
-		<label for="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>"><?php _e( 'Message', 'mycred' ); ?>:</label>
+		<label for="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>"><?php esc_html_e( 'Message', 'mycred' ); ?>:</label>
 		<textarea name="<?php echo esc_attr( $this->get_field_name( 'message' ) ); ?>" id="<?php echo esc_attr( $this->get_field_id( 'message' ) ); ?>" rows="3" cols="20" class="widefat"><?php echo esc_attr( $message ); ?></textarea>
-		<small><?php echo $mycred->available_template_tags( array( 'general', 'amount' ) ); ?></small>
+		<small><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'amount' ) ) ); ?></small>
 	</p>
 </div>
 <!-- Widget Admin Scripting -->

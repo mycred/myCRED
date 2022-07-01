@@ -1,662 +1,589 @@
 <?php
-if (! defined('myCRED_VERSION') ) { exit;
-}
+if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 /**
  * Query Export
- *
- * @see     http://codex.mycred.me/classes/mycred_query_export/ 
- * @since   1.7
+ * @see http://codex.mycred.me/classes/mycred_query_export/ 
+ * @since 1.7
  * @version 1.0
  */
-if (! class_exists('myCRED_Query_Export') ) :
-    class myCRED_Query_Export
-    {
-
-        protected $db       = '';
-
-        public $args        = array();
-        public $headers     = array();
-        public $raw         = false;
-        public $file_name   = '';
-        public $references  = array();
-        public $orderby     = '';
-        public $limit       = '';
-        public $user_id     = false;
-
-        protected $data     = array();
-        protected $types    = array();
-
-        /**
-         * Construct
-         */
-        public function __construct( $args = array(), $headers = array() )
-        {
-
-            global $mycred_log_table;
-
-            $this->args = apply_filters(
-                'mycred_export_args', shortcode_atts(
-                    array(
-                    'raw'         => false,
-                    'number'      => -1,
-                    'order'       => 'time',
-                    'orderby'     => 'DESC',
-                    'date_format' => get_option('date_format')
-                    ), $args 
-                ), $args 
-            );
-
-            $this->db          = $mycred_log_table;
-            $this->raw         = $this->args['raw'];
-            $this->references  = mycred_get_all_references();
-
-            $this->set_orderby();
-            $this->set_limit();
-            $this->set_column_headers($headers);
-
-        }
+if ( ! class_exists( 'myCRED_Query_Export' ) ) :
+	class myCRED_Query_Export {
 
-        /**
-         * Set Export File Name
-         * Sets the file name we will use when we export.
-         *
-         * @version 1.0
-         */
-        public function set_export_file_name( $name = '' )
-        {
+		protected $db       = '';
 
-            $file = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $name);
-            $file = mb_ereg_replace("([\.]{2,})", '', $name);
+		public $args        = array();
+		public $headers     = array();
+		public $raw         = false;
+		public $file_name   = '';
+		public $references  = array();
+		public $orderby     = '';
+		public $limit       = '';
+		public $user_id     = false;
 
-            if ($file === null || $file === false || strlen($file) == 0 ) {
-                $file = 'mycred-export-' . date($this->args['date_format'], current_time('timestamp')) . '.csv';
-            }
+		protected $data     = array();
+		protected $types    = array();
 
-            $username   = '';
-            $point_type = 'default';
+		/**
+		 * Construct
+		 */
+		public function __construct( $args = array(), $headers = array() ) {
 
-            if ($this->user_id !== false ) {
+			global $mycred_log_table;
 
-                $user = get_userdata($this->user_id);
-                if (isset($user->user_login) ) {
-                    $username = $user->user_login;
-                }
+			$this->args = apply_filters( 'mycred_export_args', shortcode_atts( array(
+				'raw'         => false,
+				'number'      => -1,
+				'order'       => 'time',
+				'orderby'     => 'DESC',
+				'date_format' => get_option( 'date_format' )
+			), $args ), $args );
 
-            }
+			$this->db          = $mycred_log_table;
+			$this->raw         = $this->args['raw'];
+			$this->references  = mycred_get_all_references();
 
-            if (! empty($this->types) && count($this->types) == 1 ) {
-                foreach ( $this->types as $type_id => $mycred ) {
-                    $point_type = $type_id;
-                }
-            }
+			$this->set_orderby();
+			$this->set_limit();
+			$this->set_column_headers( $headers );
 
-            $file = str_replace('%username%',   $username, $file);
-            $file = str_replace('%point_type%', $point_type, $file);
+		}
 
-            $this->file_name = apply_filters('mycred_export_file_name', $file, $name, $this);
+		/**
+		 * Set Export File Name
+		 * Sets the file name we will use when we export.
+		 * @version 1.0
+		 */
+		public function set_export_file_name( $name = '' ) {
 
-        }
+			$file = mb_ereg_replace( "([^\w\s\d\-_~,;\[\]\(\).])", '', $name );
+			$file = mb_ereg_replace( "([\.]{2,})", '', $name );
 
-        /**
-         * Get Data by IDs
-         * Retreaves log entries based on a set of entry ids.
-         *
-         * @version 1.0
-         */
-        public function get_data_by_ids( $ids = array() )
-        {
+			if ( $file === NULL || $file === false || strlen( $file ) == 0 )
+				$file = 'mycred-export-' . date( $this->args['date_format'], current_time( 'timestamp' ) ) . '.csv';
 
-            $ids = $this->clean_ids($ids);
-            if ($ids === true || empty($ids) || empty($this->headers) ) { return false;
-            }
+			$username   = '';
+			$point_type = 'default';
 
-            global $wpdb;
+			if ( $this->user_id !== false ) {
 
-            $id_list = implode(', ', $ids);
-            $data    = $wpdb->get_results("SELECT * FROM {$this->db} WHERE id IN ({$id_list}) ORDER BY {$this->orderby} {$this->limit};");
+				$user = get_userdata( $this->user_id );
+				if ( isset( $user->user_login ) )
+					$username = $user->user_login;
 
-            $exportable_data = array();
-            if (! empty($data) ) {
+			}
 
-                $this->set_point_types($data);
+			if ( ! empty( $this->types ) && count( $this->types ) == 1 ) {
+				foreach ( $this->types as $type_id => $mycred )
+					$point_type = $type_id;
+			}
 
-                foreach ( $data as $entry ) {
+			$file = str_replace( '%username%',   $username, $file );
+			$file = str_replace( '%point_type%', $point_type, $file );
 
-                    if ($this->raw ) {
-                        $exportable_data[] = $this->get_raw_entry($entry);
-                    } else {
-                        $exportable_data[] = $this->get_rendered_entry($entry);
-                    }
+			$this->file_name = apply_filters( 'mycred_export_file_name', $file, $name, $this );
 
-                }
+		}
 
-            }
-            $this->data = $exportable_data;
+		/**
+		 * Get Data by IDs
+		 * Retreaves log entries based on a set of entry ids.
+		 * @version 1.0
+		 */
+		public function get_data_by_ids( $ids = array() ) {
 
-            return $exportable_data;
+			$ids = $this->clean_ids( $ids );
+			if ( $ids === true || empty( $ids ) || empty( $this->headers ) ) return false;
 
-        }
+			global $wpdb;
 
-        /**
-         * Get Data by User
-         * Retreaves log entries based on a given user ID.
-         *
-         * @version 1.0
-         */
-        public function get_data_by_user( $user_id = null )
-        {
+			$id_list = implode( ', ', $ids );
+			$data    = $wpdb->get_results( "SELECT * FROM {$this->db} WHERE id IN ({$id_list}) ORDER BY {$this->orderby} {$this->limit};" );
 
-            $user_id = absint($user_id);
-            if ($user_id === 0 ) { return false;
-            }
+			$exportable_data = array();
+			if ( ! empty( $data ) ) {
 
-            global $wpdb;
+				$this->set_point_types( $data );
 
-            $this->user_id = $user_id;
-            $data          = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->db} WHERE user_id = %d ORDER BY {$this->orderby} {$this->limit};", $user_id));
+				foreach ( $data as $entry ) {
 
-            $exportable_data = array();
-            if (! empty($data) ) {
+					if ( $this->raw )
+						$exportable_data[] = $this->get_raw_entry( $entry );
+					else
+						$exportable_data[] = $this->get_rendered_entry( $entry );
 
-                $this->set_point_types($data);
+				}
 
-                foreach ( $data as $entry ) {
+			}
+			$this->data = $exportable_data;
 
-                    if ($this->raw ) {
-                        $exportable_data[] = $this->get_raw_entry($entry);
-                    } else {
-                        $exportable_data[] = $this->get_rendered_entry($entry);
-                    }
+			return $exportable_data;
 
-                }
+		}
 
-            }
-            $this->data = $exportable_data;
+		/**
+		 * Get Data by User
+		 * Retreaves log entries based on a given user ID.
+		 * @version 1.0
+		 */
+		public function get_data_by_user( $user_id = NULL ) {
 
-            return $exportable_data;
+			$user_id = absint( $user_id );
+			if ( $user_id === 0 ) return false;
 
-        }
+			global $wpdb;
 
-        /**
-         * Get Data by Type
-         * Retreaves log entries based on a given point type.
-         *
-         * @version 1.0
-         */
-        public function get_data_by_type( $point_type = null )
-        {
+			$this->user_id = $user_id;
+			$data          = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->db} WHERE user_id = %d ORDER BY {$this->orderby} {$this->limit};", $user_id ) );
 
-            $point_type = sanitize_key($point_type);
-            if (! mycred_point_type_exists($point_type) ) { return false;
-            }
+			$exportable_data = array();
+			if ( ! empty( $data ) ) {
 
-            global $wpdb;
+				$this->set_point_types( $data );
 
-            $data = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->db} WHERE ctype = %s ORDER BY {$this->orderby} {$this->limit};", $point_type));
+				foreach ( $data as $entry ) {
 
-            $exportable_data = array();
-            if (! empty($data) ) {
+					if ( $this->raw )
+						$exportable_data[] = $this->get_raw_entry( $entry );
+					else
+						$exportable_data[] = $this->get_rendered_entry( $entry );
 
-                $types = array();
-                $types[ $point_type ] = mycred($point_type);
-                $this->types = $types;
+				}
 
-                foreach ( $data as $entry ) {
+			}
+			$this->data = $exportable_data;
 
-                    if ($this->raw ) {
-                        $exportable_data[] = $this->get_raw_entry($entry);
-                    } else {
-                        $exportable_data[] = $this->get_rendered_entry($entry);
-                    }
+			return $exportable_data;
 
-                }
+		}
 
-            }
-            $this->data = $exportable_data;
+		/**
+		 * Get Data by Type
+		 * Retreaves log entries based on a given point type.
+		 * @version 1.0
+		 */
+		public function get_data_by_type( $point_type = NULL ) {
 
-            return $exportable_data;
+			$point_type = sanitize_key( $point_type );
+			if ( ! mycred_point_type_exists( $point_type ) ) return false;
 
-        }
+			global $wpdb;
 
-        /**
-         * Get Data by Query
-         * Retreaves log entries based on an array of query arguments.
-         *
-         * @version 1.0
-         */
-        public function get_data_by_query( $args = array() )
-        {
+			$data = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->db} WHERE ctype = %s ORDER BY {$this->orderby} {$this->limit};", $point_type ) );
 
-            $log = new myCRED_Query_Log($args);
+			$exportable_data = array();
+			if ( ! empty( $data ) ) {
 
-            if ($log->have_entries() ) {
-                $this->data = $log->results;
-            }
+				$types = array();
+				$types[ $point_type ] = mycred( $point_type );
+				$this->types = $types;
 
-            $log->reset_query();
+				foreach ( $data as $entry ) {
 
-        }
+					if ( $this->raw )
+						$exportable_data[] = $this->get_raw_entry( $entry );
+					else
+						$exportable_data[] = $this->get_rendered_entry( $entry );
 
-        /**
-         * Set Orderby
-         * Converts a valid set of order arguments into the order arguments the export
-         * db queries will use.
-         *
-         * @version 1.0
-         */
-        protected function set_orderby()
-        {
+				}
 
-            $default = 'time DESC';
-            $order   = sanitize_key($this->args['order']);
-            $by      = sanitize_text_field($this->args['orderby']);
+			}
+			$this->data = $exportable_data;
 
-            if (! in_array($order, array( 'id', 'time', 'user_id', 'creds', 'ctype', 'entry', 'data', 'ref', 'ref_id' )) ) {
-                $order = 'time';
-            }
+			return $exportable_data;
 
-            if (! in_array($by, array( 'ASC', 'DESC' )) ) {
-                $by = 'DESC';
-            }
+		}
 
-            $orderby = $order . ' ' . $by;
-            if (strlen($orderby) === 1 ) {
-                $orderby = $default;
-            }
+		/**
+		 * Get Data by Query
+		 * Retreaves log entries based on an array of query arguments.
+		 * @version 1.0
+		 */
+		public function get_data_by_query( $args = array() ) {
 
-            $this->orderby = apply_filters('mycred_export_orderby', $orderby, $this->args);
+			$log = new myCRED_Query_Log( $args );
 
-        }
+			if ( $log->have_entries() )
+				$this->data = $log->results;
 
-        /**
-         * Set Limit
-         * Sets the limit argument to be used in the db queries based on the argument we gave.
-         *
-         * @version 1.0
-         */
-        protected function set_limit()
-        {
+			$log->reset_query();
 
-            $number = (int) sanitize_text_field($this->args['number']);
-            if ($number > 0 ) {
-                $number = absint($number);
-            }
+		}
 
-            if ($number > 0 ) {
-                $this->limit = 'LIMIT 0,' . $number;
-            }
+		/**
+		 * Set Orderby
+		 * Converts a valid set of order arguments into the order arguments the export
+		 * db queries will use.
+		 * @version 1.0
+		 */
+		protected function set_orderby() {
 
-        }
+			$default = 'time DESC';
+			$order   = sanitize_key( $this->args['order'] );
+			$by      = sanitize_text_field( $this->args['orderby'] );
 
-        /**
-         * Set Column Headers
-         * Sets a valid set of column headers for the export.
-         *
-         * @version 1.0
-         */
-        protected function set_column_headers( $headers = array() )
-        {
+			if ( ! in_array( $order, array( 'id', 'time', 'user_id', 'creds', 'ctype', 'entry', 'data', 'ref', 'ref_id' ) ) )
+				$order = 'time';
 
-            if (empty($headers) || ! is_array($headers) ) {
-                $headers = array( 'ref' => __('Reference', 'mycred'), 'ref_id' => __('Reference ID', 'mycred'), 'user_id' => __('User', 'mycred'), 'creds' => __('Amount', 'mycred'), 'ctype' => __('Point Type', 'mycred'), 'time' => __('Date', 'mycred'), 'entry' => __('Entry', 'mycred'), 'data' => __('Data', 'mycred') );
-            }
+			if ( ! in_array( $by, array( 'ASC', 'DESC' ) ) )
+				$by = 'DESC';
 
-            if (! $this->raw ) {
-                unset($headers['ref_id']);
-                unset($headers['data']);
-            }
+			$orderby = $order . ' ' . $by;
+			if ( strlen( $orderby ) === 1 )
+				$orderby = $default;
 
-            $headers = apply_filters('mycred_export_headers', $headers, $this->raw);
+			$this->orderby = apply_filters( 'mycred_export_orderby', $orderby, $this->args );
 
-            if ($this->raw ) {
-                $this->headers = array_keys($headers);
+		}
 
-            } else {
-                $this->headers = array_values($headers);
-            }
+		/**
+		 * Set Limit
+		 * Sets the limit argument to be used in the db queries based on the argument we gave.
+		 * @version 1.0
+		 */
+		protected function set_limit() {
 
-        }
+			$number = (int) sanitize_text_field( $this->args['number'] );
+			if ( $number > 0 )
+				$number = absint( $number );
 
-        /**
-         * Clean IDs
-         * Sanitization function for array of entry ids. Also eliminates duplicates.
-         *
-         * @returns array of intregers or false
-         * @version 1.0
-         */
-        protected function clean_ids( $data = array() )
-        {
+			if ( $number > 0 )
+				$this->limit = 'LIMIT 0,' . $number;
 
-            if (empty($data) ) { return false;
-            }
+		}
 
-            $clean_ids = array();
-            foreach ( $data as $unknown_id ) {
-                $abs_int     = absint($unknown_id);
-                if ($abs_int === 0 || in_array($abs_int, $clean_ids) ) { continue;
-                }
-                $clean_ids[] = $abs_int;
-            }
+		/**
+		 * Set Column Headers
+		 * Sets a valid set of column headers for the export.
+		 * @version 1.0
+		 */
+		protected function set_column_headers( $headers = array() ) {
 
-            return $clean_ids;
+			if ( empty( $headers ) || ! is_array( $headers ) )
+				$headers = array( 'ref' => __( 'Reference', 'mycred' ), 'ref_id' => __( 'Reference ID', 'mycred' ), 'user_id' => __( 'User', 'mycred' ), 'creds' => __( 'Amount', 'mycred' ), 'ctype' => __( 'Point Type', 'mycred' ), 'time' => __( 'Date', 'mycred' ), 'entry' => __( 'Entry', 'mycred' ), 'data' => __( 'Data', 'mycred' ) );
 
-        }
+			if ( ! $this->raw ) {
+				unset( $headers['ref_id'] );
+				unset( $headers['data'] );
+			}
 
-        /**
-         * Set Point Types
-         * Populates $this->types with all the point types found int the data.
-         *
-         * @version 1.0
-         */
-        protected function set_point_types( $data )
-        {
+			$headers = apply_filters( 'mycred_export_headers', $headers, $this->raw );
 
-            $types = array();
-            foreach ( $data as $entry ) {
+			if ( $this->raw )
+				$this->headers = array_keys( $headers );
 
-                if (isset($entry->ctype) && sanitize_text_field($entry->ctype) !== '' && ! array_key_exists($entry->ctype, $types) ) {
-                    $types[ $entry->ctype ] = mycred($entry->ctype);
-                }
+			else
+				$this->headers = array_values( $headers );
 
-            }
+		}
 
-            $this->types = $types;
+		/**
+		 * Clean IDs
+		 * Sanitization function for array of entry ids. Also eliminates duplicates.
+		 * @returns array of intregers or false
+		 * @version 1.0
+		 */
+		protected function clean_ids( $data = array() ) {
 
-        }
+			if ( empty( $data ) ) return false;
 
-        /**
-         * Get Raw Entry
-         * Returns the values for all columns in the current export row in raw format.
-         *
-         * @version 1.0
-         */
-        protected function get_raw_entry( $entry )
-        {
+			$clean_ids = array();
+			foreach ( $data as $unknown_id ) {
+				$abs_int     = absint( $unknown_id );
+				if ( $abs_int === 0 || in_array( $abs_int, $clean_ids ) ) continue;
+				$clean_ids[] = $abs_int;
+			}
 
-            $row = array();
-            if (! empty($this->headers) ) {
-                foreach ( $this->headers as $header_id ) {
+			return $clean_ids;
 
-                    $value = '';
-                    if (isset($entry->$header_id) ) {
-                        $value = $entry->$header_id;
-                    }
+		}
 
-                    $row[ $header_id ] = $value;
+		/**
+		 * Set Point Types
+		 * Populates $this->types with all the point types found int the data.
+		 * @version 1.0
+		 */
+		protected function set_point_types( $data ) {
 
-                }
-            }
+			$types = array();
+			foreach ( $data as $entry ) {
 
-            return $row;
+				if ( isset( $entry->ctype ) && sanitize_text_field( $entry->ctype ) !== '' && ! array_key_exists( $entry->ctype, $types ) )
+					$types[ $entry->ctype ] = mycred( $entry->ctype );
 
-        }
+			}
 
-        /**
-         * Get Rendered Entry
-         * Returns the values for all columns in the current export row formatted.
-         *
-         * @version 1.0
-         */
-        protected function get_rendered_entry( $entry )
-        {
+			$this->types = $types;
 
-            $row  = array();
-            $type = $entry->ctype;
+		}
 
-            if (! empty($this->headers) ) {
-                foreach ( $this->headers as $header_id ) {
+		/**
+		 * Get Raw Entry
+		 * Returns the values for all columns in the current export row in raw format.
+		 * @version 1.0
+		 */
+		protected function get_raw_entry( $entry ) {
 
-                    switch ( $header_id ) {
+			$row = array();
+			if ( ! empty( $this->headers ) ) {
+				foreach ( $this->headers as $header_id ) {
 
-                    case 'ref' :
-                    case __('Reference', 'mycred') :
+					$value = '';
+					if ( isset( $entry->$header_id ) )
+						$value = $entry->$header_id;
 
-                        $content = '';
-                        if (array_key_exists($entry->ref, $this->references) ) {
-                            $content = $this->references[ $entry->ref ];
-                        }
+					$row[ $header_id ] = $value;
 
-                        $content = apply_filters('mycred_log_ref', $content, $entry->ref, $entry);
+				}
+			}
 
-                        break;
+			return $row;
 
-                    case 'user_id' :
-                    case __('User', 'mycred') :
+		}
 
-                        $user         = get_userdata($entry->user_id);
-                        $display_name = '<span>' . __('User Missing', 'mycred') . ' (ID: ' . $entry->user_id . ')</span>';
-                        if (isset($user->display_name) ) {
-                            $display_name = $user->display_name;
-                        }
+		/**
+		 * Get Rendered Entry
+		 * Returns the values for all columns in the current export row formatted.
+		 * @version 1.0
+		 */
+		protected function get_rendered_entry( $entry ) {
 
-                        $content = apply_filters('mycred_log_username', $display_name, $entry->user_id, $entry);
+			$row  = array();
+			$type = $entry->ctype;
 
-                        break;
+			if ( ! empty( $this->headers ) ) {
+				foreach ( $this->headers as $header_id ) {
 
-                    case 'creds' :
-                    case __('Amount', 'mycred') :
+					switch ( $header_id ) {
 
-                        $content = $this->types[ $type ]->format_creds($entry->creds);
-                        $content = apply_filters('mycred_log_creds', $content, $entry->creds, $entry);
+						case 'ref' :
+						case __( 'Reference', 'mycred' ) :
 
-                        break;
+							$content = '';
+							if ( array_key_exists( $entry->ref, $this->references ) )
+								$content = $this->references[ $entry->ref ];
 
-                    case 'ctype' :
-                    case __('Point Type', 'mycred') :
+							$content = apply_filters( 'mycred_log_ref', $content, $entry->ref, $entry );
 
-                        $content = $this->types[ $type ]->plural();
-                        $content = apply_filters('mycred_log_ctype', $content, $entry->ctype, $entry);
+						break;
 
-                        break;
+						case 'user_id' :
+						case __( 'User', 'mycred' ) :
 
-                    case 'time' :
-                    case __('Date', 'mycred') :
+							$user         = get_userdata( $entry->user_id );
+							$display_name = '<span>' . __( 'User Missing', 'mycred' ) . ' (ID: ' . $entry->user_id . ')</span>';
+							if ( isset( $user->display_name ) )
+								$display_name = $user->display_name;
 
-                        $content = apply_filters('mycred_log_date', date($this->args['date_format'], $entry->time), $entry->time, $entry);
+							$content = apply_filters( 'mycred_log_username', $display_name, $entry->user_id, $entry );
 
-                        break;
+						break;
 
-                    case 'entry' :
-                    case __('Entry', 'mycred') :
+						case 'creds' :
+						case __( 'Amount', 'mycred' ) :
 
-                        $content = $this->types[ $type ]->parse_template_tags($entry->entry, $entry);
-                        $content = apply_filters('mycred_log_entry', $content, $entry->entry, $entry);
+							$content = $this->types[ $type ]->format_creds( $entry->creds );
+							$content = apply_filters( 'mycred_log_creds', $content, $entry->creds, $entry );
 
-                        break;
+						break;
 
-                        // Let others play
-                    default :
+						case 'ctype' :
+						case __( 'Point Type', 'mycred' ) :
 
-                        $content = apply_filters('mycred_log_' . $header_id, '', $entry);
+							$content = $this->types[ $type ]->plural();
+							$content = apply_filters( 'mycred_log_ctype', $content, $entry->ctype, $entry );
 
-                        break;
+						break;
 
-                    }
+						case 'time' :
+						case __( 'Date', 'mycred' ) :
 
-                    $row[ $header_id ] = $content;
+							$content = apply_filters( 'mycred_log_date', date( $this->args['date_format'], $entry->time ), $entry->time, $entry );
 
-                }
-            }
+						break;
 
-            return $row;
+						case 'entry' :
+						case __( 'Entry', 'mycred' ) :
 
-        }
+							$content = $this->types[ $type ]->parse_template_tags( $entry->entry, $entry );
+							$content = apply_filters( 'mycred_log_entry', $content, $entry->entry, $entry );
 
-        /**
-         * Do Export
-         * If data is available for export, we run the export tool.
-         *
-         * @version 1.0.1
-         */
-        public function do_export()
-        {
+						break;
 
-            if (empty($this->data) ) { return false;
-            }
+						// Let others play
+						default :
 
-            // Load parseCSV
-            if (! class_exists('parseCSV') ) {
-                include_once myCRED_ASSETS_DIR . 'libs/parsecsv.lib.php';
-            }
+							$content = apply_filters( 'mycred_log_' . $header_id, '', $entry );
 
-            $csv = new parseCSV();
-            $csv->output(true, $this->file_name, $this->data, $this->headers);
+						break;
 
-            exit;
+					}
 
-        }
+					$row[ $header_id ] = $content;
 
-    }
+				}
+			}
+
+			return $row;
+
+		}
+
+		/**
+		 * Do Export
+		 * If data is available for export, we run the export tool.
+		 * @version 1.0.1
+		 */
+		public function do_export() {
+
+			if ( empty( $this->data ) ) return false;
+
+			// Load parseCSV
+			if ( ! class_exists( 'parseCSV' ) )
+				require_once myCRED_ASSETS_DIR . 'libs/parsecsv.lib.php';
+
+			$csv = new parseCSV();
+			$csv->output( true, $this->file_name, $this->data, $this->headers );
+
+			exit;
+
+		}
+
+	}
 endif;
 
 /**
  * Get Export Formats
  * Returns an arry of supported formats.
- *
- * @since   1.7
+ * @since 1.7
  * @version 1.0
  */
-if (! function_exists('mycred_get_export_formats') ) :
-    function mycred_get_export_formats()
-    {
+if ( ! function_exists( 'mycred_get_export_formats' ) ) :
+	function mycred_get_export_formats() {
 
-        return apply_filters(
-            'mycred_export_formats', array(
-            'raw'       => __('Export log entries raw', 'mycred'),
-            'formatted' => __('Export log entries formatted', 'mycred')
-            ) 
-        );
+		return apply_filters( 'mycred_export_formats', array(
+			'raw'       => __( 'Export log entries raw', 'mycred' ),
+			'formatted' => __( 'Export log entries formatted', 'mycred' )
+		) );
 
-    }
+	}
 endif;
 
 /**
  * Get Log Exports
  * Returns an associative array of log export options.
- *
- * @since   1.4
+ * @since 1.4
  * @version 1.2
  */
-if (! function_exists('mycred_get_log_exports') ) :
-    function mycred_get_log_exports()
-    {
+if ( ! function_exists( 'mycred_get_log_exports' ) ) :
+	function mycred_get_log_exports() {
 
-        $defaults = array(
-        'all'      => array(
-        'label'    => __('All Log Entries', 'mycred'),
-        'my_label' => null,
-        'class'    => 'btn btn-primary button button-primary'
-        ),
-        'search'   => array(
-        'label'    => __('Search Results', 'mycred'),
-        'my_label' => null,
-        'class'    => 'btn btn-primary button button-secondary'
-        ),
-        'user'     => array(
-        'label'    => __('Users Log Entries', 'mycred'),
-        'my_label' => __('Export History', 'mycred'),
-        'class'    => 'btn btn-primary button button-secondary'
-        )
-        );
+		$defaults = array(
+			'all'      => array(
+				'label'    => __( 'All Log Entries', 'mycred' ),
+				'my_label' => NULL,
+				'class'    => 'btn btn-primary button button-primary'
+			),
+			'search'   => array(
+				'label'    => __( 'Search Results', 'mycred' ),
+				'my_label' => NULL,
+				'class'    => 'btn btn-primary button button-secondary'
+			),
+			'user'     => array(
+				'label'    => __( 'Users Log Entries', 'mycred' ),
+				'my_label' => __( 'Export History', 'mycred' ),
+				'class'    => 'btn btn-primary button button-secondary'
+			)
+		);
 
-        return apply_filters('mycred_log_exports', $defaults);
+		return apply_filters( 'mycred_log_exports', $defaults );
 
-    }
+	}
 endif;
 
 /**
  * Get Export URL
  * Returns the URL for triggering an export (if allowed).
- *
- * @since   1.7
+ * @since 1.7
  * @version 1.0
  */
-if (! function_exists('mycred_get_export_url') ) :
-    function mycred_get_export_url( $set = 'all', $raw = false )
-    {
+if ( ! function_exists( 'mycred_get_export_url' ) ) :
+	function mycred_get_export_url( $set = 'all', $raw = false ) {
 
-        $export_url = false;
-        $is_admin   = ( ( function_exists('is_admin') && is_admin() ) ? true : false );
+		$export_url = false;
+		$is_admin   = ( ( function_exists( 'is_admin' ) && is_admin() ) ? true : false );
 
-        if (! $is_admin ) {
+		if ( ! $is_admin ) {
 
-            global $wp;
-            $current_url = add_query_arg($wp->query_string, '', home_url($wp->request . '/'));
+			global $wp;
+			$current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request . '/' ) );
 
-        }
-        else {
+		}
+		else {
 
-            $current_url = admin_url('admin.php');
+			$current_url = admin_url( 'admin.php' );
 
-        }
+		}
 
-        if (is_user_logged_in() ) {
+		if ( is_user_logged_in() ) {
 
-            $args = array();
+			$args = array();
 
-            if ($is_admin ) {
+			if ( $is_admin ) {
 
-                if (isset($_GET['page']) ) {
-                    $args['page'] = $_GET['page'];
-                }
+				if ( isset( $_GET['page'] ) )
+					$args['page'] = sanitize_key( wp_unslash( $_GET['page'] ) );
 
-                $args['mycred-action'] = 'export';
-                $args['_token']        = wp_create_nonce('mycred-export-request-admin');
+				$args['mycred-action'] = 'export';
+				$args['_token']        = wp_create_nonce( 'mycred-export-request-admin' );
 
-            }
-            else {
+			}
+			else {
 
-                $args['mycred-action'] = 'export';
-                $args['_token']        = wp_create_nonce('mycred-export-request');
+				$args['mycred-action'] = 'export';
+				$args['_token']        = wp_create_nonce( 'mycred-export-request' );
 
-            }
+			}
 
-            $args['set'] = sanitize_key($set);
+			$args['set'] = sanitize_key( $set );
 
-            if ($raw ) {
-                $args['raw'] = 'export-raw';
-            }
+			if ( $raw )
+				$args['raw'] = 'export-raw';
 
-            $export_url = add_query_arg($args, $current_url);
+			$export_url = add_query_arg( $args, $current_url );
 
-        }
+		}
 
-        return apply_filters('mycred_get_export_url', $export_url, $set, $is_admin);
+		return apply_filters( 'mycred_get_export_url', $export_url, $set, $is_admin );
 
-    }
+	}
 endif;
 
 /**
  * Is Valid Export URL
  * Checks if a valid export URL is present.
- *
- * @since   1.7
+ * @since 1.7
  * @version 1.0
  */
-if (! function_exists('mycred_is_valid_export_url') ) :
-    function mycred_is_valid_export_url( $admin = false )
-    {
+if ( ! function_exists( 'mycred_is_valid_export_url' ) ) :
+	function mycred_is_valid_export_url( $admin = false ) {
 
-        $valid = false;
-        $token = 'mycred-export-request';
-        if ($admin ) {
-            $token = 'mycred-export-request-admin';
-        }
+		$valid = false;
+		$token = 'mycred-export-request';
+		if ( $admin )
+			$token = 'mycred-export-request-admin';
 
-        if (is_user_logged_in() ) {
+		if ( is_user_logged_in() ) {
 
-            if (isset($_REQUEST['mycred-action']) && isset($_REQUEST['_token']) && substr($_REQUEST['mycred-action'], 0, 6) === 'export' ) {
+			if ( isset( $_REQUEST['mycred-action'] ) && isset( $_REQUEST['_token'] ) && substr( sanitize_text_field( wp_unslash( $_REQUEST['mycred-action'] ) ), 0, 6 ) === 'export' ) {
 
-                if (wp_verify_nonce($_REQUEST['_token'], $token) ) {
-                    $valid = true;
-                }
+				if ( wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_token'] ) ), $token ) )
+					$valid = true;
 
-            }
+			}
 
-        }
+		}
 
-        return apply_filters('mycred_is_valid_export_url', $valid, $admin);
+		return apply_filters( 'mycred_is_valid_export_url', $valid, $admin );
 
-    }
+	}
 endif;

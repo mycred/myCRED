@@ -1,516 +1,497 @@
 <?php
-if (! defined('myCRED_VERSION') ) { exit;
-}
+if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 // If this file is called directly, abort.
-if (! defined('ABSPATH') ) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-if (! class_exists('myCRED_Tools') ) :
-    class myCRED_Tools
-    {
-
-        private $response = array();
-
-        /**
-         * Construct
-         */
-        public function __construct()
-        {
-
-            add_action('admin_menu', array( $this, 'tools_sub_menu' ));
-
-            add_action('wp_ajax_mycred-tools-select-user', array( $this, 'tools_select_user' ));
-
-            if(isset($_GET['page']) && $_GET['page'] == 'mycred-tools' ) {
-                add_action('admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ));
-            }
-        
-        }
-
-        public function admin_enqueue_scripts()
-        {
-            wp_enqueue_style(MYCRED_SLUG . '-admin');
-
-            wp_enqueue_script(MYCRED_SLUG . '-select2-script');
-
-            wp_enqueue_style(MYCRED_SLUG . '-select2-style');
-
-            wp_enqueue_script(MYCRED_SLUG . '-tools-script', plugins_url('assets/js/mycred-tools.js', __DIR__), 'jquery', myCRED_VERSION, true);
-
-            wp_enqueue_style(MYCRED_SLUG . '-buttons');
-
-            wp_localize_script( 
-                MYCRED_SLUG . '-tools-script',
-                'mycredTools',
-                array(
-                'ajax_url'                =>    admin_url('admin-ajax.php'),
-                'token'                =>    wp_create_nonce('mycred-tools'),
-                'awardConfirmText'     =>    __('Do you really want to bulk award?', 'mycred'),
-                'revokeConfirmText'    =>    __('Do you really want to bulk deduct?', 'mycred'),
-                'successfullyAwarded'  =>    __('Successfully Awarded.', 'mycred'),
-                'successfullyDeducted' =>    __('Successfully Deducted.', 'mycred'),
-                'pointsRequired'       =>    __('Points field is required.', 'mycred'),
-                'logEntryRequired'       =>    __('Log Entry is requried.', 'mycred'),
-                'revokeConfirmText'       =>    __('Do you really want to bulk revoke?', 'mycred'),
-                'successfullyRevoked'  =>    __('Successfully Revoked.', 'mycred'),
-                'userOrRoleIsRequired' =>    __('Username or Role field required.', 'mycred'),
-                'tryLater'               =>    __('Something went wrong try later.', 'mycred'),
-                'selectPointType'       =>    __('Please select point type.', 'mycred'),
-                'accessDenied'           =>    __('Access Denied', 'mycred'),
-                'selectUser'           =>    __('Please select atleast one user.', 'mycred'),
-                'selectRank'           =>    __('Please select rank.', 'mycred'),
-                'badgesFieldRequried'  =>  __('Please select atleast one badge.', 'mycred'),
-                )
-            );
-        }
-
-        /**
-         * Register tools menu
-         * 
-         * @since 2.4.4.1 `$capability` check added
-         */
-        public function tools_sub_menu()
-        {
-
-            $mycred = new myCRED_Settings();
-            $capability = $mycred->get_point_admin_capability();
-
-            mycred_add_main_submenu( 
-                'Tools', 
-                'Tools', 
-                $capability, 
-                'mycred-tools',
-                array( $this, 'tools_page' ),
-                2
-            );
-        }
-
-        /**
-         * Tools menu callback
-         *
-         * @since   2.3
-         * @since   2.4 Import Export Module Added
-         * @version 1.1
-         */
-        public function tools_page()
-        { 
-        
-            $import_export = get_mycred_tools_page_url('points');
-            $logs_cleanup = get_mycred_tools_page_url('logs-cleanup');
-            $reset_data = get_mycred_tools_page_url('reset-data');
-            $pages = array( 
-            'import-export',
-            'points', 
-            'badges', 
-            'ranks',
-            'setup'
-            );
-            ?>
-
-        <div class="" id="myCRED-wrap">
-            <div class="mycredd-tools">
-                <h1>Tools</h1>
-            </div>
-            <div class="clear"></div>
-            <div class="mycred-tools-main-nav">
-                <h2 class="nav-tab-wrapper">
-                    <a href="<?php echo admin_url('admin.php?page=mycred-tools') ?>" class="nav-tab <?php echo !isset($_GET['mycred-tools']) ? 'nav-tab-active' : ''; ?>">Bulk Assign</a>
-                    <a href="<?php echo $import_export ?>" class="nav-tab <?php echo ( isset($_GET['mycred-tools']) && in_array($_GET['mycred-tools'], $pages) ) ? 'nav-tab-active' : ''; ?>">Import/Export</a>
-                    <!-- <a href="<?php //echo $logs_cleanup ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'logs-cleanup' ) ? 'nav-tab-active' : ''; ?>">Logs Cleanup</a>
-                    <a href="<?php //echo $reset_data ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'reset-data' ) ? 'nav-tab-active' : ''; ?>">Reset Data</a> -->
-                </h2>
-            </div>
-        
-            <?php
-
-            if (isset($_GET['mycred-tools']) ) {
-
-                if (in_array($_GET['mycred-tools'], $pages) ) { 
-                    $mycred_tools_import_export = new myCRED_Tools_Import_Export();
-
-                    $mycred_tools_import_export->get_header();
-                }
-            }
-
-            if (isset($_GET['mycred-tools']) ) {
-                if ($_GET['mycred-tools'] == 'logs-cleanup' ) { ?>
-                <h1>LOGS-CLEANUP</h1>
-                    <?php
-                }
-            }
-
-            if (isset($_GET['mycred-tools']) ) {
-                if ($_GET['mycred-tools'] == 'reset-data' ) { ?>
-                <h1>RESET-DATA</h1>
-                    <?php
-                }
-            }
-            else
-            {
-
-                $mycred_tools_bulk_assign = new myCRED_Tools_Bulk_Assign();
-
-                $mycred_tools_bulk_assign->get_page();
-
-            }
-
-            ?>
-        </div>
-            <?php
-        }
-
-        public function get_all_users()
-        {
-            $users = array();
-
-            $wp_users = get_users();
-
-            foreach( $wp_users as $user ) {
-                   $users[$user->user_email] = $user->display_name;
-            }
-
-            return $users;
-        }
-
-        public function get_users_by_email( $emails )
-        {
-            $ids = array();
-
-            foreach( $emails as $email ) {
-                $ids[] = get_user_by('email', $email)->ID;
-            }
+if ( ! class_exists( 'myCRED_Tools' ) ) :
+class myCRED_Tools {
+
+	private $response = array();
+
+	/**
+	 * Construct
+	 */
+	public function __construct() {
+
+		add_action( 'admin_menu', array( $this, 'tools_sub_menu' ) );
+
+		add_action( 'wp_ajax_mycred-tools-select-user', array( $this, 'tools_select_user' ) );
+
+		if( isset( $_GET['page'] ) && $_GET['page'] == 'mycred-tools' )
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		
+	}
+
+	public function admin_enqueue_scripts() {
+
+		wp_enqueue_style( MYCRED_SLUG . '-admin' );
+
+		wp_enqueue_script( MYCRED_SLUG . '-select2-script' );
+
+		wp_enqueue_style( MYCRED_SLUG . '-select2-style' );
+
+		wp_enqueue_script( MYCRED_SLUG . '-tools-script', plugins_url( 'assets/js/mycred-tools.js', __DIR__ ), 'jquery', myCRED_VERSION, true );
+
+		wp_enqueue_style( MYCRED_SLUG . '-buttons' );
+
+		wp_localize_script( 
+			MYCRED_SLUG . '-tools-script',
+			'mycredTools',
+			array(
+				'ajax_url' 			   =>	admin_url( 'admin-ajax.php' ),
+				'token'                =>	wp_create_nonce( 'mycred-tools' ),
+				'awardConfirmText'     =>	__( 'Do you really want to bulk award?', 'mycred' ),
+				'revokeConfirmText'    =>	__( 'Do you really want to bulk deduct?', 'mycred' ),
+				'successfullyAwarded'  =>	__( 'Successfully Awarded.', 'mycred' ),
+				'successfullyDeducted' =>	__( 'Successfully Deducted.', 'mycred' ),
+				'pointsRequired'	   =>	__( 'Points field is required.', 'mycred' ),
+				'logEntryRequired'	   =>	__( 'Log Entry is requried.', 'mycred' ),
+				'revokeConfirmText'	   =>	__( 'Do you really want to bulk revoke?', 'mycred' ),
+				'successfullyRevoked'  =>	__( 'Successfully Revoked.', 'mycred' ),
+				'userOrRoleIsRequired' =>	__( 'Username or Role field required.', 'mycred' ),
+				'tryLater'	           =>	__( 'Something went wrong try later.', 'mycred' ),
+				'selectPointType'	   =>	__( 'Please select point type.', 'mycred' ),
+				'accessDenied'	       =>	__( 'Access Denied', 'mycred' ),
+				'selectUser'	       =>	__( 'Please select atleast one user.', 'mycred' ),
+				'selectRank'	       =>	__( 'Please select rank.', 'mycred' ),
+				'badgesFieldRequried'  =>  __( 'Please select atleast one badge.', 'mycred' ),
+			)
+		);
+		
+	}
+
+	/**
+	 * Register tools menu
+	 * 
+	 * @since 2.4.4.1 `$capability` check added
+	 */
+	public function tools_sub_menu() {
+
+		$mycred     = new myCRED_Settings();
+		$capability = $mycred->get_point_admin_capability();
+
+		mycred_add_main_submenu( 
+			'Tools', 
+			'Tools', 
+			$capability, 
+			'mycred-tools',
+			array( $this, 'tools_page' ),
+			2
+		);
+
+	}
+
+	/**
+	 * Tools menu callback
+	 * @since 2.3
+	 * @since 2.4 Import Export Module Added
+	 * @version 1.1
+	 */
+	public function tools_page() { 
+		
+		$import_export = get_mycred_tools_page_url('points');
+		$logs_cleanup = get_mycred_tools_page_url('logs-cleanup');
+		$reset_data = get_mycred_tools_page_url('reset-data');
+		$pages = array( 
+			'import-export',
+			'points', 
+			'badges', 
+			'ranks',
+			'setup'
+		);
+		?>
+
+		<div class="" id="myCRED-wrap">
+			<div class="mycredd-tools">
+				<h1>Tools</h1>
+			</div>
+			<div class="clear"></div>
+			<div class="mycred-tools-main-nav">
+				<h2 class="nav-tab-wrapper">
+					<a href="<?php echo esc_url( admin_url('admin.php?page=mycred-tools') ) ?>" class="nav-tab <?php echo !isset( $_GET['mycred-tools'] ) ? 'nav-tab-active' : ''; ?>">Bulk Assign</a>
+					<a href="<?php echo esc_url( $import_export ) ?>" class="nav-tab <?php echo ( isset( $_GET['mycred-tools'] ) && in_array( $_GET['mycred-tools'], $pages ) ) ? 'nav-tab-active' : ''; ?>">Import/Export</a>
+					<!-- <a href="<?php //echo $logs_cleanup ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'logs-cleanup' ) ? 'nav-tab-active' : ''; ?>">Logs Cleanup</a>
+					<a href="<?php //echo $reset_data ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'reset-data' ) ? 'nav-tab-active' : ''; ?>">Reset Data</a> -->
+				</h2>
+			</div>
+		
+		<?php
+
+		if ( isset( $_GET['mycred-tools'] ) ) {
+
+			if ( in_array( $_GET['mycred-tools'], $pages ) )
+			{ 
+				$mycred_tools_import_export = new myCRED_Tools_Import_Export();
+
+				$mycred_tools_import_export->get_header();
+			}
+		}
+
+		if ( isset( $_GET['mycred-tools'] ) ) {
+			if ( $_GET['mycred-tools'] == 'logs-cleanup' ) { ?>
+				<h1>LOGS-CLEANUP</h1>
+				<?php
+			}
+		}
+
+		if ( isset( $_GET['mycred-tools'] ) ) 
+		{
+			if ( $_GET['mycred-tools'] == 'reset-data' ) { ?>
+				<h1>RESET-DATA</h1>
+				<?php
+			}
+		}
+		else
+		{
+
+			$mycred_tools_bulk_assign = new myCRED_Tools_Bulk_Assign();
+
+			$mycred_tools_bulk_assign->get_page();
+
+		}
+
+		?>
+		</div>
+		<?php
+	}
 
-            return $ids;
-        }
+	public function get_all_users()
+	{
+		$users = array();
 
-        public function get_users_by_role( $roles )
-        {
-            $user_ids = array();
+		$wp_users = get_users();
 
-            foreach( $roles as $role )
-            {
-                $args = array(
-                'role'    =>    $role
-                );
+		foreach( $wp_users as $user )
+            $users[$user->user_email] = $user->display_name;
 
-                $user_query = new WP_User_Query($args);
+		return $users;
+	}
 
-                if (! empty($user_query->get_results()) ) {
-                    foreach ( $user_query->get_results() as $user ) { 
-                        $user_ids[] = $user->ID;
-                    }
-                }
-            }
+	public function get_users_by_email( $emails )
+	{
+		$ids = array();
 
-            return $user_ids;
-        }
+		foreach( $emails as $email )
+			$ids[] = get_user_by( 'email', $email )->ID;
 
-        public function tools_assign_award()
-        {
+		return $ids;
+	}
 
-            check_ajax_referer('mycred-tools', 'token');
+	public function get_users_by_role( $roles )
+	{
+		$user_ids = array();
 
-            $this->response = array( 'success' => 'tryLater' );
+		foreach( $roles as $role )
+		{
+			$args = array(
+				'role'	=>	$role
+			);
 
-            if(isset($_REQUEST['selected_type']) ) {
+			$user_query = new WP_User_Query( $args );
 
-                $selected_type = sanitize_text_field($_REQUEST['selected_type']);
-            
-                switch ( $selected_type ) {
-                case 'points':
-                    $this->process_points();
-                    break;
-                case 'ranks':
-                    $this->process_ranks();
-                    break;
-                case 'badges':
-                        $this->process_badges();
-                    break;
-                default:
-                    break;
-                }
+			if ( ! empty( $user_query->get_results() ) ) 
+			{
+				foreach ( $user_query->get_results() as $user ) 
+					$user_ids[] = $user->ID;
+			}
+		}
 
-            }
+		return $user_ids;
+	}
 
-            wp_send_json($this->response);
-            wp_die();
+	public function tools_assign_award() {
 
-        }
+		check_ajax_referer( 'mycred-tools', 'token' );
 
-        private function process_points()
-        {
+		$this->response = array( 'success' => 'tryLater' );
 
-            if (! isset($_REQUEST['point_type']) ) {
+		if( isset( $_REQUEST['selected_type'] ) ) {
 
-                $this->response = array( 'success' => 'selectPointType' );
-                return;
-        
-            }
-        
-            $point_type      = sanitize_text_field($_REQUEST['point_type']);
-            $current_user_id = get_current_user_id();
-            $mycred          = mycred($point_type);
+			$selected_type = sanitize_key( $_REQUEST['selected_type'] );
 
-            if (! $mycred->user_is_point_admin($current_user_id) ) {
+			switch ( $selected_type ) {
+				case 'points':
+					$this->process_points();
+					break;
+				case 'ranks':
+					$this->process_ranks();
+					break;
+				case 'badges':
+					$this->process_badges();
+					break;
+				default:
+					break;
+			}
 
-                $this->response = array( 'success' => 'accessDenied' );
-                return;
+		}
 
-            }
+		wp_send_json( $this->response );
+		wp_die();
 
-            if (empty($_REQUEST['points_to_award']) ) {
+	}
 
-                $this->response = array( 'success' => 'pointsRequired' );
-                return;
-        
-            }
+	private function process_points() {
 
-            $points_to_award = sanitize_text_field($_REQUEST['points_to_award']);
+		if ( ! isset( $_REQUEST['point_type'] ) ) {
 
-            $log_entry = isset($_REQUEST['log_entry']) ? ( sanitize_text_field($_REQUEST['log_entry']) == 'true' ? true : false ) : false;
-        
-            $users_to_award = $this->get_requested_users();
+			$this->response = array( 'success' => 'selectPointType' );
+			return;
+		
+		}
+		
+		$point_type      = sanitize_key( $_REQUEST['point_type'] );
+		$current_user_id = get_current_user_id();
+		$mycred          = mycred( $point_type );
 
-            if (empty($users_to_award) ) { return;
-            }
+		if ( ! $mycred->user_is_point_admin( $current_user_id ) ) {
 
-            foreach ( $users_to_award  as $user_id ) {
+			$this->response = array( 'success' => 'accessDenied' );
+			return;
 
-                if ($mycred->exclude_user($user_id) ) { continue;
-                }
+		}
 
-                //Entries with log
-                if($log_entry ) {
+		if ( empty( $_REQUEST['points_to_award'] ) ) {
 
-                    $log_entry_text = isset($_REQUEST['log_entry_text']) ? sanitize_text_field($_REQUEST['log_entry_text']) : '';
+			$this->response = array( 'success' => 'pointsRequired' );
+			return;
+		
+		}
 
-                    if(empty($log_entry_text) ) {
+		$points_to_award = sanitize_text_field( wp_unslash( $_REQUEST['points_to_award'] ) );
 
-                         $this->response = array( 'success' => 'logEntryRequired' );
-                         return;
+		$log_entry = isset( $_REQUEST['log_entry'] ) ? ( sanitize_key( $_REQUEST['log_entry'] ) == 'true' ? true : false ) : false;
 
-                    }
+		$users_to_award = $this->get_requested_users();
 
-                    $mycred->add_creds(
-                        'bulk_assign',
-                        $user_id,
-                        $points_to_award,
-                        $log_entry_text
-                    );
+		if ( empty( $users_to_award ) ) return;
 
-                }
-                else {
+		foreach ( $users_to_award  as $user_id ) {
 
-                    $new_balance = $mycred->update_users_balance($user_id, $points_to_award, $point_type);
-            
-                }
+			if ( $mycred->exclude_user( $user_id ) ) continue;
 
-            }
+			//Entries with log
+			if( $log_entry ) {
 
-            $this->response = array( 'success' => true );
+				$log_entry_text = isset( $_REQUEST['log_entry_text'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['log_entry_text'] ) ) : '';
 
-        }
+				if( empty( $log_entry_text ) ) {
 
-        private function process_ranks()
-        {
+					$this->response = array( 'success' => 'logEntryRequired' );
+					return;
 
-            if(class_exists('myCRED_Ranks_Module') && mycred_manual_ranks() ) {
+				}
 
-                if (empty($_REQUEST['rank_to_award']) ) {
+				$mycred->add_creds(
+					'bulk_assign',
+					$user_id,
+					$points_to_award,
+					$log_entry_text
+				);
 
-                    $this->response = array( 'success' => 'selectRank' );
-                    return;
-            
-                }
+			}
+			else {
 
-                $rank_id         = intval($_REQUEST['rank_to_award']);
-                $point_type      = mycred_get_rank_pt($rank_id);
-                $current_user_id = get_current_user_id();
-                $mycred          = mycred($point_type);
+				$new_balance = $mycred->update_users_balance( $user_id, $points_to_award, $point_type );
+			
+			}
 
-                if (! $mycred->user_is_point_admin($current_user_id) ) {
+		}
 
-                    $this->response = array( 'success' => 'accessDenied' );
-                    return;
+		$this->response = array( 'success' => true );
 
-                }
+	}
 
-                $users_to_award = $this->get_requested_users();
+	private function process_ranks() {
 
-                if (empty($users_to_award) ) { return;
-                }
+		if( class_exists( 'myCRED_Ranks_Module' ) && mycred_manual_ranks() ) {
 
-                foreach ( $users_to_award  as $user_id ) {
+			if ( empty( $_REQUEST['rank_to_award'] ) ) {
 
-                    if ($mycred->exclude_user($user_id) ) { continue;
-                    }
+				$this->response = array( 'success' => 'selectRank' );
+				return;
+			
+			}
 
-                    mycred_save_users_rank($user_id, $rank_id, $point_type);
+			$rank_id         = intval( $_REQUEST['rank_to_award'] );
+			$point_type      = mycred_get_rank_pt( $rank_id );
+			$current_user_id = get_current_user_id();
+			$mycred          = mycred( $point_type );
 
-                }
+			if ( ! $mycred->user_is_point_admin( $current_user_id ) ) {
 
-                $this->response = array( 'success' => true );
+				$this->response = array( 'success' => 'accessDenied' );
+				return;
 
-            }
+			}
 
-        }
+			$users_to_award = $this->get_requested_users();
 
-        private function process_badges()
-        {
+			if ( empty( $users_to_award ) ) return;
 
-            $current_user_id = get_current_user_id();
-            $mycred          = mycred();
-            $is_revoke       = ( isset($_REQUEST['revoke']) && $_REQUEST['revoke'] == 'revoke' );
+			foreach ( $users_to_award  as $user_id ) {
 
-            if (! $mycred->user_is_point_admin($current_user_id) ) {
+				if ( $mycred->exclude_user( $user_id ) ) continue;
 
-                $this->response = array( 'success' => 'accessDenied' );
-                return;
+				mycred_save_users_rank( $user_id, $rank_id, $point_type );
 
-            }
-        
-            if ($is_revoke ) {
-                $selected_badges = isset($_REQUEST['badges_to_revoke']) ? sanitize_text_field($_REQUEST['badges_to_revoke']) : '';
-            } else {
-                $selected_badges = isset($_REQUEST['badges_to_award']) ? sanitize_text_field($_REQUEST['badges_to_award']) : '';
-            }
+			}
 
-            $selected_badges = json_decode(stripslashes($selected_badges));
+			$this->response = array( 'success' => true );
 
-            if(empty($selected_badges) ) {
+		}
 
-                $this->response = array( 'success' => 'badgesFieldRequried' );
-                return;
+	}
 
-            }
+	private function process_badges() {
 
-            $selected_users = $this->get_requested_users();
+		$current_user_id = get_current_user_id();
+		$mycred          = mycred();
+		$is_revoke       = ( isset( $_REQUEST['revoke'] ) && $_REQUEST['revoke'] == 'revoke' );
 
-            if (empty($selected_users) ) { return;
-            }
+		if ( ! $mycred->user_is_point_admin( $current_user_id ) ) {
 
-            foreach( $selected_badges as $badge_id ) {
+			$this->response = array( 'success' => 'accessDenied' );
+			return;
 
-                foreach( $selected_users as $user_id ) {
+		}
+		
+		if ( $is_revoke )
+			$selected_badges = isset( $_REQUEST['badges_to_revoke'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['badges_to_revoke'] ) ) : '';
+		else
+			$selected_badges = isset( $_REQUEST['badges_to_award'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['badges_to_award'] ) ) : '';
 
-                    if ($mycred->exclude_user($user_id) ) { continue;
-                    }
+		$selected_badges = json_decode( stripslashes( $selected_badges ) );
 
-                    if ($is_revoke ) {
-                    
-                            $badge = mycred_get_badge((int) $badge_id);
-                              $badge->divest($user_id);
+		if( empty( $selected_badges ) ) {
 
-                    }
-                    else {
+			$this->response = array( 'success' => 'badgesFieldRequried' );
+			return;
 
-                        mycred_assign_badge_to_user($user_id, (int) $badge_id);
+		}
 
-                    }
+		$selected_users = $this->get_requested_users();
 
-                }
+		if ( empty( $selected_users ) ) return;
 
-            }
+		foreach( $selected_badges as $badge_id ) {
 
-            $this->response = array( 'success' => true );
+			foreach( $selected_users as $user_id ) {
 
-        }
+				if ( $mycred->exclude_user( $user_id ) ) continue;
 
-        private function get_requested_users()
-        {
-        
-            $users_to_award = array();
+				if ( $is_revoke ) {
+					
+					$badge = mycred_get_badge( (int) $badge_id );
+        			$badge->divest( $user_id );
 
-            if (isset($_REQUEST['award_to_all_users']) ) {
-            
-                $award_to_all_users = sanitize_text_field($_REQUEST['award_to_all_users']) == 'true' ? true : false;
+				}
+				else {
 
-                if ($award_to_all_users ) {
-                
-                    $users = $this->get_all_users();
+					mycred_assign_badge_to_user( $user_id, (int) $badge_id );
 
-                    foreach( $users as $email => $user_name ) {
-                           $users_to_award[] = $email;
-                    }
+				}
 
-                    $users_to_award = $this->get_users_by_email($users_to_award);
+			}
 
-                }
-                else {
+		}
 
-                    $selected_users      = isset($_REQUEST['users']) ? sanitize_text_field($_REQUEST['users']) : '[]';
-                    $selected_user_roles = isset($_REQUEST['user_roles']) ? sanitize_text_field($_REQUEST['user_roles']) : '[]';
+		$this->response = array( 'success' => true );
 
-                    $selected_users      = json_decode(stripslashes($selected_users));
-                    $selected_user_roles = json_decode(stripslashes($selected_user_roles));
+	}
 
-                    $users_to_award      = $this->get_users_by_email($selected_users);
+	private function get_requested_users() {
+		
+		$users_to_award = array();
 
-                    if(! empty($selected_user_roles) ) {
+		if ( isset( $_REQUEST['award_to_all_users'] ) ) {
+			
+			$award_to_all_users = sanitize_key( $_REQUEST['award_to_all_users'] ) == 'true' ? true : false;
 
-                           $users_by_role = $this->get_users_by_role($selected_user_roles);
-                           $users_to_award = array_merge($users_by_role, $users_to_award);
-                           $users_to_award = array_unique($users_to_award);
-                
-                    }
+			if ( $award_to_all_users ) {
+				
+				$users = $this->get_all_users();
 
-                }
+				foreach( $users as $email => $user_name ) {
+					$users_to_award[] = $email;
+				}
 
-            }
+				$users_to_award = $this->get_users_by_email( $users_to_award );
 
-            if (empty($users_to_award) ) { 
-                $this->response = array( 'success' => 'selectUser' );
-            }
+			}
+			else {
 
-            return $users_to_award;
+				$selected_users      = isset( $_REQUEST['users'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['users'] ) ) : '[]';
+				$selected_user_roles = isset( $_REQUEST['user_roles'] ) ? sanitize_key( $_REQUEST['user_roles'] ) : '[]';
 
-        }
+				$selected_users      = json_decode( stripslashes( $selected_users ) );
+				$selected_user_roles = json_decode( stripslashes( $selected_user_roles ) );
 
-        /**
-         * Ajax Call-back
-         *
-         * @since   2.4.1
-         * @since   2.4.4.1 `current_user_can` security added
-         * @version 1.0
-         */
-        public function tools_select_user()
-        {
+				$users_to_award      = $this->get_users_by_email( $selected_users );
 
-            check_ajax_referer('mycred-tools', 'token');
+				if( ! empty( $selected_user_roles ) ) {
 
-            $mycred = new myCRED_Settings();
-            $capability = $mycred->get_point_admin_capability();
+					$users_by_role = $this->get_users_by_role( $selected_user_roles );
+					$users_to_award = array_merge( $users_by_role, $users_to_award );
+					$users_to_award = array_unique( $users_to_award );
+				
+				}
 
-            if(!current_user_can($capability) ) {
-                die('-1');
-            }
-        
-            if(isset($_GET['action']) &&  $_GET['action'] == 'mycred-tools-select-user' ) {
-                $search = sanitize_text_field($_GET['search']);
+			}
 
-                $results = mycred_get_users_by_name_email($search, 'user_email');
+		}
 
-                echo json_encode($results);
+		if ( empty( $users_to_award ) ) 
+			$this->response = array( 'success' => 'selectUser' );
 
-                die;
-            }
-        }
-    }
+		return $users_to_award;
+
+	}
+
+	/**
+	 * Ajax Call-back
+	 * @since 2.4.1
+	 * @since 2.4.4.1 `current_user_can` security added
+	 * @version 1.0
+	 */
+	public function tools_select_user()
+	{
+
+		check_ajax_referer( 'mycred-tools', 'token' );
+
+		$mycred = new myCRED_Settings();
+		$capability = $mycred->get_point_admin_capability();
+
+		if( !current_user_can( $capability ) ) {
+			die( '-1' );
+		}
+		
+		if( isset( $_GET['action'] ) &&  $_GET['action'] == 'mycred-tools-select-user' )
+		{
+			$search = isset($_GET['search'] ) ? sanitize_key( $_GET['search'] ) : '';
+
+			$results = mycred_get_users_by_name_email( $search, 'user_email' );
+
+			echo json_encode( $results );
+
+			die;
+		}
+	}
+}
 endif;
 
 $mycred_tools = new myCRED_Tools();
 
-if (! function_exists('get_mycred_tools_page_url') ) :
-    function get_mycred_tools_page_url( $urls )
-    {
-        
-        $args = array(
-        'page'         => MYCRED_SLUG . '-tools',
-        'mycred-tools' =>  $urls,
-        );
+if ( ! function_exists( 'get_mycred_tools_page_url' ) ) :
+	function get_mycred_tools_page_url( $urls ) {
+		
+		$args = array(
+			'page'         => MYCRED_SLUG . '-tools',
+			'mycred-tools' =>  $urls,
+		);
 
-        return esc_url(add_query_arg($args, admin_url('admin.php')));
+		return esc_url( add_query_arg( $args, admin_url( 'admin.php' ) ) );
 
-    }
+	}
 endif;

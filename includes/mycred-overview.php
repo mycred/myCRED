@@ -111,33 +111,33 @@ div.overview-module-wrap div.mycred-type .overview .section strong { padding: 0 
 
 			<div class="type-icon"><div class="dashicons dashicons-star-filled"></div></div>
 
-			<span class="type-label"><?php echo $mycred->plural(); ?></span>
+			<span class="type-label"><?php echo esc_html( $mycred->plural() ); ?></span>
 
 			<?php do_action( 'mycred_overview_total_' . $point_type, $point_type, $total, $data ); ?>
 
-			<a href="<?php echo $url; ?>" title="<?php _e( 'Total amount in circulation', 'mycred' ); ?>"><?php echo $mycred->format_creds( $total ); ?></a>
+			<a href="<?php echo esc_url( $url ); ?>" title="<?php esc_attr_e( 'Total amount in circulation', 'mycred' ); ?>"><?php echo esc_html( $mycred->format_creds( $total ) ); ?></a>
 
 		</div>
 		<div class="overview clear">
 			<div class="section border" style="width: 50%;">
 				<p>
 
-					<strong style="color:green;"><?php _e( 'Awarded', 'mycred' ); ?>:</strong>
+					<strong style="color:green;"><?php esc_html_e( 'Awarded', 'mycred' ); ?>:</strong>
 
 					<?php do_action( 'mycred_overview_awarded_' . $point_type, $point_type, $total, $data ); ?>
 
-					<a href="<?php echo esc_url( $awarded_url ); ?>"><?php echo $mycred->format_creds( $awarded ); ?></a>
+					<a href="<?php echo esc_url( $awarded_url ); ?>"><?php echo esc_html( $mycred->format_creds( $awarded ) ); ?></a>
 
 				</p>
 			</div>
 			<div class="section border" style="width: 50%; margin-left: -1px;">
 				<p>
 
-					<strong style="color:red;"><?php _e( 'Deducted', 'mycred' ); ?>:</strong>
+					<strong style="color:red;"><?php esc_html_e( 'Deducted', 'mycred' ); ?>:</strong>
 
 					<?php do_action( 'mycred_overview_deducted_' . $point_type, $point_type, $total, $data ); ?>
 
-					<a href="<?php echo esc_url( $deducted_url ); ?>"><?php echo $mycred->format_creds( $deducted ); ?></a>
+					<a href="<?php echo esc_url( $deducted_url ); ?>"><?php echo esc_html( $mycred->format_creds( $deducted ) ); ?></a>
 
 				</p>
 			</div>

@@ -17,6 +17,7 @@ require_once myCRED_BANK_ABSTRACT_DIR . 'mycred-abstract-service.php';
 require_once myCRED_BANK_INCLUDES_DIR . 'mycred-banking-functions.php';
 
 require_once myCRED_BANK_SERVICES_DIR . 'mycred-service-central.php';
+require_once myCRED_BANK_SERVICES_DIR . 'mycred-service-schedule-deposit.php';
 
 /**
  * myCRED_Banking_Module class
@@ -143,6 +144,14 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 				'callback'     => array( 'myCRED_Banking_Service_Central' )
 			);
 
+			$services['schedule_deposit'] = array(
+				'title'        => __( 'Schedule Deposit', 'mycred' ),
+				'description'  => __( 'The admin can schedule the points deposit to the central account automatically after the specified interval.', 'mycred' ),
+				'cron'         => false,
+				'icon'         => 'dashicons-admin-site',
+				'callback'     => array( 'myCRED_Banking_Service_Schedule_Deposit' )
+			);
+
 			$services = apply_filters( 'mycred_setup_banking', $services );
 
 			if ( $save === true && $this->core->user_is_point_admin() ) {
@@ -151,6 +160,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 					'services'      => $services,
 					'service_prefs' => $this->service_prefs
 				);
+
 				mycred_update_option( $this->option_id, $new_data );
 			}
 
@@ -171,7 +181,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
 			wp_enqueue_style( 'mycred-forms' );
 			wp_enqueue_style( 'mycred-select2-style' );
-
+			wp_enqueue_style( MYCRED_SLUG . '-buttons' );
 			wp_register_script( 'mycred-central-deposit-admin', plugins_url( 'assets/js/central-deposit-admin.js', myCRED_BANK ), array( 'jquery', 'mycred-select2-script' ), myCRED_VERSION );
 
 			wp_enqueue_script( 'mycred-central-deposit-admin' );
@@ -206,7 +216,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 	<?php $this->update_notice(); ?>
 
-	<h1><?php _e( 'Central Deposit', 'mycred' ); ?></h1>
+	<h1><?php esc_html_e( 'Central Deposit', 'mycred' ); ?></h1>
 	<form method="post" class="form" action="options.php">
 
 		<?php settings_fields( $this->settings_name ); ?>
@@ -220,13 +230,13 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 				foreach ( $installed as $key => $data ) {
 
 ?>
-			<h4><span class="dashicons <?php echo $data['icon']; ?><?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' static'; ?>"></span><?php echo $this->core->template_tags_general( $data['title'] ); ?></h4>
+			<h4><span class="dashicons <?php echo esc_attr( $data['icon'] ); ?><?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' static'; ?>"></span><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></h4>
 			<div class="body" style="display: none;">
-				<p><?php echo nl2br( $this->core->template_tags_general( $data['description'] ) ); ?></p>
-				<label class="subheader" for="mycred-bank-service-<?php echo $key; ?>"><?php _e( 'Enable', 'mycred' ); ?></label>
+				<p><?php echo nl2br( esc_html( $this->core->template_tags_general( $data['description'] ) ) ); ?></p>
+				<label class="subheader" for="mycred-bank-service-<?php echo esc_attr( $key ); ?>"><?php esc_html_e( 'Enable', 'mycred' ); ?></label>
 				<ol>
 					<li>
-						<input type="checkbox" name="<?php echo $this->option_id; ?>[active][]" id="mycred-bank-service-<?php echo $key; ?>" value="<?php echo $key; ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> />
+						<input type="checkbox" name="<?php echo esc_attr( $this->option_id ); ?>[active][]" id="mycred-bank-service-<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $key ); ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> />
 					</li>
 				</ol>
 
@@ -242,7 +252,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 		</div>
 
-		<?php submit_button( __( 'Update Changes', 'mycred' ), 'primary large', 'submit', false ); ?>
+		<?php submit_button( esc_html__( 'Update Changes', 'mycred' ), 'primary large', 'submit', false ); ?>
 
 	</form>
 </div>
@@ -257,6 +267,9 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 		 */
 		public function sanitize_settings( $post ) {
 
+			// added do_action in 2.2.4
+			$post        	      = apply_filters( 'mycred_banking_settings_save', $post, $this );
+			
 			$installed            = $this->get();
 
 			// Construct new settings
@@ -335,13 +348,13 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 		public function ajax_handler() {
 
 			// Make sure this is an ajax call for this point type
-			if ( isset( $_REQUEST['_token'] ) && wp_verify_nonce( $_REQUEST['_token'], 'run-mycred-bank-task' . $this->mycred_type ) ) {
+			if ( isset( $_REQUEST['_token'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_token'] ) ), 'run-mycred-bank-task' . $this->mycred_type ) ) {
 
 				// Make sure ajax call is made by an admin
 				if ( $this->core->user_is_point_admin() ) {
 
 					// Get the service requesting to use this
-					$service   = sanitize_key( $_POST['service'] );
+					$service   = ( isset( $_POST['service'] ) ? sanitize_key( wp_unslash( $_POST['service'] ) ) : '' );
 					$installed = $this->get();
 
 					// If there is such a service, load it's ajax handler

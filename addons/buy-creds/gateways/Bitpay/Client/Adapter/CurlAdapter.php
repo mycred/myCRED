@@ -77,11 +77,7 @@ class CurlAdapter implements AdapterInterface
             throw new \Bitpay\Client\ConnectionException($errorMessage);
         }
 
-        /**
-* 
-         *
- * @var ResponseInterface 
-*/
+        /** @var ResponseInterface */
         $response = Response::createFromRawResponse($raw);
 
         curl_close($curl);
@@ -92,7 +88,7 @@ class CurlAdapter implements AdapterInterface
     /**
      * Returns an array of default curl settings to use
      *
-     * @param  RequestInterface $request
+     * @param RequestInterface $request
      * @return array
      */
     private function getCurlDefaultOptions(RequestInterface $request)

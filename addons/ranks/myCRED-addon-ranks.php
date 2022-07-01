@@ -166,7 +166,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			add_filter( 'manage_' . MYCRED_RANK_KEY . '_posts_columns',       array( $this, 'adjust_column_headers' ), 50 );
 			add_action( 'manage_' . MYCRED_RANK_KEY . '_posts_custom_column', array( $this, 'adjust_column_content' ), 10, 2 );
 			add_action( 'save_post_' . MYCRED_RANK_KEY,                       array( $this, 'save_rank' ), 10, 2 );
-			add_filter( 'views_edit-mycred_rank', array( $this, 'modify_ranks_views_links' ) );
+			add_filter( 'views_edit-mycred_rank', 			  array( $this, 'modify_ranks_views_links' ) );
 
 			add_action( 'delete_user', array( $this, 'delete_user_rank_data' ) );
 		}
@@ -232,8 +232,8 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		 */
 		public function register_ranks() {
 
-			if ( isset( $_GET['ctype'] ) && array_key_exists( $_GET['ctype'], $this->point_types ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_RANK_KEY )
-				$name = sprintf( __( 'Ranks for %s', 'mycred' ), $this->point_types[ $_GET['ctype'] ] );
+			if ( isset( $_GET['ctype'] ) && array_key_exists( sanitize_text_field( wp_unslash( $_GET['ctype'] ) ), $this->point_types ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_RANK_KEY )
+				$name = sprintf( __( 'Ranks for %s', 'mycred' ), $this->point_types[ sanitize_text_field( wp_unslash( $_GET['ctype'] ) ) ] );
 			else
 				$name = __( 'Ranks', 'mycred' );
 
@@ -392,7 +392,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			if ( $path == 'post-new.php?post_type=' . MYCRED_RANK_KEY ) {
 
 				if ( isset( $_GET['ctype'] ) )
-					return get_site_url( $blog_id, 'wp-admin/', 'admin' ) . 'post-new.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . ( ( isset( $_GET['ctype'] ) ) ? $_GET['ctype'] : MYCRED_DEFAULT_TYPE_KEY );
+					return get_site_url( $blog_id, 'wp-admin/', 'admin' ) . 'post-new.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . ( ( isset( $_GET['ctype'] ) ) ? sanitize_text_field( wp_unslash( $_GET['ctype'] ) ) : MYCRED_DEFAULT_TYPE_KEY );
 
 				elseif ( isset( $post->post_type ) && $post->post_type == MYCRED_RANK_KEY && mycred_get_post_meta( $post->ID, 'ctype', true ) != '' )
 					return get_site_url( $blog_id, 'wp-admin/', 'admin' ) . 'post-new.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . mycred_get_post_meta( $post->ID, 'ctype', true );
@@ -452,12 +452,12 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			}
 
 			// When editing a rank, we need to indicate that we are under the appropriate point type menu
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_RANK_KEY ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( sanitize_text_field( wp_unslash( $_GET['post'] ) ) ) == MYCRED_RANK_KEY ) {
 
 				if ( isset( $_GET['ctype'] ) && $_GET['ctype'] != MYCRED_DEFAULT_TYPE_KEY )
 					return MYCRED_SLUG . '_' . sanitize_key( $_GET['ctype'] );
 
-				$point_type = mycred_get_post_meta( $_GET['post'], 'ctype', true );
+				$point_type = mycred_get_post_meta( sanitize_text_field( wp_unslash( $_GET['post'] ) ), 'ctype', true );
 				$point_type = sanitize_key( $point_type );
 
 				if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
@@ -484,19 +484,19 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			if ( ( $pagenow == 'edit.php' || $pagenow == 'post-new.php' ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == MYCRED_RANK_KEY ) {
 
 				if ( isset( $_GET['ctype'] ) )
-					return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . $_GET['ctype'];
+					return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . sanitize_text_field( wp_unslash( $_GET['ctype'] ) );
 
 				return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . MYCRED_DEFAULT_TYPE_KEY;
 			
 			}
 
 			// When editing a rank, we need to highlight the "Ranks" submenu to indicate where we are
-			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( $_GET['post'] ) == MYCRED_RANK_KEY ) {
+			elseif ( $pagenow == 'post.php' && isset( $_GET['post'] ) && mycred_get_post_type( sanitize_text_field( wp_unslash( $_GET['post'] ) ) ) == MYCRED_RANK_KEY ) {
 
 				if ( isset( $_GET['ctype'] ) )
-					return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . $_GET['ctype'];
+					return 'edit.php?post_type=' . MYCRED_RANK_KEY . '&ctype=' . sanitize_text_field( wp_unslash( $_GET['ctype'] ) );
 
-				$point_type = mycred_get_post_meta( $_GET['post'], 'ctype', true );
+				$point_type = mycred_get_post_meta( sanitize_text_field( wp_unslash( $_GET['post'] ) ), 'ctype', true );
 				$point_type = sanitize_key( $point_type );
 
 				if ( $point_type != MYCRED_DEFAULT_TYPE_KEY )
@@ -782,7 +782,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			if ( $output == '' ) return;
 
-			echo '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bp_rank_in_header', $output, $user_id, $this ) . '</div>';
+			echo wp_kses_post( '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bp_rank_in_header', $output, $user_id, $this ) . '</div>' );
 
 		}
 
@@ -836,9 +836,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 <div class="bp-widget mycred-field">
 	<table class="profile-fields">
 		<tr id="mycred-users-rank">
-			<td class="label"><?php if ( $count == 1 ) _e( 'Rank', 'mycred' ); else _e( 'Ranks', 'mycred' ); ?></td>
+			<td class="label"><?php if ( $count == 1 ) esc_html_e( 'Rank', 'mycred' ); else esc_html_e( 'Ranks', 'mycred' ); ?></td>
 			<td class="data">
-				<?php echo apply_filters( 'mycred_bp_rank_in_profile', $output, $user_id, $this ); ?>
+				<?php echo wp_kses_post( apply_filters( 'mycred_bp_rank_in_profile', $output, $user_id, $this ) ); ?>
 
 			</td>
 		</tr>
@@ -894,7 +894,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			if ( $output == '' ) return;
 
-			echo '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bb_rank_in_reply', $output, $user_id, $this ) . '</div>';
+			echo wp_kses_post( '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bb_rank_in_reply', $output, $user_id, $this ) . '</div>' );
 
 		}
 
@@ -942,7 +942,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			if ( $output == '' ) return;
 
-			echo '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bb_rank_in_profile', $output, $user_id, $this ) . '</div>';
+			echo wp_kses_post( '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bb_rank_in_profile', $output, $user_id, $this ) . '</div>' );
 
 		}
 
@@ -1013,7 +1013,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			}
 
 			if ( ! mycred_have_ranks( $point_type ) ) {
-				echo '<div class="balance-desc current-rank"><em>' . __( 'No ranks exists.', 'mycred' ) . '</em></div>';
+				echo wp_kses_post( '<div class="balance-desc current-rank"><em>' . __( 'No ranks exists.', 'mycred' ) . '</em></div>' );
 				return;
 			}
 
@@ -1026,25 +1026,41 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			if ( $this->is_manual_mode( $point_type ) && mycred_is_admin( NULL, $point_type ) ) {
 
 				$ranks = mycred_get_ranks( 'publish', '-1', 'DESC', $point_type );
-				echo '<div class="balance-desc current-rank"><select name="rank-' . $point_type . '" id="mycred-rank">';
+				$rank_dropdown = '<div class="balance-desc current-rank"><select name="rank-' . $point_type . '" id="mycred-rank">';
 
-				echo '<option value=""';
+				$rank_dropdown .= '<option value=""';
 				if ( $users_rank === false )
-					echo ' selected="selected"';
-				echo '>' . __( 'No rank', 'mycred' ) . '</option>';
+				$rank_dropdown .= ' selected="selected"';
+				$rank_dropdown .= '>' . __( 'No rank', 'mycred' ) . '</option>';
 
 				foreach ( $ranks as $rank ) {
-					echo '<option value="' . $rank->post_id . '"';
-					if ( ! empty( $users_rank ) && $users_rank->post_id == $rank->post_id ) echo ' selected="selected"';
-					echo '>' . $rank->title . '</option>';
+					$rank_dropdown .= '<option value="' . $rank->post_id . '"';
+					if ( ! empty( $users_rank ) && $users_rank->post_id == $rank->post_id ) 
+						$rank_dropdown .= ' selected="selected"';
+					$rank_dropdown .= '>' . $rank->title . '</option>';
 				}
 
-				echo '</select></div>';
+				$rank_dropdown .= '</select></div>';
 
+				$allowed_html = array(
+					'div'	 => array(
+						'class' => array()
+					),
+					'select' => array(
+						'name' => array(),
+						'id' => array()
+					),
+					'option' => array(
+						'value' => array(),
+						'selected' => array()
+					)
+				);
+
+				echo wp_kses( $rank_dropdown, $allowed_html );
 			}
 			else {
 
-				echo '<div class="balance-desc current-rank">' . sprintf( '<strong>%s:</strong> %s', __( 'Rank', 'mycred' ), $rank_title ) . '</div>';
+				echo wp_kses_post( '<div class="balance-desc current-rank">' . sprintf( '<strong>%s:</strong> %s', __( 'Rank', 'mycred' ), $rank_title ) . '</div>' );
 
 			}
 
@@ -1126,13 +1142,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 				wp_enqueue_style( 'mycred-admin' );
 
-				if ( isset( $_GET['ctype'] ) && array_key_exists( $_GET['ctype'], $this->point_types ) ) :
+				if ( isset( $_GET['ctype'] ) && array_key_exists( sanitize_text_field( wp_unslash( $_GET['ctype'] ) ), $this->point_types ) ) :
 
 					wp_localize_script(
 						'mycred-rank-tweaks',
 						'myCRED_Ranks',
 						array(
-							'rank_ctype' => $_GET['ctype']
+							'rank_ctype' => sanitize_text_field( wp_unslash( $_GET['ctype'] ) )
 						)
 					);
 					wp_enqueue_script( 'mycred-rank-tweaks' );
@@ -1207,7 +1223,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				}
 
 				// Otherwise if ctype is set and it is a point type filter the results
-				elseif ( isset( $_GET['ctype'] ) && array_key_exists( $_GET['ctype'], $this->point_types ) ) {
+				elseif ( isset( $_GET['ctype'] ) && array_key_exists( sanitize_text_field( wp_unslash( $_GET['ctype'] ) ), $this->point_types ) ) {
 					$query->set( 'meta_query', array(
 						array(
 							'key'     => 'ctype',
@@ -1226,11 +1242,11 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				if ( ! isset( $query->query['post_type'] ) || $query->query['post_type'] != MYCRED_RANK_KEY ) return;
 
 				// If ctype is set, filter ranks according to it's value
-				if ( isset( $_GET['ctype'] ) && array_key_exists( $_GET['ctype'], $this->point_types ) ) {
+				if ( isset( $_GET['ctype'] ) && array_key_exists( sanitize_text_field( wp_unslash( $_GET['ctype'] ) ), $this->point_types ) ) {
 					$query->set( 'meta_query', array(
 						array(
 							'key'     => 'ctype',
-							'value'   => $_GET['ctype'],
+							'value'   => sanitize_text_field( wp_unslash( $_GET['ctype'] ) ),
 							'compare' => '='
 						)
 					) );
@@ -1287,9 +1303,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			if ( $column_name == 'mycred-rank-logo' ) {
 				$logo = mycred_get_rank_logo( $post_id, 'thumbnail' );
 				if ( empty( $logo ) )
-					echo __( 'No Logo Set', 'mycred' );
+					echo esc_html( __( 'No Logo Set', 'mycred' ) );
 				else
-					echo $logo;
+					echo wp_kses_post( $logo );
 
 			}
 
@@ -1310,14 +1326,14 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 					$max = __( 'Any Value', 'mycred' );
 
 				$max = $mycred->template_tags_general( __( 'Maximum %plural%', 'mycred' ) ) . ': ' . $max;
-				echo $min . '<br />' . $max;
+				echo wp_kses_post( $min ) . '<br />' . wp_kses_post( $max );
 
 			}
 
 			// Rank Users (user list)
 			elseif ( $column_name == 'mycred-rank-users' ) {
 
-				echo mycred_count_users_with_rank( $post_id );
+				echo esc_html( mycred_count_users_with_rank( $post_id ) );
 
 			}
 
@@ -1325,9 +1341,9 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			if ( $column_name == 'mycred-rank-type' ) {
 
 				if ( isset( $this->point_types[ $type ] ) )
-					echo $this->point_types[ $type ];
+					echo esc_html( $this->point_types[ $type ] );
 				else
-					echo $this->core->plural();
+					echo esc_html( $this->core->plural() );
 
 			}
 
@@ -1416,13 +1432,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			<div class="row">
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 					<div class="form-group">
-						<label for="mycred-rank-min"><?php _e( 'Minimum Balance Requirement', 'mycred' ); ?></label>
+						<label for="mycred-rank-min"><?php esc_html_e( 'Minimum Balance Requirement', 'mycred' ); ?></label>
 						<input type="text" name="mycred_rank[mycred_rank_min]" id="mycred-rank-min" class="form-control" value="<?php echo esc_attr( $rank->minimum ); ?>" />
 					</div>
 				</div>
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 					<div class="form-group">
-						<label for="mycred-rank-max"><?php _e( 'Maximum Balance Requirement', 'mycred' ); ?></label>
+						<label for="mycred-rank-max"><?php esc_html_e( 'Maximum Balance Requirement', 'mycred' ); ?></label>
 						<input type="text" name="mycred_rank[mycred_rank_max]" id="mycred-rank-max" class="form-control" value="<?php echo esc_attr( $rank->maximum ); ?>" />
 					</div>
 				</div>
@@ -1433,16 +1449,16 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 					<?php if ( count( $this->point_types ) > 1 ) : ?>
 
 					<div class="form-group">
-						<label for="mycred-rank-point-type"><?php _e( 'Point Type', 'mycred' ); ?></label>
+						<label for="mycred-rank-point-type"><?php esc_html_e( 'Point Type', 'mycred' ); ?></label>
 						<?php mycred_types_select_from_dropdown( 'mycred_rank[ctype]', 'mycred-rank-point-type', $type, false, '  class="form-control"' ); ?>
 					</div>
 
 					<?php else : ?>
 
 					<div class="form-group">
-						<label for="mycred-rank-point-type"><?php _e( 'Point Type', 'mycred' ); ?></label>
-						<p class="form-control-static"><?php echo $mycred->plural(); ?></p>
-						<input type="hidden" name="mycred_rank[ctype]" value="<?php echo MYCRED_DEFAULT_TYPE_KEY; ?>" />
+						<label for="mycred-rank-point-type"><?php esc_html_e( 'Point Type', 'mycred' ); ?></label>
+						<p class="form-control-static"><?php echo esc_html( $mycred->plural() ); ?></p>
+						<input type="hidden" name="mycred_rank[ctype]" value="<?php echo esc_html( MYCRED_DEFAULT_TYPE_KEY ); ?>" />
 					</div>
 
 					<?php endif; ?>
@@ -1464,7 +1480,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 					if ( $rank->minimum == '' ) $rank->minimum = __( 'Not Set', 'mycred' );
 					if ( $rank->maximum == '' ) $rank->maximum = __( 'Not Set', 'mycred' );
 
-					echo '<li><strong>' . $rank->title . '</strong> ' . $rank->minimum . ' - ' . $rank->maximum . '</li>';
+					echo '<li><strong>' . esc_html( $rank->title ) . '</strong> ' . esc_html( $rank->minimum ) . ' - ' . esc_html( $rank->maximum ) . '</li>';
 
 				}
 				echo '</ul>';
@@ -1472,7 +1488,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			}
 			else {
 
-				echo '<p>' . __( 'No ranks found', 'mycred' ) . '.</p>';
+				echo wp_kses_post( '<p>' . __( 'No ranks found', 'mycred' ) . '.</p>' );
 
 			}
 
@@ -1494,7 +1510,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			// Make sure fields exists
 			if ( $post === NULL || ! $this->core->user_is_point_editor() || ! isset( $_POST['mycred_rank'] ) ) return;
 
-			$point_type = sanitize_key( $_POST['mycred_rank']['ctype'] );
+			$point_type = ( !empty( $_POST['mycred_rank']['ctype'] ) ? sanitize_key( $_POST['mycred_rank']['ctype'] ) : '' );
 			if ( ! array_key_exists( $point_type, $this->point_types ) )
 				$point_type = MYCRED_DEFAULT_TYPE_KEY;
 
@@ -1502,6 +1518,7 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			$type_object = new myCRED_Point_Type( $point_type );
 
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			foreach ( $_POST['mycred_rank'] as $meta_key => $meta_value ) {
 
 				if ( $meta_key == 'ctype' ) continue;
@@ -1551,56 +1568,56 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 			$box               = ( ( $prefs['base'] == 'current' ) ? 'display: none;' : 'display: block;' );
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php _e( 'Ranks', 'mycred' ); ?></h4>
+<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Ranks', 'mycred' ); ?></h4>
 <div class="body" style="display:none;">
 
 	<?php if ( $mycred->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) : ?>
 
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Rank Features', 'mycred' ); ?></h3>
+			<h3><?php esc_html_e( 'Rank Features', 'mycred' ); ?></h3>
 			<div class="form-group">
 				<div class="checkbox">
-					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php _e( 'Title', 'mycred' ); ?></label>
+					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php esc_html_e( 'Title', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php echo $mycred->core->template_tags_general( __( '%plural% requirement', 'mycred' ) ); ?></label>
+					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php echo esc_html( $mycred->core->template_tags_general( __( '%plural% requirement', 'mycred' ) ) ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php _e( 'Rank Logo', 'mycred' ); ?></label>
+					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php esc_html_e( 'Rank Logo', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'support' => 'content' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'support' => 'content' ) ); ?>" id="<?php echo $this->field_id( array( 'support' => 'content' ) ); ?>" <?php checked( $prefs['support']['content'], 1 ); ?> value="1" /> <?php _e( 'Content', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'content' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'content' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'content' ) ) ); ?>" <?php checked( $prefs['support']['content'], 1 ); ?> value="1" /> <?php esc_html_e( 'Content', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'support' => 'excerpt' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'support' => 'excerpt' ) ); ?>" id="<?php echo $this->field_id( array( 'support' => 'excerpt' ) ); ?>" <?php checked( $prefs['support']['excerpt'], 1 ); ?> value="1" /> <?php _e( 'Excerpt', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'excerpt' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'excerpt' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'excerpt' ) ) ); ?>" <?php checked( $prefs['support']['excerpt'], 1 ); ?> value="1" /> <?php esc_html_e( 'Excerpt', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'support' => 'comments' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'support' => 'comments' ) ); ?>" id="<?php echo $this->field_id( array( 'support' => 'comments' ) ); ?>" <?php checked( $prefs['support']['comments'], 1 ); ?> value="1" /> <?php _e( 'Comments', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr ($this->field_id( array( 'support' => 'comments' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'comments' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'comments' ) ) ); ?>" <?php checked( $prefs['support']['comments'], 1 ); ?> value="1" /> <?php esc_html_e( 'Comments', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'support' => 'page-attributes' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'support' => 'page-attributes' ) ); ?>" id="<?php echo $this->field_id( array( 'support' => 'page-attributes' ) ); ?>" <?php checked( $prefs['support']['page-attributes'], 1 ); ?> value="1" /> <?php _e( 'Page Attributes', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'page-attributes' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'page-attributes' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'page-attributes' ) ) ); ?>" <?php checked( $prefs['support']['page-attributes'], 1 ); ?> value="1" /> <?php esc_html_e( 'Page Attributes', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( array( 'support' => 'custom-fields' ) ); ?>"><input type="checkbox" name="<?php echo $this->field_name( array( 'support' => 'custom-fields' ) ); ?>" id="<?php echo $this->field_id( array( 'support' => 'custom-fields' ) ); ?>" <?php checked( $prefs['support']['custom-fields'], 1 ); ?> value="1" /> <?php _e( 'Custom Fields', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'custom-fields' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'custom-fields' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'custom-fields' ) ) ); ?>" <?php checked( $prefs['support']['custom-fields'], 1 ); ?> value="1" /> <?php esc_html_e( 'Custom Fields', 'mycred' ); ?></label>
 				</div>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Rank Post Type', 'mycred' ); ?></h3>
+			<h3><?php esc_html_e( 'Rank Post Type', 'mycred' ); ?></h3>
 			<div class="form-group">
 				<div class="checkbox">
-					<label for="<?php echo $this->field_id( 'public' ); ?>"><input type="checkbox" name="<?php echo $this->field_name( 'public' ); ?>" id="<?php echo $this->field_id( 'public' ); ?>" <?php checked( $prefs['public'], 1 ); ?> value="1" /> <?php _e( 'Make Ranks Public', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( 'public' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'public' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'public' ) ); ?>" <?php checked( $prefs['public'], 1 ); ?> value="1" /> <?php esc_html_e( 'Make Ranks Public', 'mycred' ); ?></label>
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="subheader" for="<?php echo $this->field_id( 'slug' ); ?>"><?php _e( 'Rank SLUG', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo $this->field_name( 'slug' ); ?>" id="<?php echo $this->field_id( 'slug' ); ?>" value="<?php echo esc_attr( $prefs['slug'] ); ?>" class="form-control" />
-				<p><span class="description"><?php _e( 'If you have selected to make Ranks public, you can select what rank archive URL slug you want to use. Ignored if Ranks are not set to be public.', 'mycred' ); ?></span></p>
+				<label class="subheader" for="<?php echo esc_attr( $this->field_id( 'slug' ) ); ?>"><?php esc_attr( 'Rank SLUG', 'mycred' ); ?></label>
+				<input type="text" name="<?php echo esc_attr( $this->field_name( 'slug' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'slug' ) ); ?>" value="<?php echo esc_attr( $prefs['slug'] ); ?>" class="form-control" />
+				<p><span class="description"><?php esc_html_e( 'If you have selected to make Ranks public, you can select what rank archive URL slug you want to use. Ignored if Ranks are not set to be public.', 'mycred' ); ?></span></p>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'order' ); ?>"><?php _e( 'Display Order', 'mycred' ); ?></label>
-				<select name="<?php echo $this->field_name( 'order' ); ?>" id="<?php echo $this->field_id( 'order' ); ?>" class="form-control">
+				<label for="<?php echo esc_html( $this->field_id( 'order' ) ); ?>"><?php esc_html_e( 'Display Order', 'mycred' ); ?></label>
+				<select name="<?php echo esc_html( $this->field_name( 'order' ) ); ?>" id="<?php echo esc_html( $this->field_id( 'order' ) ); ?>" class="form-control">
 <?php
 
 			// Order added in 1.1.1
@@ -1608,65 +1625,68 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				'ASC'  => __( 'Ascending - Lowest rank to highest', 'mycred' ),
 				'DESC' => __( 'Descending - Highest rank to lowest', 'mycred' )
 			);
-			foreach ( $options as $option_value => $option_label ) {
-				echo '<option value="' . $option_value . '"';
-				if ( $prefs['order'] == $option_value ) echo ' selected="selected"';
-				echo '>' . $option_label . '</option>';
+			foreach ( $options as $option_value => $option_label ) { ?>
+				<option value="<?php echo esc_attr( $option_value );?>"
+				<?php
+				if ( $prefs['order'] == $option_value ) echo ' selected="selected"';?>
+				> <?php echo esc_html( $option_label ); ?>
+				</option>
+				<?php
 			}
 
 ?>
 
 				</select>
-				<p><span class="description"><?php _e( 'Option to set in which order Ranks should be shown on the archive page.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'Option to set in which order Ranks should be shown on the archive page.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 	</div>
 
 	<?php endif; ?>
 
-	<h3><?php _e( 'Rank Behaviour', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Rank Behaviour', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
-					<label for="<?php echo $this->field_id( array( 'base' => 'manual' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'base' ); ?>" id="<?php echo $this->field_id( array( 'base' => 'manual' ) ); ?>"<?php checked( $prefs['base'], 'manual' ); ?> value="manual" /> <?php _e( 'Manual Mode', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'base' => 'manual' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'base' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'base' => 'manual' ) ) ); ?>"<?php checked( $prefs['base'], 'manual' ); ?> value="manual" /> <?php esc_html_e( 'Manual Mode', 'mycred' ); ?></label>
 				</div>
-				<p><span class="description"><?php _e( 'Ranks are assigned manually for each user.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'Ranks are assigned manually for each user.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
-					<label for="<?php echo $this->field_id( array( 'base' => 'current' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'base' ); ?>" id="<?php echo $this->field_id( array( 'base' => 'current' ) ); ?>"<?php checked( $prefs['base'], 'current' ); ?> value="current" /> <?php _e( 'Based on Current Balances', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'base' => 'current' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'base' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'base' => 'current' ) ) ); ?>"<?php checked( $prefs['base'], 'current' ); ?> value="current" /> <?php esc_html_e( 'Based on Current Balances', 'mycred' ); ?></label>
 				</div>
-				<p><span class="description"><?php _e( 'Users can be promoted or demoted depending on where their balance fits in amongst your ranks.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'Users can be promoted or demoted depending on where their balance fits in amongst your ranks.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<div class="radio">
-					<label for="<?php echo $this->field_id( array( 'base' => 'total' ) ); ?>"><input type="radio" name="<?php echo $this->field_name( 'base' ); ?>" id="<?php echo $this->field_id( array( 'base' => 'total' ) ); ?>"<?php checked( $prefs['base'], 'total' ); ?> value="total" /> <?php _e( 'Based on Total Balances', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'base' => 'total' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'base' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'base' => 'total' ) ) ); ?>"<?php checked( $prefs['base'], 'total' ); ?> value="total" /> <?php esc_html_e( 'Based on Total Balances', 'mycred' ); ?></label>
 				</div>
-				<p><span class="description"><?php _e( 'Users can only be promoted and gain higher ranks even if their balance decreases.', 'mycred' ); ?></span></p>
+				<p><span class="description"><?php esc_html_e( 'Users can only be promoted and gain higher ranks even if their balance decreases.', 'mycred' ); ?></span></p>
 			</div>
 		</div>
 	</div>
 
-	<div class="row" id="mycred-rank-based-on-wrapper" style="<?php echo $box; ?>">
+	<div class="row" id="mycred-rank-based-on-wrapper" style="<?php echo esc_attr( $box ); ?>">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<h3><?php _e( 'Tools', 'mycred' ); ?></h3>
-			<p><span class="description"><?php _e( 'Use this button to calculate or recalculate each individual users total balance if you think your users total balances are incorrect, or if you switch from Ranks being based on users current balance to total balance.', 'mycred' ); ?></span></p>
-			<p><input type="button" name="mycred-update-totals" data-type="<?php echo $mycred->mycred_type; ?>" id="mycred-update-totals" value="<?php _e( 'Calculate Totals', 'mycred' ); ?>" class="button button-large button-<?php if ( $prefs['base'] == 'current' ) echo 'secondary'; else echo 'primary'; ?>"<?php if ( $prefs['base'] == 'current' ) echo ' disabled="disabled"'; ?> /></p>
+			<h3><?php esc_html_e( 'Tools', 'mycred' ); ?></h3>
+			<p><span class="description"><?php esc_html_e( 'Use this button to calculate or recalculate each individual users total balance if you think your users total balances are incorrect, or if you switch from Ranks being based on users current balance to total balance.', 'mycred' ); ?></span></p>
+			<p><input type="button" name="mycred-update-totals" data-type="<?php echo esc_attr( $mycred->mycred_type ); ?>" id="mycred-update-totals" value="<?php esc_attr_e( 'Calculate Totals', 'mycred' ); ?>" class="button button-large button-<?php if ( $prefs['base'] == 'current' ) echo 'secondary'; else echo 'primary'; ?>"<?php if ( $prefs['base'] == 'current' ) echo ' disabled="disabled"'; ?> /></p>
 		</div>
 	</div>
 
-	<h3><?php _e( 'Third-party Integrations', 'mycred' ); ?></h3>
+	<h3><?php esc_html_e( 'Third-party Integrations', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'bb_location' ); ?>">BuddyPress</label>
+				<label for="<?php echo esc_attr( $this->field_id( 'bb_location' ) ); ?>">BuddyPress</label>
 				<?php if ( $buddypress ) : ?>
-				<select name="<?php echo $this->field_name( 'bb_location' ); ?>" id="<?php echo $this->field_id( 'bb_location' ); ?>" class="form-control">
+				<select name="<?php echo esc_attr( $this->field_name( 'bb_location' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bb_location' ) ); ?>" class="form-control">
 <?php
 
 			if ( ! array_key_exists( 'bb_location', $prefs ) )
@@ -1682,10 +1702,13 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				'both'        => __( 'Include under the "Profile" tab and Profile Header.', 'mycred' )
 			);
 
-			foreach ( $rank_locations as $value => $label ) {
-				echo '<option value="' . $value . '"';
-				if ( $prefs['bb_location'] == $value ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+			foreach ( $rank_locations as $value => $label ) { ?>
+				<option value="<?php echo esc_attr( $value ); ?>"
+				<?php
+				if ( $prefs['bb_location'] == $value ) echo ' selected="selected"';?>
+				> <?php echo esc_html( $label ); ?>
+				</option>
+				<?php
 			}
 
 ?>
@@ -1693,21 +1716,21 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				</select>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'bb_template' ); ?>"><?php _e( 'Template', 'mycred' ); ?></label>
-				<textarea name="<?php echo $this->field_name( 'bb_template' ); ?>" id="<?php echo $this->field_id( 'bb_template' ); ?>" rows="5" cols="50" class="form-control"><?php echo esc_attr( $prefs['bb_template'] ); ?></textarea>
-				<p><span class="description"><?php _e( 'Template to use when showing a users Rank in BuddyPress. Use %rank_title% for the title and %rank_logo% to show the rank logo. HTML is allowed.', 'mycred' ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( 'bb_template' ) ); ?>"><?php esc_html_e( 'Template', 'mycred' ); ?></label>
+				<textarea name="<?php echo esc_attr( $this->field_name( 'bb_template' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bb_template' ) ); ?>" rows="5" cols="50" class="form-control"><?php echo esc_attr( $prefs['bb_template'] ); ?></textarea>
+				<p><span class="description"><?php esc_html_e( 'Template to use when showing a users Rank in BuddyPress. Use %rank_title% for the title and %rank_logo% to show the rank logo. HTML is allowed.', 'mycred' ); ?></span></p>
 				<?php else : ?>
-				<input type="hidden" name="<?php echo $this->field_name( 'bb_location' ); ?>" value="" />
-				<input type="hidden" name="<?php echo $this->field_name( 'bb_template' ); ?>" value="" />
-				<p><span class="description"><?php _e( 'Not installed', 'mycred' ); ?></span></p>
+				<input type="hidden" name="<?php echo esc_attr( $this->field_name( 'bb_location' ) ); ?>" value="" />
+				<input type="hidden" name="<?php echo esc_attr( $this->field_name( 'bb_template' ) ); ?>" value="" />
+				<p><span class="description"><?php esc_html_e( 'Not installed', 'mycred' ); ?></span></p>
 				<?php endif; ?>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'bp_location' ); ?>">bbPress</label>
+				<label for="<?php echo esc_attr( $this->field_id( 'bp_location' ) ); ?>">bbPress</label>
 				<?php if ( $bbpress ) : ?>
-				<select name="<?php echo $this->field_name( 'bp_location' ); ?>" id="<?php echo $this->field_id( 'bp_location' ); ?>" class="form-control">
+				<select name="<?php echo esc_attr( $this->field_name( 'bp_location' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bp_location' ) ); ?>" class="form-control">
 <?php
 
 			if ( ! array_key_exists( 'bp_location', $prefs ) )
@@ -1723,10 +1746,12 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				'both'    => __( 'Include in Topic Replies and Profile', 'mycred' )
 			);
 
-			foreach ( $rank_locations as $value => $label ) {
-				echo '<option value="' . $value . '"';
-				if ( $prefs['bp_location'] == $value ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+			foreach ( $rank_locations as $value => $label ) { ?>
+				<option value="<?php echo esc_attr( $value ); ?>"; <?php
+				if ( $prefs['bp_location'] == $value ) echo ' selected="selected"'; ?>
+				><?php echo esc_html( $label ); ?>
+				</option>
+				<?php
 			}
 
 ?>
@@ -1734,19 +1759,19 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 				</select>
 			</div>
 			<div class="form-group">
-				<label for="<?php echo $this->field_id( 'bp_template' ); ?>"><?php _e( 'Template', 'mycred' ); ?></label>
-				<textarea name="<?php echo $this->field_name( 'bp_template' ); ?>" id="<?php echo $this->field_id( 'bp_template' ); ?>" rows="5" cols="50" class="form-control"><?php echo esc_attr( $prefs['bp_template'] ); ?></textarea>
-				<p><span class="description"><?php _e( 'Template to use when showing a users Rank in BuddyPress. Use %rank_title% for the title and %rank_logo% to show the rank logo. HTML is allowed.', 'mycred' ); ?></span></p>
+				<label for="<?php echo esc_attr( $this->field_id( 'bp_template' ) ); ?>"><?php esc_html_e( 'Template', 'mycred' ); ?></label>
+				<textarea name="<?php echo esc_attr( $this->field_name( 'bp_template' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bp_template' ) ); ?>" rows="5" cols="50" class="form-control"><?php echo esc_attr( $prefs['bp_template'] ); ?></textarea>
+				<p><span class="description"><?php esc_html_e( 'Template to use when showing a users Rank in BuddyPress. Use %rank_title% for the title and %rank_logo% to show the rank logo. HTML is allowed.', 'mycred' ); ?></span></p>
 				<?php else : ?>
-				<input type="hidden" name="<?php echo $this->field_name( 'bp_location' ); ?>" value="" />
-				<input type="hidden" name="<?php echo $this->field_name( 'bp_template' ); ?>" value="" />
-				<p><span class="description"><?php _e( 'Not installed', 'mycred' ); ?></span></p>
+				<input type="hidden" name="<?php echo esc_attr( $this->field_name( 'bp_location' ) ); ?>" value="" />
+				<input type="hidden" name="<?php echo esc_attr( $this->field_name( 'bp_template' ) ); ?>" value="" />
+				<p><span class="description"><?php esc_html_e( 'Not installed', 'mycred' ); ?></span></p>
 				<?php endif; ?>
 			</div>
 		</div>
 	</div>
 
-	<h3 style="margin-bottom: 0;"><?php _e( 'Available Shortcodes', 'mycred' ); ?></h3>
+	<h3 style="margin-bottom: 0;"><?php esc_html_e( 'Available Shortcodes', 'mycred' ); ?></h3>
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<p><a href="http://codex.mycred.me/shortcodes/mycred_my_rank/" target="_blank">[mycred_my_rank]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_my_ranks/" target="_blank">[mycred_my_ranks]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_list_ranks/" target="_blank">[mycred_list_ranks]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_users_of_all_ranks/" target="_blank">[mycred_users_of_all_ranks]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_users_of_rank/" target="_blank">[mycred_users_of_rank]</a></p>
@@ -1762,11 +1787,11 @@ jQuery(function($){
 			type       : "POST",
 			data       : {
 				action    : 'mycred-calc-totals',
-				token     : '<?php echo wp_create_nonce( 'mycred-calc-totals' ); ?>',
+				token     : '<?php echo esc_html( wp_create_nonce( 'mycred-calc-totals' ) ); ?>',
 				ctype     : pointtype
 			},
 			dataType   : "JSON",
-			url        : '<?php echo admin_url( 'admin-ajax.php' ); ?>',
+			url        : '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
 			beforeSend : function() {
 				button.attr( 'disabled', 'disabled' ).removeClass( 'button-primary' ).addClass( 'button-seconday' ).val( '<?php echo esc_js( esc_attr__( 'Processing...', 'mycred' ) ); ?>' );
 			},
@@ -1777,7 +1802,7 @@ jQuery(function($){
 
 	};
 
-	$( 'input[name="<?php echo $this->field_name( 'base' ); ?>"]' ).change(function(){
+	$( 'input[name="<?php echo esc_attr( $this->field_name( 'base' ) ); ?>"]' ).change(function(){
 
 		var button    = $( '#mycred-update-totals' );
 		var hiddenrow = $( '#mycred-rank-based-on-wrapper' );
@@ -1853,19 +1878,19 @@ jQuery(function($){
 				$rank_meta_key .= $mycred->mycred_type;
 
 ?>
-<label class="subheader"><?php _e( 'Ranks', 'mycred' ); ?></label>
+<label class="subheader"><?php esc_html_e( 'Ranks', 'mycred' ); ?></label>
 <ol id="myCRED-rank-actions" class="inline">
 	<li>
-		<label><?php _e( 'User Meta Key', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" id="mycred-rank-post-type" disabled="disabled" value="<?php echo $rank_meta_key; ?>" class="readonly" /></div>
+		<label><?php esc_html_e( 'User Meta Key', 'mycred' ); ?></label>
+		<div class="h2"><input type="text" id="mycred-rank-post-type" disabled="disabled" value="<?php echo esc_attr( $rank_meta_key ); ?>" class="readonly" /></div>
 	</li>
 	<li>
-		<label><?php _e( 'No. of ranks', 'mycred' ); ?></label>
-		<div class="h2"><input type="text" id="mycred-ranks-no-of-ranks" disabled="disabled" value="<?php echo $count; ?>" class="readonly short" /></div>
+		<label><?php esc_html_e( 'No. of ranks', 'mycred' ); ?></label>
+		<div class="h2"><input type="text" id="mycred-ranks-no-of-ranks" disabled="disabled" value="<?php echo esc_attr( $count ); ?>" class="readonly short" /></div>
 	</li>
 	<li>
-		<label><?php _e( 'Actions', 'mycred' ); ?></label>
-		<div class="h2"><input type="button" id="mycred-manage-action-reset-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Remove All Ranks', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>" /><?php if ( ! $this->is_manual_mode( $mycred->mycred_type ) ) : ?> <input type="button" id="mycred-manage-action-assign-ranks" data-type="<?php echo $mycred->mycred_type; ?>" value="<?php _e( 'Assign Ranks to Users', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; ?>" /></div><?php endif; ?>
+		<label><?php esc_html_e( 'Actions', 'mycred' ); ?></label>
+		<div class="h2"><input type="button" id="mycred-manage-action-reset-ranks" data-type="<?php echo esc_attr( $mycred->mycred_type ); ?>" value="<?php esc_attr_e( 'Remove All Ranks', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>" /><?php if ( ! $this->is_manual_mode( esc_html( $mycred->mycred_type ) ) ) : ?> <input type="button" id="mycred-manage-action-assign-ranks" data-type="<?php echo esc_attr( $mycred->mycred_type ); ?>" value="<?php esc_attr_e( 'Assign Ranks to Users', 'mycred' ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; ?>" /></div><?php endif; ?>
 	</li>
 </ol>
 <?php
@@ -1989,12 +2014,13 @@ jQuery(function($){
 		 * @since 2.2
 		 * @version 1.0
 		 */
-		public function active_current_view( $view )
-		{
-			$post_status = isset( $_GET['post_status'] ) ? $_GET['post_status'] : '';
+		public function active_current_view( $view ) {
+
+			$post_status = isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : '';
 
 			if( $post_status == $view ) 
 				return 'class="current" aria-current="page"';
+
 		}
 		
 		/**
@@ -2002,13 +2028,13 @@ jQuery(function($){
 		 * @since 2.2
 		 * @version 1.0
 		 */
-		public function modify_ranks_views_links( $view )
-		{
-			$post_status = isset( $_GET['post_status'] ) ? $_GET['post_status'] : '';
+		public function modify_ranks_views_links( $view ) {
+
+			$post_status = isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : '';
 			
 			$current = 'class="current" aria-current="page"';
 
-			$current_point_type = isset( $_GET['ctype'] ) ? $_GET['ctype'] : MYCRED_DEFAULT_TYPE_KEY;
+			$current_point_type = isset( $_GET['ctype'] ) ? sanitize_key( $_GET['ctype'] ) : MYCRED_DEFAULT_TYPE_KEY;
 
 			$view['all'] = '<a href="edit.php?post_type=mycred_rank&ctype='.$current_point_type.'" '.$this->active_current_view( '' ).'>All</a>';
 
@@ -2021,12 +2047,14 @@ jQuery(function($){
 				$view['draft'] = '<a href="edit.php?post_status=draft&amp;post_type=mycred_rank&ctype='.$current_point_type.'" '.$this->active_current_view( 'draft' ).'>Drafts</a>';
 
 			return $view;
+		
 		}
 
-		public function delete_user_rank_data( $user_id ) 
-		{	
+		public function delete_user_rank_data( $user_id ) {	
+
 			$current_assign_rank = mycred_get_users_rank($user_id);
 			mycred_update_post_meta( $current_assign_rank->post_id, 'mycred_rank_users', mycred_count_users_with_rank( $current_assign_rank->post_id ) - 1 );		
+		
 		}
 
 	}

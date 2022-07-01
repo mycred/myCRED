@@ -226,11 +226,11 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			if ( ! $this->core->user_is_point_admin() )
 				wp_send_json_error( 'Access denied' );
 
-			$row_id = absint( $_POST['row'] );
+			$row_id = isset( $_POST['row'] ) ? absint( $_POST['row'] ) : 0;
 			if ( $row_id === 0 )
 				wp_send_json_error( 'Unknown Row ID' );
 
-			$point_type = sanitize_key( $_POST['ctype'] );
+			$point_type = isset( $_POST['ctype'] ) ? sanitize_key( $_POST['ctype'] ) : '';
 			if ( ! mycred_point_type_exists( $point_type ) )
 				wp_send_json_error( 'Unknown Point Type' );
 
@@ -272,21 +272,24 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				wp_send_json_error( array( 'message' => 'Access denied' ) );
 
 			// Make sure we handle our own point type only
-			$point_type       = sanitize_key( $_POST['ctype'] );
+			$point_type       = isset( $_POST['ctype'] ) ? sanitize_key( $_POST['ctype'] ) : '';
 			if ( ! mycred_point_type_exists( $point_type ) )
 				wp_send_json_error( array( 'message' => 'Unknown point type' ) );
 
 			if ( $point_type !== $this->mycred_type ) return;
 
 			// We need a row id
-			$entry_id         = absint( $_POST['rowid'] );
+			$entry_id         = isset( $_POST['rowid'] ) ? absint( $_POST['rowid'] ) : 0;
 			if ( $entry_id === 0 )
 				wp_send_json_error( array( 'message' => 'Invalid Log Entry' ) );
 
-			$screen           = sanitize_key( $_POST['screen'] );
+			$screen           = isset( $_POST['screen'] ) ? sanitize_key( $_POST['screen'] ) : '';
 
 			// Parse form submission
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			parse_str( $_POST['form'], $post );
+
+			$post = mycred_sanitize_array( $post );
 
 			// Apply defaults
 			$request          = shortcode_atts( apply_filters( 'mycred_update_log_entry_request', array(
@@ -396,7 +399,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			if ( substr( $screen->id, 0, ( 14 + strlen( MYCRED_SLUG ) ) ) != 'toplevel_page_' . MYCRED_SLUG ) return;
 
 			if ( isset( $_GET['deleted'] ) && isset( $_GET['ctype'] ) && $_GET['ctype'] == $this->mycred_type )
-				echo '<div id="message" class="updated notice is-dismissible"><p>' . sprintf( _n( '1 Entry Deleted', '%d Entries Deleted', absint( $_GET['deleted'] ), 'mycred' ), absint( $_GET['deleted'] ) ) . '</p><button type="button" class="notice-dismiss"></button></div>';
+				echo '<div id="message" class="updated notice is-dismissible"><p>' . esc_html( sprintf( _n( '1 Entry Deleted', '%d Entries Deleted', absint( $_GET['deleted'] ), 'mycred' ), absint( $_GET['deleted'] ) ) ) . '</p><button type="button" class="notice-dismiss"></button></div>';
 
 		}
 
@@ -427,8 +430,8 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				return;
 
 			}
-
-			$settings_key = 'mycred_epp_' . $_GET['page'];
+			$get_page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+			$settings_key = 'mycred_epp_' . $get_page;
 
 			// Update Entries per page option
 			if ( isset( $_REQUEST['wp_screen_options']['option'] ) && isset( $_REQUEST['wp_screen_options']['value'] ) ) {
@@ -461,7 +464,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 				// First get a clean list of ids to delete
 				$entry_ids = array();
-				foreach ( (array) $_GET['entry'] as $id ) {
+				foreach ( array_map( 'absint', wp_unslash( $_GET['entry'] ) ) as $id ) {
 					$id = absint( $id );
 					if ( $id === 0 || in_array( $id, $entry_ids ) ) continue;
 					$entry_ids[] = $id;
@@ -513,12 +516,12 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 		public function screen_options() {
 
 			$this->screen_actions();
-
+			$get_page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
 			// Prep Per Page
 			$args = array(
 				'label'   => __( 'Entries', 'mycred' ),
 				'default' => 10,
-				'option'  => 'mycred_epp_' . $_GET['page']
+				'option'  => 'mycred_epp_' . $get_page
 			);
 			add_screen_option( 'per_page', $args );
 
@@ -585,10 +588,11 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			// Search Results
 			if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) )
-				$search_for = ' <span class="subtitle">' . __( 'Search results for', 'mycred' ) . ' "' . sanitize_text_field( $_GET['s'] ) . '"</span>';
+				$search_for = ' <span class="subtitle">' . __( 'Search results for', 'mycred' ) . ' "' . sanitize_text_field( wp_unslash( $_GET['s'] ) ) . '"</span>';
 
 			elseif ( isset( $_GET['time'] ) && $_GET['time'] != '' ) {
-				$time       = urldecode( $_GET['time'] );
+
+				$time       = urldecode( sanitize_text_field( wp_unslash( $_GET['time'] ) ) );
 				$check      = explode( ',', $time );
 				$search_for = ' <span class="subtitle">' . sprintf( _x( 'Log entries from %s', 'e.g. Log entries from April 12th 2016', 'mycred' ), date( 'F jS Y', $check[0] ) ) . '</span>';
 			}
@@ -596,7 +600,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			else
 				$search_for = '';
 
-			echo $title . ' ' . $search_for;
+			echo wp_kses_post( $title ) . ' ' . wp_kses_post( $search_for );
 
 		}
 
@@ -610,7 +614,9 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			// Security
 			if ( ! $this->core->user_is_point_editor() ) wp_die( 'Access Denied' );
 
-			$per_page             = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $_GET['page'], '', true );
+			$get_page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+
+			$per_page             = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $get_page, '', true );
 			if ( $per_page == '' ) $per_page = 10;
 
 			$name                 = mycred_label( true );
@@ -635,7 +641,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 ?>
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php _e( 'Log', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/the-log/" class="page-title-action" target="_blank"><?php _e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<h1><?php esc_html_e( 'Log', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/the-log/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
 <?php
 
 			// This requirement is only checked on activation. If the library is disabled
@@ -645,7 +651,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			// Exchange Shortcode
 			$extensions = get_loaded_extensions();
 			if ( ! in_array( 'mcrypt', $extensions ) && ! defined( 'MYCRED_DISABLE_PROTECTION' ) )
-				echo '<div id="message" class="error below-h2"><p>' . __( 'Warning. The required Mcrypt PHP Library is not installed on this server! Certain hooks and shortcodes will not work correctly!', 'mycred' ) . '</p></div>';
+				echo '<div id="message" class="error below-h2"><p>' . esc_html__( 'Warning. The required Mcrypt PHP Library is not installed on this server! Certain hooks and shortcodes will not work correctly!', 'mycred' ) . '</p></div>';
 
 			// Filter by dates
 			$log->filter_dates( admin_url( 'admin.php?page=' . $this->screen_id ) );
@@ -655,7 +661,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 	<?php do_action( 'mycred_top_log_page', $this ); ?>
 
 	<form method="get" action="">
-		<input type="hidden" name="page" value="<?php echo $this->screen_id; ?>" />
+		<input type="hidden" name="page" value="<?php echo esc_attr( $this->screen_id ); ?>" />
 <?php
 
 			if ( array_key_exists( 'user', $search_args ) )
@@ -665,10 +671,10 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				echo '<input type="hidden" name="s" value="' . esc_attr( $search_args['s'] ) . '" />';
 
 			if ( isset( $_GET['ref'] ) )
-				echo '<input type="hidden" name="show" value="' . esc_attr( $_GET['ref'] ) . '" />';
+				echo '<input type="hidden" name="show" value="' . esc_attr( sanitize_key( $_GET['ref'] ) ) . '" />';
 
 			if ( isset( $_GET['show'] ) )
-				echo '<input type="hidden" name="show" value="' . esc_attr( $_GET['show'] ) . '" />';
+				echo '<input type="hidden" name="show" value="' . esc_attr( sanitize_key( $_GET['show'] ) ) . '" />';
 
 			if ( array_key_exists( 'order', $search_args ) )
 				echo '<input type="hidden" name="order" value="' . esc_attr( $search_args['order'] ) . '" />';
@@ -719,8 +725,10 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			// Security
 			if ( ! is_user_logged_in() ) wp_die( 'Access Denied' );
-
-			$per_page                  = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $_GET['page'], '', true );
+			
+			$get_page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+			
+			$per_page                  = mycred_get_user_meta( $this->current_user_id, 'mycred_epp_' . $get_page, '', true );
 			if ( $per_page == '' ) $per_page = 10;
 
 			$search_args               = mycred_get_search_args();
@@ -746,12 +754,12 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 <div class="wrap" id="myCRED-wrap">
 	<h1><?php $this->page_title( sprintf( __( 'My %s History', 'mycred' ),  $this->core->plural() ) ); ?></h1>
 
-	<?php $log->filter_dates( admin_url( 'users.php?page=' . $_GET['page'] ) ); ?>
+	<?php $log->filter_dates( admin_url( 'users.php?page=' . $get_page ) ); ?>
 
 	<?php do_action( 'mycred_top_my_log_page', $this ); ?>
 
 	<form method="get" action="" name="mycred-mylog-form" novalidate>
-		<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>" />
+		<input type="hidden" name="page" value="<?php echo esc_attr( $get_page ); ?>" />
 <?php
 
 			if ( array_key_exists( 's', $search_args ) )
@@ -761,7 +769,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				echo '<input type="hidden" name="ref" value="' . esc_attr( $search_args['ref'] ) . '" />';
 
 			if ( isset( $_GET['show'] ) )
-				echo '<input type="hidden" name="show" value="' . esc_attr( $_GET['show'] ) . '" />';
+				echo '<input type="hidden" name="show" value="' . esc_attr( sanitize_key( $_GET['show'] ) ) . '" />';
 
 			elseif ( array_key_exists( 'time', $search_args ) )
 				echo '<input type="hidden" name="time" value="' . esc_attr( $search_args['time'] ) . '" />';
@@ -973,36 +981,36 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 ?>
 <div id="edit-mycred-log-entry" style="display: none;">
 	<div class="mycred-container">
-		<?php if ( $name == 'myCRED' ) : ?><img id="mycred-token-sitting" class="hidden-sm hidden-xs" src="<?php echo plugins_url( 'assets/images/token-sitting.png', myCRED_THIS ); ?>" alt="Token looking on" /><?php endif; ?>
+		<?php if ( $name == 'myCRED' ) : ?><img id="mycred-token-sitting" class="hidden-sm hidden-xs" src="<?php echo esc_url( plugins_url( 'assets/images/token-sitting.png', myCRED_THIS ) ); ?>" alt="Token looking on" /><?php endif; ?>
 		<form class="form" method="post" action="" id="mycred-editor-form">
 			<input type="hidden" name="mycred_manage_log[id]" value="" id="mycred-edit-log-id" />
 
 			<div class="row">
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<label><?php _e( 'User', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'User', 'mycred' ); ?></label>
 					<div id="mycred-user-to-show"></div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<label><?php _e( 'Date', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Date', 'mycred' ); ?></label>
 					<div id="mycred-date-to-show"></div>
 				</div>
 				<div class="col-lg-2 col-md-2 col-sm-4 col-xs-12">
-					<label><?php echo $this->core->plural(); ?></label>
+					<label><?php echo esc_html( $this->core->plural() ); ?></label>
 					<input type="text" name="mycred_manage_log[creds]" id="mycred-creds-to-show" class="form-control" placeholder="" value="" />
 				</div>
 				<div class="col-lg-4 col-md-4 col-sm-8 col-xs-12">
-					<label><?php _e( 'Reference', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Reference', 'mycred' ); ?></label>
 					<select name="mycred_manage_log[ref]" id="mycred-referece-to-show"></select>
 				</div>
 			</div>
 
 			<div class="row">
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" id="mycred-old-entry-to-show-wrapper">
-					<label><?php _e( 'Original Entry', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Original Entry', 'mycred' ); ?></label>
 					<div id="mycred-old-entry-to-show"></div>
 				</div>
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" id="mycred-new-entry-to-show-wrapper">
-					<label><?php _e( 'Log Entry', 'mycred' ); ?></label>
+					<label><?php esc_html_e( 'Log Entry', 'mycred' ); ?></label>
 					<input type="text" name="mycred_manage_log[entry]" id="mycred-new-entry-to-show" class="form-control" placeholder="" value="" />
 					<span class="description" id="available-template-tags" style="display:none;"></span>
 				</div>
@@ -1010,12 +1018,12 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			<div class="row last">
 				<div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 text-center">
-					<a href="javascript:void(0);" class="button button-primary button-large mycred-delete-row" id="mycred-delete-entry-in-editor" data-id=""><?php _e( 'Delete Entry', 'mycred' ); ?></a>
+					<a href="javascript:void(0);" class="button button-primary button-large mycred-delete-row" id="mycred-delete-entry-in-editor" data-id=""><?php esc_html_e( 'Delete Entry', 'mycred' ); ?></a>
 				</div>
 				<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12"><span id="mycred-editor-indicator" class="spinner"></span></div>
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" id="mycred-editor-results"></div>
 				<div class="col-lg-3 col-md-2 col-sm-11 col-xs-12 text-right">
-					<input type="submit" id="mycred-editor-submit" class="button button-secondary button-large" value="<?php _e( 'Update Entry', 'mycred' ); ?>" />
+					<input type="submit" id="mycred-editor-submit" class="button button-secondary button-large" value="<?php esc_attr_e( 'Update Entry', 'mycred' ); ?>" />
 				</div>
 			</div>
 		</form>

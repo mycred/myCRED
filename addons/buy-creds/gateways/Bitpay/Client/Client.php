@@ -98,7 +98,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param  TokenInterface $token
+     * @param TokenInterface $token
      * @return ClientInterface
      */
     public function setToken(TokenInterface $token)
@@ -197,22 +197,20 @@ class Client implements ClientInterface
             throw new \Exception('Error with request: no data returned');
         }
         $currencies = $body['data'];
-        array_walk(
-            $currencies, function (&$value, $key) {
-                $currency = new \Bitpay\Currency();
-                $currency
-                    ->setCode($value['code'])
-                    ->setSymbol($value['symbol'])
-                    ->setPrecision($value['precision'])
-                    ->setExchangePctFee($value['exchangePctFee'])
-                    ->setPayoutEnabled($value['payoutEnabled'])
-                    ->setName($value['name'])
-                    ->setPluralName($value['plural'])
-                    ->setAlts($value['alts'])
-                    ->setPayoutFields($value['payoutFields']);
-                $value = $currency;
-            }
-        );
+        array_walk($currencies, function (&$value, $key) {
+            $currency = new \Bitpay\Currency();
+            $currency
+                ->setCode($value['code'])
+                ->setSymbol($value['symbol'])
+                ->setPrecision($value['precision'])
+                ->setExchangePctFee($value['exchangePctFee'])
+                ->setPayoutEnabled($value['payoutEnabled'])
+                ->setName($value['name'])
+                ->setPluralName($value['plural'])
+                ->setAlts($value['alts'])
+                ->setPayoutFields($value['payoutFields']);
+            $value = $currency;
+        });
 
         return $currencies;
     }
@@ -316,54 +314,48 @@ class Client implements ClientInterface
 
         $payouts = array();
 
-        array_walk(
-            $body['data'], function ($value, $key) use (&$payouts) {
-                $payout = new \Bitpay\Payout();
-                $payout
+        array_walk($body['data'], function ($value, $key) use (&$payouts) {
+            $payout = new \Bitpay\Payout();
+            $payout
+                ->setId($value['id'])
+                ->setAccountId($value['account'])
+                ->setCurrency(new \Bitpay\Currency($value['currency']))
+                ->setEffectiveDate($value['effectiveDate'])
+                ->setRequestdate($value['requestDate'])
+                ->setPricingMethod($value['pricingMethod'])
+                ->setStatus($value['status'])
+                ->setAmount($value['amount'])
+                ->setResponseToken($value['token'])
+                ->setRate(@$value['rate'])
+                ->setBtcAmount(@$value['btc'])
+                ->setReference(@$value['reference'])
+                ->setNotificationURL(@$value['notificationURL'])
+                ->setNotificationEmail(@$value['notificationEmail']);
+
+            array_walk($value['instructions'], function ($value, $key) use (&$payout) {
+                $instruction = new \Bitpay\PayoutInstruction();
+                $instruction
                     ->setId($value['id'])
-                    ->setAccountId($value['account'])
-                    ->setCurrency(new \Bitpay\Currency($value['currency']))
-                    ->setEffectiveDate($value['effectiveDate'])
-                    ->setRequestdate($value['requestDate'])
-                    ->setPricingMethod($value['pricingMethod'])
-                    ->setStatus($value['status'])
+                    ->setLabel($value['label'])
+                    ->setAddress($value['address'])
                     ->setAmount($value['amount'])
-                    ->setResponseToken($value['token'])
-                    ->setRate(@$value['rate'])
-                    ->setBtcAmount(@$value['btc'])
-                    ->setReference(@$value['reference'])
-                    ->setNotificationURL(@$value['notificationURL'])
-                    ->setNotificationEmail(@$value['notificationEmail']);
+                    ->setStatus($value['status']);
 
-                array_walk(
-                    $value['instructions'], function ($value, $key) use (&$payout) {
-                        $instruction = new \Bitpay\PayoutInstruction();
-                        $instruction
-                            ->setId($value['id'])
-                            ->setLabel($value['label'])
-                            ->setAddress($value['address'])
-                            ->setAmount($value['amount'])
-                            ->setStatus($value['status']);
+                array_walk($value['transactions'], function ($value, $key) use (&$instruction) {
+                    $transaction = new \Bitpay\PayoutTransaction();
+                    $transaction
+                        ->setTransactionId($value['txid'])
+                        ->setAmount($value['amount'])
+                        ->setDate($value['date']);
 
-                        array_walk(
-                            $value['transactions'], function ($value, $key) use (&$instruction) {
-                                $transaction = new \Bitpay\PayoutTransaction();
-                                $transaction
-                                    ->setTransactionId($value['txid'])
-                                    ->setAmount($value['amount'])
-                                    ->setDate($value['date']);
+                    $instruction->addTransaction($transaction);
+                });
 
-                                $instruction->addTransaction($transaction);
-                            }
-                        );
+                $payout->addInstruction($instruction);
+            });
 
-                        $payout->addInstruction($instruction);
-                    }
-                );
-
-                $payouts[] = $payout;
-            }
-        );
+            $payouts[] = $payout;
+        });
 
         return $payouts;
     }
@@ -432,32 +424,28 @@ class Client implements ClientInterface
             ->setEffectiveDate($data['effectiveDate'])
             ->setResponseToken($data['token']);
 
-        array_walk(
-            $data['instructions'], function ($value, $key) use (&$payout) {
-                $instruction = new \Bitpay\PayoutInstruction();
-                $instruction
-                    ->setId($value['id'])
-                    ->setLabel($value['label'])
-                    ->setAddress($value['address'])
-                    ->setStatus($value['status'])
+        array_walk($data['instructions'], function ($value, $key) use (&$payout) {
+            $instruction = new \Bitpay\PayoutInstruction();
+            $instruction
+                ->setId($value['id'])
+                ->setLabel($value['label'])
+                ->setAddress($value['address'])
+                ->setStatus($value['status'])
+                ->setAmount($value['amount'])
+                ->setBtc($value['btc']);
+
+            array_walk($value['transactions'], function ($value, $key) use (&$instruction) {
+                $transaction = new \Bitpay\PayoutTransaction();
+                $transaction
+                    ->setTransactionId($value['txid'])
                     ->setAmount($value['amount'])
-                    ->setBtc($value['btc']);
+                    ->setDate($value['date']);
 
-                array_walk(
-                    $value['transactions'], function ($value, $key) use (&$instruction) {
-                        $transaction = new \Bitpay\PayoutTransaction();
-                        $transaction
-                            ->setTransactionId($value['txid'])
-                            ->setAmount($value['amount'])
-                            ->setDate($value['date']);
+                $instruction->addTransaction($transaction);
+            });
 
-                        $instruction->addTransaction($transaction);
-                    }
-                );
-
-                $payout->addInstruction($instruction);
-            }
-        );
+            $payout->addInstruction($instruction);
+        });
 
         return $payout;
     }
@@ -482,18 +470,16 @@ class Client implements ClientInterface
 
         $tokens = array();
 
-        array_walk(
-            $body['data'], function ($value, $key) use (&$tokens) {
-                $key   = current(array_keys($value));
-                $value = current(array_values($value));
-                $token = new \Bitpay\Token();
-                $token
-                    ->setFacade($key)
-                    ->setToken($value);
+        array_walk($body['data'], function ($value, $key) use (&$tokens) {
+            $key   = current(array_keys($value));
+            $value = current(array_values($value));
+            $token = new \Bitpay\Token();
+            $token
+                ->setFacade($key)
+                ->setToken($value);
 
-                $tokens[$token->getFacade()] = $token;
-            }
-        );
+            $tokens[$token->getFacade()] = $token;
+        });
 
         return $tokens;
     }
@@ -613,7 +599,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param  RequestInterface $request
+     * @param RequestInterface $request
      * @return ResponseInterface
      */
     public function sendRequest(RequestInterface $request)

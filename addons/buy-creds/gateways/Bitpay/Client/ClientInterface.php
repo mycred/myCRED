@@ -42,7 +42,7 @@ interface ClientInterface
     public function getCurrencies();
 
     /**
-     * @param  InvoiceInterface $invoiceId
+     * @param InvoiceInterface $invoiceId
      * @return \Bitpay\Invoice
      * @throws \Exception
      */
@@ -50,7 +50,7 @@ interface ClientInterface
     //public function getInvoices();
 
     /**
-     * @param  $invoiceId
+     * @param $invoiceId
      * @return InvoiceInterface
      * @throws \Exception
      */
@@ -65,29 +65,28 @@ interface ClientInterface
 
     /**
      * Create a Payout Request on Bitpay
-     *
-     * @param  PayoutInterface $payout
+     * @param PayoutInterface $payout
      * @return PayoutInterface|mixed
      * @throws \Exception
      */
     public function createPayout(PayoutInterface $payout);
 
     /**
-     * @param  null $status
+     * @param null $status
      * @return array
      * @throws \Exception
      */
     public function getPayouts($status = null);
 
     /**
-     * @param  $payoutId
+     * @param $payoutId
      * @return \Bitpay\Payout
      * @throws \Exception
      */
     public function getPayout($payoutId);
 
     /**
-     * @param  PayoutInterface
+     * @param PayoutInterface
      * @return PayoutInterface|mixed
      * @throws \Exception
      */
@@ -100,7 +99,6 @@ interface ClientInterface
 
     /**
      * Get an array of tokens indexed by facade
-     *
      * @return array
      * @throws \Exception
      */

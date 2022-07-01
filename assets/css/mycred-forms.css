@@ -95,3 +95,9 @@
     text-align: center;
     display: inline-block!important;
 }
+
+button.remove-badge-level {
+    position: absolute;
+    top: 0;
+    right: 12px;
+}

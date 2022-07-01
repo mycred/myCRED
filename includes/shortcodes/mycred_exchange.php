@@ -50,30 +50,30 @@ if ( ! function_exists( 'mycred_render_shortcode_exchange' ) ) :
 ?>
 <div class="mycred-exchange">
 
-	<?php echo $content; ?>
+	<?php echo wp_kses_post( $content ); ?>
 
 	<?php if ( isset( $mycred_exchange['message'] ) ) : ?>
-	<div class="alert alert-<?php if ( $mycred_exchange['success'] ) echo 'success'; else echo 'warning'; ?>"><?php echo $mycred_exchange['message']; ?></div>
+	<div class="alert alert-<?php if ( $mycred_exchange['success'] ) echo 'success'; else echo 'warning'; ?>"><?php echo esc_html( $mycred_exchange['message'] ); ?></div>
 	<?php endif; ?>
 
 	<form action="" method="post" class="form">
 		<div class="row">
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mycred-exchange-current-balance">
 				<div class="form-group">
-					<label><?php printf( __( 'Your current %s balance', 'mycred' ), $mycred_from->singular() ); ?></label>
-					<p class="form-control-static"><?php echo $mycred_from->format_creds( $balance ); ?></p>
+					<label><?php printf( esc_html__( 'Your current %s balance', 'mycred' ), esc_html( $mycred_from->singular() ) ); ?></label>
+					<p class="form-control-static"><?php echo esc_html( $mycred_from->format_creds( $balance ) ); ?></p>
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mycred-exchange-current-amount">
 				<div class="form-group">
-					<label for="mycred-exchange-amount"><?php _e( 'Amount', 'mycred' ); ?></label>
-					<input type="text" size="20" placeholder="<?php printf( __( 'Minimum %s', 'mycred' ), $mycred_from->format_creds( $min ) ); ?>" value="" class="form-control" id="mycred-exchange-amount" name="mycred_exchange[amount]" />
+					<label for="mycred-exchange-amount"><?php esc_html_e( 'Amount', 'mycred' ); ?></label>
+					<input type="text" size="20" placeholder="<?php printf( esc_attr__( 'Minimum %s', 'mycred' ), esc_attr( $mycred_from->format_creds( $min ) ) ); ?>" value="" class="form-control" id="mycred-exchange-amount" name="mycred_exchange[amount]" />
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mycred-exchange-current-rate">
 				<div class="form-group">
-					<label><?php _e( 'Exchange Rate', 'mycred' ); ?></label>
-					<p class="form-control-static"><?php printf( __( '1 %s = <span class="rate">%s</span> %s', 'mycred' ), $mycred_from->singular(), $rate, ( ( $rate == 1 ) ? $mycred_to->singular() : $mycred_to->plural() ) ); ?></p>
+					<label><?php esc_html_e( 'Exchange Rate', 'mycred' ); ?></label>
+					<p class="form-control-static"><?php printf( wp_kses_post( '1 %s = <span class="rate">%s</span> %s', 'mycred' ), esc_html( $mycred_from->singular() ), esc_html( $rate ), ( ( $rate == 1 ) ? esc_html( $mycred_to->singular() ) : esc_html( $mycred_to->plural() ) ) ); ?></p>
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12mycred-exchange-current-submit">
@@ -82,8 +82,8 @@ if ( ! function_exists( 'mycred_render_shortcode_exchange' ) ) :
 				</div>
 			</div>
 		</div>
-		<input type="hidden" name="mycred_exchange[token]" value="<?php echo $token; ?>" />
-		<input type="hidden" name="mycred_exchange[nonce]" value="<?php echo wp_create_nonce( 'mycred-exchange' ); ?>" />
+		<input type="hidden" name="mycred_exchange[token]" value="<?php echo esc_attr( $token ); ?>" />
+		<input type="hidden" name="mycred_exchange[nonce]" value="<?php echo esc_attr( wp_create_nonce( 'mycred-exchange' ) ); ?>" />
 	</form>
 
 </div>
@@ -107,10 +107,12 @@ add_shortcode( MYCRED_SLUG . '_exchange', 'mycred_render_shortcode_exchange' );
 if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 	function mycred_catch_exchange_requests() {
 
-		if ( ! isset( $_POST['mycred_exchange']['nonce'] ) || ! wp_verify_nonce( $_POST['mycred_exchange']['nonce'], 'mycred-exchange' ) ) return;
+		if ( ! isset( $_POST['mycred_exchange']['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mycred_exchange']['nonce'] ) ), 'mycred-exchange' ) ) return;
+
+		$post_token  = isset( $_POST['mycred_exchange']['token'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_exchange']['token'] ) ) : false;
 
 		// Decode token
-		$token       = mycred_verify_token( $_POST['mycred_exchange']['token'], 5 );
+		$token       = mycred_verify_token( $post_token, 5 );
 		if ( $token === false ) return;
 
 		global $mycred_exchange;
@@ -159,7 +161,7 @@ if ( ! function_exists( 'mycred_catch_exchange_requests' ) ) :
 		}
 
 		// Prep Amount
-		$amount      = abs( $_POST['mycred_exchange']['amount'] );
+		$amount      = isset( $_POST['mycred_exchange']['amount'] ) ? abs( sanitize_text_field( wp_unslash( $_POST['mycred_exchange']['amount'] ) ) ) : 0;
 		$amount      = $mycred_from->number( $amount );
 
 		// Make sure we are sending more then minimum
