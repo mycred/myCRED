@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 6.0
-Stable tag: 2.4.8.1
+Tested up to: 6.0.1
+Stable tag: 2.4.9
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -316,6 +316,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.9 =
+New features and Bug fixes.
+
 = 2.4.8.1 =
 Bug fixes.
 
@@ -413,6 +416,19 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.4.9 =
+- **NEW** - Introduced title, excerpt, and display attributes in mycred_my_badges shortcode.
+- **NEW** - Added support in myCred referral hook for "New User Approve".
+- **NEW** - Added email trigger in Email Notification for manually assigned rank.
+- **TWEAK** - Registered a points bulk assign reference.
+- **TWEAK** - Code improvement in mycred_my_badges shortcode.
+- **FIX** - Award / Revoke by User Role was not working.
+- **FIX** - PHP notices were resolved.
+- **FIX** - Filter hooks were not working properly after the last update.
+- **FIX** - Sorting by points not working at Users Page.
+- **FIX** - Fixed cashCred vulnerabilities.
+- **FIX** - Fixed CSS conflicts.
 
 = 2.4.8.1 =
 - **FIX** - Fixed erros in mycred_cashcred shortcode.

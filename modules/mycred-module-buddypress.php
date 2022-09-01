@@ -134,7 +134,8 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 
 			}
 
-			echo wp_kses_post( apply_filters( 'mycred_bp_profile_details', $output, $balance, $this ) );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo apply_filters( 'mycred_bp_profile_details', $output, $balance, $this );
 
 			do_action('mycred_buddypress_profile_details');
 
@@ -195,7 +196,8 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			
 			}
 
-			echo wp_kses_post( apply_filters( 'mycred_bp_profile_header', $output, $this->buddypress['balance_template'], $this ) );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo apply_filters( 'mycred_bp_profile_header', $output, $this->buddypress['balance_template'], $this );
 
 			do_action('mycred_buddypress_profile_header');
 
@@ -321,8 +323,9 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			$others = str_replace( '%label%', $this->point_types[ $this->selected_type ], $this->buddypress['history_menu_title']['others'] );
 			$title  = bp_word_or_name( $me, $others, false, false );
 			$title  = $this->core->template_tags_general( $title );
-
-			echo wp_kses_post( apply_filters( 'mycred_br_history_page_title', $title, $this ) );
+			
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo apply_filters( 'mycred_br_history_page_title', $title, $this );
 
 		}
 
@@ -395,82 +398,9 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 
 			$output = ob_get_contents();
 			ob_end_clean();
-		
-			$allowed_html = array(
-				'form' 	=> array(
-					'action' 	=> array(),
-					'id'	 	=> array(),
-					'method' 	=> array(),
-					'class'	 	=> array(),
-					'role'	 	=> array()
-				),
-				'label' => array(
-					'for'		 => array(),
-					'class'		 => array()
-				),
-				'input' => array(
-					'type'  	 => array(),
-					'class'		 => array(),
-					'value' 	 => array(),
-					'id'		 => array(),
-					'name'		 => array(),
-					'size'		 => array(),
-					'aria-describedby'		=> array()
-				),
-				'style' => array(
-					'type'  	 => array()
-				),
-				'select' => array(
-					'name'  	 => array(),
-					'id'		 => array(),
-					'style'		 => array()
-				),
-				'option' => array(
-					'value'    	 => array(),
-					'selected' 	 => array()
-				),
-				'div' 	=> array(
-					'class' 	 => array()
-				),
-				'h2' 	=> array(
-					'class'		 => array()
-				),
-				'span' 	=> array(
-					'class'		 => array(),
-					'aria-hidden' => array()
-				),
-				'a'		=> array(
-					'class'		=> array(),
-					'href'		=> array()
-				),
-				'br' 	=> array(
-					'class'		=> array()
-				),
-				'table'	=> array(
-					'class'		 => array(),
-					'cellspacing' => array()	
-				),
-				'thead'	=> array(),
-				'tbody'	=> array(
-					'id'		=> array()
-				),
-				'tr'	=> array(
-					'class'		=> array(),
-					'id'		=> array()
-				),
-				'th'	=> array(
-					'scope'		=> array(),
-					'id'		=> array(),
-					'class'		=> array()
-				),
-				'td'	=> array(
-					'class'	=> array(),
-					'data-colname'	=> array()
-				),
-				'tfoot'	=> array(),
-			);
 
-			echo wp_kses( apply_filters( 'mycred_bp_history_page', $output, $this ), $allowed_html );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo apply_filters( 'mycred_bp_history_page', $output, $this );
 
 		}
 
@@ -507,7 +437,15 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			}
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><label><?php echo esc_html( apply_filters( 'mycred_bp_change_text', 'BuddyPress' ) ); ?></label></h4>
+<h4><span class="dashicons dashicons-admin-plugins static"></span>
+	<label>
+		<?php 
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo apply_filters( 'mycred_bp_change_text', 'BuddyPress' ); 
+		?>
+		
+	</label>
+</h4>
 <div class="body" style="display:none;">
 
 	<?php do_action( 'mycred_bp_before_settings', $this ); ?>

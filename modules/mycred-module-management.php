@@ -168,6 +168,9 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 			// Balance change with a log entry
 			else {
 
+				// To check if the points are manually adjust by admin in user profile
+				$mycred->adjust_manually = true;
+
 				$success = $mycred->add_creds(
 					$reference,
 					$user_id,
@@ -402,7 +405,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 			if ( $screen === NULL || $screen->id != 'users' ) return;
 
 			if ( isset( $query->query_vars['orderby'] ) ) {
-;
+
 				global $wpdb;
 
 				$mycred_types = mycred_get_types();
@@ -417,20 +420,8 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 				if ( isset( $_REQUEST['ctype'] ) && array_key_exists( sanitize_key( wp_unslash( $_REQUEST['ctype'] ) ), $mycred_types ) )
 					$mycred = mycred( sanitize_key( wp_unslash( $_REQUEST['ctype'] ) ) );
 
-				// Sort by only showing users with a particular point type
-				if ( $cred_id == 'mycred_default' ) {
-
-					$amount = $mycred->zero();
-					if ( isset( $_REQUEST['amount'] ) )
-						$amount = $mycred->number( intval( $_REQUEST['amount'] ) );
-
-					$query->query_from  .= " LEFT JOIN {$wpdb->usermeta} mycred ON ({$wpdb->users}.ID = mycred.user_id AND mycred.meta_key = '{$mycred->cred_id}')";
-					$query->query_where .= " AND mycred.meta_value = {$amount}";
-
-				}
-
 				// Sort a particular point type
-				elseif ( array_key_exists( $cred_id, $mycred_types ) ) {
+				if ( array_key_exists( $cred_id, $mycred_types ) ) {
 
 					$query->query_from   .= " LEFT JOIN {$wpdb->usermeta} mycred ON ({$wpdb->users}.ID = mycred.user_id AND mycred.meta_key = '{$cred_id}')";
 					$query->query_orderby = "ORDER BY mycred.meta_value+0 {$order} ";
@@ -831,57 +822,8 @@ jQuery(function($){
 				$content = ob_get_contents();
 				ob_end_clean();
 
-				$allowed_html = array(
-					'div' => array(
-						'id' => array(),
-						'class' => array(),
-						'style' => array()
-					),
-					'img' => array(
-						'id' => array(),
-						'class' => array(),
-						'src' => array(),
-						'alt' => array()
-					),
-					'form' => array(
-						'id' => array(),
-						'class' => array(),
-						'action' => array(),
-						'method' => array()
-					),
-					'input' => array(
-						'id' => array(),
-						'class' => array(),
-						'type' => array(),
-						'value' => array(),
-						'size' => array(),
-						'placeholder' => array(),
-						'name' => array()
-					),
-					'select' => array(
-						'id' => array(),
-						'name' => array()
-					),
-					'option' => array(
-						'value' => array(),
-						'selected' => array()
-					),
-					'span' => array(
-						'id' => array(),
-						'class' => array()
-					),
-					'button' => array(
-						'id' => array(),
-						'class' => array(),
-						'type' => array()
-					),
-					'label' => array()
-				);
-
-				echo wp_kses(
-					apply_filters( 'mycred_admin_inline_editor', $content ),
-					$allowed_html
-				);
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo apply_filters( 'mycred_admin_inline_editor', $content );
 
 			}
 

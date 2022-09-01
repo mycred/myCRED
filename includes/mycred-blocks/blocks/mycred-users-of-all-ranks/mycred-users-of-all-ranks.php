@@ -26,7 +26,7 @@ if ( ! class_exists('mycred_users_of_all_ranks_block') ) :
                     'wp-blocks', 
                     'wp-element', 
                     'wp-components', 
-                    'wp-editor'
+                    'wp-block-editor'
                 )
             );
 

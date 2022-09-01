@@ -70,20 +70,21 @@ if ( ! function_exists( 'mycred_get_email_triggers' ) ) :
 	function mycred_get_email_triggers( $point_type = MYCRED_DEFAULT_TYPE_KEY, $force = false ) {
 
 		$generic_events = array(
-			'any'          => array(),
-			'positive'     => array(),
-			'negative'     => array(),
-			'zero'         => array(),
-			'minus'        => array(),
-			'badge_new'    => array(),
-			'badge_level'  => array(),
-			'rank_up'      => array(),
-			'rank_down'    => array(),
-			'transfer_out' => array(),
-			'transfer_in'  => array(),
-			'cashcred_approved'   => array(),
-			'cashcred_pending'    => array(),
-			'cashcred_cancel'	=>array()
+			'any'          		 => array(),
+			'positive'     		 => array(),
+			'negative'     		 => array(),
+			'zero'         		 => array(),
+			'minus'        		 => array(),
+			'badge_new'    		 => array(),
+			'badge_level'  		 => array(),
+			'manual_rank_assign' => array(),
+			'rank_up'            => array(),
+			'rank_down'    		 => array(),
+			'transfer_out' 		 => array(),
+			'transfer_in'  		 => array(),
+			'cashcred_approved'  => array(),
+			'cashcred_pending'   => array(),
+			'cashcred_cancel'	 => array()
 		);
 
 		$defaults = array(

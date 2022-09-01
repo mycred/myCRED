@@ -27,7 +27,7 @@ if ( ! class_exists('mycred_exchange_block') ) :
                     'wp-blocks', 
                     'wp-element', 
                     'wp-components', 
-                    'wp-editor', 
+                    'wp-block-editor', 
                     'wp-rich-text' 
                 )
             );

@@ -600,7 +600,8 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			else
 				$search_for = '';
 
-			echo wp_kses_post( $title ) . ' ' . wp_kses_post( $search_for );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $title . ' ' . $search_for;
 
 		}
 

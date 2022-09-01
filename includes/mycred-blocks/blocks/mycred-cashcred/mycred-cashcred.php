@@ -34,7 +34,7 @@ if ( ! class_exists('mycred_cashcred_block') ) :
                     'wp-blocks', 
                     'wp-element', 
                     'wp-components', 
-                    'wp-editor'
+                    'wp-block-editor'
                 )
             );
 

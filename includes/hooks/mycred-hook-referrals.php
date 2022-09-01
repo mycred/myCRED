@@ -76,6 +76,10 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 
 			// Hook into user activation
+			if ( class_exists('pw_new_user_approve') )
+				add_action( 'new_user_approve_user_approved', array( $this, 'verified_signup' ) );
+
+			// Hook into user activation
 			if ( function_exists( 'buddypress' ) )
 				add_action( 'mycred_bp_user_activated', array( $this, 'verified_signup' ) );
 
@@ -239,34 +243,8 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 			$output = do_shortcode( $output );
 
-			echo wp_kses(
-				apply_filters( 'mycred_affiliate_bp_profile', $output, $user_id, $users_ref_link, $this ),
-				array(
-					'div' => array(
-						'class' => array()
-					),
-					'p' => array(),
-					'h4' => array(),
-					'input' => array(
-						'type' => array(),
-						'readonly' => array(),
-						'id' => array(),
-						'value' => array()
-					),
-					'button' => array(
-						'onclick' => array()
-					),
-					'table' => array(
-						'class' => array()
-					),
-					'tr' => array(
-						'class' => array()
-					),
-					'td' => array(
-						'class' => array()
-					)
-				) 
-			);
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo apply_filters( 'mycred_affiliate_bp_profile', $output, $user_id, $users_ref_link, $this );
 
 		}
 
@@ -379,7 +357,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 				if ( $this->ref_counts( $user_id, $IP, 'signup' ) ) {
 
 					// Award when users account gets activated
-					if ( function_exists( 'buddypress' ) ) {
+					if ( function_exists( 'buddypress' ) || class_exists( 'pw_new_user_approve' ) ) {
 
 						mycred_add_user_meta( $new_user_id, 'referred_by_', $this->mycred_type, $user_id, true );
 						mycred_add_user_meta( $new_user_id, 'referred_by_IP_', $this->mycred_type, $IP, true );
@@ -423,6 +401,13 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		 * @version 1.0
 		 */
 		public function verified_signup( $user_id ) {
+
+			if( ! is_object($user_id) ) {
+				$user_id = $user_id;
+			}
+			else {
+				$user_id = $user_id->ID;
+			}
 
 			// Check if there is a referral
 			$referred_by    = mycred_get_user_meta( $user_id, 'referred_by_', $this->mycred_type, true );

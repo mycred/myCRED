@@ -423,7 +423,7 @@ class myCRED_Tools {
 			else {
 
 				$selected_users      = isset( $_REQUEST['users'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['users'] ) ) : '[]';
-				$selected_user_roles = isset( $_REQUEST['user_roles'] ) ? sanitize_key( $_REQUEST['user_roles'] ) : '[]';
+				$selected_user_roles = isset( $_REQUEST['user_roles'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['user_roles'] ) ) : '[]';
 
 				$selected_users      = json_decode( stripslashes( $selected_users ) );
 				$selected_user_roles = json_decode( stripslashes( $selected_user_roles ) );

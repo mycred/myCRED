@@ -74,6 +74,16 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			add_action( 'parse_query',		     array( $this,  'cashcred_filter_query' ) );
 			
 			add_action( 'admin_enqueue_scripts', array( $this, 'cashcred_admin_assets' ) );
+			
+			// added action for custom posttype add-new button if click will redirect back to post page.
+			add_action("load-post-new.php", array( $this, 'cashcred_redirect_addnew_button') );
+
+		}
+
+		public function cashcred_redirect_addnew_button() {
+		    
+		    if( $_GET["post_type"] == "cashcred_withdrawal" ) 
+		        wp_redirect("edit.php?post_type=cashcred_withdrawal");
 
 		}
 		
@@ -419,7 +429,9 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 					$points = check_site_get_post_meta( $post_id, 'points', true );
 					$cost     = check_site_get_post_meta( $post_id, 'cost', true );
 					$currency = check_site_get_post_meta( $post_id, 'currency', true );
-					echo esc_html( $currency ) .' ' . esc_html( $points * $cost );
+					$cashcred_points = !empty($points) ? $points : 0 ;
+					$cashcred_cost = !empty($cost) ? $cost : 0 ;
+					echo esc_html( $currency ) .' ' . esc_html( $cashcred_points *  $cashcred_cost );
 
 				break;
 				case 'gateway';
@@ -982,7 +994,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 					$type_data = $cashcred_setting['fees']['types'][get_post_meta($post->ID,'point_type',true)];
 
 					if ( $type_data['by'] == 'percent' ) {
-						$fee = ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) );
+						$fee = !empty($type_data['amount']) ? ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) ) : '' ;
 					}
 					else{
 						$fee = $type_data['amount'];

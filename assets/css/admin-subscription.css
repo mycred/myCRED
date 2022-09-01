@@ -34,35 +34,7 @@ a.thickbox.open-plugin-details-modal {
     margin-right: 5px;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    display: block;
-    font-weight: 600;
-}
-
-h2, h3 {
-    color: #1d2327;
-    font-size: 1.3em;
-    margin: 1em 0;
-}
-
-
-
-p {
-    font-size: 13px;
-    line-height: 1.5;
-    margin: 1em 0;
-}
-
-/*.theme.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-   flex-wrap: wrap;
-}*/
-
-
- .theme-browser .theme {
+.theme-browser .theme {
    min-height: 10em;
 }
 
@@ -89,7 +61,7 @@ p {
 
 /** myCred Membership Table **/
 .mmc_table{
-    /* background-color:#FFF; */ padding: 0 20px 0 20px;
+  padding: 0 20px 0 20px;
 }
 .mmc-packages {
     display: table;
@@ -124,7 +96,6 @@ p {
     text-decoration-line: line-through;
     text-decoration-color: red;
 }
-
 .mmc_table .mmc_table_pricing_current {
     font-size: 48px;
     font-weight: bold;
@@ -136,12 +107,10 @@ p {
     transform: scale(1);
     margin: 3% 0 14% 0;
 }
-
 .mmc_table .mmc_table_pricing .mmc_table_pricing_dollar_sign{
     font-size: 26px;
     vertical-align: super;
 }
-
 .mmc_table .mmc_table_plan_sites {
     font-size: 16px;
     color: rgba(136, 0, 255, 1);
@@ -156,7 +125,6 @@ p {
     margin-bottom: 0 !important;
 
 }
-
 .mmc_table .mmc_table_plan_billed{
     color: #999ea9;
     font-size: 12px;
@@ -167,7 +135,6 @@ p {
     text-align: center;
     margin-top: 0px;
 }
-
 .mmc_table .mmc_table_addon_details li{
     position: relative;
     display: block;
@@ -183,7 +150,6 @@ p {
     -ms-transform: scale(1);
     transform: scale(1);
 }
-
 .mmc_table .mmc_table_get_started{
     text-align:center;
     margin-bottom: 30px;
@@ -207,11 +173,9 @@ p {
     width: 100px;
     margin: 0 auto;
 }
-
 .mmc_table .border-right{
     border-right: 1px solid #ccc;
 }
-
 .mmc_table .mmc_table_most_popular{
     color: white;
     background: #ff6f41;
@@ -227,8 +191,6 @@ p {
     font-size: 16px;
     line-height: 22px;
 }
-
-
 div#tabs_package_1 {
     width: auto;
     display: block;
@@ -236,7 +198,6 @@ div#tabs_package_1 {
     text-align: center;
     margin-bottom: 50px;
 }
-
 #tabs_package_1 a {
     padding: 8px 10px;
     height: 45px;
@@ -246,7 +207,6 @@ div#tabs_package_1 {
     text-transform: uppercase;
     position: relative;
 }
-
 #tabs_package_1 a sup {
     background: #f05d3e;
     width: 97px;
@@ -288,7 +248,6 @@ div#tabs_package_1 {
   height: 34px;
   margin-bottom:0px;
 }
-
 #tabs_package_1  .switch_btn input { 
   opacity: 0;
   width: 0;
@@ -305,7 +264,6 @@ div#tabs_package_1 {
   -webkit-transition: .4s;
   transition: .4s;
 }
-
 #tabs_package_1  .slider_btn:before {
   position: absolute;
   content: "";
@@ -324,7 +282,6 @@ div#tabs_package_1 {
 #tabs_package_1  input:checked + #tabs_package_1  .slider_btn {
   background-color: #894be0!important;
 }
-
 #tabs_package_1  input:checked +   .slider_btn:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
@@ -337,7 +294,6 @@ line-height:34px;
 #tabs_package_1  .slider_btn.round {
   border-radius: 34px;
 }
-
 #tabs_package_1  .slider_btn.round:before {
   border-radius: 50%;
 }
@@ -350,21 +306,16 @@ line-height:34px;
 .row.mycred-money-back {
     display: none;
 }
-
-
 @media (min-width: 1640px) {
 
 .mycred-treasures .theme-browser .theme {
     width: 29.7%;
-    margin: 0 3% 3% 0;
-    
+    margin: 0 3% 3% 0;   
 }
 
 .mycred-treasures .theme-id-container {
     width: 100%;
     height: 100%;
-   
-
 }
 
 .mycred-treasures .theme.active {
@@ -372,17 +323,8 @@ line-height:34px;
     width: calc(33.1% - 5em);
 }
 
-
 }
 
-
-/*@media screen and (min-width: 1600px) and (max-width: 2299px){
-.theme.active {
-    width: 30%;
-    width: calc(33.1% - 8px);
-}
-
-}*/
 
 @media (max-width: 1120px) {
 
@@ -438,10 +380,7 @@ line-height:34px;
 }
 
 .mmc-addons .theme .theme-screenshot1 img {
-    /* height: 100%; */
     width: 100%;
-  /*  text-align: center;
-    margin: 0 auto;*/
 }
 
 .mmc-addons .theme .theme-screenshot1 {
@@ -459,10 +398,8 @@ line-height:34px;
 }
 
 .mmc-addons .theme .theme-screenshot1 img {
-    /*margin: 0 auto;*/
     display: block;
     float: none;
-    /*position: relative!important;*/
 }
 
 .mmc-addons .theme .theme-screenshot {
@@ -487,6 +424,8 @@ line-height:34px;
     height: 262.19px;
     width: 262.19px;
 }
+
+
 
 #myCRED-wrap h1{
     display: block!important;
@@ -535,16 +474,25 @@ line-height:34px;
     margin-top: 12px;
 }
 
+
 .mycred-support-page-content h2 {
     margin-bottom: 2px;
+    display: block;
+    font-weight: 600;
+    color: #1d2327;
+    font-size: 1.3em;
+    margin: 1em 0;
 }
 
 .mycred-support-page-content p {
     margin-top: 5px;
+    line-height: 1.5;
+    color: #1d2327;
+    font-size: 1.3em;
+    margin: 1em 0;
 }
 
 .mycred-treasure-pack {
-    /*background: white;*/
     cursor: auto !important;
 }
 
@@ -560,10 +508,15 @@ line-height:34px;
 .mycred-treasure-pack h3 {
     color: #2271b1;
     margin: 8px 0 0 0;
+     display: block;
+    font-weight: 600;
+    font-size: 1.3em;
 }
 
 .mycred-treasure-pack p {
     margin: 8px 0 0 0;
+     font-size: 13px;
+    line-height: 1.5;
 }
 
 .mycred-treasure-pack .theme-id-container .theme-name {
@@ -573,14 +526,18 @@ line-height:34px;
 .mycred-treasure-pack .theme-id-container .theme-actions {
     padding: 14px 20px !important;
 }
+
 .mycred-tools-ba-award-table p{
     margin: 0px;
+    line-height: 1.5;
+     font-size: 13px;
 }
 
 .mycred-tools-ba-award-table tr td:first-child {
     min-width: 200px;
     max-width: 200px;
 }
+
 .mycred-tools-ba-award-table .tb-zero-padding{
     padding-top: 0px!important;
     padding-bottom: 0px!important;

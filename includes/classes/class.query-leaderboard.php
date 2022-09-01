@@ -818,9 +818,9 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 					$balance_format = 'CAST( %f AS DECIMAL( ' . $length . ', ' . $this->core->format['decimals'] . ' ) )';
 				}
 
-				if ( ! $this->args['total'] ) {
+				
 					$query = $wpdb->prepare( "AND l.meta_value != {$balance_format}", $this->core->zero() );
-				}
+				
 
 				
 			}

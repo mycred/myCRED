@@ -291,7 +291,7 @@ if ( ! function_exists( 'mycred_save_users_rank' ) ) :
 
 		$current_rank   = mycred_get_users_current_rank_id( $user_id, $point_type );
 
-		if ( !$current_rank || $current_rank != $rank_id ) {
+		if ( ! $current_rank || $current_rank != $rank_id ) {
 			
 			global $mycred_current_account;
 
@@ -398,7 +398,7 @@ endif;
  */
 if ( ! function_exists( 'mycred_find_users_rank' ) ) :
 	function mycred_find_users_rank( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY, $act = true ) {
-
+		
 		if ( mycred_manual_ranks() ) return false;
 
 		if ( $user_id === NULL ) $user_id = get_current_user_id();

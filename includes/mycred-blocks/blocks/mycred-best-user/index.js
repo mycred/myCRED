@@ -4,12 +4,12 @@
  */
 (function (wp) {
     var registerBlockType = wp.blocks.registerBlockType;
-    var InspectorControls = wp.editor.InspectorControls;
+    var InspectorControls = wp.blockEditor.InspectorControls;
     var el = wp.element.createElement;
     var SelectControl = wp.components.SelectControl;
     var TextControl = wp.components.TextControl;
     var TextareaControl = wp.components.TextareaControl;
-    var RichText = wp.editor.RichText;
+    var RichText = wp.blockEditor.RichText;
     var panelBody = wp.components.PanelBody;
     var __ = wp.i18n.__;
 

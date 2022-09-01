@@ -1306,12 +1306,16 @@ if ( ! function_exists( 'mycred_badge_show_levels' ) ) :
 
 		if( ! empty( $settings->core["badges"]["show_levels"] ) || $badge->open_badge && ! empty( $settings->core["badges"]["show_steps_to_achieve"] ) ) {
 
+            $content .= '<div class="mycred-badge-page-levels-container">';
+
 			if ( ! $badge->open_badge )
                 $content .= "<h3>" . __("Levels", "mycred") . "</h3>";
             else 
                 $content .= "<h3>" . __("Requirement", "mycred") . "</h3>";
 
             $levels = mycred_show_badge_requirements( $badge->post_id );
+
+            $content .= '<div class="mycred-badge-page-levels">';
 
             foreach ( $levels as $id => $level ) {
 
@@ -1328,12 +1332,10 @@ if ( ! function_exists( 'mycred_badge_show_levels' ) ) :
 	            if ( ! $badge->open_badge ) {
 
 	                if ( ! empty( $level_image_url ) )
-	                    $content .= '<img src="'.$level_image_url.'" class="mycred-level-image mycred-float-left" />';
+	                    $content .= '<img src="'.$level_image_url.'" class="mycred-level-image" />';
 
 	                $content .= "<h4>$heading</h4>";
 	            }
-
-	            $content .= "<div class='clear'></div>";
 
 	            if ( ! empty( $settings->core["badges"]["show_steps_to_achieve"] ) )
 	                $content .= mycred_badge_level_req_check( $badge->post_id, $id );
@@ -1348,7 +1350,11 @@ if ( ! function_exists( 'mycred_badge_show_levels' ) ) :
 	            $content .= '</div>';
 	        }
 
-	        $content .= '<div class="clear"></div>';
+	        $content .= '<div class="mycred-clearfix"></div>';
+	        
+	        $content .= '</div>';
+
+	        $content .= '</div>';
 		
 		}
 

@@ -60,7 +60,8 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 
 			add_action( 'mycred_badge_level_reached',    array( $this, 'badge_check' ), 10, 3 );
 			add_action( 'mycred_user_got_promoted',      array( $this, 'rank_promotion' ), 10, 4 );
-			add_action( 'mycred_user_got_demoted',       array( $this, 'rank_demotion' ), 10, 4 );		
+			add_action( 'mycred_user_got_demoted',       array( $this, 'rank_demotion' ), 10, 4 );
+			add_action( 'mycred_manual_rank_assigned',   array( $this, 'manual_rank_assigned' ), 40, 2 );
             
             add_action( 'mycred_send_email_notices',     'mycred_email_notice_cron_job' );
 
@@ -644,34 +645,11 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 <?php
 
 			if ( count( $this->point_types ) > 1  ) {
-				$allowed_html = array(
-					'div' => array(
-						'class' => array()
-					),
-					'label' => array(
-						'for' => array()
-					),
-					'input' => array(
-						'type'    => array(),
-						'value'   => array(),
-						'name'    => array(),
-						'id'	  => array(),
-						'checked' => array()
-					),
-					'select' => array(
-						'name'  => array(),
-						'id'	=> array(),
-						'style'	=> array(),
-					),
-					'option' => array(
-						'value'    => array(),
-						'selected' => array()
-					)
-				);
+				
 				$point_types_html = mycred_types_select_from_checkboxes( 'mycred_email[ctype][]', 'mycred-email-ctype', $email->point_types, true );
 
-				$point_type_html = apply_filters( 'mycred_point_type_checkbox', $point_types_html );
-				echo wp_kses( $point_type_html, $allowed_html );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo apply_filters( 'mycred_point_type_checkbox', $point_types_html );
 			}
 
 			else {
@@ -1118,6 +1096,44 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 					if ( mycred_user_wants_email( $user_id, $notice_id ) )
 						mycred_send_new_email( $notice_id, $request, $point_type );
 
+				}
+
+			}
+
+		}
+		
+		public function manual_rank_assigned( $rank_id, $user_id ) {
+
+			global $mycred;
+
+			$point_type = $mycred->get_point_type_key();
+			$emails     = mycred_get_event_emails( $point_type, 'generic', 'manual_rank_assign' );
+			$users_rank = mycred_get_users_rank( $user_id, $point_type );
+			$balance    = $mycred->get_users_balance( $user_id );
+
+			if ( mycred_manual_ranks() ) {
+
+				$request = array(
+					'ref'     => 'rank_promotion',
+					'user_id' => $user_id,
+					'amount'  => 0,
+					'entry'   => 'New Rank',
+					'ref_id'  => $rank_id,
+					'data'    => array( 'ref_type' => 'post' ),
+					'type'    => $point_type,
+					'new'     => $balance,
+					'old'     => $balance
+				);
+
+			}
+
+			mycred_assign_ranks( $point_type );
+
+			foreach ( $emails as $notice_id ) {
+
+				// Respect unsubscriptions
+				if ( mycred_user_wants_email( $user_id, $notice_id ) ) {
+					mycred_send_new_email( $notice_id, $request, $point_type );
 				}
 
 			}

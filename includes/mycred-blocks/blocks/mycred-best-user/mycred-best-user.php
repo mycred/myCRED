@@ -28,7 +28,7 @@ if ( ! class_exists('mycred_best_user_block') ) :
                     'wp-blocks', 
                     'wp-element', 
                     'wp-components', 
-                    'wp-editor'
+                    'wp-block-editor'
                 )
             );
 

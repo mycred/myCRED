@@ -26,7 +26,7 @@ if ( ! class_exists('mycred_buy_form_block') ) :
                     'wp-blocks', 
                     'wp-element', 
                     'wp-components', 
-                    'wp-editor'
+                    'wp-block-editor'
                 )
             );
 
