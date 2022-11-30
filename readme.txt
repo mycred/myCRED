@@ -2,12 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-<<<<<<< HEAD
-Tested up to: 6.0.2
-=======
-Tested up to: 6.0.1
->>>>>>> 2e4d68ff323b74b989368789916a2e23168dcf17
-Stable tag: 2.4.9
+Tested up to: 6.0.3
+Stable tag: 2.4.10
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -20,7 +16,7 @@ myCred is an intelligent and adaptive **points management system** that allows y
 
 [youtube https://www.youtube.com/watch?v=-M19tzYo1jo]
 
-Build **brand loyalty** by rewarding your customers through store reward systems, community leaderboards, monetizing your website content, etc. - The possibilities are endless. 
+Build **brand loyalty** by rewarding your customers through store reward systems, community leaderboards, monetizing your website content, etc. - The possibilities are endless.
 
 **Increase customer engagement tenfold - Rewarding your users for community engagement will help your business grow.**
 
@@ -47,6 +43,41 @@ We have added new functionality in the Central deposit built-in Addon where admi
 * Added Email notification on Minimum balance in central deposit.
 * Added Email notification on No balance Left in central deposit.
 
+**Latest update - myCred v2.4.4**
+
+**myCred v2.4.4** includes several new features and enhancements. The most prominent addition is the ability to set a transfer fee when exchanging points between members. Other new features include Gutenberg block support and the ability to set a range for minimum and maximum fees. Version 2.4.4 is available now from the WordPress Plugin Directory.
+
+Here is a list of the complete features introduced in myCred v2.4.4:
+
+* Gutenberg block support for the following shortcodes: mycred_cashcred, mycred_badges_list, mycred_buy_pending, mycred_chart_circulation, mycred_chart_gain_loss, mycred_chart_history, mycred_chart_balance_history, mycred_chart_top_balance, mycred_chart_instance_history and mycred_chart_top_instance.
+* cashCred points transfer between users.
+* Setup Numerical Difference (set a range for Minimum and Maximum fee).
+* Setup Parameters (fees can be set up using points or percentage).
+* All registered references will be listed on the support page.
+* Import or export user points.
+* Import or export setup settings in JSON format.
+* Select specific users fields for export.
+* Assign Badges/Ranks using coupons.
+
+**Recent update - myCred v2.4**
+
+**myCred v2.4** focuses on expanding the plugins ability to import and export points, ranks, and badges from and to other sites. What's better is that you can choose to export or import complete setup settings like point types, achievements level, and created badges with achievements level with the simplest of ease.
+
+Here is a list of the complete features introduced in myCred v2.4:
+
+* Import or export user points
+* Export all or specific point types
+* Export setup settings for all point types
+* Import or export setup settings in JSON format
+* Import or all or specific export user ranks
+* Import or export all or specific user badges
+* Import badges With ID/Title/Slug
+* Import ranks With ID/Title/Slug
+* Export raw or formatted file
+* Select users fields in the exported file
+* Assign Badges/Ranks using coupons
+* Merged myCred Gutenberg to myCred Core
+
 = BECOME A VIP MEMBER OF THE MYCRED MEMBERSHIP CLUB =
 
 Join the myCred membership club today and take advantage of premium services that include priority customer support and hundreds of add-ons at a super-saver price - Save 30% on all 3-year plans!
@@ -71,10 +102,6 @@ Empower your WordPress website users by rewarding them points - each user has th
 **- Buy Points**: The buyCred add-on allows your users to purchase points using real money using some of the most popular payment gateways available in the market today.
 **- Store Payments**: myCred supports some of the most popular store plugins for WordPress, allowing your users to pay for orders/tickets using their point balance instead of real money.
 **- Upload Point-type image**: Give your point type a unique identity by assigning them an image.
-**- Import/Export User Points**: Import or export any user's myCred points. 
-**- Export All or Specific Point Types**: Export point types from the myCred system.
-**- Export Setup Settings For Point Types**: Export any point type's setup settings.
-**- Export/Import Format**: Import or export setup settings in JSON format
 
 = Badges =
 
@@ -87,9 +114,6 @@ Empower your WordPress website users by rewarding them points - each user has th
 **-  Badge Evidence Download Button** - Access Open Badges of any users on the website. The admin can also download any given badge images.
 **-  The "Quick Edit" badge option** will allow you to modify the information of any particular badge.
 **-  Social share setting** - Allow users to share their achieved badges on their social profiles.
-**-  Assign Badges/Ranks Using Coupons**: Users can earn badges or ranks on using coupons.
-**-  Import/Export All or Specific User Badges/Ranks**: Import or export user badges or ranks for specific or all users.
-**-  Import Badges/Ranks With ID/Title/Slug**: Import the ID, title or slug of any badge or rank.
 
 = cashCred =
 **GIVE USERS THE POWER TO CONVERT THEIR MYCRED POINTS INTO REAL MONEY.**
@@ -110,9 +134,6 @@ cashCred works perfectly with a reward system that engages users to perform acti
 **-  Pay Through PayPal** - cashCred supports payment through PayPal.
 **-  Pay Through Stripe** - cashCred supports payment through Stripe.
 **-  Create email events/templates** for cashCred pending/approved/cancel requests.
-**-  Points Transfer** - cashCred points transfer between users.
-**-  Min/Max Fee** - Setup Numerical Difference (set a range for Minimum and Maximum fee).
-**-  Points or Percentage** - Setup Parameters (fees can be set up using points or percentage).
 
 = Template Tags = 
 
@@ -158,9 +179,6 @@ You can achieve the following features by using a dedicated log for your points 
 **-  Enable/Disable add-ons** - Save time and use toggle buttons for enabling or disabling add-ons. 
 **-  Treasures** - A brand new collection of attractive graphical images that can be used for ranks and badges.
 **-  Suggestions** - Submit your ideas and suggestions on the new suggestion page.
-**-  myCred Gutenberg** - Merged myCred Gutenberg to myCred Core.
-**-  Shortcode Support** - Gutenberg block support for the following shortcodes: mycred_cashcred, mycred_badges_list, mycred_buy_pending, mycred_chart_circulation, mycred_chart_gain_loss, mycred_chart_history, mycred_chart_balance_history, mycred_chart_top_balance, mycred_chart_instance_history and mycred_chart_top_instance.
-**-  Registered Reference** - All registered references will be listed on the support page.
 
 = BUILT-IN ADD-ONS =
 
@@ -186,114 +204,67 @@ myCred supports some of the most popular WordPress plugins like **BuddyPress, Wo
 **Simple & organized** To keep your admin area organized, myCred will only show features and setting for those third-party plugins that are installed and enabled.
 
 
-= INTEGRATIONS AND ADDONS FOR LEARNING MANAGEMENT SYSTEMS =
+= INTEGRATED WITH THE MOST POPULAR LEARNING MANAGEMENT SYSTEMS =
 myCred is integrated with a large number of popular learning management systems, that include:
 
-- [myCred LearnDash](https://wordpress.org/plugins/mycred-learndash/)
-- [myCred LifterLMS](https://wordpress.org/plugins/mycred-lifterlms-integration/)
-- [WPLMS](https://wplms.io/support/knowledge-base/wplms-mycred-add-on/)
-- [myCred LifterLMS](https://www.mycred.me/store/mycred-lifterlms-integration/)
-- [myCred for Courseware](https://mycred.me/store/mycred-for-courseware/)
-- [myCred LearnDash Point Importer](https://mycred.me/store/mycred-learndash-points-importer/)
-- [myCred Tutor LMS](https://mycred.me/store/mycred-tutor-lms/)
-- [myCred LearnPress](https://thimpress.com/product/mycred-add-on-for-learnpress/) (Paid third-party integration)
+- [LearnDash](https://wordpress.org/plugins/mycred-learndash/)
+- [LifterLMS](https://wordpress.org/plugins/mycred-lifterlms-integration/)
+- [WPLMS](https://wplms.io/support/knowledge-base/wplms-mycred-add-on/) (Free third-party integration)
+- [LearnPress](https://thimpress.com/product/mycred-add-on-for-learnpress/) (Paid third-party integration).
+
+= MYCRED'S INTEGRATION WITH YOUR FAVORITE PAGE BUILDERS: =
+
+- [myCred Elementor](https://www.mycred.me/store/mycred-elementor/)
+- [myCred Beaver Builder](https://www.mycred.me/store/mycred-beaver-builder/)
+- [myCred for WPBakery Page Builder](https://www.mycred.me/store/mycred-for-wpbakery-page-builder/)
+
 
 = MYCRED OFFERS A VARIETY OF FREE PLUGINS THAT INCLUDE: =
 
+- [LifterLMS Plugin Integration with myCred](https://www.mycred.me/store/mycred-lifterlms-integration/)
 - [myCred Credly](https://www.mycred.me/store/mycred-credly/)
 - [myCred BP Group Leaderboards](https://www.mycred.me/store/mycred-bp-group-leaderboards/)
 - [myCred for WP-Pro-Quiz](https://www.mycred.me/store/mycred-for-wp-pro-quiz/)
 - [myCred for Rating Form](https://www.mycred.me/store/mycred-for-rating-form/)
-- [myCred Elementor](https://www.mycred.me/store/mycred-elementor/)
-- [myCred Zapier Addon](https://mycred.me/store/mycred-zapier-addon/)
-- [myCred for BuddyPress Compliments](https://mycred.me/store/mycred-for-buddypress-compliments/)
-- [myCred WP Simple Pay](https://mycred.me/store/mycred-wp-simple-pay/)
-- [myCred MemberPress](https://mycred.me/store/mycred-memberpress/)
-- [myCred GamiPress Importer](https://mycred.me/store/mycred-gamipress-importer/)
-- [myCred Paid Membership Pro](https://mycred.me/store/mycred-paid-membership-pro/)
-- [myCred H5P](https://mycred.me/store/mycred-h5p/)
-- [myCred Amelila](https://mycred.me/store/mycred-amelia/)
-- [myCred Badgr](https://mycred.me/store/mycred-badgr/)
-- [myCred AnsPress](https://mycred.me/store/mycred-anspress/)
-- [myCred Zoom](https://mycred.me/store/mycred-zoom/)
-- [myCred BuddyBoss](https://mycred.me/store/mycred-buddyboss-add-on/)
-- [myCred Github Rewards](https://mycred.me/store/mycred-github-rewards/)
-- [myCred GiveWP](https://mycred.me/store/mycred-givewp/)
-- [myCred Square](https://mycred.me/store/mycred-square/)
-- [myCred for Event Espresso 4.6+](https://mycred.me/store/mycred-for-event-espresso-4/)
-- [myCred for WP-PostRatings](https://mycred.me/store/mycred-for-wp-postratings/)
-- [myCred Birthdays](https://mycred.me/store/mycred-birthdays/)
-- [myCred for WP-PostViews](https://mycred.me/store/mycred-for-wp-postviews/)
-- [myCred for TotalPoll](https://mycred.me/store/mycred-for-totalpoll/)
-- [myCred Gutenberg](https://mycred.me/store/mycred-gutenberg/)
-- [myCred for Events Manager Pro](https://mycred.me/store/mycred-for-events-manager-pro/)
-- [myCred Retro](https://mycred.me/store/mycred-retro/)
-- [myCred for GD Star Rating](https://mycred.me/store/mycred-for-gd-star-rating/)
 [Explore to find out more...](https://www.mycred.me/product-category/freebies/)
+
 
 = MYCRED'S THIRD-PARTY BRIDGES PLUGINS: =
 
-- [myCred WooCommerce Plus](https://www.mycred.me/store/mycred-woocommerce-plus/)
-- [myCred Beaver Builder](https://www.mycred.me/store/mycred-beaver-builder/)
-- [myCred Dokan](https://www.mycred.me/store/mycred-dokan/)
-- [Easy Digital Downloads - myCred Gateway](https://www.mycred.me/store/mycred-for-easy-digital-downloads/)
-- [myCred for Users Ultra](https://www.mycred.me/store/mycred-for-users-ultra/)
-- [myCred WCVendors](https://www.mycred.me/store/mycred-wc-vendors/)
-- [myCred BP Charges](https://www.mycred.me/store/mycred-bp-charges/)
-- [myCred for User Pro](https://www.mycred.me/store/mycred-for-user-pro/)
-- [myCred for WPBakery Page Builder](https://www.mycred.me/store/mycred-for-wpbakery-page-builder/)
-
-= MYCRED'S BUYCRED GATEWAYS
-
 - [Stripe - buyCred Gateway](https://www.mycred.me/store/buycred-stripe/)
-- [Paystack - buyCred Gateway](https://mycred.me/store/buycred-paystack/)
-- [Paymentwall - buyCred Gateway](https://mycred.me/store/buycred-paymentwall/)
-- [ComproPago - buyCred Gateway](https://mycred.me/store/buycred-compropago/)
-- [2Checkout - buyCred Gateway](https://mycred.me/store/buycred-co2/)
-- [Robokassa - buyCred Gateway](https://mycred.me/store/buycred-robokassa/)
-- [Coinbase - buyCred Gateway](https://mycred.me/store/buycred-coinbase/)
-- [CoinPayments - buyCred Gateway](https://mycred.me/store/buycred-coinpayment/)
-- [PayFast - buyCred Gateway](https://mycred.me/store/buycred-payfast/)
-- [WePay - buyCred Gateway](https://mycred.me/store/buycred-wepay/)
-- [Payza - buyCred Gateway](https://mycred.me/store/buycred-payza/)
-
-= MYCRED'S CASHCRED GATEWAYS
-
-- [PayPal - cashCred Gateway](https://mycred.me/store/cashcred-paypal/)
-- [Stripe - cashCred Gateway](https://mycred.me/store/cashcred-stripe/)
-- [PayStack - cashCred Gateway](https://mycred.me/store/cashcred-paystack/)
+- [Easy Digital Downloads - myCred Gateway](https://www.mycred.me/store/mycred-for-easy-digital-downloads/)
+- [myCred Zapier Addon](https://mycred.me/store/mycred-zapier-addon/)
+- [myCred Dokan](https://www.mycred.me/store/mycred-dokan/)
+- [myCred WCVendors](https://www.mycred.me/store/mycred-wc-vendors/)
+- [myCred Learndash](https://www.mycred.me/store/mycred-learndash/)
+- [myCred for Users Ultra](https://www.mycred.me/store/mycred-for-users-ultra/)
+- [myCred for User Pro](https://www.mycred.me/store/mycred-for-user-pro/)
 
 = MYCRED'S GAMIFICATION PLUGINS: =
 
-- [myCred Arcade Game](https://www.mycred.me/store/mycred-pacman/)
-- [myCred Spin Wheel](https://www.mycred.me/store/wheel-of-fortune-add-on/)
+- [myCred PacMan](https://www.mycred.me/store/mycred-pacman/)
+- [Wheel of Fortune Add-On](https://www.mycred.me/store/wheel-of-fortune-add-on/)
+
 
 = MYCRED'S ENHANCEMENT PLUGINS: =
 
-- [myCred Notifications Plus Add-on](https://www.mycred.me/store/notifications-plus-add-on/)
-- [myCred Transfer Plus](https://www.mycred.me/store/transfer-plus/)
-- [myCred Video Add-on For Vimeo](https://www.mycred.me/store/video-add-on/)
-- [myCred Progress Bar Add on](https://www.mycred.me/store/mycred-progress-bar-add-on/)
-- [myCred Video Add-on For JW Player](https://www.mycred.me/store/jw-player-with-mycred/)
-- [myCred Rest API](https://www.mycred.me/store/mycred-rest-api/)
+- [myCred WooCommerce Plus](https://www.mycred.me/store/mycred-woocommerce-plus/)
+- [myCred Email Digest](https://mycred.me/store/mycred-email-digest/)
+- [myCred Progress Map](https://mycred.me/store/mycred-progress-map/)
+- [myCred Points Cap](https://mycred.me/store/mycred-points-cap/)
+- [myCred Level Cred](https://www.mycred.me/store/mycred-level-cred/)
+- [myCred Social Proof](https://www.mycred.me/store/mycred-social-proof/)
 - [myCred SMS Payments - Twilio Transfers](https://www.mycred.me/store/sms-payments/)
 - [myCred Expiration Add on](https://www.mycred.me/store/mycred-expiration-add-on/)
 - [myCred Social Share Add on](https://www.mycred.me/store/mycred-social-share-add-on/)
-- [myCred Level Cred](https://www.mycred.me/store/mycred-level-cred/)
-- [myCred Social Proof](https://www.mycred.me/store/mycred-social-proof/)
-- [myCred Reset Points](https://mycred.me/store/mycred-reset-point-add-on/)
-- [myCred Progress Map](https://mycred.me/store/mycred-progress-map/)
-- [myCred Points Cap](https://mycred.me/store/mycred-points-cap/)
-- [myCred Time-Based Rewards](https://mycred.me/store/mycred-time-base-reward/)
-- [myCred Email Digest](https://mycred.me/store/mycred-email-digest/)
-- [myCred Coupon Plus](https://mycred.me/store/mycred-coupon-plus/)
-- [myCred Birthday Plus](https://mycred.me/store/mycred-birthday-plus/)
-- [myCred Daily Login Rewards](https://mycred.me/store/mycred-daily-login-rewards/)
-- [myCred Anniversary Pro](https://mycred.me/store/mycred-anniversary-pro/)
-- [myCred Submission](https://mycred.me/store/mycred-form-submission/)
-- [mycred Nomination](https://mycred.me/store/mycred-nomination-form/)
-- [myCred Email Plus](https://mycred.me/store/mycred-email-plus/)
-- [myCred To-Do List](https://mycred.me/store/mycred-todo-list/)
+- [myCred Progress Bar Add on](https://www.mycred.me/store/mycred-progress-bar-add-on/)
+- [myCred Video Add-on For JW Player](https://www.mycred.me/store/jw-player-with-mycred/)
+- [myCred BP Charges](https://www.mycred.me/store/mycred-bp-charges/)
+- [myCred Rest API](https://www.mycred.me/store/mycred-rest-api/)
+- [myCred Transfer Plus](https://www.mycred.me/store/transfer-plus/)
+- [myCred Video Add-on For Vimeo](https://www.mycred.me/store/video-add-on/)
+- [myCred Notifications Plus Add-on](https://www.mycred.me/store/notifications-plus-add-on/)
+
 
 = Documentation =
 
@@ -344,6 +315,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 6. **Badges Layout & Alignment**
 
 == Upgrade Notice ==
+
+= 2.4.10 =
+Bug fixes.
 
 = 2.4.9 =
 New features and Bug fixes.
@@ -445,6 +419,10 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.4.10 =
+- **NEW** - Added action hook "mycred_add_share_and_embed_button".
+- **FIX** - PHP warnings are resolved.
 
 = 2.4.9 =
 - **NEW** - Introduced title, excerpt, and display attributes in mycred_my_badges shortcode.
