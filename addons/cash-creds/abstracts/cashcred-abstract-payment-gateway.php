@@ -156,30 +156,9 @@ if ( ! class_exists( 'myCRED_Cash_Payment_Gateway' ) ) :
 </table>';
 
 			}
-			$allowed_html = 
-				array(
-					'input' => array(
-						'type'  => array(),
-						'value' => array(),
-						'name'  => array(),
-						'id'	=> array(),
-						'size'  => array()
-					),
-					'table' => array(),
-					'tr'	=> array(),
-					'td' 	=> array(
-						'style' => array()
-					),
-					'div'	=> array(
-						'class'	=> array()
-					),
-					'span'	=> array(
-						'class'	=> array()
-					),
-					
-				);
-
-			echo wp_kses( apply_filters( 'mycred_cashcred_exchange_rate_field', $content, $default, $this ), $allowed_html );
+			
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo apply_filters( 'mycred_cashcred_exchange_rate_field', $content, $default, $this );
 
 		}
 

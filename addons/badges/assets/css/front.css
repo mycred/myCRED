@@ -1,28 +1,23 @@
-.the-badge {
+.mycred-users-badges .the-badge.vertical {
     display: flex;
-    align-items: center;
-  	justify-content: space-between;
+    margin-bottom: 10px;
 }
 
-hr.badge-line {
-        
-    margin-top: 10px !important;
+.mycred-users-badges .the-badge.horizontal {
+    display: inline-flex;
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 
-.page-excerpt {
-    
-    width: 100%;
-    margin-left:10px;
+.mycred-users-badges .the-badge .mycred-badge-content {
+    display: table;
+    margin-left: 15px;
 }
 
-
-.page-excerpt {
-    
-    width: 100%;
-    margin-left:10px;
+.mycred-users-badges .the-badge .mycred-badge-content h4.title {
+    margin: 0;
 }
 
-.demo-badge-title {
-    margin-left: 20px;
-    width: 100%;
+.mycred-users-badges .the-badge .mycred-badge-content p.excerpt {
+    margin: 10px 0 0 0;
 }

@@ -4278,6 +4278,7 @@ if ( ! function_exists( 'mycred_get_email_instances' ) ) :
 		if ( class_exists( 'myCRED_Ranks_Module' ) ) {
 			$instances['rank_up']   = __( 'user is promoted to a higher rank', 'mycred' );
 			$instances['rank_down'] = __( 'user is demoted to a lower rank', 'mycred' );
+			$instances['manual_rank_assign'] = __( 'admin manually assigns the rank', 'mycred' );
 		}
 
 		if ( class_exists( 'myCRED_Transfer_Module' ) ) {

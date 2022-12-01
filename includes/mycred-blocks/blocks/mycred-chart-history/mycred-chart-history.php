@@ -26,7 +26,7 @@ if ( ! class_exists('mycred_chart_history_block') ) :
                     'wp-blocks', 
                     'wp-element', 
                     'wp-components', 
-                    'wp-editor', 
+                    'wp-block-editor', 
                     'wp-rich-text' 
                 )
             );

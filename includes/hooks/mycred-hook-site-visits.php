@@ -63,7 +63,7 @@ if ( ! class_exists( 'myCRED_Hook_Site_Visits' ) ) :
 			$data = '';
 
 			// Make sure this is unique
-			if ( $this->core->has_entry( 'site_visit', $today, $user_id, $data, $this->mycred_type ) ) return;
+			if ( $this->core->has_entry( 'site_visit', $today, $user_id, NULL, $this->mycred_type ) ) return;
 
 			// Execute
 			$this->core->add_creds(
@@ -72,7 +72,7 @@ if ( ! class_exists( 'myCRED_Hook_Site_Visits' ) ) :
 				$this->prefs['creds'],
 				$this->prefs['log'],
 				$today,
-				$data,
+				'',
 				$this->mycred_type
 			);
 

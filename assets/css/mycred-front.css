@@ -164,7 +164,7 @@ ul.mycred-badges-list-tabs li.active {
 .mycred-badge-page .mycred-badge-page-level {
     float: left;
     width: 30%;
-    text-align: center;
+    /*text-align: center;*/
 }
 .mycred-badge-page .mycred-level-requirement {
     font-size: 19px;

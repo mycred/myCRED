@@ -111,8 +111,8 @@ function mycred_load_contact_form_seven_hook() {
             if ( $this->core->exclude_user( $this->user_id ) ) return;
 
             // Limit
-            if ( $this->over_hook_limit( $form_id, 'contact_form_submission' ) ) return;
-
+            if ( $this->over_hook_limit( $form_id, 'contact_form_submission', $this->user_id ) ) return;
+           
             $this->core->add_creds(
                 'contact_form_submission',
                 $this->user_id,

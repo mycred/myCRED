@@ -184,7 +184,8 @@ function mycred_load_bbpress_hook() {
 			$balance = $this->core->get_users_balance( $user_id, $this->mycred_type );
 			$layout  = $this->core->plural() . ': ' . $this->core->format_creds( $balance );
 
-			echo wp_kses_post( apply_filters( 'mycred_bbp_reply_balance', '<div class="users-mycred-balance">' . $layout . '</div>', $layout, $user_id, $this ) );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo apply_filters( 'mycred_bbp_reply_balance', '<div class="users-mycred-balance">' . $layout . '</div>', $layout, $user_id, $this );
 
 		}
 

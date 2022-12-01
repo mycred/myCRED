@@ -139,6 +139,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 		}
 		
 		public function cashcred_pay_now( $post_id = false, $auto = false ) {
+
 			global $cashcred_instance;
 
 			$payment_response = array();
@@ -158,6 +159,18 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			} 
 			else {
 				return	$this->response( false, array( 'message' => 'Invalid Payment Gateway' ), $auto );
+			}
+
+			$withdraw_user_id    = (int) mycred_get_post_meta( $post_id, 'from', true );
+			$payment_settings    = cashcred_get_payment_settings( $post_id );
+			$withdraw_point_type = $payment_settings->point_type;
+			$withdraw_amount     = $payment_settings->points;
+			$users_balance       = mycred_get_users_balance( $withdraw_user_id, $withdraw_point_type );
+
+			if( $withdraw_amount > $users_balance ) {
+
+				return $this->response( false, array( 'message' => 'Insufficient Balance' ), $auto );
+			
 			}
 			
 			if ( $cashcred_pay_method !== false && array_key_exists( $cashcred_pay_method, $cashcred_instance->active ) ) {
@@ -194,6 +207,7 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 				return	$this->response( false, array( 'message' => 'Invalid Payment Gateway' ), $auto );
 				
 			}
+
 		}
 
 		public function cashcred_developer_log() {
@@ -465,7 +479,6 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 			}
 			
 			$user_balance = mycred_get_users_balance( get_current_user_id() , $point_type );
-
 			
 			//adding fees attribute in cashcred 2.4
 			$cashcred_setting = mycred_get_cashcred_settings();
@@ -476,16 +489,18 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 					
 					$fee_amount = $cashcred_setting['fees']['types'][$point_type]['amount'];
 					$fee = $fee_amount;
-					if( $cashcred_setting['fees']['types'][$point_type]['by'] == 'percent' )
+					if( $cashcred_setting['fees']['types'][$point_type]['by'] == 'percent' && is_numeric($fee_amount) )
 						$fee = ( ( $fee_amount / 100 ) * $points );
 
 					if( $cashcred_setting['fees']['types'][$point_type]['min_cap'] != 0 )
 						$fee = $fee + $cashcred_setting['fees']['types'][$point_type]['min_cap'];
 
 					if( $cashcred_setting['fees']['types'][$point_type]['max_cap'] != 0 && $fee > $cashcred_setting['fees']['types'][$point_type]['max_cap'] )
-						$fee = $cashcred_setting['fees']['types'][$point_type]['max_cap'];
+						$fee = intval($cashcred_setting['fees']['types'][$point_type]['max_cap']);
 						
-					$fee_points = $points + $fee; 
+						 $cashcred_fees = !empty($fee) ? $fee : 0 ;
+						
+					     $fee_points = $points + $cashcred_fees; 
 
 					if( $user_balance < $fee_points ){
 				
@@ -557,12 +572,14 @@ if ( ! class_exists( 'myCRED_cashCRED_Module' ) ) :
 		public function can_withdraw_request() {
 
 			$response = false; 
-
+			$pending_withdrawal = cashcred_get_withdraw_requests('Pending');
+			
 			if( ! empty( $_POST['points'] ) && 
 				! empty( $_POST['cashcred_point_type'] ) && 
 				! empty( $_POST['cashcred_pay_method'] ) && 
 				! empty( $_POST['cashcred_withdraw_wpnonce'] ) && 
-				wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cashcred_withdraw_wpnonce'] ) ), 'cashCred-withdraw-request' ) 
+				wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cashcred_withdraw_wpnonce'] ) ), 'cashCred-withdraw-request' ) && 
+				empty( $pending_withdrawal )
 			) {
 				$response = true;
 			}

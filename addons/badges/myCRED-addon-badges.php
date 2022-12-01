@@ -167,6 +167,8 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
         public function enqueue_front_scripts() {
 
             wp_enqueue_script( 'mycred-badge-front', plugins_url( 'assets/js/front.js', myCRED_BADGE ), array('jquery'), myCRED_BADGE_VERSION );
+            wp_register_style( 'mycred-badge-front-style', plugins_url( 'assets/css/front.css', myCRED_BADGE ), array(), myCRED_BADGE_VERSION , 'all' );
+
         }
 
         /**
@@ -1764,6 +1766,9 @@ th#badge-users { width: 10%; }
 
                                     $badge_id     = absint( $badge_id );
                                     $badge        = mycred_get_badge( $badge_id );
+
+                                    if ( empty( $badge ) ) continue;
+
                                     $earned       = 0;
                                     $earned_level = 0;
                                     $badge_image  = $badge->main_image;
@@ -2108,7 +2113,7 @@ th#badge-users { width: 10%; }
 
             global $post;
 
-            if ( is_single() && $post->post_type == MYCRED_BADGE_KEY ) {
+            if ( is_single() && ! empty( $post->post_type ) && $post->post_type == MYCRED_BADGE_KEY ) {
 
                 $mycred = mycred();
 

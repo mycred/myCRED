@@ -518,10 +518,19 @@ jQuery(document).ready(function() {
 function mycredToolsResetForm() {
     var $selectedValue = jQuery('.bulk-award-type').val();
     jQuery(".mycred-tools-ba-award-form").trigger('reset');
-    jQuery('#bulk-users').val(null).trigger('change');
-    jQuery('#bulk-roles').val(null).trigger('change');
-    jQuery('#bulk-badges').val(null).trigger('change');
-    jQuery('#bulk-ranks').val(null).trigger('change');
+    
+    jQuery('#bulk-users').val();
+    jQuery('#bulk-users').trigger('change');
+    
+    jQuery('#bulk-roles').val();
+    jQuery('#bulk-roles').trigger('change');
+    
+    jQuery('#bulk-badges').val();
+    jQuery('#bulk-badges').trigger('change');
+    
+    jQuery('#bulk-ranks').val();
+    jQuery('#bulk-ranks').trigger('change');
+
     jQuery(".log-entry").removeAttr("checked");
     jQuery('.log-entry-row').hide();
     jQuery(".award-to-all").removeAttr("checked");

@@ -1,211 +1,99 @@
 <?php
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
-if (! function_exists('mycred_render_my_badges') ) :
+/**
+ * Shortcode: mycred_my_badges
+ * Allows you to show the current users earned badges.
+ * @since 1.5
+ * @version 1.2.1
+ */
+if ( ! function_exists( 'mycred_render_my_badges' ) ) :
     function mycred_render_my_badges( $atts, $content = '' ) {
 
-        extract(
-            shortcode_atts(
-                array(
-                'show'     => 'earned',
-                'width'    => MYCRED_BADGE_WIDTH,
-                'height'   => MYCRED_BADGE_HEIGHT,
-                'user_id'  => 'current',
-                'title'    => '',
-                'post_excerpt'   => ''
-                ), $atts, MYCRED_SLUG . '_my_badges' 
-            ) 
-        );
+        extract( shortcode_atts( array(
+            'show'         => 'earned',
+            'width'        => MYCRED_BADGE_WIDTH,
+            'height'       => MYCRED_BADGE_HEIGHT,
+            'user_id'      => 'current',
+            'title'        => 0,
+            'excerpt'      => 0,
+            'display'      => 'vertical'
+        ), $atts, MYCRED_SLUG . '_my_badges' ) );
 
-        if ( ! is_user_logged_in() && $user_id == 'current' ) {
+        if ( ! is_user_logged_in() && $user_id == 'current' )
             return $content;
-        }
 
-        $all_badges      = mycred_get_badge_ids();
-        $profile_user_id = mycred_get_user_id( $user_id );
-        $users_badges    = mycred_get_users_badges( $profile_user_id, true );
-        $user_id         = mycred_get_user_id( $user_id );
+        $user_id      = mycred_get_user_id( $user_id );
+        $all_badges   = mycred_get_badge_ids();
+        $users_badges = mycred_get_users_badges( $user_id );
+        $css_classes  = in_array( $display, array( 'vertical', 'horizontal' ) ) ? $display : 'vertical';
+
+        wp_enqueue_style( 'mycred-badge-front-style' );
 
         ob_start();
 
-        echo '<div class="row" id="mycred-users-badges"><div class="col-xs-12">';
+        echo '<div class="mycred-users-badges">';
 
-        // Show only badges that we have earned
-        if ( $show == 'earned' ) {
+        foreach ( $all_badges as $badge_id ) {
 
-            foreach ( $all_badges as $badge_id ) {
-                
-                echo '<div class="the-badge">';
-                
-                $page_id      = get_page($badge_id);
-                $badge_id     = absint( $badge_id );
-                $has_earned   = mycred_get_badge( $badge_id );
-                $badge        = mycred_get_badge( $badge_id );
-                $users_badges = mycred_get_users_badges($profile_user_id );
-                $mycred       = mycred();
+            $user_has_earned = array_key_exists( $badge_id, $users_badges );
 
-                if ( array_key_exists( $badge_id, $users_badges ) ) {
-                            
-                    $earned       = 1;
-                    $earned_level = $users_badges[ $badge_id ];
-                    $badge_image  = $badge->get_image( $earned_level );
-                            
-                }
+            if ( $show == 'earned' && ! $user_has_earned ) continue;
 
-                if( $has_earned ) {
+            $css_classes = $user_has_earned ? $display . ' earned' : $display;
 
-                    $badge_title = $has_earned->title;
-                    $badge_img = $has_earned->main_image;
-                    $level_image = $has_earned->level_image;
-                    $show_img = $has_earned->user_has_badge( $profile_user_id );
+            echo '<div class="the-badge '. esc_attr( $css_classes ) .'">';
 
-                    if( $show_img ) {
+            $level = $user_has_earned ? $users_badges[ $badge_id ] : NULL;
+            $badge = mycred_get_badge( $badge_id, $level );
+            $badge->image_width  = $width;
+            $badge->image_height = $height;
 
-                        $earned_badge_image = ! empty( $has_earned->level_image ) ? $has_earned->level_image : $has_earned->main_image;
-
-                        echo '<div class="demo-badge-image">' . wp_kses_post( $earned_badge_image ) . '</div>';
-
-                        if( $title == 'show' ) {
-
-                            echo '<div class="demo-badge-title">' . esc_html( $badge_title ) . ' '.'</div>';
-
-                        } 
-                        else {
-
-                            echo '<div class="demo-badge-title" style="display:none;">' . esc_html( $badge_title ) . ' '.'</div>';
-
-                        }
-
-                        if( $post_excerpt == 'show' ) {
-
-                            echo '<div class="page-excerpt">' . wp_kses_post( $page_id->post_excerpt ) . ' '.'</div>';
-
-                        } 
-                        else {
-                        
-                            echo '<div class="page-excerpt" style="display:none;">' . wp_kses_post( $page_id->post_excerpt ) . ' '.'</div>';
-                        
-                        }
-
-                    }
-
-                }
+            if ( $user_has_earned ) {
                     
+                if ( $badge->level_image !== false )
+                    echo wp_kses_post( $badge->get_image( $level ) );
+
+            }
+            else {
+
+                if ( $badge->main_image !== false )
+                    echo wp_kses_post( $badge->get_image( 'main' ) );
+
             }
 
-        }
-        // Show all badges highlighting the ones we earned
-        elseif ( $show == 'all' ) {
+            if ( $title == 1 || $excerpt == 1 ) {
 
-            $users_badges = mycred_get_users_badges( $user_id );
-            $all_badges   = mycred_get_badge_ids();
+                echo '<div class="mycred-badge-content">';
 
-            foreach ( $all_badges as $badge_id ) {
+                if ( $title == 1 && ! empty( $badge->title ) ) 
+                    echo '<h4 class="title">' . esc_html( $badge->title ) . '</h4>';
 
-                echo '<div class="the-badge">';
+                if ( $excerpt == 1 ) {
 
-                // User has not earned badge
-                if ( ! array_key_exists( $badge_id, $users_badges ) ) {
+                    $badge_excerpt = get_the_excerpt( $badge_id );
 
-                    $badge = mycred_get_badge( $badge_id );
-                    $page_id = get_page( $badge_id );
-                    $badge->image_width  = $width;
-                    $badge->image_height = $height;
-                    $badge_title = $badge->title;
-                    $badge_img = $badge->main_image;
+                    if ( ! empty( $badge_excerpt ) ) 
+                        echo '<p class="excerpt">' . esc_html( $badge_excerpt ) . '</p>';
 
-                    if ( $badge->main_image !== false ) {
-
-                        echo '<div class="demo-badge-image">' . wp_kses_post( $badge_img ) . '</div>';
-
-                        if( $title == 'show' ) {
-
-                            echo '<div class="demo-badge-title">' . esc_html( $badge_title ) . ' '.'</div>';
-
-                        } else {
-
-                            echo '<div class="demo-badge-title" style="display:none;">' . esc_html( $badge_title ) . ' '.'</div>';
-
-                        }
-
-                        if( $post_excerpt == 'show' ) {
-
-                            echo '<div class="page-excerpt">' . wp_kses_post( $page_id->post_excerpt ) . ' '.'</div>';
-
-                        } 
-                        else {
-                        
-                            echo '<div class="page-excerpt" style="display:none;">' . wp_kses_post( $page_id->post_excerpt ) . ' '.'</div>';
-                        
-                        }
-                                   
-                    }
-
-                }
-                // User has earned badge
-                else {
-
-                    $level = $users_badges[ $badge_id ];
-                    $badge = mycred_get_badge( $badge_id, $level );
-                    $badge->image_width  = $width;
-                    $badge->image_height = $height;
-                    $badge_page_id = get_page( $badge_id );
-
-                    if ( $badge->level_image !== false ) {
-
-                       
-                        echo '<div class="demo-badge-image">' . wp_kses_post( $badge->get_image( $level ) ) . '</div>';
-
-                        if( $title == 'show' ) {
-                            
-                            echo '<div class="demo-badge-title">' . esc_html( $badge->title ) . ' '.'</div>';
-
-                        }
-                        else {
-                            
-                            echo '<div class="demo-badge-title" style="display:none;">' . esc_html( $badge->title ) . ' '.'</div>';
-
-                        }
-
-                        if( $post_excerpt == 'show' ) {
-                               
-                            echo '<div class="page-excerpt">' . wp_kses_post( $badge_page_id->post_excerpt ) . ' '.'</div>';
-
-                        } 
-                        else {
-                                 
-                            echo '<div class="page-excerpt" style="display:none;">' . wp_kses_post( $badge_page_id->post_excerpt ) . ' '.'</div>';;
-                        
-                        }
-                                   
-                    }
-
-                }
+                } 
 
                 echo '</div>';
 
-                if( $title == 'show' || $post_excerpt == 'show' ) {
-                    
-                    echo '<hr class="badge-line">';
-                
-                }
-                else {
-                
-                    echo '';
-                
-                }
-
             }
 
+            echo '</div>';
+            do_action( 'mycred_add_share_and_embed_button', $badge, $badge_id );
         }
-        echo '</div></div>';
+
+        echo '</div>';
 
         $output = ob_get_contents();
         ob_end_clean();
 
-        return apply_filters('mycred_my_badges', $output, $user_id);
+        return apply_filters( 'mycred_my_badges', $output, $user_id );
 
-    }
+    } 
 endif;
 
 /**
@@ -410,9 +298,3 @@ if ( !function_exists( 'mycred_render_badge_evidence' ) ) :
         return $content;
     }
 endif;
-
-add_action( 'wp_enqueue_scripts',  'enqueue_badge_front_shortcode_scripts'  );
-
- function enqueue_badge_front_shortcode_scripts() {
-     wp_enqueue_style( 'mycred-badge-front-style', plugins_url( 'assets/css/front.css', myCRED_BADGE ), array(), myCRED_BADGE_VERSION , 'all');
- }

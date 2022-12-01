@@ -293,7 +293,7 @@ if ( ! function_exists( 'mycred_render_rank_list' ) ) :
 		extract( $atts );
 
 		$output    = '';
-		$all_ranks = mycred_get_ranks( 'publish', '-1', $order, $ctype );
+		$all_ranks = mycred_get_ranks( 'publish', '-1', strtoupper( $order ), $ctype );
 
 		if ( ! empty( $all_ranks ) ) {
 

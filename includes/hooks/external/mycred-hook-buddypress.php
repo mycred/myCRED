@@ -308,7 +308,8 @@ function mycred_load_buddypress_profile_hook() {
 
 			// Prevent BP from running this ajax call
 			if ( $balance < $cost ) {
-				echo esc_html( apply_filters( 'mycred_bp_declined_addfriend', __( 'Insufficient Funds', 'mycred' ), $this ) );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo apply_filters( 'mycred_bp_declined_addfriend', __( 'Insufficient Funds', 'mycred' ), $this );
 				exit;
 			}
 

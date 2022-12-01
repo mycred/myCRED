@@ -89,7 +89,12 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 
 						<th><?php esc_html_e( 'Amount', 'mycred' ) ?></th>
 						<th><?php esc_html_e( 'Point Type', 'mycred' ) ?></th>
-						<th><?php esc_html_e( apply_filters( 'mycred_change_gateway_text', 'Gateway' ), 'mycred' ); ?></th>
+						<th>
+							<?php 
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							apply_filters( 'mycred_change_gateway_text', 'Gateway' ); 
+							?>	
+						</th>
 
 						
 						<th class="date-heading">Date</th>
@@ -113,7 +118,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 									$type_data = $cashcred_setting['fees']['types'][get_post_meta($post->ID,'point_type',true)];
 										
 									if ( $type_data['by'] == 'percent' ) {
-										$fee = ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) );
+										$fee = !empty($type_data['amount']) ? ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) ) : '';
 									}
 									else{
 										$fee = $type_data['amount'];
@@ -266,7 +271,12 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 						}?>
 						<th><?php esc_html_e( 'Amount', 'mycred' ) ?></th>
 						<th><?php esc_html_e( 'Point Type', 'mycred' ) ?></th>
-						<th><?php esc_html_e(apply_filters( 'mycred_change_gateway_text', 'Gateway' ),'mycred'); ?></th>
+						<th>
+							<?php 
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							apply_filters( 'mycred_change_gateway_text', 'Gateway' ); 
+							?>	
+						</th>
 						<th>Date</th>
 
 
@@ -290,7 +300,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 									$type_data = $cashcred_setting['fees']['types'][get_post_meta($post->ID,'point_type',true)];
 										
 									if ( $type_data['by'] == 'percent' ) {
-										$fee = ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) );
+										$fee = !empty($type_data['amount']) ? ( ( $type_data['amount'] / 100 ) * (int)get_post_meta($post->ID,'points',true) ) : '';
 									}
 									else{
 										$fee = $type_data['amount'];
@@ -348,7 +358,12 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 						}?>
 						<th><?php esc_html_e(  'Amount', 'mycred' ) ?></th>
 						<th><?php esc_html_e(  'Point Type', 'mycred' ) ?></th>
-						<th><?php esc_html_e( apply_filters( 'mycred_change_gateway_text', 'Gateway' ), 'mycred' ); ?></th>
+						<th>
+							<?php 
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							apply_filters( 'mycred_change_gateway_text', 'Gateway' ); 
+							?>			
+						</th>
 						<th><?php esc_html_e( 'Date', 'mycred' ) ?></th>
 
 					</tr>

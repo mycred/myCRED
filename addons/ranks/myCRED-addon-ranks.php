@@ -782,7 +782,8 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			if ( $output == '' ) return;
 
-			echo wp_kses_post( '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bp_rank_in_header', $output, $user_id, $this ) . '</div>' );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bp_rank_in_header', $output, $user_id, $this ) . '</div>' ;
 
 		}
 
@@ -838,7 +839,10 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 		<tr id="mycred-users-rank">
 			<td class="label"><?php if ( $count == 1 ) esc_html_e( 'Rank', 'mycred' ); else esc_html_e( 'Ranks', 'mycred' ); ?></td>
 			<td class="data">
-				<?php echo wp_kses_post( apply_filters( 'mycred_bp_rank_in_profile', $output, $user_id, $this ) ); ?>
+				<?php 
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo apply_filters( 'mycred_bp_rank_in_profile', $output, $user_id, $this ); 
+				?>
 
 			</td>
 		</tr>
@@ -894,7 +898,8 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			if ( $output == '' ) return;
 
-			echo wp_kses_post( '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bb_rank_in_reply', $output, $user_id, $this ) . '</div>' );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bb_rank_in_reply', $output, $user_id, $this ) . '</div>';
 
 		}
 
@@ -942,7 +947,8 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 			if ( $output == '' ) return;
 
-			echo wp_kses_post( '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bb_rank_in_profile', $output, $user_id, $this ) . '</div>' );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<div id="mycred-my-ranks">' . apply_filters( 'mycred_bb_rank_in_profile', $output, $user_id, $this ) . '</div>';
 
 		}
 
@@ -1087,7 +1093,11 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 
 						// Save users rank if a valid rank id is provided and it differs from the users current one
 						if ( $rank !== false && $rank > 0 && $users_rank->post_id != $rank ){
+
 							mycred_save_users_rank( $user_id, $rank, $type_key );
+						
+							do_action('mycred_manual_rank_assigned',$rank,$user_id);
+						
 						}
 						// Delete users rank
 						elseif ( $rank === false ) {

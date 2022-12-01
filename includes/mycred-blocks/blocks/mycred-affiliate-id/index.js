@@ -5,7 +5,7 @@
 //
 (function (wp) {
     var registerBlockType = wp.blocks.registerBlockType;
-    var InspectorControls = wp.editor.InspectorControls;
+    var InspectorControls = wp.blockEditor.InspectorControls;
     var el = wp.element.createElement;
     var SelectControl = wp.components.SelectControl;
     var panelBody = wp.components.PanelBody;
