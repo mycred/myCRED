@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 6.0.1
-Stable tag: 2.4.9
+Tested up to: 6.0.3
+Stable tag: 2.4.10
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +16,7 @@ myCred is an intelligent and adaptive **points management system** that allows y
 
 [youtube https://www.youtube.com/watch?v=-M19tzYo1jo]
 
-Build **brand loyalty** by rewarding your customers through store reward systems, community leaderboards, monetizing your website content, etc. - The possibilities are endless. 
+Build **brand loyalty** by rewarding your customers through store reward systems, community leaderboards, monetizing your website content, etc. - The possibilities are endless.
 
 **Increase customer engagement tenfold - Rewarding your users for community engagement will help your business grow.**
 
@@ -316,6 +316,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.4.10 =
+Bug fixes.
+
 = 2.4.9 =
 New features and Bug fixes.
 
@@ -416,6 +419,10 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.4.10 =
+- **NEW** - Added action hook "mycred_add_share_and_embed_button".
+- **FIX** - PHP warnings are resolved.
 
 = 2.4.9 =
 - **NEW** - Introduced title, excerpt, and display attributes in mycred_my_badges shortcode.

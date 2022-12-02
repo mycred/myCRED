@@ -83,7 +83,7 @@ if ( ! function_exists( 'mycred_render_my_badges' ) ) :
             }
 
             echo '</div>';
-
+            do_action( 'mycred_add_share_and_embed_button', $badge, $badge_id );
         }
 
         echo '</div>';

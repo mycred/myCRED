@@ -2,38 +2,6 @@
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 /**
- * Load BitPay PHP Library
- * @since 1.8
- * @version 1.0
- */
-if ( ! class_exists( 'WC_Gateway_Bitpay' ) ) {
-
-	$autoloader_param = __DIR__ . '/Bitpay/Autoloader.php';
-
-	// Load up the BitPay library
-	if ( true === file_exists( $autoloader_param ) && true === is_readable( $autoloader_param ) ) {
-
-		require_once $autoloader_param;
-		\Bitpay\Autoloader::register();
-
-	}
-
-	// Exist for quirks in object serialization...
-	if ( false === class_exists( 'PrivateKey' ) ) {
-		include_once( __DIR__ . '/Bitpay/PrivateKey.php' );
-	}
-
-	if ( false === class_exists( 'PublicKey' ) ) {
-		include_once( __DIR__ . '/Bitpay/PublicKey.php' );
-	}
-
-	if ( false === class_exists( 'Token' ) ) {
-		include_once( __DIR__ . '/Bitpay/Token.php' );
-	}
-
-}
-
-/**
  * myCRED_Bitpay class
  * BitPay (Bitcoins) - Payment Gateway
  * @since 1.4
@@ -58,11 +26,7 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 				'gateway_logo_url' => plugins_url( 'assets/images/bitpay.png', MYCRED_PURCHASE ),
 				'defaults'         => array(
 					'sandbox'          => 0,
-					'api_public'       => '',
-					'api_secret'       => '',
-					'api_sign'         => '',
 					'api_token'        => '',
-					'api_label'        => '',
 					'currency'         => 'USD',
 					'exchange'         => $default_exchange,
 					'item_name'        => 'Purchase of myCRED %plural%',
@@ -71,10 +35,6 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 					'notifications'    => 1
 				)
 			), $gateway_prefs );
-
-			$this->is_ready = false;
-			if ( isset( $this->prefs['api_public'] ) && ! empty( $this->prefs['api_public'] ) && isset( $this->prefs['api_secret'] ) && ! empty( $this->prefs['api_secret'] ) )
-				$this->is_ready = true;
 
 		}
 
@@ -90,25 +50,31 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 
 				$new_call = array();
 				$json     = json_decode( $post, true );
-				if ( ! empty( $json ) && array_key_exists( 'id', $json ) && array_key_exists( 'url', $json ) ) {
+
+				if ( ! empty( $json ) && array_key_exists( 'id', $json['data'] ) && array_key_exists( 'url', $json['data'] ) ) {
 
 					try {
+						// Bitpay url
+						$host = 'bitpay.com';
+						if ( $this->sandbox_mode )
+							$host = 'test.bitpay.com';
 
-						$client      = new \Bitpay\Client\Client();
-						if ( false === strpos( $json['url'], 'test' ) )
-							$network = new \Bitpay\Network\Livenet();
-						else
-							$network = new \Bitpay\Network\Testnet();
-
-						$client->setNetwork( $network );
-						$curlAdapter = new \Bitpay\Client\Adapter\CurlAdapter();
-						$client->setAdapter( $curlAdapter );
-
-						$client->setPrivateKey( buycred_bitpay_decrypt( $this->prefs['api_secret'] ) );
-						$client->setPublicKey( buycred_bitpay_decrypt( $this->prefs['api_public'] ) );
-						$client->setToken( buycred_bitpay_decrypt( $this->prefs['api_token'] ) );
-
-						$invoice     = $client->getInvoice( $json['id'] );
+						$id = $json['data']['id'];
+						
+						$retrieve_invoice = 
+							wp_remote_get( 'https://'.$host.'/invoices/'.$id.'?token='.$this->prefs['api_token'], 
+								array(
+								    'headers'     => 
+									    array( 
+									    	'X-Accept-Version' => '2.0.0',
+		    								'Content-Type' => 'application/json'
+									    )
+								) 
+							);
+							
+						$data 	 = json_decode( wp_remote_retrieve_body( $retrieve_invoice ) );
+						$status  = $data->data->status;
+						$orderId = $data->data->orderId;
 
 					} catch ( \Exception $e ) {
 
@@ -116,16 +82,16 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 
 					}
 
-					if ( empty( $new_call ) ) {
+					if ( empty( $new_call ) && $status == 'confirmed' ) {
 
-						$transaction_id  = $invoice->getOrderId();
+						$transaction_id  = $orderId;
 						$pending_post_id = buycred_get_pending_payment_id( $transaction_id );
 						$pending_payment = $this->get_pending_payment( $pending_post_id );
 
 						if ( $pending_payment !== false ) {
 
 							// If account is credited, delete the post and it's comments.
-							if ( $this->complete_payment( $pending_payment, $json['id'] ) )
+							if ( $this->complete_payment( $pending_payment, $json['data']['id'] ) )
 								$this->trash_pending_payment( $pending_post_id );
 							else
 								$new_call[] = __( 'Failed to credit users account.', 'mycred' );
@@ -156,85 +122,7 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 		 * @since 1.8
 		 * @version 1.0
 		 */
-		public function admin_init() {
-
-			add_action( 'wp_ajax_buycred-bitpay-pairing', array( $this, 'ajax_pair' ) );
-
-		}
-
-		/**
-		 * AJAX: Pair with bitPay
-		 * @since 1.8
-		 * @version 1.0
-		 */
-		public function ajax_pair() {
-
-			check_ajax_referer( 'buycred-pair-bitpay', 'token' );
-
-			$pairing_code = isset( $_POST['code'] ) ? sanitize_text_field( wp_unslash( $_POST['code'] ) ) : '';
-			$network      = isset( $_POST['network'] ) ? sanitize_text_field( wp_unslash( $_POST['network'] ) ) : '';
-
-			try {
-
-				$key          = new \Bitpay\PrivateKey();
-				$key->generate();
-
-				$pub          = new \Bitpay\PublicKey();
-				$pub->setPrivateKey( $key );
-				$pub->generate();
-
-				$sin          = new \Bitpay\SinKey();
-				$sin->setPublicKey( $pub );
-				$sin->generate();
-
-				$client       = new \Bitpay\Client\Client();
-
-				if ( $network === 'live' )
-					$client->setNetwork( new \Bitpay\Network\Livenet() );
-				else
-					$client->setNetwork( new \Bitpay\Network\Testnet() );
-
-				$curlAdapter  = new \Bitpay\Client\Adapter\CurlAdapter();
-
-				$client->setAdapter( $curlAdapter );
-				$client->setPrivateKey( $key );
-				$client->setPublicKey( $pub );
-
-			} catch ( \Exception $e ) {
-				wp_send_json_error( $e->getMessage() );
-			}
-
-			$label        = preg_replace( '/[^a-zA-Z0-9 \-\_\.]/', '', get_bloginfo() );
-			$label        = substr( 'buyCRED - ' . $label, 0, 59 );
-
-			try {
-
-				$token = $client->createToken(
-					array(
-						'id'          => (string) $sin,
-						'pairingCode' => $pairing_code,
-						'label'       => $label,
-					)
-				);
-
-			} catch ( \Exception $e ) {
-
-				wp_send_json_error( $e->getMessage() );
-
-			}
-
-			if ( $network !== 'live' )
-				$label .= ' (Testnet)';
-
-			wp_send_json_success( array(
-				'api_secret' => '<input type="hidden" name="' . $this->field_name( 'api_secret' ) . '" value="' . buycred_bitpay_encrypt( $key ) . '" />',
-				'api_public' => '<input type="hidden" name="' . $this->field_name( 'api_public' ) . '" value="' . buycred_bitpay_encrypt( $pub ) . '" />',
-				'api_sign'   => '<input type="hidden" name="' . $this->field_name( 'api_sign' ) . '" value="' . (string) $sin . '" />',
-				'api_token'  => '<input type="hidden" name="' . $this->field_name( 'api_token' ) . '" value="' . buycred_bitpay_encrypt( $token ) . '" />',
-				'label'      => '<input type="hidden" name="' . $this->field_name( 'api_label' ) . '" value="' . $label . '" /><p class="form-control-static">' . $label . '</p>'
-			) );
-
-		}
+		public function admin_init() { }
 
 		/**
 		 * Prep Sale
@@ -246,61 +134,54 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 			// Set currency
 			$this->currency = ( $this->currency == '' ) ? $this->prefs['currency'] : $this->currency;
 
+			// Token
+			$api_token = ! empty( $this->prefs['api_token'] ) ? $this->prefs['api_token'] : '';
 			//Set Cost in raw format 
 			$this->cost = $this->get_cost( $this->amount, $this->point_type, true );
 
 			// Item Name
 			$item_name      = str_replace( '%number%', $this->amount, $this->prefs['item_name'] );
 			$item_name      = $this->core->template_tags_general( $item_name );
-
 			$user           = get_userdata( $this->buyer_id );
 
 			// Based on the "BitPay for WooCommerce" plugin issued by Bitpay
 			try {
 
-				// Currency
-				$currency    = new \Bitpay\Currency( $this->currency );
+				// Bitpay url
+				$host          	= 'bitpay.com';
+				if ( $this->sandbox_mode )
+					$host = 'test.bitpay.com';
+				
+				$request_body = 
+					json_encode(
+						array(
+						    'currency' => $this->currency,
+						    'price' => $this->cost,
+						    'orderId' => $this->transaction_id,
+						    'notificationURL' => $this->callback_url(),
+						    'redirectURL' => $this->get_thankyou(),
+						    'fullNotifications' => ( ( $this->prefs['notifications'] ) ? true : false ),
+							'transactionSpeed' => $this->prefs['speed'],
+							'description'	=> $item_name,
+						    'buyer' => array(
+						         'email' => $user->user_email
+						    ),
+						    'token' => $api_token
+						),
+					);
 
-				// First, we set the client
-				$client      = new \Bitpay\Client\Client();
-
-				if ( ! $this->sandbox_mode )
-					$client->setNetwork( new \Bitpay\Network\Livenet() );
-				else
-					$client->setNetwork( new \Bitpay\Network\Testnet() );
-
-				$curlAdapter = new \Bitpay\Client\Adapter\CurlAdapter();
-				$client->setAdapter($curlAdapter);
-
-				$client->setPrivateKey( buycred_bitpay_decrypt( $this->prefs['api_secret'] ) );
-				$client->setPublicKey( buycred_bitpay_decrypt( $this->prefs['api_public'] ) );
-				$client->setToken( buycred_bitpay_decrypt( $this->prefs['api_token'] ) );
-
-				// Next, we create an invoice object
-				$invoice     = new \Bitpay\Invoice();
-				$invoice->setOrderId( (string) $this->transaction_id );
-				$invoice->setCurrency( $currency ) ;
-				$invoice->setFullNotifications( ( ( $this->prefs['notifications'] ) ? true : false ) );
-
-				// Next, we set the invoice item
-				$item        = new \Bitpay\Item();
-				$item->setPrice( $this->cost );
-				$item->setDescription( $item_name );
-
-				// This includes setting the buyer
-				$buyer       = new \Bitpay\Buyer();
-				$buyer->setEmail( $user->user_email );
-
-				$invoice->setBuyer( $buyer );
-				$invoice->setItem( $item );
-
-				// Append extras
-				$invoice->setRedirectUrl( $this->get_thankyou() );
-				$invoice->setNotificationUrl( $this->callback_url() );
-				$invoice->setTransactionSpeed( $this->prefs['speed'] );
-
-				// Create an invoice
-				$invoice     = $client->createInvoice( $invoice );
+				$create_invoice = 
+					wp_remote_post( 'https://'.$host.'/invoices', 
+						array(
+						    'method'      => 'POST',
+						    'headers'     => 
+							    array( 
+							    	'X-Accept-Version' => '2.0.0',
+    								'Content-Type' => 'application/json'
+							    ),
+						    'body'        => $request_body
+						) 
+					);
 
 			} catch ( \Exception $e ) {
 
@@ -309,8 +190,8 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 			}
 
 			if ( empty( $this->errors ) ) {
-
-				$this->redirect_to = $invoice->getUrl();
+				
+				$this->redirect_to = json_decode( $create_invoice['body'] )->data->url;
 
 			}
 
@@ -343,13 +224,13 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 		 */
 		public function checkout_page_body() {
 
-			echo wp_kses_post( $this->checkout_header() );
-			echo wp_kses_post( $this->checkout_logo( false ) );
+			echo $this->checkout_header();
+			echo $this->checkout_logo( false );
 
-			echo wp_kses_post( $this->checkout_order() );
-			echo wp_kses_post( $this->checkout_cancel() );
+			echo $this->checkout_order();
+			echo $this->checkout_cancel();
 
-			echo wp_kses_post( $this->checkout_footer() );
+			echo $this->checkout_footer();
 
 		}
 
@@ -361,136 +242,51 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 		function preferences() {
 
 			$prefs = $this->prefs;
-
 ?>
 <div class="row">
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php esc_html_e( 'Details', 'mycred' ); ?></h3>
-
-		<?php if ( ! $this->is_ready ) : ?>
+		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
 
 		<div class="form-group">
-			<label><?php esc_html_e( 'API Token', 'mycred' ); ?></label>
+			<label><?php _e( 'API Token', 'mycred' ); ?></label>
 			<div class="form-inline" id="bitpay-pairing-wrapper">
-				<input type="text" id="bitpay-pair-code" class="form-control" placeholder="Pairing Code" value="" /> 
-				<select id="bitpay-pair-network" class="form-control">
-					<option value="live">Livenet</option>
-					<option value="test">Testnet</option>
-				</select> 
-				<button type="button" id="sync-bitpay-pairing-code" class="button button-secondary">Sync</button>
+				<input type="text" id="bitpay-pair-code" class="form-control" name="<?php echo esc_attr( $this->field_name('api_token') ); ?>" placeholder="Input Token" value="<?php echo esc_attr( $prefs['api_token'] ); ?>" /> 
 			</div>
-			<p class="description bitpay-link" id="bitpay-link-live"><span>Get a pairing code: <a href="https://bitpay.com/api-tokens" target="_blank">https://bitpay.com/api-tokens</a></span></p>
-			<p class="description bitpay-link" id="bitpay-link-test" style="display: none;"><span>Get a pairing code: <a href="https://test.bitpay.com/api-tokens" target="_blank">https://test.bitpay.com/api-tokens</a></span></p>
+			<p class="description bitpay-link" id="bitpay-link-live" <?php echo $prefs['sandbox'] == 0 ? 'style="display: block;"' : 'style="display: none;"'; ?>><span>Get a pairing code: <a href="https://bitpay.com/api-tokens" target="_blank">https://bitpay.com/api-tokens</a></span></p>
+			<p class="description bitpay-link" id="bitpay-link-test" <?php echo $prefs['sandbox'] == 1 ? 'style="display: block;"' : 'style="display: none;"'; ?>><span>Get a pairing code: <a href="https://test.bitpay.com/api-tokens" target="_blank">https://test.bitpay.com/api-tokens</a></span></p>
 		</div>
-<script type="text/javascript">
-jQuery(function($){
+		<script type="text/javascript">
+		jQuery(function($){
 
-	$( '#sync-bitpay-pairing-code' ).click(function(e){
+			$( '#buycred-gateway-bitpay-sandbox' ).on( 'click', function(){
 
-		e.preventDefault();
-
-		var pairwrapper = $( '#bitpay-pairing-wrapper' );
-
-		$.ajax({
-			type     : "POST",
-			data     : {
-				action  : 'buycred-bitpay-pairing',
-				token   : '<?php echo esc_attr( wp_create_nonce( 'buycred-pair-bitpay' ) ); ?>',
-				code    : $( '#bitpay-pair-code' ).val(),
-				network : $( '#bitpay-pair-network' ).find( ':selected' ).val(),
-			},
-			dataType : "JSON",
-			url      : '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
-			beforeSend : function() {
-
-				$( '#sync-bitpay-pairing-code' ).attr( 'disabled', 'disabled' );
-
-			},
-			success  : function( response ) {
-
-				if ( response.success ) {
-
-					pairwrapper.slideUp(function(){
-						pairwrapper.empty();
-						$.each( response.data, function(index,element){
-							pairwrapper.append( element );
-						});
-						pairwrapper.slideDown();
-					});
-
-				}
-				else {
-
-					alert( response.data );
-					$( '#sync-bitpay-pairing-code' ).removeAttr( 'disabled' );
+				if ( $( this ).is( ':checked' ) ) {
+					$( '#bitpay-link-test' ).show();
+					$( '#bitpay-link-live' ).hide();
+				}else{
+					$( '#bitpay-link-test' ).hide();
+					$( '#bitpay-link-live' ).show();
 
 				}
 
-			},
-			error    : function() {
-				alert( 'Communications Error' );
-			}
+			});
+
 		});
-
-	});
-
-	$( '#bitpay-pair-network' ).change(function(){
-
-		$( '.bitpay-link' ).hide();
-		var selectedmode = $(this).find( ':selected' );
-		$( '#bitpay-link-' + selectedmode.val() ).show();
-
-	});
-
-});
-</script>
-
-		<?php else : ?>
+		</script>
 
 		<div class="form-group">
-			<label><?php esc_html_e( 'API Token', 'mycred' ); ?></label>
-			<p class="form-control-static"><?php echo esc_attr( $prefs['api_label'] ); ?></p>
-			<button type="button" id="bitpay-cancel-pair" class="button button-secondary">Revoke Token</button>
-			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_secret' ) ); ?>" value="<?php echo esc_attr( $prefs['api_secret'] ); ?>" />
-			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_public' ) ); ?>" value="<?php echo esc_attr( $prefs['api_public'] ); ?>" />
-			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_sign' ) ); ?>" value="<?php echo esc_attr( $prefs['api_sign'] ); ?>" />
-			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_token' ) ); ?>" value="<?php echo esc_attr( $prefs['api_token'] ); ?>" />
-			<input type="hidden" class="reset-api" name="<?php echo esc_attr( $this->field_name( 'api_label' ) ); ?>" value="<?php echo esc_attr( $prefs['api_label'] ); ?>" />
-		</div>
-<script type="text/javascript">
-jQuery(function($){
-
-	$( '#bitpay-cancel-pair' ).click(function(e){
-
-		e.preventDefault();
-
-		if ( confirm( '<?php echo esc_js( esc_attr( __( 'Are you sure you want to do this?', 'mycred' ) ) ); ?>' ) ) {
-
-			$( 'input.reset-api' ).val( '' );
-			$(this).before().html( '<?php echo esc_js( __( 'Removed - Remember to save your changes.', 'mycred' ) ); ?>' );
-
-		}
-
-	});
-
-});
-</script>
-
-		<?php endif; ?>
-
-		<div class="form-group">
-			<label for="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>"><?php esc_html_e( 'Item Name', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo esc_attr( $this->field_name( 'item_name' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
+			<label for="<?php echo $this->field_id( 'item_name' ); ?>"><?php _e( 'Item Name', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo $this->field_name( 'item_name' ); ?>" id="<?php echo $this->field_id( 'item_name' ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>"><?php esc_html_e( 'Logo URL', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo esc_attr( $this->field_name( 'logo_url' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
+			<label for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
 		</div>
 		<div class="row">
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo esc_attr( $this->field_id( 'speed' ) ); ?>"><?php esc_html_e( 'Transaction Speed', 'mycred' ); ?></label>
-					<select name="<?php echo esc_attr( $this->field_name( 'speed' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'speed' ) ); ?>" class="form-control">
+					<label for="<?php echo $this->field_id( 'speed' ); ?>"><?php _e( 'Transaction Speed', 'mycred' ); ?></label>
+					<select name="<?php echo $this->field_name( 'speed' ); ?>" id="<?php echo $this->field_id( 'speed' ); ?>" class="form-control">
 <?php
 
 			$options = array(
@@ -499,7 +295,9 @@ jQuery(function($){
 				'low'    => __( 'Low', 'mycred' )
 			);
 			foreach ( $options as $value => $label ) {
-				echo '<option value="' . esc_attr( $value ) . '" ' . selected( $prefs['speed'], $value ) . '>' . esc_html( $label ) . '</option>';
+				echo '<option value="' . $value . '"';
+				if ( $prefs['speed'] == $value ) echo ' selected="selected"';
+				echo '>' . $label . '</option>';
 			}
 
 ?>
@@ -509,8 +307,8 @@ jQuery(function($){
 			</div>
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo esc_attr( $this->field_id( 'notifications' ) ); ?>"><?php esc_html_e( 'Full Notifications', 'mycred' ); ?></label>
-					<select name="<?php echo esc_attr( $this->field_name( 'notifications' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'notifications' ) ); ?>" class="form-control">
+					<label for="<?php echo $this->field_id( 'notifications' ); ?>"><?php _e( 'Full Notifications', 'mycred' ); ?></label>
+					<select name="<?php echo $this->field_name( 'notifications' ); ?>" id="<?php echo $this->field_id( 'notifications' ); ?>" class="form-control">
 <?php
 
 			$options = array(
@@ -518,7 +316,9 @@ jQuery(function($){
 				1 => __( 'Yes', 'mycred' )
 			);
 			foreach ( $options as $value => $label ) {
-				echo '<option value="' . esc_attr( $value ) . '" ' . selected( $prefs['notifications'], $value ) . '>' . esc_html( $label ) . '</option>';
+				echo '<option value="' . $value . '"';
+				if ( $prefs['notifications'] == $value ) echo ' selected="selected"';
+				echo '>' . $label . '</option>';
 			}
 
 ?>
@@ -529,14 +329,14 @@ jQuery(function($){
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
+		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>"><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo esc_attr( $this->field_name( 'currency' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>" value="<?php echo esc_attr( $prefs['currency'] ); ?>" class="form-control" maxlength="3" placeholder="<?php esc_html_e( 'Currency Code', 'mycred' ); ?>" />
+			<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo $this->field_name( 'currency' ); ?>" id="<?php echo $this->field_id( 'currency' ); ?>" value="<?php echo $prefs['currency']; ?>" class="form-control" maxlength="3" placeholder="<?php _e( 'Currency Code', 'mycred' ); ?>" />
 
 		</div>
 		<div class="form-group">
-			<label><?php esc_html_e( 'Exchange Rates', 'mycred' ); ?></label>
+			<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
 
 			<?php $this->exchange_rate_setup(); ?>
 
@@ -556,20 +356,7 @@ jQuery(function($){
 
 			$new_data                  = array();
 
-			if ( array_key_exists( 'api_secret', $data ) ) {
-				$new_data['api_secret']    = sanitize_text_field( $data['api_secret'] );
-				$new_data['api_public']    = sanitize_text_field( $data['api_public'] );
-				$new_data['api_sign']      = sanitize_text_field( $data['api_sign'] );
-				$new_data['api_token']     = sanitize_text_field( $data['api_token'] );
-				$new_data['api_label']     = sanitize_text_field( $data['api_label'] );
-			}
-			else {
-				$new_data['api_secret']    = '';
-				$new_data['api_public']    = '';
-				$new_data['api_sign']      = '';
-				$new_data['api_token']     = '';
-				$new_data['api_label']     = '';
-			}
+			$new_data['api_token']     = isset( $data['api_token'] ) ? sanitize_text_field( $data['api_token'] ) : '';
 
 			$new_data['sandbox']       = ( isset( $data['sandbox'] ) ) ? 1 : 0;
 			$new_data['currency']      = sanitize_text_field( $data['currency'] );
@@ -590,91 +377,6 @@ jQuery(function($){
 			return $new_data;
 
 		}
-
-	}
-endif;
-
-/**
- * Bitpay Encrypt
- * @since 1.8
- * @version 1.0
- */
-if ( ! function_exists( 'buycred_bitpay_encrypt' ) ) :
-	function buycred_bitpay_encrypt( $data ) {
-
-        if (false === isset($data) || true === empty($data)) {
-            throw new \Exception('The Bitpay payment plugin was called to encrypt data but no data was passed!');
-        }
-
-        $openssl_ext = new \Bitpay\Crypto\OpenSSLExtension();
-        $fingerprint = sha1(sha1(__DIR__));
-
-        if (true === isset($fingerprint) &&
-            true === isset($openssl_ext)  &&
-            strlen($fingerprint) > 24)
-        {
-            $fingerprint = substr($fingerprint, 0, 24);
-
-            if (false === isset($fingerprint) || true === empty($fingerprint)) {
-                throw new \Exception('The Bitpay payment plugin was called to encrypt data but could not generate a fingerprint parameter!');
-            }
-
-            $encrypted = $openssl_ext->encrypt(base64_encode(serialize($data)), $fingerprint, '1234567890123456');
-
-            if (true === empty($encrypted)) {
-                throw new \Exception('The Bitpay payment plugin was called to serialize an encrypted object and failed!');
-            }
-
-            return $encrypted;
-        } else {
-            wp_die('Invalid server fingerprint generated');
-        }
-
-	}
-endif;
-
-/**
- * Bitpay Decrypt
- * @since 1.8
- * @version 1.0
- */
-if ( ! function_exists( 'buycred_bitpay_decrypt' ) ) :
-    function buycred_bitpay_decrypt( $encrypted ) {
-
-        if (false === isset($encrypted) || true === empty($encrypted)) {
-            throw new \Exception('The Bitpay payment plugin was called to decrypt data but no data was passed!');
-        }
-        $openssl_ext = new \Bitpay\Crypto\OpenSSLExtension();
-       
-        $fingerprint = sha1(sha1(__DIR__));
-
-        if (true === isset($fingerprint) &&
-            true === isset($openssl_ext)  &&
-            strlen($fingerprint) > 24)
-        {
-            $fingerprint = substr($fingerprint, 0, 24);
-
-            if (false === isset($fingerprint) || true === empty($fingerprint)) {
-                throw new \Exception('The Bitpay payment plugin was called to decrypt data but could not generate a fingerprint parameter!');
-            }
-
-            $decrypted = base64_decode($openssl_ext->decrypt($encrypted, $fingerprint, '1234567890123456'));
-
-            // Strict base64 char check
-            if (false === base64_decode($decrypted, true)) {
-                $error_string = '    [Warning] In bitpay_decrypt: data appears to have already been decrypted. Strict base64 check failed.';
-            } else {
-                $decrypted = base64_decode($decrypted);
-            }
-
-            if (true === empty($decrypted)) {
-                throw new \Exception('The Bitpay payment plugin was called to unserialize a decrypted object and failed! The decrypt function was called with "' . $encrypted . '"');
-            }
-
-            return unserialize($decrypted);
-        } else {
-            wp_die('Invalid server fingerprint generated');
-        }
 
 	}
 endif;
