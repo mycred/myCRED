@@ -496,7 +496,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			$cost_label = apply_filters( 'mycred_buycred_checkout_order', __('Cost', 'mycred'), $this );
 		
 			if ( $this->gifting )
-				$table_rows[] = '<tr><td colspan="2"><strong>' . esc_js( esc_attr($cost_label ) ) . ':</strong> ' . esc_html( get_userdata( $this->recipient_id )->display_name ) . '</td></tr>';
+				$table_rows[] = '<tr><td>Recipient</td><td class="cost right">' . esc_html( get_userdata( $this->recipient_id )->display_name ) . '</td></tr>';
 
 			$table_rows[] = '<tr class="total"><td class="item right">' . esc_js( esc_attr( __( 'Cost', 'mycred' ) ) ) . '</td><td class="cost right">' . sprintf( '%s %s', apply_filters( 'mycred_buycred_display_user_amount',  $this->cost ), $this->prefs['currency'] ) . '</td></tr>';
 
@@ -507,8 +507,8 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 					<table class="table" cellspacing="0" cellpadding="0">
 						<thead>
 							<tr>
-								<th class="item">' . esc_js( esc_attr($item_label ) ) . '</td>
-								<th class="cost right">' . esc_js( esc_attr($amount_label ) ) . '</td>
+								<th class="item">' . esc_js( esc_attr( $item_label ) ) . '</td>
+								<th class="cost right">' . esc_js( esc_attr( $amount_label ) ) . '</td>
 							</tr>
 						</thead>
 						<tbody>
@@ -888,12 +888,6 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 		 */
 		public function get_cost( $amount = 0, $point_type = MYCRED_DEFAULT_TYPE_KEY, $raw = false, $custom_rate = 0 ) {
 
-			if( ! empty( $_REQUEST['er_random'] ) ) {
-				
-				$custom_rate = mycred_decode_values( sanitize_text_field( wp_unslash( $_REQUEST['er_random'] ) ) );
-			
-			}
-
 			$setup = mycred_get_buycred_sale_setup( $point_type );
 
 			// Apply minimum
@@ -903,12 +897,15 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 			// Calculate cost here so we can use any exchange rate
 			if ( array_key_exists( $point_type, $this->prefs['exchange'] ) ) {
 
-				// Check for user override
 				$override = mycred_get_user_meta( $this->current_user_id, 'mycred_buycred_rates_' . $point_type, '', true );
-				if ( isset( $override[ $this->id ] ) && $override[ $this->id ] != '' )
-					$rate = $override[ $this->id ];
-				else if( $custom_rate !=0 )
+
+				if ( $custom_rate == 0 && isset( $_REQUEST['er_random'] ) )
+					$custom_rate = mycred_decode_values( sanitize_text_field( wp_unslash( $_REQUEST['er_random'] ) ) );
+
+				if( $custom_rate != 0 )
 					$rate = $custom_rate;
+				else if( isset( $override[ $this->id ] ) && $override[ $this->id ] != '' )
+					$rate = $override[ $this->id ];
 				else
 					$rate = $this->prefs['exchange'][ $point_type ];
 
@@ -917,7 +914,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 				else
 					$rate = (int) $rate;
 
-				$cost   = $amount * $rate;
+				$cost = $amount * $rate;
 
 			}
 			else

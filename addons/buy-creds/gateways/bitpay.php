@@ -190,7 +190,7 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 			}
 
 			if ( empty( $this->errors ) ) {
-				
+
 				$this->redirect_to = json_decode( $create_invoice['body'] )->data->url;
 
 			}
@@ -224,13 +224,13 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 		 */
 		public function checkout_page_body() {
 
-			echo $this->checkout_header();
-			echo $this->checkout_logo( false );
+			echo wp_kses_post( $this->checkout_header() );
+			echo wp_kses_post( $this->checkout_logo( false ) );
 
-			echo $this->checkout_order();
-			echo $this->checkout_cancel();
+			echo wp_kses_post( $this->checkout_order() );
+			echo wp_kses_post( $this->checkout_cancel() );
 
-			echo $this->checkout_footer();
+			echo wp_kses_post( $this->checkout_footer() );
 
 		}
 
@@ -245,10 +245,10 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 ?>
 <div class="row">
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Details', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Details', 'mycred' ); ?></h3>
 
 		<div class="form-group">
-			<label><?php _e( 'API Token', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'API Token', 'mycred' ); ?></label>
 			<div class="form-inline" id="bitpay-pairing-wrapper">
 				<input type="text" id="bitpay-pair-code" class="form-control" name="<?php echo esc_attr( $this->field_name('api_token') ); ?>" placeholder="Input Token" value="<?php echo esc_attr( $prefs['api_token'] ); ?>" /> 
 			</div>
@@ -275,18 +275,18 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 		</script>
 
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'item_name' ); ?>"><?php _e( 'Item Name', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'item_name' ); ?>" id="<?php echo $this->field_id( 'item_name' ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'item_name' ) );?>"><?php esc_html_e( 'Item Name', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'item_name' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'item_name' ) ); ?>" value="<?php echo esc_attr( $prefs['item_name'] ); ?>" class="form-control" />
 		</div>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'logo_url' ); ?>"><?php _e( 'Logo URL', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'logo_url' ); ?>" id="<?php echo $this->field_id( 'logo_url' ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
+			<label for="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>"><?php esc_html_e( 'Logo URL', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'logo_url' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'logo_url' ) ); ?>" value="<?php echo esc_attr( $prefs['logo_url'] ); ?>" class="form-control" />
 		</div>
 		<div class="row">
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( 'speed' ); ?>"><?php _e( 'Transaction Speed', 'mycred' ); ?></label>
-					<select name="<?php echo $this->field_name( 'speed' ); ?>" id="<?php echo $this->field_id( 'speed' ); ?>" class="form-control">
+					<label for="<?php echo esc_attr( $this->field_id( 'speed' ) ); ?>"><?php esc_html_e( 'Transaction Speed', 'mycred' ); ?></label>
+					<select name="<?php echo esc_attr( $this->field_name( 'speed' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'speed' ) ); ?>" class="form-control">
 <?php
 
 			$options = array(
@@ -295,9 +295,9 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 				'low'    => __( 'Low', 'mycred' )
 			);
 			foreach ( $options as $value => $label ) {
-				echo '<option value="' . $value . '"';
+				echo '<option value="' . esc_attr( $value ) . '"';
 				if ( $prefs['speed'] == $value ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+				echo '>' . esc_html( $label ) . '</option>';
 			}
 
 ?>
@@ -307,8 +307,8 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 			</div>
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 				<div class="form-group">
-					<label for="<?php echo $this->field_id( 'notifications' ); ?>"><?php _e( 'Full Notifications', 'mycred' ); ?></label>
-					<select name="<?php echo $this->field_name( 'notifications' ); ?>" id="<?php echo $this->field_id( 'notifications' ); ?>" class="form-control">
+					<label for="<?php echo esc_attr( $this->field_id( 'notifications' ) ); ?>"><?php esc_html_e( 'Full Notifications', 'mycred' ); ?></label>
+					<select name="<?php echo esc_attr( $this->field_name( 'notifications' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'notifications' ) ); ?>" class="form-control">
 <?php
 
 			$options = array(
@@ -316,9 +316,9 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 				1 => __( 'Yes', 'mycred' )
 			);
 			foreach ( $options as $value => $label ) {
-				echo '<option value="' . $value . '"';
+				echo '<option value="' . esc_attr( $value ) . '"';
 				if ( $prefs['notifications'] == $value ) echo ' selected="selected"';
-				echo '>' . $label . '</option>';
+				echo '>' . esc_html( $label ) . '</option>';
 			}
 
 ?>
@@ -329,14 +329,14 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<h3><?php _e( 'Setup', 'mycred' ); ?></h3>
+		<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
 		<div class="form-group">
-			<label for="<?php echo $this->field_id( 'currency' ); ?>"><?php _e( 'Currency', 'mycred' ); ?></label>
-			<input type="text" name="<?php echo $this->field_name( 'currency' ); ?>" id="<?php echo $this->field_id( 'currency' ); ?>" value="<?php echo $prefs['currency']; ?>" class="form-control" maxlength="3" placeholder="<?php _e( 'Currency Code', 'mycred' ); ?>" />
+			<label for="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>"><?php esc_html_e( 'Currency', 'mycred' ); ?></label>
+			<input type="text" name="<?php echo esc_attr( $this->field_name( 'currency' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'currency' ) ); ?>" value="<?php echo esc_attr( $prefs['currency'] ); ?>" class="form-control" maxlength="3" placeholder="<?php esc_attr_e( 'Currency Code', 'mycred' ); ?>" />
 
 		</div>
 		<div class="form-group">
-			<label><?php _e( 'Exchange Rates', 'mycred' ); ?></label>
+			<label><?php esc_html_e( 'Exchange Rates', 'mycred' ); ?></label>
 
 			<?php $this->exchange_rate_setup(); ?>
 

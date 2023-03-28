@@ -103,6 +103,9 @@ if ( ! class_exists( 'myCRED_Stats_Module' ) ) :
 			add_shortcode( MYCRED_SLUG . '_chart_top_balances',     'mycred_render_chart_top_balances' );
 			add_shortcode( MYCRED_SLUG . '_chart_top_instances',    'mycred_render_chart_top_instances' );
 
+			add_shortcode( MYCRED_SLUG . '_chart_acquisition',    	'mycred_render_chart_acquisition' );
+
+
 		}
 
 		/**

@@ -2111,7 +2111,12 @@ if ( ! function_exists( 'mycred_install_log' ) ) :
 			entry         LONGTEXT DEFAULT NULL, 
 			data          LONGTEXT DEFAULT NULL, 
 			PRIMARY KEY   (id), 
-			UNIQUE KEY id (id)"; 
+			UNIQUE KEY id (id),
+			INDEX 		  ref (ref),
+			INDEX 		  ref_id (ref_id),
+			INDEX 		  user_id (user_id),
+			INDEX 		  ctype (ctype),
+			INDEX 		  time (time)";  
 
 		// Insert table
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -3882,8 +3887,6 @@ if ( ! function_exists( 'mycred_get_addon_defaults' ) ) :
                     'show_levels'              => 0,
                     'show_level_points'        => 0,
                     'show_earners'             => 0,
-                    'open_badge'               => 0,
-                    'open_badge_evidence_page' => 0,
                     'buddypress'               => '',
                     'bbpress'                  => '',
                     'show_all_bp'              => 0,
@@ -4019,7 +4022,7 @@ if ( ! function_exists( 'mycred_add_main_submenu' ) ) :
 			'menu_slug',
 			'function',
 			'position'
-		));
+		) );
 
 		return add_submenu_page( $main_menu_slug, $page_title, $menu_title, $capability, $menu_slug, $function, $position );
 
@@ -4191,44 +4194,47 @@ endif;
  * @since 2.3
  * @version 1.0
  */
-if( !function_exists( 'mycred_create_select2' ) ):
-function mycred_create_select2( $options = '', $attributes = array(), $selected = array() )
-{
-	$content = '';
-	$is_selected = false;
-	$content .= "<select ";
+if( ! function_exists( 'mycred_create_select2' ) ):
+	function mycred_create_select2( $options = '', $attributes = array(), $selected = array(), $width = '168px' ) {
+		
+		$content = '';
+		$is_selected = false;
+		$content .= "<select ";
 
-	if( !empty( $attributes ) )
-		foreach( $attributes as $attr => $value )
-			$content .= "{$attr}='{$value}' ";
+		if( ! empty( $attributes ) )
+			foreach( $attributes as $attr => $value )
+				$content .= "{$attr}='{$value}' ";
 
-	$content .= "style='width: 168px;'>";
+		$content .= "style='width: {$width}'>";
 
-	if( !empty( $options ) )
-	{
-		foreach( $options as $key => $value )
-		{
-			foreach( $selected as $s_key )
-			{
-				if( $s_key == $key )
-				{
-					$content .= "<option selected='selected' value='{$key}'>{$value}</option>";	
-					$is_selected = true;
+		if( ! empty( $options ) ) {
+
+			foreach( $options as $key => $value ) {
+
+				foreach( $selected as $s_key ) {
+			
+					if( $s_key == $key ) {
+						$content .= "<option selected='selected' value='{$key}'>{$value}</option>";	
+						$is_selected = true;
+					}
+			
 				}
-			}
-			if( $is_selected )
-			{
-				$is_selected = false;
-				continue;	
-			}
-			$content .= "<option value='{$key}'>{$value}</option>";
-		}
-	}										
+			
+				if( $is_selected ) {
+					$is_selected = false;
+					continue;	
+				}
 
-	$content .= "</select>";
+				$content .= "<option value='{$key}'>{$value}</option>";
+			
+			}
 
-	return $content;
-}
+		}										
+
+		$content .= "</select>";
+
+		return $content;
+	}
 endif;
 
 /**
@@ -4305,26 +4311,25 @@ endif;
  * @since 2.4
  * @version 1.0
  */
-
 if( !function_exists( 'mycred_sanitize_array' ) ):
-function mycred_sanitize_array( $_array )
-{
-	foreach( $_array as $key => $value )
-	{
-		$key = sanitize_text_field( $key );
-		
-		if( is_array( $value ) )
-		{
-			$value = mycred_sanitize_array( $value );
-		}
-		else
-		{
-			$_array[$key] = sanitize_text_field( $value );
-		}
-	}
+	function mycred_sanitize_array( $_array ) {
 
-	return $_array;
-}
+		foreach( $_array as $key => $value ) {
+
+			$key = sanitize_text_field( $key );
+			
+			if( is_array( $value ) ) {
+				$value = mycred_sanitize_array( $value );
+			}
+			else {
+				$_array[$key] = sanitize_text_field( $value );
+			}
+
+		}
+
+		return $_array;
+
+	}
 endif;
 
 /**
@@ -4409,8 +4414,8 @@ endif;
  * @since 4.2.1
  * @version 1.0
  */
-function mycred_get_users_by_name_email( $query, $get = 'ID' )
-{
+function mycred_get_users_by_name_email( $query, $get = 'ID' ){
+	
 	global $wpdb;
 
 	$results = array();
@@ -4428,3 +4433,362 @@ function mycred_get_users_by_name_email( $query, $get = 'ID' )
 
 	return $results;
 } 
+
+/**
+ * Adds a meta box with myCred styling.
+ * @since 2.5
+ * @since 1.0
+ */
+if ( ! function_exists( 'add_mycred_meta_box' ) ) :	
+	function add_mycred_meta_box( $key, $title, $callback, $screen = null, $context = 'advanced', $priority = 'default', $icon = 'dashicons-admin-generic' ) {
+
+		if ( ! empty( $key ) && ! empty( $title ) && ! empty( $callback ) ) {
+			
+			add_meta_box(
+	            $key,
+	            $title,
+	            function( $post, $args ) {
+
+	            	mycred_meta_box_template( $args['args'] );
+	            
+	            },
+	            $screen,
+	            $context,
+	            $priority,
+	            array( 
+	            	'metabox_id' => $key, 
+	            	'metabox_title' => $title, 
+	            	'metabox_callback' => $callback,
+	            	'metabox_icon' => $icon 
+	            )
+	        );
+
+		}
+
+	}
+endif;
+
+/**
+ * myCred meta box template 
+ * @since 2.5
+ * @since 1.0
+ */
+if ( ! function_exists( 'mycred_meta_box_template' ) ) :	
+	function mycred_meta_box_template( $data ) {
+
+		$metabox_id       = $data['metabox_id'];
+		$metabox_title    = $data['metabox_title'];
+		$metabox_callback = $data['metabox_callback'];
+		$metabox_icon     = $data['metabox_icon'];
+
+		wp_enqueue_style( 'mycred-metabox' );
+
+		?>
+		<style>#<?php echo esc_attr( $metabox_id );?> {border:none;box-shadow:none;}#<?php echo esc_attr( $metabox_id );?> > .postbox-header {display:none !important;}</style>
+    	<div id="mycred-rank-requirement-container" class="postbox mycred-ui-metabox">
+			<div class="postbox-header">
+				<div class="mycred-metabox-title">
+					<span class="dashicons <?php echo esc_attr( $metabox_icon );?>"></span><span><?php echo esc_html( $metabox_title );?></span>
+				</div>
+				<div class="handle-actions hide-if-no-js">
+					<button type="button" class="handlediv" aria-expanded="true">
+						<span class="screen-reader-text">Toggle panel: <?php echo esc_html( $metabox_title );?></span>
+						<span class="toggle-indicator" aria-hidden="true"></span>
+					</button>
+				</div>
+			</div>
+			<div class="inside">
+				<?php 
+
+					if( 
+						is_array( $metabox_callback ) && 
+						! empty( $metabox_callback[1] ) && 
+						is_string( $metabox_callback[1] ) &&
+						method_exists( $metabox_callback[0], $metabox_callback[1] )
+					) {
+						
+						$func = $metabox_callback[1];
+						$metabox_callback[0]->$func();
+
+					}
+					elseif( is_string( $metabox_callback ) && function_exists( $metabox_callback ) ) {
+
+						$metabox_callback();
+
+					}
+
+				?>
+			</div>
+		</div>
+		<?php
+	}
+endif;
+
+if ( ! function_exists( 'mycred_create_input_field' ) ) :	
+	function mycred_create_input_field( $atts = array(), $echo = true ) {
+
+		if ( empty( $atts['type'] ) || in_array( $atts['type'], array( 'checkbox', 'radio', 'button', 'submit' ) ) ) 
+			$atts['type'] = 'text';
+
+		if ( empty( $atts['class'] ) )
+			$atts['class'] = 'mycred-ui-form';
+		else
+			$atts['class'] = 'mycred-ui-form ' . $atts['class'];
+
+		$field = '<input '. mycred_get_attribute_html( $atts ) .' />';
+
+		if ( $echo )
+			echo $field;
+		else
+			return $field;
+
+	}
+endif;
+
+if ( ! function_exists( 'mycred_create_select_field' ) ) :	
+	function mycred_create_select_field( $childs, $selected = array(), $atts = array(), $echo = true ) {
+
+		if ( empty( $atts['type'] ) || in_array( $atts['type'], array( 'checkbox', 'radio', 'button', 'submit' ) ) ) 
+			$atts['type'] = 'text';
+
+		if ( empty( $atts['class'] ) )
+			$atts['class'] = 'mycred-ui-form';
+		else
+			$atts['class'] = 'mycred-ui-form ' . $atts['class'];
+
+		$field  = '<select '. mycred_get_attribute_html( $atts ) .'>';
+
+		if ( ! empty( $childs ) && is_array( $childs ) ) {
+			
+			foreach ( $childs as $child_key => $child_value ) {
+
+				if ( is_array( $child_value ) ) {
+
+					if ( empty( $child_value['options'] ) ) continue;
+
+					$group_label = ! empty( $child_value['label'] ) ? $child_value['label'] : 'Group Label';
+
+					$field .= '<optgroup label="'. esc_attr( $group_label ) .'">';
+
+					foreach ( $child_value['options'] as $key => $label ) {
+						$field .= '<option value="'. esc_attr( $key ) .'" '. mycred_selected( $selected, $key, false ) .'>'. esc_html( $label ) .'</option>';
+					}
+
+					$field .= '</optgroup>';
+
+				}
+				else {
+					$field .= '<option value="'. esc_attr( $child_key ) .'" '. mycred_selected( $selected, $child_key, false ) .'>'. esc_html( $child_value ) .'</option>';
+				}
+
+			}
+
+		}
+
+		$field .= '</select>';
+
+		if ( $echo )
+			echo $field;
+		else
+			return $field;
+
+	}
+endif;
+
+if ( ! function_exists( 'mycred_get_attribute_html' ) ) :	
+	function mycred_get_attribute_html( $data ) {
+
+		$attributes = array();
+
+		if ( ! empty( $data ) && is_array( $data ) ) {
+			
+			foreach ( $data as $attribute => $attribute_value ) {
+
+				if ( ! empty( $attribute_value ) )
+					$attributes[] = esc_attr( $attribute ) . '="' . esc_attr( $attribute_value ) . '"';
+
+			}
+		
+		}
+
+		return implode( ' ', $attributes );
+	
+	}
+endif;
+
+if ( ! function_exists( 'mycred_selected' ) ) :	
+	function mycred_selected( $selected, $current, $echo = true ) {
+
+		$result = '';
+
+		if ( 
+			( is_array( $selected ) && in_array( $current, $selected ) ) || 
+			( ! is_array( $selected ) && (string) $current === (string) $selected ) 
+		)
+		$result = " selected='selected'";
+	 
+	    if ( $echo )
+	        echo $result;
+	 	else
+		    return $result;
+	
+	}
+endif;
+
+/**
+ * Cretae Evidence page
+ * @since 2.5
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_evidence_page_id' ) ) :
+	function mycred_get_evidence_page_id() {
+
+		$evidencePageId = 0;
+
+		$hooks = mycred_get_option( 'mycred_pref_core' );
+
+        $badges = array_key_exists( 'open_badge', $hooks ) ? $hooks['open_badge'] : array();
+
+        //If Open badge enabled
+        if ( isset( $badges['is_enabled'] ) && $badges['is_enabled'] == '1' ) {
+
+            $canCreatePage = true;
+
+            $evidence_page_refrence = mycred_get_option( 'open_badge_evidence_page', 0 );
+
+            if ( ! empty( $badges['evidence_page'] ) || ! empty( $evidence_page_refrence ) ) {
+
+            	$pageId = intval( $evidence_page_refrence );
+
+            	if ( ! empty( $badges['evidence_page'] ) ) {
+            			
+            		$pageId = intval( $badges['evidence_page'] );
+
+            	}
+
+                if ( get_post_status( $pageId ) == 'publish' ) {
+                    
+                    $canCreatePage  = false;
+                    $evidencePageId = $pageId;
+
+                }
+
+            }
+
+            if ( $canCreatePage ) {
+
+                $postData = array(
+                    'post_content'   => '[' . MYCRED_SLUG . '_badge_evidence]',
+                    'post_title'     => 'Badge Evidence',
+                    'post_status'    => 'publish',
+                    'post_type'      => 'page',
+                    'comment_status' => 'closed',
+                    'post_name'      => 'Badge Evidence'
+                );
+
+                $pageId = wp_insert_post( $postData );
+
+                $evidencePageId = intval( $pageId );
+
+                mycred_update_option( 'open_badge_evidence_page', $evidencePageId );
+
+                mycred_set_badge_evidence_page( $evidencePageId );
+
+            }
+        
+        }
+
+        return $evidencePageId;
+
+    }
+endif;
+
+/**
+ * Set Evidence page
+ * @since 2.5
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_set_badge_evidence_page' ) ) :
+	function mycred_set_badge_evidence_page( $page_id ) {
+
+		$settings = mycred_get_option( 'mycred_pref_core' );
+
+		if ( isset( $settings[ 'open_badge' ] ) ) {
+
+			$settings['open_badge'][ 'evidence_page' ] = intval( $page_id );
+
+			mycred_update_option( 'mycred_pref_core', $settings );
+
+		}
+
+	}
+endif;
+
+/**
+ * Returns Badge main image with share icons.
+ * @since 2.2
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_badge_plus_show_main_image_with_social_icons' ) ) :
+	function mycred_badge_show_main_image_with_social_icons( $earned_image_url, $user_has_badge ) {
+
+		$content = '';
+
+		$image_url = $earned_image_url;
+
+		if ( ! empty( $image_url ) ) {
+
+			$content .= '<div class="mycred-badge-image-wrapper">';
+
+			$content .= '<img src="' . $image_url . '" class="mycred-badge-image" alt="Badge Image">';
+			$mycred = mycred();
+
+			//If user has earned badge, show user sharing badge option
+            if( 
+            	$user_has_badge && 
+            	! empty( $mycred->core["br_social_share"]["enable_open_badge_ss"] ) 
+            ) {
+
+                $facebook_url  = "http://www.facebook.com/sharer.php?u=".get_permalink()."&p[images][0]=$image_url";
+                $twitter_url   = "https://twitter.com/share?url=".get_permalink()."";
+                $linkedin_url  = "http://www.linkedin.com/shareArticle?url=".get_permalink()."";
+                $pinterest_url = "https://pinterest.com/pin/create/bookmarklet/?media=$image_url&amp;url=".get_permalink()."";
+
+                $content .= mycred_br_get_social_icons( $facebook_url, $twitter_url, $linkedin_url, $pinterest_url );
+
+            } 
+
+            $content .= '</div>';
+			
+		}
+
+		return apply_filters( 'mycred_badge_show_main_image_with_social_icons', $content, $mycred );
+
+	}
+endif;
+
+/**
+ * override old open badge setting to new open badge setting menu
+ * @since 2.5
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_override_open_badge' ) ) :
+	function mycred_override_open_badge() {
+
+		$settings = mycred_get_option( 'mycred_pref_core' );
+
+		if ( isset( $settings[ 'badges' ]['open_badge'] ) ) {
+			
+			$settings[ 'open_badge' ] = array(); 
+			$settings[ 'open_badge' ]['is_enabled'] = $settings['badges']['open_badge'];
+			$settings[ 'open_badge' ]['evidence_page'] = isset( $settings['badges']['open_badge_evidence_page'] ) ? $settings['badges']['open_badge_evidence_page'] : 0;
+			
+			unset( $settings['badges']['open_badge'] );
+			unset( $settings['badges']['open_badge_evidence_page'] );
+
+			mycred_update_option( 'mycred_pref_core', $settings );
+
+		}
+
+	}
+endif;

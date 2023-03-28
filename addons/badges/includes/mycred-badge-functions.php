@@ -663,8 +663,10 @@ if ( ! function_exists( 'mycred_display_users_badges' ) ) :
 				else if( $badge->main_image !== false )
 					$badge_image = $badge->get_image( 'main' );
 
-				if ( !empty( $badge_image ) )
-					echo wp_kses_post( apply_filters( 'mycred_the_badge', $badge_image, $badge_id, $badge, $user_id ) );
+				if ( !empty( $badge_image ) ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo apply_filters( 'mycred_the_badge', $badge_image, $badge_id, $badge, $user_id );
+				}
 
 			}
 
@@ -961,93 +963,6 @@ if( !function_exists( 'mycred_get_level_image_url' ) ) :
 endif;
 
 /**
- * Cretae Evidence page
- * @since 2.1
- * @version 1.0
- */
-if ( ! function_exists( 'mycred_get_evidence_page_id' ) ) :
-	function mycred_get_evidence_page_id() {
-
-		$evidencePageId = 0;
-
-		$badges = mycred_get_addon_settings( 'badges' );
-
-        //If Open badge enabled
-        if ( isset( $badges['open_badge'] ) && $badges['open_badge'] == '1' ) {
-
-            $canCreatePage = true;
-
-            $evidence_page_refrence = mycred_get_option( 'open_badge_evidence_page', 0 );
-
-            if ( ! empty( $badges['open_badge_evidence_page'] ) || ! empty( $evidence_page_refrence ) ) {
-
-            	$pageId = intval( $evidence_page_refrence );
-
-            	if ( ! empty( $badges['open_badge_evidence_page'] ) ) {
-            			
-            		$pageId = intval( $badges['open_badge_evidence_page'] );
-
-            	}
-
-                if ( get_post_status( $pageId ) == 'publish' ) {
-                    
-                    $canCreatePage  = false;
-                    $evidencePageId = $pageId;
-
-                }
-
-            }
-
-            if ( $canCreatePage ) {
-
-                $postData = array(
-                    'post_content'   => '[' . MYCRED_SLUG . '_badge_evidence]',
-                    'post_title'     => 'Badge Evidence',
-                    'post_status'    => 'publish',
-                    'post_type'      => 'page',
-                    'comment_status' => 'closed',
-                    'post_name'      => 'Badge Evidence'
-                );
-
-                $pageId = wp_insert_post( $postData );
-
-                $evidencePageId = intval( $pageId );
-
-                mycred_update_option( 'open_badge_evidence_page', $evidencePageId );
-
-                mycred_set_badge_evidence_page( $evidencePageId );
-
-            }
-        
-        }
-
-        return $evidencePageId;
-
-    }
-endif;
-
-/**
- * Set Evidence page
- * @since 2.1
- * @version 1.0
- */
-if ( ! function_exists( 'mycred_set_badge_evidence_page' ) ) :
-	function mycred_set_badge_evidence_page( $page_id ) {
-
-		$settings = mycred_get_option( 'mycred_pref_core' );
-
-		if ( isset( $settings[ 'badges' ] ) ) {
-
-			$settings[ 'badges' ][ 'open_badge_evidence_page' ] = intval( $page_id );
-
-			mycred_update_option( 'mycred_pref_core', $settings );
-
-		}
-
-	}
-endif;
-
-/**
  * Get badges list
  * @since 2.1.1
  * @version 1.0
@@ -1220,50 +1135,6 @@ if ( ! function_exists( 'mycred_badge_show_congratulation_msg' ) ) :
 		}
 
 		return apply_filters( 'mycred_badge_show_congratulation_msg', $content, $badge, $settings );
-
-	}
-endif;
-
-/**
- * Returns Badge main image with share icons.
- * @since 2.2
- * @version 1.0
- */
-if ( ! function_exists( 'mycred_badge_show_main_image_with_social_icons' ) ) :
-	function mycred_badge_show_main_image_with_social_icons( $user_id, $badge, $mycred = NULL ) {
-
-		$content = '';
-
-		$image_url = $badge->get_earned_image( $user_id );
-
-		if ( ! empty( $image_url ) ) {
-
-			$content .= '<div class="mycred-badge-image-wrapper">';
-
-			$content .= '<img src="' . $image_url . '" class="mycred-badge-image" alt="Badge Image">';
-
-			if ( empty( $mycred ) ) $mycred = mycred();
-
-			//If user has earned badge, show user sharing badge option
-            if( 
-            	$badge->user_has_badge( $user_id ) && 
-            	! empty( $mycred->core["br_social_share"]["enable_open_badge_ss"] ) 
-            ) {
-
-                $facebook_url  = "http://www.facebook.com/sharer.php?u=".get_permalink()."&p[images][0]=$image_url";
-                $twitter_url   = "https://twitter.com/share?url=".get_permalink()."";
-                $linkedin_url  = "http://www.linkedin.com/shareArticle?url=".get_permalink()."";
-                $pinterest_url = "https://pinterest.com/pin/create/bookmarklet/?media=$image_url&amp;url=".get_permalink()."";
-
-                $content .= mycred_br_get_social_icons( $facebook_url, $twitter_url, $linkedin_url, $pinterest_url );
-
-            } 
-
-            $content .= '</div>';
-			
-		}
-
-		return apply_filters( 'mycred_badge_show_main_image_with_social_icons', $content, $badge, $mycred );
 
 	}
 endif;

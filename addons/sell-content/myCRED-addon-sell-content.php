@@ -580,7 +580,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 
 						$settings          = mycred_get_option( 'mycred_sell_this_' . $point_type_key );
 
-						$setup['default']  = $settings['profit_share'];
+						$setup['default']  = isset( $settings['profit_share'] ) ? $settings['profit_share'] : 0;
 
 						$users_share = mycred_get_user_meta( $user->ID, 'mycred_sell_content_share_' . $point_type_key, '', true );
 						if ( strlen( $users_share ) > 0 ) {

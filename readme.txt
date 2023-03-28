@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 6.0.3
-Stable tag: 2.4.10
+Tested up to: 6.2
+Stable tag: 2.5
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +16,7 @@ myCred is an intelligent and adaptive **points management system** that allows y
 
 [youtube https://www.youtube.com/watch?v=-M19tzYo1jo]
 
-Build **brand loyalty** by rewarding your customers through store reward systems, community leaderboards, monetizing your website content, etc. - The possibilities are endless.
+Build **brand loyalty** by rewarding your customers through store reward systems, community leaderboards, monetizing your website content, etc. - The possibilities are endless. 
 
 **Increase customer engagement tenfold - Rewarding your users for community engagement will help your business grow.**
 
@@ -316,6 +316,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.5 =
+New features and Bug fixes.
+
 = 2.4.10 =
 Bug fixes.
 
@@ -419,6 +422,14 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.5 =
+- **NEW** - Added ref attribute in the mycred_chart_balance_history shortcode.
+- **NEW** - Introduced new shortcode mycred_my_chart_gain_loss.
+- **TWEAK** - Added database indexes to ensure maximum performance on the myCred Log table.
+- **TWEAK** - Moved the Open badge setting to the separate open badge tab.
+- **FIX** - Ranks-related email notification events are not triggered when the admin adjusts the user's points manually.
+- **FIX** - Issue fixed regarding myCred Events Manager Payment Gateway.
 
 = 2.4.10 =
 - **NEW** - Added action hook "mycred_add_share_and_embed_button".

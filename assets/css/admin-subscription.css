@@ -556,3 +556,8 @@ line-height:34px;
     height: unset !important;
     width: 100% !important;
 }
+
+.mycred-update-database span {
+    line-height: 1.6 !important;
+    margin: 0px 5px 0px 0px;
+}

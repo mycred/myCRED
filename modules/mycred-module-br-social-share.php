@@ -44,7 +44,7 @@ if ( ! class_exists( 'myCRED_Module_OB_Social_Share' ) ) :
 		 */
         public function load()
         {
-            add_action( 'mycred_admin_after_badges_settings', array( $this, 'after_general_settings' ), 20 );
+            add_action( 'mycred_admin_open_badge_setting', array( $this, 'after_general_settings' ), 20 );
 			add_filter( 'mycred_save_core_prefs', array( $this, 'sanitize_extra_settings' ), 80, 3 );
         }
 

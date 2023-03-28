@@ -108,7 +108,10 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 			if ( ! empty( $this->prefs['bank_id'] ) )
 				$user = get_userdata( $this->prefs['bank_id'] );
 
-			if( ! empty( mycred_get_option('mycred_pref_bank')['active'] ) && in_array( 'central', mycred_get_option('mycred_pref_bank')['active'] ) ) {
+			$settings = mycred_get_banking_addon_settings( NULL, $this->core->cred_id );
+
+			if ( ! empty( $settings['active'] ) && in_array( 'central', $settings['active'] ) ) {
+				
 ?>
 <div class="row">
 	<div class="col-xs-12">

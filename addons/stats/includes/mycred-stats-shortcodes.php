@@ -263,6 +263,7 @@ if ( ! function_exists( 'mycred_render_chart_balance_history' ) ) :
 			'labels'  => 1,
 			'legend'  => 1,
 			'height'  => '',
+			'ref'	  => '',
 			'width'   => ''
 		), $atts, MYCRED_SLUG . '_chart_balance_history' ) );
 
@@ -274,7 +275,7 @@ if ( ! function_exists( 'mycred_render_chart_balance_history' ) ) :
 		$type  = ( ! in_array( $type, array( 'line', 'bar' ) ) ) ? 'line' : $type;
 
 		// Get data
-		$data  = mycred_get_users_history_data( $user_id, $ctype, $period, $number, $order );
+		$data  = mycred_get_users_history_data( $user_id, $ctype, $period, $number, $order, $ref );
 		if ( empty( $data ) ) return $no_data;
 
 		// New Chart Object
@@ -327,6 +328,60 @@ if ( ! function_exists( 'mycred_render_chart_instance_history' ) ) :
 		// Get data
 		$data  = mycred_get_ref_history_data( $ref, $ctype, $period, $number, $order );
 		if ( empty( $data ) ) return $no_data;
+
+		// New Chart Object
+		$chart = mycred_create_chart( array(
+			'type'     => $type,
+			'title'    => $title,
+			'animate'  => (bool) $animate,
+			'bezier'   => (bool) $bezier,
+			'x_labels' => (bool) $labels,
+			'legend'   => (bool) $legend,
+			'height'   => $height,
+			'width'    => $width
+		) );
+
+		return $chart->generate_canvas( $type, $data );
+
+	}
+endif;
+
+/**
+ * Shortcode: This shortcode will show all point gains on the site
+ * @see http://codex.mycred.me/shortcodes/mycred_my_chart_gain_loss/
+ * @since 2.5
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_render_chart_acquisition' ) ) :
+	function mycred_render_chart_acquisition( $atts, $no_data = '' ) {
+
+		extract( shortcode_atts( array(
+			'type'    => 'pie',
+			'ctype'   => MYCRED_DEFAULT_TYPE_KEY,
+			'period'  => 'days',
+			'number'  => 10,
+			'title'   => '',
+			'animate' => 1,
+			'bezier'  => 1,
+			'labels'  => 1,
+			'legend'  => 1,
+			'height'  => '',
+			'width'   => ''
+		), $atts, MYCRED_SLUG . '_chart_acquisition' ) );
+
+		// Make sure we request a chart type that we support
+		$type  = ( ! in_array( $type, array( 'pie', 'doughnut', 'line', 'bar', 'polarArea' ) ) ) ? 'pie' : $type;
+
+		// Get data
+		$data  = mycred_get_time_frame_data( $ctype, $period, $number );
+		if ( empty( $data ) ) return $no_data;
+
+		// If we want to customize labels
+		if ( ! empty( $gains ) )
+			$data[0]->label = $gains;
+
+		if ( ! empty( $losses ) )
+			$data[1]->label = $losses;
 
 		// New Chart Object
 		$chart = mycred_create_chart( array(

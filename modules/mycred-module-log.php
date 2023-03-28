@@ -474,6 +474,8 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				$deleted = 0;
 				if ( ! empty( $entry_ids ) ) {
 
+					do_action( 'mycred_bulk_delete_log', $entry_ids, $this->mycred_type, $_GET );
+
 					global $wpdb, $mycred_log_table;
 
 					foreach ( $entry_ids as $entry_id ) {

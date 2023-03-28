@@ -102,8 +102,6 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 				</thead>
 				<tbody class="cashcred-table-content">
 					<?php foreach( $pending_withdrawal as $post ):?>
-
-						<?php $post->post_date = date('F d, Y, h:i A'); ?>
 					<tr class="cashcred-table-content">
 						<td><?php echo esc_html( $post->post_name ); ?></td>
 						<td><?php echo esc_html( get_post_meta($post->ID,'points',true) );?></td>
@@ -285,7 +283,6 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 				<tbody>
 					<?php foreach($posts as $post) {
 						
-						$post->post_date = date('F d, Y, h:i A');
 						?>
 					<tr>
 						<td><?php echo esc_html( $post->post_name ); ?></td>
@@ -370,8 +367,6 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 				</thead>
 				<tbody>
 					<?php foreach($posts as $post) {
-
-						$post->post_date = date('F d, Y, h:i A');
 
 						?>
 					<tr>

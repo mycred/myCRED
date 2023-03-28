@@ -7,7 +7,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.0.1
  */
 if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
-	class myCRED_Banking_Service_Schedule_Deposit extends myCRED_Service {
+    class myCRED_Banking_Service_Schedule_Deposit extends myCRED_Service {
    
         /**
          * Construct
@@ -44,7 +44,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
             
             }
             
-            add_action( 'mycred_schedule_deposit_event', array( $this, 'scheduled_event' ) );
+            add_action( 'mycred_schedule_deposit_event_' . $this->core->cred_id, array( $this, 'scheduled_event' ) );
             add_filter( 'mycred_check_schedule_deposite_entry', array( $this, 'mycred_check_schedule_deposite' ), 10, 4 );
             add_action( 'mycred_banking_settings_save', array( $this, 'mycred_save_banking_setting' ), 10, 2 );
 
@@ -63,24 +63,18 @@ if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
         // when will cron work and to save all setting of central deposit schedule 
         public function mycred_save_banking_setting( $post, $obj ) {
 
-            if ( in_array( 'central', (array) $obj->active ) && ! in_array( 'central', $post['active'] ) ) {
+            if ( ! empty( $post['active'] ) && in_array( 'schedule_deposit', (array) $post['active'] ) ) {
                 
-                $post['active'] = array();
-
-            }
-
-            if( isset( $post['active'][1] ) && $post['active'][1] == 'schedule_deposit' ){
-                
-                if( ! wp_next_scheduled( 'mycred_schedule_deposit_event' ) ) {
+                if( ! wp_next_scheduled( 'mycred_schedule_deposit_event_' . $obj->core->cred_id ) ) {
                    
-                    wp_schedule_event( time(), 'daily', 'mycred_schedule_deposit_event' );
+                    wp_schedule_event( time(), 'daily', 'mycred_schedule_deposit_event_' . $obj->core->cred_id );
 
                 }
 
             }
             else {
 
-                wp_clear_scheduled_hook( 'mycred_schedule_deposit_event' );
+                wp_clear_scheduled_hook( 'mycred_schedule_deposit_event_' . $obj->core->cred_id );
 
             }
 
@@ -139,9 +133,11 @@ if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
         public function preferences() {
 
             $prefs = $this->prefs;
-            
-            if( ! empty( mycred_get_option('mycred_pref_bank')['active'] ) && in_array( 'schedule_deposit', mycred_get_option('mycred_pref_bank')['active'] ) ) {
-                ?>
+
+            $settings = mycred_get_banking_addon_settings( NULL, $this->core->cred_id );
+
+            if ( ! empty( $settings['active'] ) && in_array( 'schedule_deposit', $settings['active'] ) ) {
+?>
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="row">
@@ -249,13 +245,15 @@ if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
 
             wp_clear_scheduled_hook( 'mycred_schedule_deposit_event' );
 
-
-
         }
 
         public function mycred_notice_banking_email_check( $emailnotice, $request, $mycred ) {
+
+            $setting = mycred_get_option('mycred_pref_bank');
+
+            if ( empty( $setting['service_prefs']['central']['bank_id'] ) ) return $emailnotice;
             
-            $user_bank_id = mycred_get_option('mycred_pref_bank')['service_prefs']['central']['bank_id'];
+            $user_bank_id = $setting['service_prefs']['central']['bank_id'];
             $point_type = $mycred->get_point_type_key();
             $min_balance_emails = mycred_get_event_emails( $point_type, 'generic', 'central_min_balance' );
             $no_balance_emails  = mycred_get_event_emails( $point_type, 'generic', 'central_no_balance' );
@@ -315,13 +313,10 @@ if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
 
             }
 
-            if ( empty( $emails ) ) return; 
-
             return $emailnotice;
+
         }
 
     }
 
 endif;
-
-                

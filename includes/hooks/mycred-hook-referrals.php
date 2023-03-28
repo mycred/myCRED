@@ -38,6 +38,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
                     ),
                     'buddypress' => array(
                         'profile'  => 0,
+                        'invite'   => 0,
                         'priority' => 10,
                         'title'    => __( 'Affiliate Program', 'mycred' ),
                         'desc'     => ''
@@ -61,6 +62,9 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			add_filter( 'mycred_parse_log_entry_signup_referral', array( $this, 'parse_log_entry' ), 10, 2 );
 			add_action( 'wp_footer', 'copy_ref_link' );
 
+			if ( function_exists( 'bp_get_members_invitations_allowed' ) && bp_get_members_invitations_allowed() && $this->prefs['buddypress']['invite'] )
+				add_filter( 'bp_email_set_tokens', array( $this, 'set_mycred_referral_code' ), 10, 3 );
+
 		}
 
 		/**
@@ -73,7 +77,6 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			// Insert into BuddyPress profile
 			if ( function_exists( 'bp_is_active' ) && bp_is_active( 'xprofile' ) && $this->prefs['buddypress']['profile'] )
 				add_action( 'bp_after_profile_loop_content', array( $this, 'buddypress_profile' ), $this->prefs['buddypress']['priority'] );
-
 
 			// Hook into user activation
 			if ( class_exists('pw_new_user_approve') )
@@ -222,7 +225,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 
 				// Table
 				$output .= '<table class="profile-fields">';
-				$output .= sprintf( '<tr class="field_1 field_ref_link"><td class="label">%s</td><td><input type="text" value="%s" id="mref-link-buddypress-profile" readonly><button onclick="copy_to_clipBoard()">Copy</button></td></tr>', __( 'Link', 'mycred' ), $users_ref_link );
+				$output .= sprintf( '<tr class="field_1 field_ref_link"><td class="label">%s</td><td><input type="text" value="%s" id="mref-link-buddypress-profile" readonly><button onclick="copy_to_clipBoard(this)">Copy</button></td></tr>', __( 'Link', 'mycred' ), $users_ref_link );
 
 				// Show Visitor referral count
 				if ( $this->prefs['visit']['creds'] != 0 )
@@ -340,8 +343,6 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			// Delete Cookie
 			if ( ! headers_sent() )
 				setcookie( $key, $ref, time()-3600, COOKIEPATH, COOKIE_DOMAIN );
-
-			
 
 			// Attempt to get the users IP
 			$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
@@ -602,6 +603,31 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		}
 
 		/**
+		 * @since 2.5
+		 * @version 1.0
+		 */
+		public function set_mycred_referral_code( $formatted_tokens, $tokens, $obj ) {
+
+			if (
+				$this->prefs['signup']['creds'] != 0 && 
+				! empty( $obj->get('type') ) && 
+				$obj->get('type') == 'bp-members-invitation' && 
+				! empty( $formatted_tokens['inviter.id'] ) &&
+				! empty( $formatted_tokens['invite.accept_url'] )
+			) {
+
+				$ref_id = $this->get_ref_id( $formatted_tokens['inviter.id'] );
+
+				if ( ! empty( $ref_id ) ) 
+					$formatted_tokens['invite.accept_url'] = esc_url( add_query_arg( 'mref', $ref_id, wp_specialchars_decode( $formatted_tokens['invite.accept_url'] ) ) );
+
+			}
+
+			return $formatted_tokens;
+
+		}
+
+		/**
 		 * Preference for Affiliate Hook
 		 * @since 1.4
 		 * @version 1.1
@@ -773,6 +799,17 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			</div>
 		</div>
 	</div>
+	<?php if ( function_exists( 'bp_get_members_invitations_allowed' ) && bp_get_members_invitations_allowed() ) : ?>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="form-group">
+				<div class="checkbox">
+					<label for="<?php echo esc_attr( $this->field_id( array( 'buddypress' => 'invite' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'buddypress' => 'invite' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'buddypress' => 'invite' ) ) ); ?>"<?php checked( $prefs['buddypress']['invite'], 1 ); ?> value="1" /> <?php esc_html_e( 'Insert referral code in invite link', 'mycred' ); ?></label>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php endif; ?>
 	<div class="row">
 		<div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
@@ -915,8 +952,8 @@ endif;
 if ( ! function_exists( 'copy_ref_link' ) ) :
 	function copy_ref_link() {?>
 		<script>
-			function copy_to_clipBoard() {
-				var copyText = document.getElementById("mref-link-buddypress-profile");
+			function copy_to_clipBoard(btn) {
+				var copyText = btn.previousSibling;
 				copyText.select();
 				document.execCommand("copy");
 			}

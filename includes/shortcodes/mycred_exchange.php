@@ -76,7 +76,7 @@ if ( ! function_exists( 'mycred_render_shortcode_exchange' ) ) :
 					<p class="form-control-static"><?php printf( wp_kses_post( '1 %s = <span class="rate">%s</span> %s', 'mycred' ), esc_html( $mycred_from->singular() ), esc_html( $rate ), ( ( $rate == 1 ) ? esc_html( $mycred_to->singular() ) : esc_html( $mycred_to->plural() ) ) ); ?></p>
 				</div>
 			</div>
-			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12mycred-exchange-current-submit">
+			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 mycred-exchange-current-submit">
 				<div class="form-group">
 					<input type="submit" class="btn btn-primary btn-lg btn-block" value="<?php echo esc_attr( $button ); ?>" />
 				</div>

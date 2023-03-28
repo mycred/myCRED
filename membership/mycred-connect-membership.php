@@ -134,7 +134,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                     <hr>
 
                     <h2>Suggestion:</h2>
-                    <p>If you have suggestions for myCred and their addons, feel free to add them <a target="_blank" href="https://app.productstash.io/roadmaps/5f8d483c053518002b4441c4/public">here</a>.</p>
+                    <p>If you have suggestions for myCred and their addons, feel free to add them <a target="_blank" href="https://app.loopedin.io/mycred">here</a>.</p>
                     <hr>
 
                     <h2>Free add-ons</h2>

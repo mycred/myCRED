@@ -2540,7 +2540,6 @@ if ( ! function_exists( 'mycred_get_all_references' ) ) :
 		// Addons
 		$addons = array();
 		if ( class_exists( 'myCRED_Banking_Module' ) ) {
-			$addons['interest']  = __( 'Compound Interest', 'mycred' );
 			$addons['recurring'] = __( 'Recurring Payout', 'mycred' );
 		}
 
