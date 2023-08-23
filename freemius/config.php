@@ -146,7 +146,7 @@
     #--------------------------------------------------------------------------------
 
     if ( ! defined( 'WP_FS__IS_HTTP_REQUEST' ) ) {
-        define( 'WP_FS__IS_HTTP_REQUEST', isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_METHOD'] ) );
+        define( 'WP_FS__IS_HTTP_REQUEST', isset( $_SERVER['HTTP_HOST'] ) );
     }
 
     if ( ! defined( 'WP_FS__IS_HTTPS' ) ) {

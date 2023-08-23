@@ -4538,12 +4538,6 @@ if ( ! function_exists( 'mycred_create_input_field' ) ) :
 
 		$field = '<input '. mycred_get_attribute_html( $atts ) .' />';
 
-<<<<<<< Updated upstream
-		if ( $echo )
-			echo $field;
-		else
-			return $field;
-=======
 		if ( $echo ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $field;
@@ -4551,7 +4545,6 @@ if ( ! function_exists( 'mycred_create_input_field' ) ) :
 		else {
 			return $field;
 		}
->>>>>>> Stashed changes
 
 	}
 endif;
@@ -4598,12 +4591,6 @@ if ( ! function_exists( 'mycred_create_select_field' ) ) :
 
 		$field .= '</select>';
 
-<<<<<<< Updated upstream
-		if ( $echo )
-			echo $field;
-		else
-			return $field;
-=======
 		if ( $echo ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $field;
@@ -4611,7 +4598,6 @@ if ( ! function_exists( 'mycred_create_select_field' ) ) :
 		else {
 			return $field;
 		}
->>>>>>> Stashed changes
 
 	}
 endif;
@@ -4648,12 +4634,6 @@ if ( ! function_exists( 'mycred_selected' ) ) :
 		)
 		$result = " selected='selected'";
 	 
-<<<<<<< Updated upstream
-	    if ( $echo )
-	        echo $result;
-	 	else
-		    return $result;
-=======
 	    if ( $echo ) {
 	    	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	        echo $result;
@@ -4661,7 +4641,6 @@ if ( ! function_exists( 'mycred_selected' ) ) :
 	 	else {
 		    return $result;
 	 	}
->>>>>>> Stashed changes
 	
 	}
 endif;

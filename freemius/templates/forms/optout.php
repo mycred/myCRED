@@ -31,11 +31,7 @@
 	fs_enqueue_local_style( 'fs_optout', '/admin/optout.css' );
 	fs_enqueue_local_style( 'fs_common', '/admin/common.css' );
 
-<<<<<<< Updated upstream
-    if ( ! $permission_manager->is_premium_context() ) {
-=======
     if ( ! $fs->is_premium() ) {
->>>>>>> Stashed changes
         $optional_permissions = array( $permission_manager->get_extensions_permission( false,
             false,
             true

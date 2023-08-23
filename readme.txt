@@ -2,13 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-<<<<<<< Updated upstream
-Tested up to: 6.2
-Stable tag: 2.5
-=======
 Tested up to: 6.2.2
-Stable tag: 2.5.1
->>>>>>> Stashed changes
+Stable tag: 2.5.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -308,12 +303,12 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
-<<<<<<< Updated upstream
-=======
+= 2.5.2 =
+Improvements.
+
 = 2.5.1 =
 New features and Bug fixes.
 
->>>>>>> Stashed changes
 = 2.5 =
 New features and Bug fixes.
 
@@ -421,8 +416,9 @@ The banking module have been replaced by Central deposite module, and interest r
 
 == Changelog ==
 
-<<<<<<< Updated upstream
-=======
+= 2.5.2 =
+- **NEW** - Added filter in mycred_badges_list shortcode.
+
 = 2.5.1 =
 - **NEW** - Added compatibility for Gravity Forms payment forms. Points will be rewarded when payment is successfully received.
 - **FIX** - PHP and Javascript warnings have been resolved.
@@ -430,17 +426,12 @@ The banking module have been replaced by Central deposite module, and interest r
 - **TWEAK** - Update bitpay library
 - **TWEAK** - Introduce filter to add extra fields in cashcred payment gateways
 
->>>>>>> Stashed changes
 = 2.5 =
 - **NEW** - Added ref attribute in the mycred_chart_balance_history shortcode.
 - **NEW** - Introduced new shortcode mycred_my_chart_gain_loss.
 - **TWEAK** - Added database indexes to ensure maximum performance on the myCred Log table.
 - **TWEAK** - Moved the Open badge setting to the separate open badge tab.
-<<<<<<< Updated upstream
-- **FIX** - Ranks-related email notification events are not triggered when the admin adjusts the user's points manually.
-=======
 - **FIX** - Ranks-related email notification events are not triggered when the admin adjusts the user’s points manually.
->>>>>>> Stashed changes
 - **FIX** - Issue fixed regarding myCred Events Manager Payment Gateway.
 
 = 2.4.10 =

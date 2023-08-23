@@ -60,7 +60,6 @@
 		'plugin_version' => $fs->get_plugin_version(),
 		'mode'           => 'dashboard',
 		'trial'          => fs_request_get_bool( 'trial' ),
-		'is_ms'          => ( fs_is_network_admin() && $fs->is_network_active() ),
 	);
 
 	$plan_id = fs_request_get( 'plan_id' );
@@ -278,18 +277,16 @@
 
 					FS.PostMessage.receiveOnce('pending_activation', function (data) {
 						var requestData = {
-							user_email           : data.user_email,
-                            support_email_address: data.support_email_address
+							user_email: data.user_email
 						};
 
 						if (true === data.auto_install)
 							requestData.auto_install = true;
 
 						$.form('<?php echo fs_nonce_url( $fs->_get_admin_page_url( 'account', array(
-							'fs_action'           => $fs->get_unique_affix() . '_activate_new',
-							'plugin_id'           => $plugin_id,
-							'pending_activation'  => true,
-                            'has_upgrade_context' => true,
+							'fs_action'          => $fs->get_unique_affix() . '_activate_new',
+							'plugin_id'          => $plugin_id,
+							'pending_activation' => true,
 						) ), $fs->get_unique_affix() . '_activate_new' ) ?>', requestData).submit();
 					});
 

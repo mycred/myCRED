@@ -98,18 +98,6 @@
         }
 
         /**
-<<<<<<< Updated upstream
-         * @since 2.5.3
-         *
-         * @return bool
-         */
-        function is_premium_context() {
-            return ( $this->_fs->is_premium() || $this->_fs->can_use_premium_code() );
-        }
-
-        /**
-=======
->>>>>>> Stashed changes
          * @param bool    $is_license_activation
          * @param array[] $extra_permissions
          *
@@ -442,11 +430,7 @@
          * @return bool
          */
         function is_diagnostic_tracking_allowed( $default = true ) {
-<<<<<<< Updated upstream
-            return $this->is_premium_context() ?
-=======
             return $this->_fs->is_premium() ?
->>>>>>> Stashed changes
                 $this->is_permission_allowed( self::PERMISSION_DIAGNOSTIC, $default ) :
                 $this->is_permission_allowed( self::PERMISSION_SITE, $default );
         }
@@ -608,11 +592,7 @@
          * @return string
          */
         function get_site_permission_name() {
-<<<<<<< Updated upstream
-            return $this->is_premium_context() ?
-=======
             return $this->_fs->is_premium() ?
->>>>>>> Stashed changes
                 self::PERMISSION_ESSENTIALS :
                 self::PERMISSION_SITE;
         }
@@ -621,11 +601,7 @@
          * @return string[]
          */
         function get_site_tracking_permission_names() {
-<<<<<<< Updated upstream
-            return $this->is_premium_context() ?
-=======
             return $this->_fs->is_premium() ?
->>>>>>> Stashed changes
                 array(
                     FS_Permission_Manager::PERMISSION_ESSENTIALS,
                     FS_Permission_Manager::PERMISSION_EVENTS,

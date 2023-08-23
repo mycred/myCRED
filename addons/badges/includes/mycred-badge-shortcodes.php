@@ -249,6 +249,6 @@ if( !function_exists( 'mycred_render_badges_list' ) ) :
         <?php
         $content = ob_get_clean();
 
-        return $content;
+        return apply_filters( 'mycred_badges_list', $content, $atts );
     }
 endif;

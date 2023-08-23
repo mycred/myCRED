@@ -3,21 +3,13 @@
  * Plugin Name: myCred
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
-<<<<<<< Updated upstream
- * Version: 2.5
-=======
- * Version: 2.5.1
->>>>>>> Stashed changes
+ * Version: 2.5.2
  * Tags: point, credit, loyalty program, engagement, reward, woocommerce rewards
  * Author: myCred
  * Author URI: https://mycred.me
  * Author Email: support@mycred.me
  * Requires at least: WP 4.8
-<<<<<<< Updated upstream
- * Tested up to: WP 6.2
-=======
  * Tested up to: WP 6.2.2
->>>>>>> Stashed changes
  * Text Domain: mycred
  * Domain Path: /lang
  * License: GPLv2 or later
@@ -28,11 +20,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-<<<<<<< Updated upstream
-		public $version             = '2.5';
-=======
-		public $version             = '2.5.1';
->>>>>>> Stashed changes
+		public $version             = '2.5.2';
 
 		// Instnace
 		protected static $_instance = NULL;
@@ -66,22 +54,14 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 		 * @since 1.7
 		 * @version 1.0
 		 */
-<<<<<<< Updated upstream
-		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.5' ); }
-=======
-		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.5.1' ); }
->>>>>>> Stashed changes
+		public function __clone() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.5.2' ); }
 
 		/**
 		 * Not allowed
 		 * @since 1.7
 		 * @version 1.0
 		 */
-<<<<<<< Updated upstream
-		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.5' ); }
-=======
-		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.5.1' ); }
->>>>>>> Stashed changes
+		public function __wakeup() { _doing_it_wrong( __FUNCTION__, 'Cheatin&#8217; huh?', '2.5.2' ); }
 
 		/**
 		 * Get
@@ -102,11 +82,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( ! defined( $name ) )
 				define( $name, $value );
 			elseif ( ! $definable && defined( $name ) )
-<<<<<<< Updated upstream
-				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . esc_html( $name ) . ' as it is already defined somewhere else!', '2.5' );
-=======
-				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . esc_html( $name ) . ' as it is already defined somewhere else!', '2.5.1' );
->>>>>>> Stashed changes
+				_doing_it_wrong( 'myCRED_Core->define()', 'Could not define: ' . esc_html( $name ) . ' as it is already defined somewhere else!', '2.5.2' );
 		}
 
 		/**
@@ -118,11 +94,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 			if ( file_exists( $required_file ) )
 				require_once $required_file;
 			else
-<<<<<<< Updated upstream
-				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . esc_html( $required_file ) . ' not found.', '2.5' );
-=======
-				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . esc_html( $required_file ) . ' not found.', '2.5.1' );
->>>>>>> Stashed changes
+				_doing_it_wrong( 'myCRED_Core->file()', 'Requested file ' . esc_html( $required_file ) . ' not found.', '2.5.2' );
 		}
 
 		/**
