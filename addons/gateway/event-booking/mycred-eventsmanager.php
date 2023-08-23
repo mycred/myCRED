@@ -900,9 +900,15 @@ jQuery(function($){
 
 			// Messages
 			$new_settings['messages']['success'] = isset( $_POST['mycred_gateway']['messages']['success'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['success'] ) ) : '';
+<<<<<<< Updated upstream
 			$new_settings['messages']['error']   = isset( $_POST['mycred_gateway']['messages']['error'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['error'])  ) : '';
 			$new_settings['messages']['url']   = isset( $_POST['mycred_gateway']['messages']['url'] ) ? sanitize_text_field($_POST['mycred_gateway']['messages']['url']) : '';
 			$new_settings['messages']['text']   = isset($_POST['mycred_gateway']['messages']['text']) ? sanitize_text_field($_POST['mycred_gateway']['messages']['text']) : '';
+=======
+			$new_settings['messages']['error']   = isset( $_POST['mycred_gateway']['messages']['error'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['error'] ) ) : '';
+			$new_settings['messages']['url']   = isset( $_POST['mycred_gateway']['messages']['url'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['url'] ) ) : '';
+			$new_settings['messages']['text']   = isset($_POST['mycred_gateway']['messages']['text']) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['text'] ) ) : '';
+>>>>>>> Stashed changes
 
 			// Save Settings
 			$current     = $this->prefs;

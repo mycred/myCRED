@@ -215,7 +215,7 @@ if ( ! class_exists( 'myCRED_BuddyPress_Module' ) ) :
 			$user_id = bp_displayed_user_id();
 
 			// User is excluded
-			if ( $this->core->exclude_user( $user_id ) || $this->buddypress['history_location'] == '' ) return;
+			if ( empty( $user_id ) || $this->core->exclude_user( $user_id ) || $this->buddypress['history_location'] == '' ) return;
 
 			// If visibility is not set for visitors
 			if ( ! is_user_logged_in() && ! $this->buddypress['visibility']['history'] ) return;

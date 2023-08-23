@@ -15,7 +15,11 @@
 	 *
 	 * @var string
 	 */
+<<<<<<< Updated upstream
 	$this_sdk_version = '2.5.5';
+=======
+	$this_sdk_version = '2.5.3';
+>>>>>>> Stashed changes
 
 	#region SDK Selection Logic --------------------------------------------------------------------
 

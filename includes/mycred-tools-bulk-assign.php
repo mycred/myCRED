@@ -317,7 +317,7 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
 
     public function users_fields( $args )
 	{
-        $users = $this->get_all_users();
+        $users = array();
         
         $users_args = array(
             'name'		=>	$args['users']['name'],

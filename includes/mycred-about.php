@@ -534,17 +534,13 @@ function mycred_about_page() {
 			<div class="mycred-change-log">
 				<div class="block">
 					<h2>Change Log</h2>
+                    <h4><strong>2.5.1</strong></h4>
 					<ul>
-						<li><strong>NEW</strong> - Added minimum points reminder email notification for central deposit.</li>
-						<li><strong>NEW</strong> - Added points automatically to the central account after the specified interval. (Schedule Deposit)</li>
-						<li><strong>NEW</strong> - Added "No Available Balance" email notification for central deposit.</li>
-						<li><strong>FIX</strong> - buyCred purchase reward hook setup did not appear properly in mycred_hook_table.</li>
-						<li><strong>FIX</strong> - Typo fixes in wooCommerce product reward reference.</li>
-						<li><strong>FIX</strong> - The "Insufficient Funds Warning" message did not appear according to the myCred transfer setting.</li>
-						<li><strong>FIX</strong> - Product Reward refund was not working.</li>
-						<li><strong>FIX</strong> - user_id attribute was not working in mycred_show_if shortcode.</li>
-						<li><strong>FIX</strong> - License was not working when using subdirectory in multisite network.</li>
-						<li><strong>FIX</strong> - Fixed security vulnerabilities.</li>
+						<li><strong>NEW</strong> – Added compatibility for Gravity Forms payment forms. Points will be rewarded when payment is successfully received.</li>
+						<li><strong>FIX</strong> – PHP and Javascript warnings have been resolved.</li>
+						<li><strong>FIX</strong> – Fixed security vulnerabilities.</li>
+						<li><strong>TWEAK</strong> – Update bitpay library.</li>
+						<li><strong>TWEAK</strong> – Introduce filter to add extra fields in cashcred payment gateways.</li>
 					</ul>
 				</div>
 			</div><!-- /.mycred-change-log -->

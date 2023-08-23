@@ -69,6 +69,7 @@
                 if ( isset( $subsite_data_by_install_id[ $install->id ] ) ) {
                     $clone_subsite_data = $subsite_data_by_install_id[ $install->id ];
                     $clone_install_url  = $install_url_by_install_id[ $install->id ];
+<<<<<<< Updated upstream
 
                     if (
                         /**
@@ -84,6 +85,23 @@
                     }
                 }
 
+=======
+
+                    if (
+                        /**
+                         * If we already have an install with the same URL as the subsite it's stored in, skip the current subsite. Otherwise, replace the existing install's data with the current subsite's install's data if the URLs match.
+                         *
+                         * @author Leo Fajardo (@leorw)
+                         * @since 2.5.0
+                         */
+                        fs_strip_url_protocol( untrailingslashit( $clone_install_url ) ) === fs_strip_url_protocol( untrailingslashit( $clone_subsite_data['url'] ) ) ||
+                        fs_strip_url_protocol( untrailingslashit( $install->url ) ) !== fs_strip_url_protocol( untrailingslashit( $site_details['url'] ) )
+                    ) {
+                        continue;
+                    }
+                }
+
+>>>>>>> Stashed changes
                 if ( FS_Plugin_License::is_valid_id( $install->license_id ) ) {
                     $site_details['license_id'] = $install->license_id;
                 }
@@ -888,5 +906,8 @@ HTML;
 	});
 })( jQuery );
 </script>
+<<<<<<< Updated upstream
 <?php
     fs_require_once_template( 'api-connectivity-message-js.php' );
+=======
+>>>>>>> Stashed changes

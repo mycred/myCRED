@@ -4079,6 +4079,7 @@
             $min = 1;
             $max = 100;
 
+<<<<<<< Updated upstream
             if ( function_exists( 'random_int' ) ) {
                 $random = random_int( $min, $max );
             } else {
@@ -4086,6 +4087,27 @@
             }
 
             return ( $random <= $visibility_percentage );
+=======
+            $params = array(
+                'is_update'    => json_encode( $is_update ),
+                'version'      => $version,
+                'sdk'          => $this->version,
+                'is_admin'     => json_encode( is_admin() ),
+                'is_ajax'      => json_encode( self::is_ajax() ),
+                'is_cron'      => json_encode( self::is_cron() ),
+                'is_gdpr_test' => $is_gdpr_test,
+                'is_http'      => json_encode( WP_FS__IS_HTTP_REQUEST ),
+            );
+
+            if ( is_multisite() && function_exists( 'get_network' ) ) {
+                $params['network_uid'] = $this->get_anonymous_network_id();
+            }
+
+            return $this->get_api_plugin_scope()->ping(
+                $this->get_anonymous_id( $blog_id ),
+                $params
+            );
+>>>>>>> Stashed changes
         }
 
         /**
@@ -4404,6 +4426,382 @@
             return ( checkdnsrr( $domain, 'MX' ) || checkdnsrr( $domain, 'A' ) );
         }
 
+<<<<<<< Updated upstream
+=======
+        /**
+         * Generate API connectivity issue message.
+         *
+         * @author Vova Feldman (@svovaf)
+         * @since  1.0.9
+         *
+         * @param mixed $api_result
+         * @param bool  $is_first_failure
+         */
+        function _add_connectivity_issue_message( $api_result, $is_first_failure = true ) {
+            if ( ! $this->is_premium() && $this->_enable_anonymous ) {
+                // Don't add message if it's the free version and can run anonymously.
+                return;
+            }
+
+            if ( ! function_exists( 'wp_nonce_url' ) ) {
+                require_once ABSPATH . 'wp-includes/functions.php';
+            }
+
+            $current_user = self::_get_current_wp_user();
+//			$admin_email = get_option( 'admin_email' );
+            $admin_email = $current_user->user_email;
+
+            // Aliases.
+            $deactivate_plugin_title = $this->esc_html_inline( 'That\'s exhausting, please deactivate', 'deactivate-plugin-title' );
+            $deactivate_plugin_desc  = $this->esc_html_inline( 'We feel your frustration and sincerely apologize for the inconvenience. Hope to see you again in the future.', 'deactivate-plugin-desc' );
+            $install_previous_title  = $this->esc_html_inline( 'Let\'s try your previous version', 'install-previous-title' );
+            $install_previous_desc   = $this->esc_html_inline( 'Uninstall this version and install the previous one.', 'install-previous-desc' );
+            $fix_issue_title         = $this->esc_html_inline( 'Yes - I\'m giving you a chance to fix it', 'fix-issue-title' );
+            $fix_issue_desc          = $this->esc_html_inline( 'We will do our best to whitelist your server and resolve this issue ASAP. You will get a follow-up email to %s once we have an update.', 'fix-issue-desc' );
+            /* translators: %s: product title (e.g. "Awesome Plugin" requires access to...) */
+            $x_requires_access_to_api    = $this->esc_html_inline( '%s requires access to our API.', 'x-requires-access-to-api' );
+            $sysadmin_title              = $this->esc_html_inline( 'I\'m a system administrator', 'sysadmin-title' );
+            $happy_to_resolve_issue_asap = $this->esc_html_inline( 'We are sure it\'s an issue on our side and more than happy to resolve it for you ASAP if you give us a chance.', 'happy-to-resolve-issue-asap' );
+
+            if ( $this->is_premium() ) {
+                /* translators: This string is optionally prepended to 'plugin requires access to our API.' */
+                $x_requires_access_to_api = $this->esc_html_inline( 'For automatic delivery of security & feature updates,', 'requires-api-for' ) . ' ' . $x_requires_access_to_api;
+            }
+
+            $message = false;
+            if ( is_object( $api_result ) &&
+                 isset( $api_result->error ) &&
+                 isset( $api_result->error->code )
+            ) {
+                switch ( $api_result->error->code ) {
+                    case 'curl_missing':
+                        $missing_methods = '';
+                        if ( is_array( $api_result->missing_methods ) &&
+                             ! empty( $api_result->missing_methods )
+                        ) {
+                            foreach ( $api_result->missing_methods as $m ) {
+                                if ( 'curl_version' === $m ) {
+                                    continue;
+                                }
+
+                                if ( ! empty( $missing_methods ) ) {
+                                    $missing_methods .= ', ';
+                                }
+
+                                $missing_methods .= sprintf( '<code>%s</code>', $m );
+                            }
+
+                            if ( ! empty( $missing_methods ) ) {
+                                $missing_methods = sprintf(
+                                    '<br><br><b>%s</b> %s',
+                                    $this->esc_html_inline( 'Disabled method(s):', 'curl-disabled-methods' ),
+                                    $missing_methods
+                                );
+                            }
+                        }
+
+                        $message = sprintf(
+                            $x_requires_access_to_api . ' ' .
+                            $this->esc_html_inline( 'We use PHP cURL library for the API calls, which is a very common library and usually installed and activated out of the box. Unfortunately, cURL is not activated (or disabled) on your server.', 'curl-missing-message' ) . ' ' .
+                            $missing_methods .
+                            ' %s',
+                            '<b>' . $this->get_plugin_name() . '</b>',
+                            sprintf(
+                                '<ol id="fs_firewall_issue_options"><li>%s</li><li>%s</li><li>%s</li></ol>',
+                                sprintf(
+                                    '<a class="fs-resolve" data-type="curl" href="#"><b>%s</b></a>%s',
+                                    $this->get_text_inline( 'I don\'t know what is cURL or how to install it, help me!', 'curl-missing-no-clue-title' ),
+                                    ' - ' . sprintf(
+                                        $this->get_text_inline( 'We\'ll make sure to contact your hosting company and resolve the issue. You will get a follow-up email to %s once we have an update.', 'curl-missing-no-clue-desc' ),
+                                        '<a href="mailto:' . $admin_email . '">' . $admin_email . '</a>'
+                                    )
+                                ),
+                                sprintf(
+                                    '<b>%s</b> - %s',
+                                    $sysadmin_title,
+                                    esc_html( sprintf( $this->get_text_inline( 'Great, please install cURL and enable it in your php.ini file. In addition, search for the \'disable_functions\' directive in your php.ini file and remove any disabled methods starting with \'curl_\'. To make sure it was successfully activated, use \'phpinfo()\'. Once activated, deactivate the %s and reactivate it back again.', 'curl-missing-sysadmin-desc' ), $this->get_module_label( true ) ) )
+                                ),
+                                sprintf(
+                                    '<a href="%s"><b>%s</b></a> - %s',
+                                    wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $this->_plugin_basename . '&amp;plugin_status=all&amp;paged=1&amp;s=', 'deactivate-plugin_' . $this->_plugin_basename ),
+                                    $deactivate_plugin_title,
+                                    $deactivate_plugin_desc
+                                )
+                            )
+                        );
+                        break;
+                    case 'cloudflare_ddos_protection':
+                        $message = sprintf(
+                            $x_requires_access_to_api . ' ' .
+                            $this->esc_html_inline( 'From unknown reason, CloudFlare, the firewall we use, blocks the connection.', 'cloudflare-blocks-connection-message' ) . ' ' .
+                            $happy_to_resolve_issue_asap .
+                            ' %s',
+                            '<b>' . $this->get_plugin_name() . '</b>',
+                            sprintf(
+                                '<ol id="fs_firewall_issue_options"><li>%s</li><li>%s</li><li>%s</li></ol>',
+                                sprintf(
+                                    '<a class="fs-resolve" data-type="cloudflare" href="#"><b>%s</b></a>%s',
+                                    $fix_issue_title,
+                                    ' - ' . sprintf(
+                                        $fix_issue_desc,
+                                        '<a href="mailto:' . $admin_email . '">' . $admin_email . '</a>'
+                                    )
+                                ),
+                                sprintf(
+                                    '<a href="%s" target="_blank" rel="noopener noreferrer"><b>%s</b></a> - %s',
+                                    sprintf( 'https://wordpress.org/plugins/%s/download/', $this->_slug ),
+                                    $install_previous_title,
+                                    $install_previous_desc
+                                ),
+                                sprintf(
+                                    '<a href="%s"><b>%s</b></a> - %s',
+                                    wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $this->_plugin_basename . '&amp;plugin_status=all&amp;paged=1&amp;s=' . '', 'deactivate-plugin_' . $this->_plugin_basename ),
+                                    $deactivate_plugin_title,
+                                    $deactivate_plugin_desc
+                                )
+                            )
+                        );
+                        break;
+                    case 'squid_cache_block':
+                        $message = sprintf(
+                            $x_requires_access_to_api . ' ' .
+                            $this->esc_html_inline( 'It looks like your server is using Squid ACL (access control lists), which blocks the connection.', 'squid-blocks-connection-message' ) .
+                            ' %s',
+                            '<b>' . $this->get_plugin_name() . '</b>',
+                            sprintf(
+                                '<ol id="fs_firewall_issue_options"><li>%s</li><li>%s</li><li>%s</li></ol>',
+                                sprintf(
+                                    '<a class="fs-resolve" data-type="squid" href="#"><b>%s</b></a> - %s',
+                                    $this->esc_html_inline( 'I don\'t know what is Squid or ACL, help me!', 'squid-no-clue-title' ),
+                                    sprintf(
+                                        $this->esc_html_inline( 'We\'ll make sure to contact your hosting company and resolve the issue. You will get a follow-up email to %s once we have an update.', 'squid-no-clue-desc' ),
+                                        '<a href="mailto:' . $admin_email . '">' . $admin_email . '</a>'
+                                    )
+                                ),
+                                sprintf(
+                                    '<b>%s</b> - %s',
+                                    $sysadmin_title,
+                                    sprintf(
+                                        $this->esc_html_inline( 'Great, please whitelist the following domains: %s. Once you are done, deactivate the %s and activate it again.', 'squid-sysadmin-desc' ),
+                                        // We use a filter since the plugin might require additional API connectivity.
+                                        '<b>' . implode( ', ', $this->apply_filters( 'api_domains', array(
+                                            'api.freemius.com',
+                                            'wp.freemius.com'
+                                        ) ) ) . '</b>',
+                                        $this->_module_type
+                                    )
+                                ),
+                                sprintf(
+                                    '<a href="%s"><b>%s</b></a> - %s',
+                                    wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $this->_plugin_basename . '&amp;plugin_status=all&amp;paged=1&amp;s=', 'deactivate-plugin_' . $this->_plugin_basename ),
+                                    $deactivate_plugin_title,
+                                    $deactivate_plugin_desc
+                                )
+                            )
+                        );
+                        break;
+//					default:
+//						$message = $this->get_text_inline( 'connectivity-test-fails-message' );
+//						break;
+                }
+            }
+
+            $message_id = 'failed_connect_api';
+            $type       = 'error';
+
+            $connectivity_test_fails_message = $this->esc_html_inline( 'From unknown reason, the API connectivity test failed.', 'connectivity-test-fails-message' );
+
+            if ( false === $message ) {
+                if ( $is_first_failure ) {
+                    // First attempt failed.
+                    $message = sprintf(
+                        $x_requires_access_to_api . ' ' .
+                        $connectivity_test_fails_message . ' ' .
+                        $this->esc_html_inline( 'It\'s probably a temporary issue on our end. Just to be sure, with your permission, would it be o.k to run another connectivity test?', 'connectivity-test-maybe-temporary' ) . '<br><br>' .
+                        '%s',
+                        '<b>' . $this->get_plugin_name() . '</b>',
+                        sprintf(
+                            '<div id="fs_firewall_issue_options">%s %s</div>',
+                            sprintf(
+                                '<a  class="button button-primary fs-resolve" data-type="retry_ping" href="#">%s</a>',
+                                $this->get_text_inline( 'Yes - do your thing', 'yes-do-your-thing' )
+                            ),
+                            sprintf(
+                                '<a href="%s" class="button">%s</a>',
+                                wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $this->_plugin_basename . '&amp;plugin_status=all&amp;paged=1&amp;s=', 'deactivate-plugin_' . $this->_plugin_basename ),
+                                $this->get_text_inline( 'No - just deactivate', 'no-deactivate' )
+                            )
+                        )
+                    );
+
+                    $message_id = 'failed_connect_api_first';
+                    $type       = 'promotion';
+                } else {
+                    // Second connectivity attempt failed.
+                    $message = sprintf(
+                        $x_requires_access_to_api . ' ' .
+                        $connectivity_test_fails_message . ' ' .
+                        $happy_to_resolve_issue_asap .
+                        ' %s',
+                        '<b>' . $this->get_plugin_name() . '</b>',
+                        sprintf(
+                            '<ol id="fs_firewall_issue_options"><li>%s</li><li>%s</li><li>%s</li></ol>',
+                            sprintf(
+                                '<a class="fs-resolve" data-type="general" href="#"><b>%s</b></a>%s',
+                                $fix_issue_title,
+                                ' - ' . sprintf(
+                                    $fix_issue_desc,
+                                    '<a href="mailto:' . $admin_email . '">' . $admin_email . '</a>'
+                                )
+                            ),
+                            sprintf(
+                                '<a href="%s" target="_blank" rel="noopener noreferrer"><b>%s</b></a> - %s',
+                                sprintf( 'https://wordpress.org/plugins/%s/download/', $this->_slug ),
+                                $install_previous_title,
+                                $install_previous_desc
+                            ),
+                            sprintf(
+                                '<a href="%s"><b>%s</b></a> - %s',
+                                wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $this->_plugin_basename . '&amp;plugin_status=all&amp;paged=1&amp;s=', 'deactivate-plugin_' . $this->_plugin_basename ),
+                                $deactivate_plugin_title,
+                                $deactivate_plugin_desc
+                            )
+                        )
+                    );
+                }
+            }
+
+            $this->_admin_notices->add_sticky(
+                $message,
+                $message_id,
+                $this->get_text_x_inline( 'Oops', 'exclamation', 'oops' ) . '...',
+                $type
+            );
+        }
+
+        /**
+         * Handle user request to resolve connectivity issue.
+         * This method will send an email to Freemius API technical staff for resolution.
+         * The email will contain server's info and installed plugins (might be caching issue).
+         *
+         * @author Vova Feldman (@svovaf)
+         * @since  1.0.9
+         */
+        function _email_about_firewall_issue() {
+            check_admin_referer( 'fs_resolve_firewall_issues' );
+
+            if ( ! current_user_can( is_multisite() ? 'manage_options' : 'activate_plugins' ) ) {
+                return;
+            }
+
+            $this->_admin_notices->remove_sticky( 'failed_connect_api' );
+
+            $pong = $this->ping();
+
+            $is_connected = $this->get_api_plugin_scope()->is_valid_ping( $pong );
+
+            if ( $is_connected ) {
+                FS_GDPR_Manager::instance()->store_is_required( $pong->is_gdpr_required );
+
+                $this->store_connectivity_info( $pong, $is_connected );
+
+                echo $this->get_after_plugin_activation_redirect_url();
+                exit;
+            }
+
+            $current_user = self::_get_current_wp_user();
+            $admin_email  = $current_user->user_email;
+
+            $error_type = fs_request_get( 'error_type', 'general' );
+
+            switch ( $error_type ) {
+                case 'squid':
+                    $title = 'Squid ACL Blocking Issue';
+                    break;
+                case 'cloudflare':
+                    $title = 'CloudFlare Blocking Issue';
+                    break;
+                default:
+                    $title = 'API Connectivity Issue';
+                    break;
+            }
+
+            $custom_email_sections = array();
+
+            // Add 'API Error' custom email section.
+            $custom_email_sections['api_error'] = array(
+                'title' => 'API Error',
+                'rows'  => array(
+                    'ping' => array(
+                        'API Error',
+                        is_string( $pong ) ? htmlentities( $pong ) : json_encode( $pong )
+                    ),
+                )
+            );
+
+            // Send email with technical details to resolve API connectivity issues.
+            $this->send_email(
+                'api@freemius.com',                              // recipient
+                $title . ' [' . $this->get_plugin_name() . ']',  // subject
+                $custom_email_sections,
+                array( "Reply-To: $admin_email <$admin_email>" ) // headers
+            );
+
+            $this->_admin_notices->add_sticky(
+                sprintf(
+                    $this->get_text_inline( 'Thank for giving us the chance to fix it! A message was just sent to our technical staff. We will get back to you as soon as we have an update to %s. Appreciate your patience.', 'fix-request-sent-message' ),
+                    '<a href="mailto:' . $admin_email . '">' . $admin_email . '</a>'
+                ),
+                'server_details_sent'
+            );
+
+            // Action was taken, tell that API connectivity troubleshooting should be off now.
+
+            echo "1";
+            exit;
+        }
+
+        /**
+         * Handle connectivity test retry approved by the user.
+         *
+         * @author Vova Feldman (@svovaf)
+         * @since  1.1.7.4
+         */
+        function _retry_connectivity_test() {
+            check_admin_referer( 'fs_retry_connectivity_test' );
+
+            if ( ! current_user_can( is_multisite() ? 'manage_options' : 'activate_plugins' ) ) {
+                return;
+            }
+
+            $this->_admin_notices->remove_sticky( 'failed_connect_api_first' );
+
+            $pong = $this->ping();
+
+            $is_connected = $this->get_api_plugin_scope()->is_valid_ping( $pong );
+
+            if ( $is_connected ) {
+                FS_GDPR_Manager::instance()->store_is_required( $pong->is_gdpr_required );
+
+                $this->store_connectivity_info( $pong, $is_connected );
+
+                echo $this->get_after_plugin_activation_redirect_url();
+            } else {
+                // Add connectivity issue message after 2nd failed attempt.
+                $this->_add_connectivity_issue_message( $pong, false );
+
+                echo "1";
+            }
+
+            exit;
+        }
+
+        static function _add_firewall_issues_javascript() {
+            $params = array();
+            fs_require_once_template( 'firewall-issues-js.php', $params );
+        }
+
+>>>>>>> Stashed changes
         #endregion
 
         #----------------------------------------------------------------------------------
@@ -4973,6 +5371,7 @@
                     // Disallow updater and dialog when installing a plugin, otherwise .org "add-on" plugins will be affected.
                     ( 'install-plugin' !== fs_request_get( 'action' ) )
                 )
+<<<<<<< Updated upstream
             );
         }
 
@@ -4990,12 +5389,32 @@
                 'permissions' => implode( ',', $permissions ),
                 'is_enabled'  => $is_enabled,
             );
+=======
+            );
+        }
+
+        /**
+         * @param string[] $permissions
+         * @param bool     $is_enabled
+         * @param int|null $blog_id
+         *
+         * @return true|object `true` on success, API error object on failure.
+         */
+        private function update_site_permissions( array $permissions, $is_enabled, $blog_id = null ) {
+            $this->_logger->entrance();
+
+            $params = array(
+                'permissions' => implode( ',', $permissions ),
+                'is_enabled'  => $is_enabled,
+            );
+>>>>>>> Stashed changes
 
             $current_blog_id  = get_current_blog_id();
             $is_blog_switched = false;
             if ( is_numeric( $blog_id ) && $current_blog_id != $blog_id ) {
                 $is_blog_switched = $this->switch_to_blog( $blog_id );
             }
+<<<<<<< Updated upstream
 
             $result = $this->api_site_call( '/permissions.json', 'put', $params );
 
@@ -5003,6 +5422,15 @@
                 $this->switch_to_blog( $current_blog_id );
             }
 
+=======
+
+            $result = $this->api_site_call( '/permissions.json', 'put', $params );
+
+            if ( $is_blog_switched ) {
+                $this->switch_to_blog( $current_blog_id );
+            }
+
+>>>>>>> Stashed changes
             if (
                 ! $this->is_api_result_object( $result ) ||
                 ! isset( $result->install_id )
@@ -6960,6 +7388,7 @@
          * @param bool|string $email_address
          * @param bool        $is_pending_trial Since 1.2.1.5
          * @param bool        $is_suspicious_email Since 2.5.0 Set to true when there's an indication that email address the user opted in with is fake/dummy/placeholder.
+<<<<<<< Updated upstream
          * @param bool        $has_upgrade_context Since 2.5.3
          * @param bool        $support_email_address Since 2.5.3
          */
@@ -7036,6 +7465,28 @@
 
             $this->_admin_notices->add_sticky(
                 vsprintf( $formatted_message, $formatted_message_args ),
+=======
+         */
+        function _add_pending_activation_notice(
+            $email = false,
+            $is_pending_trial = false,
+            $is_suspicious_email = false
+        ) {
+            if ( ! is_string( $email ) ) {
+                $current_user = self::_get_current_wp_user();
+                $email        = $current_user->user_email;
+            }
+
+            $this->_admin_notices->add_sticky(
+                sprintf(
+                    $this->get_text_inline( 'You should receive a confirmation email for %s to your mailbox at %s. Please make sure you click the button in that email to %s.', 'pending-activation-message' ),
+                    '<b>' . $this->get_plugin_name() . '</b>',
+                    '<b>' . $email . '</b>',
+                    ( $is_pending_trial ?
+                        $this->get_text_inline( 'start the trial', 'start-the-trial' ) :
+                        $this->get_text_inline( 'complete the opt-in', 'complete-the-opt-in' ) )
+                ),
+>>>>>>> Stashed changes
                 'activation_pending',
                 $notice_title
             );
@@ -7534,6 +7985,7 @@
          * @since  1.2.2
          *
          * @return bool
+<<<<<<< Updated upstream
          */
         private function can_activate_previous_theme() {
             return $this->can_activate_theme( $this->get_previous_theme_slug() );
@@ -7545,6 +7997,19 @@
          *
          * @return bool
          */
+=======
+         */
+        private function can_activate_previous_theme() {
+            return $this->can_activate_theme( $this->get_previous_theme_slug() );
+        }
+
+        /**
+         * @author Leo Fajardo (@leorw)
+         * @since  2.5.0
+         *
+         * @return bool
+         */
+>>>>>>> Stashed changes
         private function can_activate_theme( $slug ) {
             if ( false !== $slug && current_user_can( 'switch_themes' ) ) {
                 $theme_instance = wp_get_theme( $slug );
@@ -9618,6 +10083,78 @@
         }
 
         /**
+         * @author Leo Fajardo (@leorw)
+         * @since  2.5.1
+         */
+        private function send_pending_clone_update_once() {
+            $this->_logger->entrance();
+
+            if ( ! empty( $this->_storage->clone_id ) ) {
+                return;
+            }
+
+            $install_clone = $this->get_api_site_scope()->call(
+                '/clones',
+                'post',
+                array( 'site_url' => self::get_unfiltered_site_url() )
+            );
+
+            if ( $this->is_api_result_entity( $install_clone ) ) {
+                $this->_storage->clone_id = $install_clone->id;
+            }
+        }
+
+        /**
+         * @author Leo Fajardo (@leorw)
+         * @since  2.5.1
+         *
+         * @param string  $resolution_type
+         * @param FS_Site $clone_context_install
+         */
+        function send_clone_resolution_update( $resolution_type, $clone_context_install ) {
+            $this->_logger->entrance();
+
+            if ( empty( $this->_storage->clone_id ) ) {
+                return;
+            }
+
+            $new_install_id = null;
+            $current_site   = null;
+
+            $flush = false;
+
+            /**
+             * If the current site is now different from the context install before the clone resolution, we need to override `$this->_site` so that the API call below will be made with the right install scope entity.
+             */
+            if ( $clone_context_install->id != $this->_site->id ) {
+                $new_install_id = $this->_site->id;
+                $current_site   = $this->_site;
+                $this->_site    = $clone_context_install;
+
+                $flush = true;
+            }
+
+            $this->get_api_site_scope( $flush )->call(
+                "/clones/{$this->_storage->clone_id}",
+                'put',
+                array(
+                    'resolution'     => $resolution_type,
+                    'new_install_id' => $new_install_id,
+                )
+            );
+
+            if ( is_object( $current_site ) ) {
+                /**
+                 * Ensure that the install scope entity is updated back to the previous install entity.
+                 */
+                $this->_site  = $current_site;
+
+                // Restore the previous install scope entity of the API.
+                $this->get_api_site_scope( true );
+            }
+        }
+
+        /**
          * Update install only if changed.
          *
          * @author Vova Feldman (@svovaf)
@@ -11024,6 +11561,52 @@
          */
         function get_site() {
             return $this->_site;
+        }
+
+        /**
+         * @author Leo Fajardo (@leorw)
+         * @since 2.5.0
+         */
+        function store_site( $site ) {
+            $this->_site = $site;
+            $this->_store_site( true );
+        }
+
+        /**
+         * Deletes the current install with an option to back it up in case restoration will be needed (e.g., if the automatic clone resolution attempt fails).
+         *
+         * @author Leo Fajardo (@leorw)
+         * @since 2.5.0
+         */
+        function delete_current_install( $back_up ) {
+            // Back up and delete the unique ID.
+            if ( $back_up ) {
+                self::$_accounts->set_option( 'prev_unique_id', $this->get_anonymous_id() );
+            }
+
+            self::$_accounts->set_option( 'unique_id', null );
+
+            if ( $back_up ) {
+                // Back up the install before deleting it so that it can be restored later on if necessary (e.g., if the automatic clone resolution attempt fails).
+                $this->back_up_site();
+            }
+
+            $this->_delete_site();
+            $this->_site = null;
+        }
+
+        /**
+         * @author Leo Fajardo (@leorw)
+         * @since 2.5.0
+         */
+        function restore_backup_site() {
+            self::$_accounts->set_option(
+                'unique_id',
+                self::$_accounts->get_option( 'prev_unique_id' )
+            );
+
+            $sites = self::get_all_sites( $this->_module_type, null, true );
+            $this->store_site( clone $sites[ $this->_slug ] );
         }
 
         /**
@@ -14626,7 +15209,11 @@
         private function get_plugin_id_for_affiliate_terms() {
             return $this->has_bundle_context() ?
                 $this->get_bundle_id() :
+<<<<<<< Updated upstream
                 $this->_plugin->id;
+=======
+                $this->_plugin_id;
+>>>>>>> Stashed changes
         }
 
         /**
@@ -15666,6 +16253,42 @@
             }
 
             return $install_map;
+        }
+
+        /**
+         * @author Vova Feldman (@svovaf)
+         * @since  2.5.1
+         *
+         * @param bool|null $is_delegated When `true`, returns only connection delegated blog IDs. When `false`, only non-delegated blog IDs.
+         *
+         * @return int[]
+         */
+        private function get_blog_ids( $is_delegated = null ) {
+            $blog_ids = array();
+
+            $sites = self::get_sites();
+            foreach ( $sites as $site ) {
+                $blog_id = self::get_site_blog_id( $site );
+
+                if (
+                    is_null( $is_delegated ) ||
+                    $is_delegated === $this->is_site_delegated_connection( $blog_id )
+                ) {
+                    $blog_ids[] = $blog_id;
+                }
+            }
+
+            return $blog_ids;
+        }
+
+        /**
+         * @author Vova Feldman (@svovaf)
+         * @since  2.5.1
+         *
+         * @return int[]
+         */
+        private function get_non_delegated_blog_ids() {
+            return $this->get_blog_ids( false );
         }
 
         /**
@@ -17004,12 +17627,128 @@
                 $versions['platform_version']             = get_bloginfo( 'version' );
                 $versions['programming_language_version'] = phpversion();
             }
+<<<<<<< Updated upstream
+
+            foreach ( $versions as $k => $version ) {
+                $versions[ $k ] = self::get_api_sanitized_property( $k, $version );
+=======
 
             foreach ( $versions as $k => $version ) {
                 $versions[ $k ] = self::get_api_sanitized_property( $k, $version );
             }
 
             return $versions;
+        }
+
+        /**
+         * Get sanitized site language.
+         *
+         * @param string $language
+         * @param int    $max_len
+         *
+         * @since  2.5.1
+         * @author Vova Feldman (@svovaf)
+         *
+         * @return string
+         */
+        private static function get_sanitized_language( $language = '', $max_len = self::LANGUAGE_MAX_CHARS ) {
+            if ( empty( $language ) ) {
+                $language = get_bloginfo( 'language' );
+            }
+
+            return substr( $language, 0, $max_len );
+        }
+
+        /**
+         * Get core version stripped from pre-release and build.
+         *
+         * @since  2.5.1
+         * @author Vova Feldman (@svovaf)
+         *
+         * @param string $version
+         * @param int    $parts
+         * @param int    $max_len
+         * @param bool   $include_pre_release
+         *
+         * @return string
+         */
+        private static function get_core_version(
+            $version,
+            $parts = 3,
+            $max_len = self::VERSION_MAX_CHARS,
+            $include_pre_release = false
+        ) {
+            if ( empty( $version ) ) {
+                // Version is empty.
+                return '';
+            }
+
+            if ( is_numeric( $version ) ) {
+                $is_float_version = is_float( $version );
+
+                $version = (string) $version;
+
+                /**
+                 * Casting a whole float number to a string cuts the decimal point. This part make sure to add the missing decimal part to the version.
+                 */
+                if ( $is_float_version && false === strpos( $version, '.' ) ) {
+                    $version .= '.0';
+                }
+            }
+
+            if ( ! is_string( $version ) ) {
+                return '';
+            }
+
+            if ( $parts < 1 ) {
+                return '';
+            }
+
+            $pre_release_regex = $include_pre_release ?
+                '(\-(alpha|beta|RC)([0-9]+)?)?' :
+                '';
+
+            if ( 0 === preg_match( '/^([0-9]+(\.[0-9]+){0,' . ( $parts - 1 ) . '}' . $pre_release_regex . ')/i', $version, $matches ) ) {
+                // Version is not starting with a digit.
+                return '';
+>>>>>>> Stashed changes
+            }
+
+            return substr( $matches[1], 0, $max_len );
+        }
+
+        /**
+         * @param string $prop
+         * @param mixed  $val
+         *
+         * @return mixed
+         *@author Vova Feldman (@svovaf)
+         *
+         * @since  2.5.1
+         */
+        private static function get_api_sanitized_property( $prop, $val ) {
+            if ( ! is_string( $val ) || empty( $val ) ) {
+                return $val;
+            }
+
+            switch ( $prop ) {
+                case 'programming_language_version':
+                    // Get core PHP version, which can have up to 3 parts (ignore pre-releases).
+                    return self::get_core_version( $val );
+                case 'platform_version':
+                    // Get the exact WordPress version, which can have up to 3 parts (including pre-releases).
+                    return self::get_core_version( $val, 3, self::VERSION_MAX_CHARS, true );
+                case 'sdk_version':
+                    // Get the exact SDK version, which can have up to 4 parts.
+                    return self::get_core_version( $val, 4 );
+                case 'version':
+                    // Get the entire version but just limited in length.
+                    return substr( $val, 0, self::VERSION_MAX_CHARS );
+                case 'language':
+                    return self::get_sanitized_language( $val );
+                default:
+                    return $val;
+            }
         }
 
         /**
@@ -17772,15 +18511,23 @@
                             fs_request_get_bool( 'auto_install' )
                         );
                     }
+<<<<<<< Updated upstream
                 } else if ( $has_pending_activation_confirmation_param ) {
+=======
+                } else if ( fs_request_has( 'pending_activation' ) ) {
+>>>>>>> Stashed changes
                     $this->set_pending_confirmation(
                         fs_request_get( 'user_email' ),
                         true,
                         false,
                         false,
+<<<<<<< Updated upstream
                         fs_request_get_bool( 'is_suspicious_email' ),
                         fs_request_get_bool( 'has_upgrade_context' ),
                         fs_request_get( 'support_email_address' )
+=======
+                        fs_request_get_bool( 'is_suspicious_email' )
+>>>>>>> Stashed changes
                     );
                 }
             }
@@ -18044,9 +18791,13 @@
             $redirect = true,
             $license_key = false,
             $is_pending_trial = false,
+<<<<<<< Updated upstream
             $is_suspicious_email = false,
             $has_upgrade_context = false,
             $support_email_address = false
+=======
+            $is_suspicious_email = false
+>>>>>>> Stashed changes
         ) {
             $is_network_admin = fs_is_network_admin();
 
@@ -18058,11 +18809,16 @@
                  * @author Vova Feldman
                  * @since  1.2.1.6
                  */
+<<<<<<< Updated upstream
                 $this->skip_connection( $is_network_admin );
+=======
+                $this->skip_connection( fs_is_network_admin() );
+>>>>>>> Stashed changes
             } else {
                 // Install must be activated via email since
                 // user with the same email already exist.
                 $this->_storage->is_pending_activation = true;
+<<<<<<< Updated upstream
                 $this->_add_pending_activation_notice(
                     $email,
                     $is_pending_trial,
@@ -18070,6 +18826,9 @@
                     $has_upgrade_context,
                     $support_email_address
                 );
+=======
+                $this->_add_pending_activation_notice( $email, $is_pending_trial, $is_suspicious_email );
+>>>>>>> Stashed changes
             }
 
             if ( ! empty( $license_key ) ) {
@@ -19944,6 +20703,28 @@
 
             $site_clone = clone $this->_site;
 
+<<<<<<< Updated upstream
+=======
+            $this->set_account_option(
+                ( $is_backup ? 'prev_' : '' ) . 'sites',
+                $sites,
+                $store,
+                $network_level_or_blog_id
+            );
+        }
+
+        /**
+         * Stores the context site in the sites backup storage. This logic is used before deleting the site info so that it can be restored later on if necessary (e.g., if the automatic clone resolution attempt fails).
+         *
+         * @author Leo Fajardo (@leorw)
+         * @since 2.5.0
+         */
+        private function back_up_site() {
+            $this->_logger->entrance();
+
+            $site_clone = clone $this->_site;
+
+>>>>>>> Stashed changes
             $this->_store_site( true, null, $site_clone, true );
         }
 
@@ -21206,6 +21987,10 @@
                              * @author Vova Feldman (@svovaf)
                              * @since  1.1.6 Only show message related to one of the Freemius powered plugins. Once it will be resolved it will fix the issue for all plugins anyways. There's no point to scare users with multiple error messages.
                              */
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
                             if ( ! self::$_global_admin_notices->has_sticky( 'api_blocked' ) ) {
                                 // Add notice immediately if not a background sync.
                                 $add_notice = ( ! $background );
@@ -21229,15 +22014,30 @@
                                 // Add notice instantly for not-background sync and only after 3 failed attempts for background sync.
                                 if ( $add_notice ) {
                                     self::$_global_admin_notices->add(
+<<<<<<< Updated upstream
                                         $this->generate_api_blocked_notice_message_from_result( $result ),
                                         '',
+=======
+                                        sprintf(
+                                            $this->get_text_inline( 'Your server is blocking the access to Freemius\' API, which is crucial for %1$s synchronization. Please contact your host to whitelist %2$s', 'server-blocking-access' ),
+                                            $this->get_plugin_name(),
+                                            '<b>' . implode( ', ', $this->apply_filters( 'api_domains', array(
+                                                'api.freemius.com',
+                                                'wp.freemius.com'
+                                            ) ) ) . '</b>'
+                                        ) . '<br> ' . $this->get_text_inline( 'Error received from the server:', 'server-error-message' ) . var_export( $result->error, true ),
+                                        $this->get_text_x_inline( 'Oops', 'exclamation', 'oops' ) . '...',
+>>>>>>> Stashed changes
                                         'error',
                                         $background,
                                         'api_blocked'
                                     );
 
+<<<<<<< Updated upstream
                                     add_action( 'admin_footer', array( 'Freemius', '_add_api_connectivity_notice_handler_js' ) );
 
+=======
+>>>>>>> Stashed changes
                                     // Notice was just shown, reset connectivity counter.
                                     delete_transient( '_fs_api_connection_retry_counter' );
                                 }
@@ -22687,6 +23487,7 @@
             $user->id         = fs_request_get( 'user_id' );
             $user->public_key = fs_request_get( 'user_public_key' );
             $user->secret_key = fs_request_get( 'user_secret_key' );
+<<<<<<< Updated upstream
 
             $prev_user   = $this->_user;
             $this->_user = $user;
@@ -22713,6 +23514,34 @@
 
                     $current_blog_sites[ $site_id_slug_map[ $install->id ] ] = clone $site;
 
+=======
+
+            $prev_user   = $this->_user;
+            $this->_user = $user;
+
+            $result = $this->get_api_user_scope( true )->get(
+                "/installs.json?install_ids=" . implode( ',', $install_ids )
+            );
+
+            $current_blog_sites = self::get_all_sites( $this->get_module_type() );
+
+            if ( $this->is_api_result_object( $result, 'installs' ) ) {
+                $site_id_slug_map = array();
+
+                foreach ( $current_blog_sites as $slug => $site ) {
+                    $site_id_slug_map[ $site->id ] = $slug;
+                }
+
+                foreach ( $result->installs as $install ) {
+                    $site = new FS_Site( $install );
+
+                    if ( ! isset( $site_id_slug_map[ $install->id ] ) ) {
+                        continue;
+                    }
+
+                    $current_blog_sites[ $site_id_slug_map[ $install->id ] ] = clone $site;
+
+>>>>>>> Stashed changes
                     if ( $this->_site->id == $site->id ) {
                         $this->_site = $site;
                     }

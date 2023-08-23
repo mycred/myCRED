@@ -71,7 +71,7 @@ if ( ! function_exists( 'mycred_transfer_render' ) ) :
 			else {
 
 				// We either have no funds, exceeded limits (if used) or are excluded
-				$output = do_shortcode( $transfer->get_error_message() );
+				$output = do_shortcode( $transfer->get_error_message(true) );
 
 			}
 

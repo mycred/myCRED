@@ -186,7 +186,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Reward_Hook' ) ) :
 						</div>
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<label><?php esc_html_e( 'Maximium', 'mycred' ); ?></label>
+								<label><?php esc_html_e( 'Maximum', 'mycred' ); ?></label>
 								<input type="text" name="<?php echo esc_attr( $this->name( $this->mycred_type, 'max' ) ); ?>" value="<?php echo esc_attr( $this->core->number( $hook['max'] ) ); ?>" class="form-control buycred-reward-max" />
 							</div>
 						</div>

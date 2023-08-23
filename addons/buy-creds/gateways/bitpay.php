@@ -148,42 +148,42 @@ if ( ! class_exists( 'myCRED_Bitpay' ) ) :
 			try {
 
 				// Bitpay url
-				$host          	= 'bitpay.com';
+				$host = 'bitpay.com';
+
 				if ( $this->sandbox_mode )
 					$host = 'test.bitpay.com';
 				
-				$request_body = 
-					json_encode(
-						array(
-						    'currency' => $this->currency,
-						    'price' => $this->cost,
-						    'orderId' => $this->transaction_id,
-						    'notificationURL' => $this->callback_url(),
-						    'redirectURL' => $this->get_thankyou(),
-						    'fullNotifications' => ( ( $this->prefs['notifications'] ) ? true : false ),
-							'transactionSpeed' => $this->prefs['speed'],
-							'description'	=> $item_name,
-						    'buyer' => array(
-						         'email' => $user->user_email
+				$request_body = json_encode(
+					array(
+					    'currency' => $this->currency,
+					    'price' => $this->cost,
+					    'orderId' => $this->transaction_id,
+					    'notificationURL' => $this->callback_url(),
+					    'redirectURL' => $this->get_thankyou(),
+					    'fullNotifications' => ( ( $this->prefs['notifications'] ) ? true : false ),
+						'transactionSpeed' => $this->prefs['speed'],
+						'description'	=> $item_name,
+					    'buyer' => array(
+					         'email' => $user->user_email
+					    ),
+					    'token' => $api_token
+					)
+				);
+
+				$create_invoice = wp_remote_post( 'https://'.$host.'/invoices', 
+					array(
+					    'method'      => 'POST',
+					    'headers'     => 
+						    array( 
+						    	'X-Accept-Version' => '2.0.0',
+								'Content-Type' => 'application/json'
 						    ),
-						    'token' => $api_token
-						),
-					);
+					    'body'        => $request_body
+					) 
+				);
 
-				$create_invoice = 
-					wp_remote_post( 'https://'.$host.'/invoices', 
-						array(
-						    'method'      => 'POST',
-						    'headers'     => 
-							    array( 
-							    	'X-Accept-Version' => '2.0.0',
-    								'Content-Type' => 'application/json'
-							    ),
-						    'body'        => $request_body
-						) 
-					);
-
-			} catch ( \Exception $e ) {
+			} 
+			catch ( \Exception $e ) {
 
 				$this->errors[] = $e->getMessage();
 

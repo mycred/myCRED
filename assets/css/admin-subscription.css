@@ -560,4 +560,22 @@ line-height:34px;
 .mycred-update-database span {
     line-height: 1.6 !important;
     margin: 0px 5px 0px 0px;
+<<<<<<< Updated upstream
+=======
+}
+
+.mycred_license_valid_check {
+    padding: 10px !important; 
+    width: 50% ;
+    margin: 0 auto !important;
+}
+
+.mmc_welcome_content .mycred_license_valid_check {
+    margin-bottom: 60px !important;
+}
+
+.mycred_valid_message {
+    font-size: 1rem;
+    text-align: left;
+>>>>>>> Stashed changes
 }

@@ -1035,25 +1035,26 @@ if ( ! class_exists( 'myCRED_Settings' ) ) :
 				$this->exclude['list'] = '';
 
 			$list = wp_parse_id_list( $this->exclude['list'] );
+
 			if ( in_array( $user_id, $list ) )
 				$result = true;
 
 			//Check if Excluded by Role
-			if( !$result && !empty( $this->exclude['by_roles'] ) )
-			{
+			if( ! $result && ! empty( $this->exclude['by_roles'] ) ) {
+
 				$roles = explode( ',', $this->exclude['by_roles'] );
 
-				$user = get_user_by(  'id', $user_id );
+				$user = get_user_by( 'id', $user_id );
 
 				$user_roles = $user->roles;
 
-				foreach( $roles as $role )
-				{
-					if( in_array( $role, $user_roles ) )
-					{
+				foreach( $roles as $role ) {
+
+					if( in_array( $role, $user_roles ) ) {
 						$result = true;
 						break;
 					}
+
 				}
 
 			}
@@ -4537,10 +4538,20 @@ if ( ! function_exists( 'mycred_create_input_field' ) ) :
 
 		$field = '<input '. mycred_get_attribute_html( $atts ) .' />';
 
+<<<<<<< Updated upstream
 		if ( $echo )
 			echo $field;
 		else
 			return $field;
+=======
+		if ( $echo ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $field;
+		}
+		else {
+			return $field;
+		}
+>>>>>>> Stashed changes
 
 	}
 endif;
@@ -4587,10 +4598,20 @@ if ( ! function_exists( 'mycred_create_select_field' ) ) :
 
 		$field .= '</select>';
 
+<<<<<<< Updated upstream
 		if ( $echo )
 			echo $field;
 		else
 			return $field;
+=======
+		if ( $echo ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $field;
+		}
+		else {
+			return $field;
+		}
+>>>>>>> Stashed changes
 
 	}
 endif;
@@ -4627,10 +4648,20 @@ if ( ! function_exists( 'mycred_selected' ) ) :
 		)
 		$result = " selected='selected'";
 	 
+<<<<<<< Updated upstream
 	    if ( $echo )
 	        echo $result;
 	 	else
 		    return $result;
+=======
+	    if ( $echo ) {
+	    	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	        echo $result;
+	    }
+	 	else {
+		    return $result;
+	 	}
+>>>>>>> Stashed changes
 	
 	}
 endif;

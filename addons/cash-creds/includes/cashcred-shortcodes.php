@@ -200,7 +200,7 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 					$amount = ! empty( $amount ) ? floatval( $amount ) : 0;
 					
 				?> 
-				<input type="number" id="withdraw_points" name="points" class="form-control" placeholder="0" value="<?php echo ! empty($amount) ? esc_attr( $amount ) : 0; ?>" required />
+				<input type="number" id="withdraw_points" name="points" class="form-control" placeholder="0" step="any" value="<?php echo ! empty($amount) ? esc_attr( $amount ) : 0; ?>" required />
 				<p class="cashcred-min"><?php echo esc_html__('Minimum Amount: ', 'mycred');?><span></span></p>
 				
 				<?php 

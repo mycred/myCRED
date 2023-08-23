@@ -222,42 +222,49 @@ if ( ! class_exists( 'myCRED_cashcred_Bank_Transfer' ) ) :
 
 			$gateway_fields = array(
 				'ac_name' => array(
+					'form'		  => 'input',
 					'type'        => 'text',
 					'lable'       => 'Account name',
 					'classes'     => 'form-control',
 					'placeholder' => 'Account name',
 				),
 				'ac_number' => array(
+					'form'		  => 'input',
 					'type'        => 'text',
 					'lable'       => 'Account number',
 					'classes'     => 'form-control',
 					'placeholder' => 'Account number',
 				),
 				'ac_code' => array(
+					'form'		  => 'input',
 					'type'        => 'text',
 					'lable'       => 'Sort code',
 					'classes'     => 'form-control',
 					'placeholder' => 'Sort code',
 				),
 				'ba_name' => array(
+					'form'		  => 'input',
 					'type'        => 'text',
 					'lable'       => 'Bank name',
 					'classes'     => 'form-control',
 					'placeholder' => 'Bank name',
 				),
 				'ro_number' => array(
+					'form'		  => 'input',
 					'type'        => 'text',
 					'lable'       => 'Routing number',
 					'classes'     => 'form-control',
 					'placeholder' => 'Routing number',
 				),
 				'ib_name' => array(
+					'form'		  => 'input',
 					'type'        => 'text',
 					'lable'       => 'IBAN',
 					'classes'     => 'form-control',
 					'placeholder' => 'IBAN',
 				),
 				'sw_code' => array(
+					'form'		  => 'input',
 					'type'        => 'text',
 					'lable'       => 'Swift code',
 					'classes'     => 'form-control',
