@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 6.2.2
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -303,6 +303,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.5.3 =
+Updated Feedback library to the latest version.
+
 = 2.5.2 =
 Improvements.
 
@@ -415,6 +418,9 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.5.3 =
+- **IMPROVEMENT** - Updated Feedback library to the latest version.
 
 = 2.5.2 =
 - **NEW** - Added filter in mycred_badges_list shortcode.
