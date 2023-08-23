@@ -82,7 +82,7 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 
 		public function cashcred_redirect_addnew_button() {
 		    
-		    if( $_GET["post_type"] == "cashcred_withdrawal" ) 
+		    if( ! empty( $_GET["post_type"] ) && $_GET["post_type"] == "cashcred_withdrawal" ) 
 		        wp_redirect("edit.php?post_type=cashcred_withdrawal");
 
 		}

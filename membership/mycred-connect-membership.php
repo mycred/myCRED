@@ -134,7 +134,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                     <hr>
 
                     <h2>Suggestion:</h2>
-                    <p>If you have suggestions for myCred and their addons, feel free to add them <a target="_blank" href="https://app.productstash.io/roadmaps/5f8d483c053518002b4441c4/public">here</a>.</p>
+                    <p>If you have suggestions for myCred and their addons, feel free to add them <a target="_blank" href="https://app.loopedin.io/mycred">here</a>.</p>
                     <hr>
 
                     <h2>Free add-ons</h2>
@@ -270,26 +270,41 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
             $membership_key = get_option( 'mycred_membership_key' );
             if( !isset( $membership_key )  && !empty( $membership_key ) )
                 $membership_key = '';
+                global $license_valid_check;
+                global $license_empty_check;
             ?>
             <div class="wrap">
                 <div class="mmc_welcome">
                     <div class="mmc_welcome_content">
-                        <div class="mmc_title"><?php esc_html_e( 'Welcome to myCred Premium Club', 'mycred' ); ?></div>
+                        <?php 
+                            
+                            if ( isset( $license_empty_check ) && 'empty' == $license_empty_check ) {
+
+                                echo '<div class="mycred_license_valid_check error notice is-dismissible"><div class="mycred_valid_message"><strong>Please Enter a License Key</strong>.</div></div>';   
+                            } elseif ( isset( $license_valid_check ) && true == $license_valid_check   ) {
+
+                                echo '<div class="mycred_license_valid_check updated notice is-dismissible"><div class="mycred_valid_message"><strong>The License Key is Valid</strong>.</div></div>';
+                            } elseif ( isset( $license_valid_check ) && false == $license_valid_check ) {
+
+                                echo '<div class="mycred_license_valid_check error notice is-dismissible"><div class="mycred_valid_message"><strong>The License Key is Invalid</strong>.</div></div>';   
+                            }
+                            ?>
+                        <div class="mmc_title"><strong><?php esc_html_e( 'Welcome to myCred Premium Club', 'mycred' ); ?></strong></div>
                         <form action="#" method="post">
                         <?php 
+                           
+                            wp_nonce_field( 'myCredLicense-nonce', 'mycred-license-nonce' );
                             if(mycred_is_valid_license_key( $membership_key )) {
                                 echo '<span class="dashicons dashicons-yes-alt membership-license-activated"></span>';
                             } 
                             else {
                                 // if membership is not active in current site and the membership key is entered
                                 echo '<span class="dashicons dashicons-dismiss membership-license-inactive"></span>';
-                            } 
-                                
-                                
+                            }      
                         ?>
                         
                             <input type="text" name="mmc_lincense_key" class="mmc_lincense_key" placeholder="<?php esc_attr_e( 'Add Your License key', 'mycred' ); ?>" value="<?php echo esc_attr( $membership_key );?>">
-                            <input type="submit" class="mmc_save_license button-primary" value="Save"/>
+                            <input type="submit" name="mmc_save_license" class="mmc_save_license button-primary" value="Save"/>
                             <div class="mmc_license_link"><a href="https://mycred.me/redirect-to-membership/" target="_blank"><span class="dashicons dashicons-editor-help"></span><?php esc_html_e('Click here to get your License Key','mycred') ?></a>
                             </div>
                             <div class="mmc_license_link">
@@ -311,16 +326,32 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
          */
         public function mycred_save_license() {
             
-            if( !isset($_POST['mmc_lincense_key']) ) return;
+            if ( isset( $_POST['mmc_lincense_key'] ) && isset( $_POST['mycred-license-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mycred-license-nonce'] ) ), 'myCredLicense-nonce' ) ) {
 
-            $license_key = sanitize_text_field( wp_unslash( $_POST['mmc_lincense_key'] ) );
+                $license_key = sanitize_text_field( wp_unslash( $_POST['mmc_lincense_key'] ) );
 
-            if( isset( $license_key ) ) {
+                if( isset( $license_key ) ) {
+                    update_option( 'mycred_membership_key', $license_key );
+                    mycred_is_valid_license_key( $license_key, true );
+                    global $license_valid_check;
+                    if ( true == mycred_is_valid_license_key( $license_key, true ) ) {
+                        $license_valid_check = true;
+                    }
+                    else {
+                        $license_valid_check = false;
+                    }
+                    $this->removeLicenseTransients();
 
-                update_option( 'mycred_membership_key', $license_key );
-                mycred_is_valid_license_key( $license_key, true );
-                $this->removeLicenseTransients();
+                }
+                
+            }
+            if ( isset( $_POST['mmc_save_license'] ) ) {
 
+                $license_key_check = isset( $_POST['mmc_lincense_key'] ) ? $_POST['mmc_lincense_key'] : '';
+                global $license_empty_check; 
+                if( '' == $license_key_check ) {
+                    $license_empty_check = 'empty';
+                }
             }
             
         }

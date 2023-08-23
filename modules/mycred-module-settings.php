@@ -542,7 +542,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 ?>
 </select>
-<p><span class="description"><?php printf( esc_html__( '<a href="%s">Click here</a> to change your default point types setup.', 'mycred' ), esc_url( $url ) ); ?></span></p>
+<p><span class="description"><?php printf( '<a href="%s">'. esc_html__( 'Click here', 'mycred' ) .'</a>'. esc_html__( ' to change your default point types setup.', 'mycred' ), esc_url( $url ) ); ?></span></p>
 <?php
 
 				}
@@ -619,7 +619,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 	<?php $this->update_notice(); ?>
 
 	<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?>
-	<p id="mycred-thank-you-text"><?php printf( esc_html__( 'Thank you for using %s. If you have a moment, please leave a %s.', 'mycred' ), esc_html_e( mycred_label() ), sprintf( '<a href="https://wordpress.org/support/plugin/mycred/reviews/?rate=5#new-post" target="_blank">%s</a>', esc_html__( 'review', 'mycred' ) ) ); ?><span id="mycred-social-media"><?php echo wp_kses_post( implode( ' ',  $social  ) ); ?></span></p>
+	<p id="mycred-thank-you-text"><?php printf( esc_html__( 'Thank you for using %s. If you have a moment, please leave a %s.', 'mycred' ), esc_html__( mycred_label() ), sprintf( '<a href="https://wordpress.org/support/plugin/mycred/reviews/?rate=5#new-post" target="_blank">%s</a>', esc_html__( 'review', 'mycred' ) ) ); ?><span id="mycred-social-media"><?php echo wp_kses_post( implode( ' ',  $social  ) ); ?></span></p>
 	<?php endif; ?>
 
 	<form method="post" action="options.php" class="form" name="mycred-core-settings-form" novalidate>
@@ -1202,7 +1202,6 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				}
 
 			}
-			
 			
 			// User deletions
 			$new_data['delete_user'] = ( isset( $post['delete_user'] ) ) ? $post['delete_user'] : 0;

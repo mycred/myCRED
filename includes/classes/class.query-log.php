@@ -2510,7 +2510,7 @@ if ( ! function_exists( 'mycred_get_all_references' ) ) :
 			$hooks['contact_form_submission'] = __( 'Form Submission (Contact Form 7)', 'mycred' );
 
 		if ( class_exists( 'GFForms' ) )
-			$hooks['gravity_form_submission'] = __( 'Form Submission (Gravity Form)', 'mycred' );
+			$hooks['gravity_form_submission'] = __( 'Form Submission (Gravity Forms)', 'mycred' );
 
 		if ( defined( 'SFTOPICS' ) ) {
 			$hooks['new_forum_topic'] = __( 'New Forum Topic (SimplePress)', 'mycred' );
@@ -2540,7 +2540,6 @@ if ( ! function_exists( 'mycred_get_all_references' ) ) :
 		// Addons
 		$addons = array();
 		if ( class_exists( 'myCRED_Banking_Module' ) ) {
-			$addons['interest']  = __( 'Compound Interest', 'mycred' );
 			$addons['recurring'] = __( 'Recurring Payout', 'mycred' );
 		}
 

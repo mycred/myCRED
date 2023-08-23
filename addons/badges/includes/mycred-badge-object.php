@@ -106,15 +106,13 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 
 			// Indicate open badge
 			if ( absint( mycred_get_post_meta( $this->post_id, 'open_badge', true ) ) === 1 ) {
- 
-				$badge_setting = mycred_get_addon_settings( 'badges' );
+				$badge_setting = mycred_get_option( 'mycred_pref_core' );
 
-				if ( isset( $badge_setting['open_badge'] ) && $badge_setting['open_badge'] === 1 ) {
+				if ( isset( $badge_setting['open_badge'] ) && absint($badge_setting['open_badge']['is_enabled'] ) === 1 ) {
 					
 					$this->open_badge = true;
 
 				}
-			
 			}
 
 			// If we requested a particular level
@@ -806,7 +804,7 @@ if ( ! class_exists( 'myCRED_Badge' ) ) :
 				if ( ! file_exists( $open_badge_directory . $filename ) ) {
 
 					$mycred_Open_Badge = new mycred_Open_Badge();
-					$mycred_Open_Badge->bake_users_image( $user_id, $badge_id );
+					$mycred_Open_Badge->bake_users_image( $user_id, $badge_id, $image_url, $this->title, $this->open_badge );
 
 				}
 

@@ -1591,25 +1591,25 @@ if ( ! class_exists( 'myCRED_Ranks_Module' ) ) :
 					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php esc_html_e( 'Title', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php echo esc_html( $mycred->core->template_tags_general( __( '%plural% requirement', 'mycred' ) ) ); ?></label>
+					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php echo esc_html( $mycred->core->template_tags_general( __( '%plural% Requirement', 'mycred' ) ) ); ?></label>
 				</div>
 				<div class="checkbox">
 					<label><input type="checkbox" value="1" checked="checked" disabled="disabled" /> <?php esc_html_e( 'Rank Logo', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'content' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'content' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'content' ) ) ); ?>" <?php checked( $prefs['support']['content'], 1 ); ?> value="1" /> <?php esc_html_e( 'Content', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'content' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'content' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'content' ) ) ); ?>" <?php if( $prefs['support']['content'] == 1 ) { echo 'checked'; } ?> value="1" /> <?php esc_html_e( 'Content', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'excerpt' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'excerpt' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'excerpt' ) ) ); ?>" <?php checked( $prefs['support']['excerpt'], 1 ); ?> value="1" /> <?php esc_html_e( 'Excerpt', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'excerpt' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'excerpt' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'excerpt' ) ) ); ?>" <?php if( $prefs['support']['excerpt'] == 1 ) { echo 'checked'; } ?> value="1" /> <?php esc_html_e( 'Excerpt', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo esc_attr ($this->field_id( array( 'support' => 'comments' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'comments' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'comments' ) ) ); ?>" <?php checked( $prefs['support']['comments'], 1 ); ?> value="1" /> <?php esc_html_e( 'Comments', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr ($this->field_id( array( 'support' => 'comments' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'comments' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'comments' ) ) ); ?>" <?php if( $prefs['support']['comments'] == 1 ) { echo 'checked'; } ?> value="1" /> <?php esc_html_e( 'Comments', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'page-attributes' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'page-attributes' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'page-attributes' ) ) ); ?>" <?php checked( $prefs['support']['page-attributes'], 1 ); ?> value="1" /> <?php esc_html_e( 'Page Attributes', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'page-attributes' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'page-attributes' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'page-attributes' ) ) ); ?>" <?php if( $prefs['support']['page-attributes'] == 1 ) { echo 'checked'; } ?> value="1" /> <?php esc_html_e( 'Page Attributes', 'mycred' ); ?></label>
 				</div>
 				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'custom-fields' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'custom-fields' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'custom-fields' ) ) ); ?>" <?php checked( $prefs['support']['custom-fields'], 1 ); ?> value="1" /> <?php esc_html_e( 'Custom Fields', 'mycred' ); ?></label>
+					<label for="<?php echo esc_attr( $this->field_id( array( 'support' => 'custom-fields' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'support' => 'custom-fields' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'support' => 'custom-fields' ) ) ); ?>" <?php if( $prefs['support']['custom-fields'] == 1 ) { echo 'checked'; } ?> value="1" /> <?php esc_html_e( 'Custom Fields', 'mycred' ); ?></label>
 				</div>
 			</div>
 		</div>

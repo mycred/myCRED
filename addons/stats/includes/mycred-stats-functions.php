@@ -201,19 +201,15 @@ if ( ! function_exists( 'mycred_get_stat_dates' ) ) :
 			case 'months' :
 
 				$from  = $value - 1;
-				$start = date( 'U', strtotime( '-' . $from . ' months midnight', $now ) );
 
-				for ( $i = 0 ; $i < $value ; $i ++ ) {
+				for ( $i = $from ; $i >= 0 ; $i -- ) {
 
-					if ( $i == 0 )
-						$new_start = $start;
-					else
-						$new_start = $start + ( MONTH_IN_SECONDS * $i );
+					$start = strtotime( date( 'Y-m-01', strtotime("-$i month") ) );
 
 					$results[] = array(
-						'label' => date_i18n( 'F', $new_start ),
-						'from'  => $new_start,
-						'until' => ( $new_start + MONTH_IN_SECONDS )
+						'label' => date_i18n( 'F', $start ),
+						'from'  => $start,
+						'until' => strtotime( date( 'Y-m-t 23:59:59', $start ) )
 					);
 
 				}
@@ -811,7 +807,7 @@ endif;
  * @version 1.0
  */
 if ( ! function_exists( 'mycred_get_users_history_data' ) ) :
-	function mycred_get_users_history_data( $user_id = 0, $point_type = MYCRED_DEFAULT_TYPE_KEY, $period = 'days', $number = 10, $order = 'DESC' ) {
+	function mycred_get_users_history_data( $user_id = 0, $point_type = MYCRED_DEFAULT_TYPE_KEY, $period = 'days', $number = 10, $order = 'DESC', $ref = '' ) {
 
 		if ( absint( $user_id ) === 0 ) return array();
 
@@ -843,6 +839,10 @@ if ( ! function_exists( 'mycred_get_users_history_data' ) ) :
 				$select   = implode( ', ' . "\n", $selects );
 
 				$wheres[] = $wpdb->prepare( 'ctype = %s', $point_type );
+				
+				if( ! empty( $ref ) ) 
+					$wheres[] = $wpdb->prepare( 'ref = %s',  $ref );
+				
 				$wheres[] = $wpdb->prepare( 'user_id = %d', $user_id );
 
 				$where    = implode( ' AND ', $wheres );
@@ -929,6 +929,82 @@ if ( ! function_exists( 'mycred_get_ref_history_data' ) ) :
 
 				$query    = $wpdb->get_row( "SELECT {$select} FROM {$mycred_log_table} WHERE {$where} {$limit};" );
 
+				if ( $query !== NULL ) {
+
+					foreach ( $periods as $row => $setup ) {
+
+						$value_key    = 'period' . $row;
+						$value        = ( isset( $query->$value_key ) && $query->$value_key !== NULL ) ? $query->$value_key : 0;
+						$value        = $type_object->number( $value );
+
+						$entry        = new StdClass();
+						$entry->type  = 'date';
+						$entry->value = $value;
+						$entry->label = $setup['label'];
+						$entry->color = ( $value >= 0 ) ? $colors['positive'] : $colors['negative'];
+
+						$datasets[]   = $entry;
+
+					}
+
+				}
+
+				$data[] = $datasets;
+
+			}
+
+			$cache = $data;
+
+			mycred_update_option( $stats_key, $cache );
+
+		}
+
+		return $cache;
+
+	}
+endif;
+
+/**
+ * Data: Get balance History without deduction 
+ * @since 2.5
+ * @version 1.0
+ */
+if ( ! function_exists( 'mycred_get_time_frame_data' ) ) :
+	function mycred_get_time_frame_data( $point_type = MYCRED_DEFAULT_TYPE_KEY, $period = 'days', $number = 10 ) {
+
+		$stats_key = MYCRED_SLUG . '-stats-' . md5( $point_type . $period . $number );
+		$cache     = mycred_get_option( $stats_key, false );
+
+		if ( $cache === false ) {
+
+			global $wpdb, $mycred_log_table;
+
+			$point_colors = mycred_get_type_color();
+			$colors       = $point_colors[ $point_type ];
+			$type_object  = new myCRED_Point_Type( $point_type );
+
+			$data         = array();
+			$periods      = mycred_get_stat_dates( $period, $number );
+
+			if ( ! empty( $periods ) ) {
+
+				$datasets = array();
+
+				$select   = '';
+				$selects  = array();
+				
+				foreach ( $periods as $row => $setup )
+					$selects[] = $wpdb->prepare( 'SUM( CASE WHEN time BETWEEN %d AND %d AND creds > 0 THEN creds END) AS period%d', $setup['from'], $setup['until'], $row );
+
+				$select   = implode( ', ' . "\n", $selects );			
+
+				$wheres[] = $wpdb->prepare( 'ctype = %s', $point_type );
+
+				$where    = implode( ' AND ', $wheres );
+				$limit    = ( absint( $number ) > 0 ) ? 'LIMIT ' . absint( $number ) : '';
+
+				$query    = $wpdb->get_row( "SELECT {$select} FROM {$mycred_log_table} WHERE {$where} {$limit};" );
+				
 				if ( $query !== NULL ) {
 
 					foreach ( $periods as $row => $setup ) {

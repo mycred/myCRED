@@ -83,7 +83,9 @@ if ( ! function_exists( 'mycred_render_my_badges' ) ) :
             }
 
             echo '</div>';
+
             do_action( 'mycred_add_share_and_embed_button', $badge, $badge_id );
+
         }
 
         echo '</div>';
@@ -247,54 +249,6 @@ if( !function_exists( 'mycred_render_badges_list' ) ) :
         <?php
         $content = ob_get_clean();
 
-        return $content;
-    }
-endif;
-
-/**
- * Renders Badge's Evidence ShortCode
- * @param string $atts
- * @since 2.1
- * @version 1.0
- */
-if ( !function_exists( 'mycred_render_badge_evidence' ) ) :
-    function mycred_render_badge_evidence( $atts = '' ) {
-
-        $content = '<div class="mycred-evidence-page">Evidence not found</div>'; 
-
-        if ( isset( $_GET['uid'] ) && isset( $_GET['bid'] ) ) {
-
-            $user_id  = intval( $_GET['uid'] );
-            $badge_id = intval( $_GET['bid'] );
-
-            $user_info = get_userdata( $user_id );
-            $badge     = mycred_get_badge( $badge_id );
-
-            if ( $user_info && $badge && $badge->open_badge ) {
-                
-                $issued_on = mycred_get_user_meta( $user_id, MYCRED_BADGE_KEY . $badge_id, '_issued_on', true );
-
-                $content = '<div class="mycred-evidence-page">
-                                <div class="mycred-left">
-                                    <img src="' . $badge->get_earned_image( $user_id ) . '" alt="">
-                                </div>
-                                <div class="mycred-left intro">
-                                    <h4 class="mycred-remove-margin">' . $badge->title . '</h4>
-                                    <div class="mycred-remove-margin">
-                                        <p>Name: '. $user_info->display_name .'</p>
-                                        <p>Email: ' . $user_info->user_email . '</p>
-                                        <p>Issued On: ' . date( 'Y-m-d\TH:i:sP', $issued_on ) . '</p>
-                                        <p><span class="dashicons dashicons-yes-alt"></span> <span class="icon-txt"> Verified</span></p>
-                                    </div>
-                                </div>
-                                <div class="mycred-clear"></div>
-                            </div>';
-
-            }
-            
-            
-        }
-
-        return $content;
+        return apply_filters( 'mycred_badges_list', $content, $atts );
     }
 endif;

@@ -31,8 +31,7 @@ if ( ! defined( 'MYCRED_BADGE_HEIGHT' ) )
 require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-badge-functions.php';
 require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-badge-shortcodes.php';
 require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-badge-object.php';
-require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-badge-secondary.php';
-require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-open-badge.php';
+require_once MYCRED_BADGE_INCLUDES_DIR . 'mycred-badge-secondary.php';;
 
 /**
  * myCRED_buyCRED_Module class
@@ -117,8 +116,6 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
 
             add_shortcode( MYCRED_SLUG . '_badges_list',    'mycred_render_badges_list' );
 
-            add_shortcode( MYCRED_SLUG . '_badge_evidence', 'mycred_render_badge_evidence' );
-
             // Insert into bbPress
             if ( class_exists( 'bbPress' ) ) {
 
@@ -129,11 +126,14 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
                     add_action( 'bbp_theme_after_reply_author_details', array( $this, 'insert_into_bbpress_reply' ) );
 
             }
+            $this->open_badge = false;
 
-            //Load open badge if enabled
-            if ( $this->badges['open_badge'] ) {
-
+            $setting = mycred_get_option( 'mycred_pref_core' );
+            if ( isset( $setting['open_badge'] ) && $setting['open_badge']['is_enabled'] == 1 ) {
+                
+                $this->open_badge = $setting['open_badge']['is_enabled'];
                 $this->mycred_open_badge_init();
+                add_action( 'mycred_open_badges_html', array( $this, 'mycred_badge_button_html' ), 10 );
             
             }
 
@@ -156,6 +156,19 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
             add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_front_scripts' ) );
 
             add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+
+        }
+
+        /**
+         * Enqueue Front End Script
+         * @since 1.3
+         * @version 1.0
+         */
+        public function mycred_badge_button_html() { ?>
+
+            <div class="form-group">
+                <button class="button button-large large button-primary" id="switch-all-to-open-badge"><span class="dashicons dashicons-update mycred-switch-all-badges-icon"></span> Switch All Badges To Open Badge.</button>
+            </div> <?php
 
         }
 
@@ -251,7 +264,6 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
                 'can_export'           => true,
                 'has_archive'          => false,
                 'exclude_from_search'  => true,
-                'publicly_queryable'   => false,
                 'register_meta_box_cb' => array( $this, 'add_metaboxes' ),
                 'capability_type'      => 'post',
                 'publicly_queryable'   => true,
@@ -603,7 +615,7 @@ if ( ! class_exists( 'myCRED_Badge_Module' ) ) :
             $columns['badge-users']         = __( 'Users', 'mycred' );
             $columns['badge-type']          = __( 'Achievements Type', 'mycred' );
 
-            if ( $this->badges['open_badge'] ) 
+            if ( $this->open_badge ) 
                 $columns['badge-open-badge'] = __( 'Open Badge', 'mycred' );
 
             // Return
@@ -796,7 +808,7 @@ th#badge-users { width: 10%; }
                 'low'
             );
 
-            if ( $this->badges['open_badge'] ) 
+            if ( $this->open_badge  ) 
                 add_meta_box(
                     'mycred-badge-open-badge',
                     __( 'Open Badge', 'mycred' ),
@@ -1078,7 +1090,7 @@ th#badge-users { width: 10%; }
             $point_types = mycred_get_types( true );
             $open_badge  = false;
 
-            if ( $this->badges['open_badge'] == 1 ) {
+            if ( $this->open_badge  == 1 ) {
                     
                 $open_badge = ( mycred_get_post_meta( $post->ID, 'open_badge', true ) == 1 ) ? true : false;
 
@@ -1581,41 +1593,6 @@ th#badge-users { width: 10%; }
                     </div>
                 </div>
 
-                <h3><?php esc_html_e( 'Open Badge', 'mycred' ); ?></h3>
-                <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label for="<?php echo esc_attr( $this->field_id( 'open_badge' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'open_badge' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'open_badge' ) ); ?>" <?php checked( $settings['open_badge'], 1 ); ?> value="1" > <?php esc_html_e( 'Enable Open Badge.', 'mycred' ); ?></label>
-                            </div>
-                        </div>
-                    </div>
-                    <?php if( $settings['open_badge'] == '1' ):?>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <div class="form-group">
-                                <label for="<?php echo esc_attr( $this->field_id( 'open_badge_evidence_page' ) ); ?>"><?php esc_html_e( 'Evidence Page', 'mycred' ); ?></label>
-                                <?php       
-
-                                    $selectedEvidencePage = mycred_get_evidence_page_id();   
-
-                                    $args = array(
-                                        'id'       => $this->field_id( 'open_badge_evidence_page' ),
-                                        'name'     => $this->field_name( 'open_badge_evidence_page' ),
-                                        'selected' => $selectedEvidencePage
-                                    );
-
-                                    wp_dropdown_pages( esc_attr( $args ) );
-                                ?>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <div class="form-group">
-                                <button class="button button-large large button-primary" id="switch-all-to-open-badge"><span class="dashicons dashicons-update mycred-switch-all-badges-icon"></span> Switch All Badges To Open Badge.</button>
-                            </div>
-                        </div>
-                    <?php endif;?>
-                </div>
-
                 <h3><?php esc_html_e( 'Third-party Integrations', 'mycred' ); ?></h3>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
@@ -1712,9 +1689,7 @@ th#badge-users { width: 10%; }
 
             $new_data['badges']['buddypress']  = ( isset( $data['badges']['buddypress'] ) ) ? sanitize_text_field( $data['badges']['buddypress'] ) : '';
             $new_data['badges']['bbpress']     = ( isset( $data['badges']['bbpress'] ) ) ? sanitize_text_field( $data['badges']['bbpress'] ) : '';
-            
-            $new_data['badges']['open_badge']  = ( isset( $data['badges']['open_badge'] ) ) ? intval( $data['badges']['open_badge'] ) : 0;
-
+        
             //Specific Badge Page Setup @since 2.1
             $new_data['badges']['show_level_description'] = ( isset( $data['badges']['show_level_description'] ) ) ? intval( $data['badges']['show_level_description'] ) : 0;
             $new_data['badges']['show_congo_text'] = ( isset( $data['badges']['show_congo_text'] ) ) ? intval( $data['badges']['show_congo_text'] ) : 0;
@@ -1722,8 +1697,6 @@ th#badge-users { width: 10%; }
             $new_data['badges']['show_level_points'] = ( isset( $data['badges']['show_level_points'] ) ) ? intval( $data['badges']['show_level_points'] ) : 0;
             $new_data['badges']['show_steps_to_achieve'] = ( isset( $data['badges']['show_steps_to_achieve'] ) ) ? intval( $data['badges']['show_steps_to_achieve'] ) : 0;
             $new_data['badges']['show_earners'] = ( isset( $data['badges']['show_earners'] ) ) ? intval( $data['badges']['show_earners'] ) : 0;
-            $new_data['badges']['open_badge_evidence_page'] = ( isset( $data['badges']['open_badge_evidence_page'] ) ) ? intval( $data['badges']['open_badge_evidence_page'] ) : 0;
-
 
             return $new_data;
 
@@ -2066,8 +2039,22 @@ th#badge-users { width: 10%; }
 
             $mycred_Open_Badge = new mycred_Open_Badge();
 
-            add_action( 'mycred_after_badge_assign', array( $mycred_Open_Badge, 'bake_users_image' ), 10, 2 );
+            add_action( 'mycred_after_badge_assign', array( $this, 'after_badge_assign' ), 10, 2 );
             add_action( 'rest_api_init',             array( $mycred_Open_Badge, 'register_open_badge_routes' ) );
+        
+        }
+
+        /**
+         * Init Open Badge
+         * @since 2.1
+         * @version 1.0
+         */
+        public function after_badge_assign( $user_id, $badge_id ) {
+
+            $mycred_Open_Badge = new mycred_Open_Badge();
+            $badge = mycred_get_badge( $badge_id );
+
+            $mycred_Open_Badge->bake_users_image( $user_id, $badge_id, $badge->main_image_url, $badge->title, $this->open_badge );
         
         }
 
@@ -2130,7 +2117,7 @@ th#badge-users { width: 10%; }
                         $content .= '<div class="'. $badge->layout .' '. $badge->align .'">';
 
                             if( $badge->layout != 'mycred_layout_bottom' )
-                                $content .= mycred_badge_show_main_image_with_social_icons( $user_id, $badge, $mycred );
+                                $content .= mycred_badge_show_main_image_with_social_icons( $badge->get_earned_image( $user_id), $badge->user_has_badge( $user_id ) );
 
                             $content .= '<div class="mycred_content">';
 
@@ -2141,7 +2128,7 @@ th#badge-users { width: 10%; }
                             $content .= '</div>';
 
                             if( $badge->layout == 'mycred_layout_bottom' )
-                                $content .= mycred_badge_show_main_image_with_social_icons( $user_id, $badge, $mycred );
+                                $content .= mycred_badge_show_main_image_with_social_icons( $badge->get_earned_image( $user_id), $badge->user_has_badge( $user_id ) );
 
                             $content .= '<div class="mycred-clearfix"></div>';
 

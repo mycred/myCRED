@@ -398,8 +398,6 @@ endif;
  */
 if ( ! function_exists( 'mycred_find_users_rank' ) ) :
 	function mycred_find_users_rank( $user_id = NULL, $point_type = MYCRED_DEFAULT_TYPE_KEY, $act = true ) {
-		
-		if ( mycred_manual_ranks() ) return false;
 
 		if ( $user_id === NULL ) $user_id = get_current_user_id();
 
@@ -476,6 +474,8 @@ if ( ! function_exists( 'mycred_find_users_rank' ) ) :
 			mycred_delete_post_meta( $results->rank_id, 'mycred_rank_users' );
 
 		}
+		
+		if ( mycred_manual_ranks() ) return false;
 
 		if ( $results === NULL )
 			$results = false;
@@ -748,11 +748,11 @@ endif;
 /**
  * Update User Ranks IDs
  * @since 2.3
- * @version 1.0
+ * @version 1.1
  */
-if( !function_exists( 'mycred_update_user_rank_id' ) ):
-	function mycred_update_user_rank_id( $user_id, $rank_id )
-	{
+if( ! function_exists( 'mycred_update_user_rank_id' ) ):
+	function mycred_update_user_rank_id( $user_id, $rank_id ) {
+
 		$current_rank_id = $rank_id;
 	
 		$rank_ids = mycred_get_user_meta( $user_id, 'mycred_rank_ids', '', true );
@@ -761,57 +761,43 @@ if( !function_exists( 'mycred_update_user_rank_id' ) ):
 
 		$demoted_ids = mycred_get_user_meta( $user_id, 'mycred_demoted_rank_ids', '', true );
 
-		if( !empty( $rank_ids ) )
-		{
-			end($rank_ids);
-			$previous_rank_id = key($rank_ids);
+		if( ! empty( $rank_ids ) ) {
 
-			$previous_rank_id = $rank_ids[$previous_rank_id];
+			end( $rank_ids );
+			
+			$previous_rank_id = key( $rank_ids );
+			$previous_rank_id = $rank_ids[ $previous_rank_id ];
 
 			array_push( $rank_ids, $current_rank_id );
 
-			$prev_maximum = mycred_get_rank( $previous_rank_id )->maximum;
-
-			$current_minimum = mycred_get_rank( $current_rank_id )->minimum;
+			$prev_maximum     = mycred_get_rank( $previous_rank_id )->maximum;
+			$current_minimum  = mycred_get_rank( $current_rank_id )->minimum;
 
 			//Update for next time
 			mycred_update_user_meta( $user_id, 'mycred_rank_ids', '', $rank_ids );
 
 			//If Demoted
-			if( $current_minimum < $prev_maximum )
-			{
-				//If already exists just update
-				if( !empty( $demoted_ids ) )
-				{
-					array_push( $demoted_ids, $current_rank_id );
+			if( $current_minimum < $prev_maximum ) {
 
-					mycred_update_user_meta( $user_id, 'mycred_demoted_rank_ids', '', $demoted_ids );
-
-				}
-				else
-					mycred_update_user_meta( $user_id, 'mycred_demoted_rank_ids', '', array( $current_rank_id ) );
+				do_action( 'mycred_rank_demoted', $user_id, $current_rank_id, $rank_ids );
 
 			}
 			//If Promoted
-			else 
-			{
-				//If already exists just update
-				if( !empty( $promoted_ids ) )
-				{
-					array_push( $promoted_ids, $current_rank_id );
+			else {
 
-					mycred_update_user_meta( $user_id, 'mycred_promoted_rank_ids', '', $promoted_ids );
-
-				}
-				else
-					mycred_update_user_meta( $user_id, 'mycred_promoted_rank_ids', '', array( $current_rank_id ) );
+				do_action( 'mycred_rank_promoted', $user_id, $current_rank_id, $rank_ids );
+			
 			}
+		
 		}
-		else
-		{
+		else {
+
 			mycred_update_user_meta( $user_id, 'mycred_rank_ids', '', array( $current_rank_id ) );
-			mycred_update_user_meta( $user_id, 'mycred_promoted_rank_ids', '', array( $current_rank_id ) );
+			
+			do_action( 'mycred_rank_promoted', $user_id, $current_rank_id, $rank_ids );
+		
 		}
+	
 	}
 endif;
 
@@ -820,16 +806,17 @@ endif;
  * @since 2.3
  * @version 1.0
  */
-if( !function_exists( 'mycred_get_users_current_rank_id' ) ):
-function mycred_get_users_current_rank_id( $user_id, $point_type = MYCRED_DEFAULT_TYPE_KEY )
-{
-	$point_type = $point_type == MYCRED_DEFAULT_TYPE_KEY ? '' : $point_type;
+if( ! function_exists( 'mycred_get_users_current_rank_id' ) ):
+	function mycred_get_users_current_rank_id( $user_id, $point_type = MYCRED_DEFAULT_TYPE_KEY ) {
 
-	$rank_id = mycred_get_user_meta( $user_id, MYCRED_RANK_KEY, $point_type, true );
+		$point_type = $point_type == MYCRED_DEFAULT_TYPE_KEY ? '' : $point_type;
 
-	if( !empty ( $rank_id ) )
-		return $rank_id;
+		$rank_id = mycred_get_user_meta( $user_id, MYCRED_RANK_KEY, $point_type, true );
 
-	return false;
-}
+		if( ! empty ( $rank_id ) )
+			return $rank_id;
+
+		return false;
+
+	}
 endif;

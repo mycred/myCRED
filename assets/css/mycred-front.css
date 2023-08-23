@@ -326,3 +326,21 @@ li.mycred-strike-off {
 .mycred-badge-image {
     display: inline;
 }
+
+.mycred-not-earned {
+    opacity: 0.4;
+}
+
+.mycred-alert {
+    padding: 10px;
+    border-radius: 5px;
+    color: #1b1e21;
+    background-color: #d6d8d9;
+    border-color: #c6c8ca;
+}
+
+.mycred-alert.success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}

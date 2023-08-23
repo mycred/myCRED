@@ -25,6 +25,7 @@ jQuery(function($){
 					buyCREDform.slideUp(function(){
 						buyCREDform.empty().append( response ).slideDown();
 					});
+					buyCREDcancel.addClass( 'on' );
 				} 
 				else {
 					buyCREDform.slideUp(function(){

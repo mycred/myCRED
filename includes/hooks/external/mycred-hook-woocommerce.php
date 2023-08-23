@@ -20,9 +20,9 @@ if ( ! function_exists( 'mycred_load_woocommerce_reward' ) ) :
 		add_action( 'woocommerce_product_after_variable_attributes', 'mycred_woo_add_product_variation_detail', 10, 3 );
 		add_action( 'woocommerce_save_product_variation',            'mycred_woo_save_product_variation_detail' );
 		add_filter( 'mycred_run_this',                               'mycred_woo_refund_points' );
-		add_action( 'woocommerce_order_status_cancelled', 'mycred_woo_reward_refund' );
-		add_action( 'woocommerce_order_status_refunded', 'mycred_woo_reward_refund' );
-		add_action( 'woocommerce_order_status_failed', 'mycred_woo_reward_refund' );
+		add_action( 'woocommerce_order_status_cancelled', 			 'mycred_woo_reward_refund' );
+		add_action( 'woocommerce_order_status_refunded', 			 'mycred_woo_reward_refund' );
+		add_action( 'woocommerce_order_status_failed', 				 'mycred_woo_reward_refund' );
 
 	}
 endif;
@@ -304,6 +304,12 @@ if ( ! function_exists( 'mycred_woo_payout_rewards' ) ) :
 
 		global $woocommerce;
 
+		// if we want to stop the rewarding system
+		$proceed = apply_filters( 'mycred_before_woo_payout_reward', true, $order);
+
+		if( $proceed == false )
+			return;
+		
 		$paid_with = ( version_compare( $woocommerce->version, '3.0', '>=' ) ) ? $order->get_payment_method() : $order->payment_method;
 		$buyer_id  = ( version_compare( $woocommerce->version, '3.0', '>=' ) ) ? $order->get_user_id() : $order->user_id;
 

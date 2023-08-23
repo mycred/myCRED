@@ -64,6 +64,19 @@
 #payment_gateway_detail input.form-control {
 	width: 100%;
 }
+
+.myCred_cashcred_payment_gateway_details {
+	margin-top: 2px;
+	margin-bottom: 20px;
+	width: 100%;
+	resize: none;
+}
+.cashcred_radio {
+	width: auto !important;
+}
+.cashcred_textarea {
+	resize: none;
+}
 #payment_gateway_detail .inside{ padding: 4px;}
 .cashcred_panel {
 	background-color: #e6e6e6;

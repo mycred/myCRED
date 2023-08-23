@@ -287,15 +287,12 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 		 */
 		public function get_db_query() {
 
-
 			if ( $this->based_on == 'balance'  ) {
 				$query = $this->get_balance_db_query();
 			}
 			else {
 				$query = $this->get_reference_db_query();
 			}
-
-		
 
 			return $query;
 
@@ -742,10 +739,6 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 
 			global $wpdb;
 
-		
-
-
-
 			// Filter: Daily
 			if ( $this->args['timeframe'] == 'today' ) {
 				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( 'today midnight', $this->now ), $this->args['now'] );
@@ -756,7 +749,6 @@ if ( ! class_exists( 'myCRED_Query_Leaderboard' ) ) :
 				$query = $wpdb->prepare( "AND l.time BETWEEN %d AND %d", strtotime( '-1 day midnight', $this->now ), strtotime( 'today midnight', $this->now ));
 				
 			}
-
 
 			// Filter: Weekly
 			elseif ( $this->args['timeframe'] == 'this-week' ) {

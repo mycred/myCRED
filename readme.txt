@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 6.0.3
-Stable tag: 2.4.10
+Tested up to: 6.2.2
+Stable tag: 2.5.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +16,7 @@ myCred is an intelligent and adaptive **points management system** that allows y
 
 [youtube https://www.youtube.com/watch?v=-M19tzYo1jo]
 
-Build **brand loyalty** by rewarding your customers through store reward systems, community leaderboards, monetizing your website content, etc. - The possibilities are endless.
+Build **brand loyalty** by rewarding your customers through store reward systems, community leaderboards, monetizing your website content, etc. - The possibilities are endless. 
 
 **Increase customer engagement tenfold - Rewarding your users for community engagement will help your business grow.**
 
@@ -30,54 +30,6 @@ myCred allows **THREE different ways** through which you can award your users:
 
 * **Badges -** Boost your users' participation by rewarding them for their exceptional performance.
 
-**myCred v2.4.6 update - Schedule Deposit in Central Deposit**
-
-We have added new functionality in the Central deposit built-in Addon where admin can schedule the points deposit to the central account automatically after the specified interval.
-
-= Features =
-
-* **Set Starting from** - Setup the starting date 
-* **Interval (in days)** - Deposit points after x days interval.
-* **Amount** - The amount of points to be scheduled.
-* **Recurring** - Enabling this options will deposit the amount recursively after the defined interval. We have also added two new email triggers for Central deposit.
-* Added Email notification on Minimum balance in central deposit.
-* Added Email notification on No balance Left in central deposit.
-
-**Latest update - myCred v2.4.4**
-
-**myCred v2.4.4** includes several new features and enhancements. The most prominent addition is the ability to set a transfer fee when exchanging points between members. Other new features include Gutenberg block support and the ability to set a range for minimum and maximum fees. Version 2.4.4 is available now from the WordPress Plugin Directory.
-
-Here is a list of the complete features introduced in myCred v2.4.4:
-
-* Gutenberg block support for the following shortcodes: mycred_cashcred, mycred_badges_list, mycred_buy_pending, mycred_chart_circulation, mycred_chart_gain_loss, mycred_chart_history, mycred_chart_balance_history, mycred_chart_top_balance, mycred_chart_instance_history and mycred_chart_top_instance.
-* cashCred points transfer between users.
-* Setup Numerical Difference (set a range for Minimum and Maximum fee).
-* Setup Parameters (fees can be set up using points or percentage).
-* All registered references will be listed on the support page.
-* Import or export user points.
-* Import or export setup settings in JSON format.
-* Select specific users fields for export.
-* Assign Badges/Ranks using coupons.
-
-**Recent update - myCred v2.4**
-
-**myCred v2.4** focuses on expanding the plugins ability to import and export points, ranks, and badges from and to other sites. What's better is that you can choose to export or import complete setup settings like point types, achievements level, and created badges with achievements level with the simplest of ease.
-
-Here is a list of the complete features introduced in myCred v2.4:
-
-* Import or export user points
-* Export all or specific point types
-* Export setup settings for all point types
-* Import or export setup settings in JSON format
-* Import or all or specific export user ranks
-* Import or export all or specific user badges
-* Import badges With ID/Title/Slug
-* Import ranks With ID/Title/Slug
-* Export raw or formatted file
-* Select users fields in the exported file
-* Assign Badges/Ranks using coupons
-* Merged myCred Gutenberg to myCred Core
-
 = BECOME A VIP MEMBER OF THE MYCRED MEMBERSHIP CLUB =
 
 Join the myCred membership club today and take advantage of premium services that include priority customer support and hundreds of add-ons at a super-saver price - Save 30% on all 3-year plans!
@@ -88,7 +40,13 @@ Join the myCred membership club today and take advantage of premium services tha
 - Connect multiple sites with just one membership license key.
 - Upgrade your package at any time to get more add-ons.
 
-[Check the package pricing page for the add-on list](https://mycred.me/membership/)
+[Check the package pricing page for the add-on list](https://mycred.me/membership/)\
+
+= Recent Update - myCred v2.5.1 =
+We have added support and compatibility with Gravity Forms Payment Forms that now allows you to award points when a user successfully submits a payment form. Complete details of the release include:
+- **NEW** - Added compatibility for Gravity Forms payment forms. Points will be rewarded when payment is successfully received.
+- **NEW** - Added ref attribute in the mycred_chart_balance_history shortcode.
+- **NEW** - Introduced new shortcode mycred_my_chart_gain_loss.
 
 = Features =
 = Point Management =
@@ -102,8 +60,15 @@ Empower your WordPress website users by rewarding them points - each user has th
 **- Buy Points**: The buyCred add-on allows your users to purchase points using real money using some of the most popular payment gateways available in the market today.
 **- Store Payments**: myCred supports some of the most popular store plugins for WordPress, allowing your users to pay for orders/tickets using their point balance instead of real money.
 **- Upload Point-type image**: Give your point type a unique identity by assigning them an image.
+**- Import/Export Points and Point Types**: Save time by importing/exporting user points and point types (all  or specific). You can also export setup settings for all point types.
+**- Import/Export Setup Settings**: Setup myCred quickly by importing/exporting setup settings in JSON format. Export option is available for all or specific user fields.
 
-= Badges =
+= Gutenberg Block Support =
+
+* Merged myCred Gutenberg to myCred Core.
+* Gutenberg block support for the following shortcodes: mycred_cashcred, mycred_badges_list, mycred_buy_pending, mycred_chart_circulation, mycred_chart_gain_loss, mycred_my_chart_gain_loss, mycred_chart_history, mycred_chart_balance_history, mycred_chart_top_balance, mycred_chart_instance_history and mycred_chart_top_instance.
+
+= Badges & Ranks =
 
 **-  Open Badge Functionality** - new opportunities to recognize and validate achievements digitally.
 **-  Add badge details** (name, achievement, website details, etc.).
@@ -114,6 +79,11 @@ Empower your WordPress website users by rewarding them points - each user has th
 **-  Badge Evidence Download Button** - Access Open Badges of any users on the website. The admin can also download any given badge images.
 **-  The "Quick Edit" badge option** will allow you to modify the information of any particular badge.
 **-  Social share setting** - Allow users to share their achieved badges on their social profiles.
+**-  Import/Export User Badges** - Import/Export option for user badges (all or specific). The admin can import badges with ID/Title/Slug.
+**-  Import/Export User Ranks** - Import/Export option for user ranks (all or specific). The admin can import ranks with ID/Title/Slug.
+**-  Export Options** - The admin can easily export badges and ranks in a raw or formatted file. The export option is available for all or specific user fields.
+**-  Award Badges/Ranks on Coupons** - Assign user badges and ranks to coupons so that users will get rewarded when using specific coupons at checkout.
+**-  Attributes** - Introduced title, excerpt, and display attributes in mycred_my_badges shortcode
 
 = cashCred =
 **GIVE USERS THE POWER TO CONVERT THEIR MYCRED POINTS INTO REAL MONEY.**
@@ -134,6 +104,10 @@ cashCred works perfectly with a reward system that engages users to perform acti
 **-  Pay Through PayPal** - cashCred supports payment through PayPal.
 **-  Pay Through Stripe** - cashCred supports payment through Stripe.
 **-  Create email events/templates** for cashCred pending/approved/cancel requests.
+**-  Point Transfer** - Users can transfer cashCred points to other users.
+**-  Min/Max Fee** - Setup Numerical Difference (set a range for Minimum and Maximum fee).
+**-  Fees (points/percentage)** - Setup Parameters (fees can be set up using points or percentage).
+**-  Registered References** - All registered references will be listed on the support page.
 
 = Template Tags = 
 
@@ -153,6 +127,19 @@ You can achieve the following features by using a dedicated log for your points 
 - Badges will use the log's data to determine which user has earned a badge.
 - Add-ons such as Sell Content use the log to track users who have purchased posts from your website.
 - Add-ons use the log to ensure that a user does not gain repetitive points for the same interaction within a given time frame.
+
+= Central Deposit = 
+Central Deposit is a built-in add-on that allows the admin to nominate any available user account to become the primary account from where all point-related transactions are managed.
+
+* **Central Deposit Account** - The admin can choose any existing user account to become a central deposit account that controls all points and their transactions.
+* **Centralized Transaction Mangement** - Any points spent or earned are recorded in a point log that can be accessed from the user’s myCred admin dashboard.
+* **Ignore Manual Adjustments** - After a central deposit account is nominated, the admin can not add points to the customer’s account manually.
+* **Set Starting from** - Setup the starting date 
+* **Interval (in days)** - Deposit points after x days interval.
+* **Amount** - The amount of points to be scheduled.
+* **Recurring** - Enabling this options will deposit the amount recursively after the defined interval. We have also added two new email triggers for Central deposit.
+* Added Email notification on Minimum balance in central deposit.
+* Added Email notification on No balance Left in central deposit.
 
 = Achievements/Assets =
 
@@ -316,6 +303,18 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.5.3 =
+Updated Feedback library to the latest version.
+
+= 2.5.2 =
+Improvements.
+
+= 2.5.1 =
+New features and Bug fixes.
+
+= 2.5 =
+New features and Bug fixes.
+
 = 2.4.10 =
 Bug fixes.
 
@@ -419,6 +418,27 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.5.3 =
+- **IMPROVEMENT** - Updated Feedback library to the latest version.
+
+= 2.5.2 =
+- **NEW** - Added filter in mycred_badges_list shortcode.
+
+= 2.5.1 =
+- **NEW** - Added compatibility for Gravity Forms payment forms. Points will be rewarded when payment is successfully received.
+- **FIX** - PHP and Javascript warnings have been resolved.
+- **FIX** - Fixed security vulnerabilities.
+- **TWEAK** - Update bitpay library
+- **TWEAK** - Introduce filter to add extra fields in cashcred payment gateways
+
+= 2.5 =
+- **NEW** - Added ref attribute in the mycred_chart_balance_history shortcode.
+- **NEW** - Introduced new shortcode mycred_my_chart_gain_loss.
+- **TWEAK** - Added database indexes to ensure maximum performance on the myCred Log table.
+- **TWEAK** - Moved the Open badge setting to the separate open badge tab.
+- **FIX** - Ranks-related email notification events are not triggered when the admin adjusts the user’s points manually.
+- **FIX** - Issue fixed regarding myCred Events Manager Payment Gateway.
 
 = 2.4.10 =
 - **NEW** - Added action hook "mycred_add_share_and_embed_button".

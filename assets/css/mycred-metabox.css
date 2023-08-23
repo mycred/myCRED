@@ -1,0 +1,349 @@
+.postbox.mycred-ui-metabox {
+    border: 1px solid #455377;
+    border-radius: 6px;
+    padding: 15px;
+    color: #455377;
+}
+
+.postbox.mycred-ui-metabox .postbox-header {
+    border: none;
+    font-weight: 600;
+}
+
+.postbox.mycred-ui-metabox .postbox-header > .mycred-metabox-title {
+    font-size: 21px !important;
+    color: #455377;
+}
+
+.postbox.mycred-ui-metabox .postbox-header > .mycred-metabox-title > .dashicons {
+    width: 28px;
+    height: 28px;
+    font-size: 28px;
+    margin-right: 20px;
+}
+
+.postbox.mycred-ui-metabox .postbox-header > .mycred-metabox-title > span {
+    vertical-align: middle;
+}
+
+.postbox.mycred-ui-metabox .inside {
+    padding: 15px 48.5px;
+    margin: 0 !important;
+}
+
+.postbox.mycred-ui-metabox .postbox-header .handle-actions .handlediv {
+    outline: none;
+    box-shadow: none;
+    height: 28px;
+    width: 28px;
+    margin: 0px;
+    background: #5f2ced;
+    border-radius: 100%;
+}
+
+.postbox.mycred-ui-metabox.closed .postbox-header .handle-actions .handlediv {
+    background: #f7f5ff;
+}
+
+.postbox.mycred-ui-metabox .handlediv .toggle-indicator::before {
+    content: "\f343";
+    top: 0.05rem;
+    text-indent: 0.5px;
+    color: #ffffff;
+    display: inline-block;
+    font: normal 20px/1 dashicons;
+    speak: never;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-decoration: none;
+}
+
+.postbox.mycred-ui-metabox.closed .handlediv .toggle-indicator::before {
+    content: "\f347";
+    top: 0.15rem;
+    color: #5f2ced;
+}
+
+.mycred-meta-repeater {
+    border: 1px solid #dcdcdc;
+    background: #ffffff;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.mycred-meta-repeater-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #dcdcdc;
+    cursor: move;
+}
+
+.mycred-meta-repeater-header .title {
+    padding: 8px 16px;
+    font-weight: 600;
+}
+
+.mycred-meta-repeater-header .actions {
+    padding: 5px 12px 5px 16px;
+    cursor: auto;
+}
+
+.mycred-meta-repeater-body {
+    padding: 25px 16px;
+}
+
+.mycred-meta-repeater-body .mycred-meta-lbl {
+    max-width: 50px;
+    padding-right: 0;
+    line-height: 23px;
+}
+
+.mycred-ui-form {
+    width: 100%;
+    vertical-align: middle;
+}
+
+.mycred-ui-select-fit-content {
+    max-width: fit-content !important;
+}
+
+.mycred-meta-requirement-limit-wrapper {
+    vertical-align: top;
+    display: inline-block;
+    min-width: 214px;
+}
+
+/*
+.mycred-meta-req-conditions .mrr-post-types,
+.mycred-meta-req-conditions .mrr-single-post {
+    display: none;
+}
+
+.mycred-meta-req-conditions .mrr-point-types,
+.mycred-meta-req-conditions .mrr-post-types,
+.mycred-meta-req-conditions .mrr-single-post {
+    max-width: 300px !important;
+    width: fit-content;
+}
+
+.mycred-meta-req-conditions[data-refrence="registration"] .mrr-post-types,
+.mycred-meta-req-conditions[data-refrence="registration"] .mrr-single-post,
+.mycred-meta-req-conditions[data-refrence="registration"] .mrr-point-types,
+.mycred-meta-req-conditions[data-refrence="registration"] .mrr-amount,
+.mycred-meta-req-conditions[data-refrence="registration"] .mrr-amount-by,
+.mycred-meta-req-conditions[data-refrence="registration"] .limit-container,
+.mycred-meta-req-conditions[data-refrence="registration"] .mrr-limit {
+    display: none;
+}
+
+.mycred-meta-req-conditions[data-refrence="view_content"] .mrr-post-types,
+.mycred-meta-req-conditions[data-refrence="view_content"] .mrr-single-post {
+    display: inline;
+}
+*/
+
+#mycred-rank-requirements-list .mycred-meta-repeater-header > .title > span.mycred-sortable-sequence {
+    display: none;
+}
+
+#mycred-rank-requirements-list.sequence .mycred-meta-repeater-header > .title > span.mycred-sortable-sequence {
+    display: inline;
+}
+
+.mrr-limit[limit-by="no_limit"] {
+    display: none;
+}
+
+.mrr-requirement-delete {
+    color: red;
+    cursor: pointer;
+    font-size: 19px;
+    height: 18px;
+}
+
+.mrr-requirement-delete-wrapper {
+    padding: 2px 0px 3px 12px;
+    border-left: 1px solid gainsboro;
+}
+
+.mycred-button-default {
+    color: #ffffff !important;
+    background: #5f2ced !important;
+    border-color: #5f2ced !important;
+    outline: none !important;
+}
+
+.mycred-button-default:hover {
+    background: #5327cf !important;
+    border-color: #5327cf !important;
+}
+
+.mycred-button-default:focus {
+    box-shadow: none !important;
+}
+
+.mycred-button-default[disabled] {
+    color: #ffffff !important;
+    background: #5f2ced !important;
+    border-color: #5f2ced !important;
+}
+
+.mycred-button-success {
+    color: #ffffff !important;
+    border-color: #48b451 !important;
+    background: #48b451 !important;
+    outline: none !important;
+}
+
+.mycred-button-success:hover {
+    border-color: #45ab4e !important;
+    background: #45ab4e !important;
+}
+
+.mycred-button-success:focus {
+    box-shadow: none !important;
+}
+
+.mycred-form-group button {
+    padding: 8px 14px 11px 14px !important;
+    line-height: 13px !important;
+    border-radius: 5px !important;
+}
+
+#mycred-add-rank-requirement {
+    margin-right: 10px;
+}
+
+.mrr-requirement-loader {
+    float: unset !important;
+    margin-top: 7px;
+    margin-left: 12px;
+}
+
+.mycred-toggle {
+    position: relative;
+    display: inline-flex;
+    width: 40px;
+    height: 20px;
+    margin-left: 6px;
+    margin-top: 2px;
+}
+
+.mycred-toggle input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    border: none;
+}
+
+.mycred-toggle input:focus + .slider {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 1px #5f2ced;
+    outline: 1px solid #5f2ced;
+    outline-offset: 3px;
+}
+
+.mycred-toggle input:checked + .slider {
+    background-color: #5f2ced;
+}
+
+.mycred-toggle input:checked + .slider::before {
+    background-color: #fff;
+}
+
+.mycred-toggle input + .slider::before {
+    background-color: #5f2ced;
+}
+
+.mycred-toggle .slider {
+    display: block;
+    width: 100%;
+    height: 16px;
+    cursor: pointer;
+    top: 0px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ffffff;
+    border-radius: 40px;
+    border: 2px solid #5f2ced;
+}
+
+.mycred-toggle .slider.round:before {
+    border-radius: 100%;
+}
+
+.mycred-toggle .slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 5px;
+    top: 4px;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+.mycred-toggle input:checked + .slider:before {
+    -webkit-transform: translateX(18px);
+    -ms-transform: translateX(18px);
+    transform: translateX(18px);
+}
+
+.mycred-loading-placeholder {
+    position: relative;
+    min-height: 20px;
+    width: 100%;
+    background-color: rgb(211,211,211);
+    overflow: hidden;
+}
+
+.mycred-loading-placeholder > div {
+    position: absolute;
+    left: -45%;
+    height: 100%;
+    width: 45%;
+    background-image: linear-gradient(to left, rgba(251,251,251, .05), rgba(251,251,251, .3), rgba(251,251,251, .6), rgba(251,251,251, .3), rgba(251,251,251, .05));
+    background-image: -moz-linear-gradient(to left, rgba(251,251,251, .05), rgba(251,251,251, .3), rgba(251,251,251, .6), rgba(251,251,251, .3), rgba(251,251,251, .05));
+    background-image: -webkit-linear-gradient(to left, rgba(251,251,251, .05), rgba(251,251,251, .3), rgba(251,251,251, .6), rgba(251,251,251, .3), rgba(251,251,251, .05));
+    animation: mycred-placeholder-loading-animation 1s infinite;
+    z-index: 45;
+}
+
+.mycred-hide {
+    display: none !important;
+}
+
+select.mycred-select2 + span.select2 {
+    margin: 0 1px;
+}
+
+select.mycred-select2.mb-4 + span.select2 {
+    margin-bottom: 1.5rem!important;
+}
+
+select.mycred-select2 + span.select2 .select2-selection.select2-selection--single {
+    font-size: 14px;
+    line-height: 2;
+    min-height: 30px;
+    color: #2c3338;
+    border-color: #8c8f94;
+    box-shadow: none;
+    border-radius: 3px;
+}
+
+select.mycred-select2 + span.select2 .select2-selection.select2-selection--single:focus {
+    border-color: #2271b1 !important;
+    box-shadow: 0 0 0 1px #2271b1 !important;
+    outline: 2px solid transparent !important;
+}
+
+@keyframes mycred-placeholder-loading-animation {
+    0%{ left: -45%; }
+    100%{ left: 100%; }
+}

@@ -438,11 +438,46 @@ if ( ! class_exists( 'CashCred_Gateway_Fields' ) ) :
 
 		public function generate_form() {
 
-			foreach ( $this->gateway_fields as $gateway_field_id => $gateway_field_data ): ?>
-
-			 	<div class="form-group">  
+			foreach ( $this->gateway_fields as $gateway_field_id => $gateway_field_data ): 
+			?>
+			 	<div class="form-group"> 
 					<label><?php echo esc_html( $gateway_field_data['lable'] ); ?></label>
-					<input type="text" name="<?php echo esc_attr( $this->field_name( $gateway_field_id ) );?>" class="<?php echo esc_attr( $gateway_field_data['classes'] ); ?>" placeholder="<?php echo esc_attr( $gateway_field_data['placeholder'] ); ?>" value="<?php echo esc_attr( $this->{$gateway_field_id} );?>">
+					<?php 
+					if ( 'select' == $gateway_field_data['form'] ) {
+						?>
+						<select name="<?php echo esc_attr( $this->field_name( $gateway_field_id ) );?>" class="<?php echo esc_attr( 'myCred_cashcred_payment_gateway_details ' ); echo esc_attr( $gateway_field_data['classes'] ); ?>">
+							<?php
+								foreach ( $gateway_field_data['options'] as $key => $value ){
+								?>
+									<option value="<?php echo esc_attr( $key ); ?>" ><?php echo esc_html( $value );  ?></option>	
+								<?php
+								}
+							?>
+						</select>
+						<?php
+					}
+					
+					if ( 'input' == $gateway_field_data['form'] && 'radio' != $gateway_field_data['type'] ) {
+						?>
+						<input type="<?php echo esc_attr( $gateway_field_data['type'] ); ?>" name="<?php echo esc_attr( $this->field_name( $gateway_field_id ) );?>" class="<?php echo esc_attr( 'myCred_cashcred_payment_gateway_details ' ); echo esc_attr( $gateway_field_data['classes'] ); ?>" placeholder="<?php echo esc_attr( $gateway_field_data['placeholder'] ); ?>" value="<?php echo esc_attr( $this->{$gateway_field_id} ); ?>">
+						<?php
+					}
+
+					if ( 'input' == $gateway_field_data['form'] && 'radio' == $gateway_field_data['type'] ) {
+						foreach ( $gateway_field_data['radio_options'] as $key => $value ) {
+							?>
+							<br><input type="<?php echo isset( $gateway_field_data['type'] ) ? esc_attr( $gateway_field_data['type'] ) : '' ; ?>" id="<?php echo esc_attr( $key );  ?>" name="<?php echo esc_attr( $this->field_name( $gateway_field_id ) );?>" class="<?php echo esc_attr( 'myCred_cashcred_payment_gateway_details ' ); echo esc_attr( 'cashcred_radio' ); echo esc_attr( $gateway_field_data['classes'] ); ?>" value="<?php echo esc_html( $value ); ?>">
+							<label for="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $value ); ?></label><br>
+							<?php
+						}
+					}
+
+					if ( 'textarea' == $gateway_field_data['form'] ) {
+						?>
+							<textarea id="<?php echo esc_attr( $gateway_field_data['id'] );?>" class="<?php echo esc_attr( 'myCred_cashcred_payment_gateway_details ' ); echo esc_attr( 'cashcred_textarea' ); ?>" name="<?php echo esc_attr( $this->field_name( $gateway_field_id ) );?>" rows="<?php echo esc_attr( $gateway_field_data['row'] );?>" cols="<?php echo esc_attr( $gateway_field_data['cols'] );?>"></textarea>	
+						<?php
+					}
+					?>
 				</div>
 
 			<?php

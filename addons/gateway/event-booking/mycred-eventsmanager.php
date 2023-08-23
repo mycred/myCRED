@@ -1,6 +1,7 @@
 <?php
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
+
 /**
  * Events Manager
  * @since 1.2
@@ -37,13 +38,17 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 					'link'   => __( 'Pay', 'mycred' )
 				),
 				'messages' => array(
+					'text'   => __( '', 'mycred' ),
 					'success' => __( 'Thank you for your payment!', 'mycred' ),
-					'error'   => __( "I'm sorry but you can not pay for these tickets using %_plural%", 'mycred' )
+					'error'   => __( "I'm sorry but you can not pay for these tickets using %_plural%", 'mycred' ),
+					'url'   => __( '', 'mycred' )
 				)
 			);
 
+
 			// Settings
 			$settings    = get_option( 'mycred_eventsmanager_gateway_prefs', $defaults );
+
 			$this->prefs = wp_parse_args( $settings, $defaults );
 
 			$this->mycred_type = $this->prefs['type'];
@@ -53,6 +58,8 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 			
 			// Apply Whitelabeling
 			$this->label = mycred_label();
+			
+
 		}
 
 		/**
@@ -62,33 +69,85 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 		 */
 		public function load() {
 
-			// Settings
-			add_action( 'em_options_page_footer_bookings',    array( $this, 'settings_page' ) );
-			add_action( 'em_options_save',                    array( $this, 'save_settings' ) );
-
-			// In case gateway has not yet been enabled bail here.
-			if ( ! $this->use_gateway() ) return;
-
-			// Currency
-			add_filter( 'em_get_currencies',                  array( $this, 'add_currency' ) );
-			if ( $this->single_currency() )
-				add_filter( 'em_get_currency_formatted', array( $this, 'format_price' ), 10, 4 );
-
-			// Adjust Ticket Columns
-			add_filter( 'em_booking_form_tickets_cols',       array( $this, 'ticket_columns' ), 10, 2 );
-			add_action( 'em_booking_form_tickets_col_mycred', array( $this, 'ticket_col' ), 10, 2 );
-
-			// Add Pay Button
-			add_filter( 'em_my_bookings_booking_actions',     array( $this, 'add_pay_button' ), 1, 2 );
-			add_action( 'em_my_bookings_booking_loop',        array( $this, 'payment_box' ) );
-			add_action( 'em_template_my_bookings_footer',     array( $this, 'insert_scripting' ) );
+			add_action('em_my_bookings_booking_loop',        array($this,'payment_box'),999);
+			add_action('em_template_my_bookings_footer',     array($this,'insert_scripting'),99);
+			
+			
+			add_filter('em_booking_get_status', array( $this,'em_booking_get_status'),40,2);
+			add_filter('em_my_bookings_booking_actions',     array($this,'add_pay_button'),99,2);
 
 			// Ajax Payments
-			add_action( 'wp_ajax_mycred-pay-em-booking',      array( $this, 'process_payment' ) );
-			if ( $this->prefs['refund'] != 0 )
-				add_filter( 'em_booking_set_status', array( $this, 'refunds' ), 10, 2 );
+			add_action('wp_ajax_mycred-pay-em-booking',array($this,'process_payment'),999);
+
+			// Settings
+			add_action('em_options_page_footer_bookings',    array($this, 'settings_page'));
+			add_action('em_options_save',                    array( $this, 'save_settings'));
+
+			// In case gateway has not yet been enabled bail here.
+			if ( ! $this->use_gateway()  ) return;
+
+			// Currency
+			add_filter('em_get_currencies',                  array( $this, 'add_currency' ));
+			if ( $this->single_currency() )
+				add_filter('em_get_currency_formatted', array($this,'format_price'),10,4);
+
+			// Adjust Ticket Columns
+			add_filter('em_booking_form_tickets_cols',       array($this,'ticket_columns'),10,2);
+			add_action('em_booking_form_tickets_col_mycred', array($this,'ticket_col'),10,2);
+
+			
+			if ( $this->prefs['refund'] != 0 ) {
+				add_filter('em_booking_set_status', array($this,'refunds'),10,2);
+			}
+
+
+			add_filter('mycred_booking_failed_text',    array($this,'mycred_booking_failed_text'),102);
+			add_filter('mycred_booking_msg_text',       array($this,'mycred_booking_msg_text'),102);
 
 		}
+
+
+		public function mycred_booking_msg_text($text) {
+
+			global $EM_Ticket, $EM_Event; 
+			$EM_Booking = $EM_Event->get_bookings()->has_booking();
+			$balance = $this->core->get_users_balance($EM_Booking->person_id,$this->mycred_type);
+		
+			if(!$this->has_paid( $EM_Booking )  && $balance <  $EM_Booking->booking_price) {
+
+				return ' You cannot attend this event. ';
+			}
+			else {
+
+				return ' ' . 'You already attending to this event.' . ' ';
+			}
+
+		}
+
+
+	
+		public function mycred_booking_failed_text($text) {
+
+			global $EM_Booking; 
+			$link_tag_url = '<a href="'.esc_url($this->prefs['messages']['url']).  '" class="insufficient-balance-booking-link" style="display:inline-block !important;">' . $this->prefs['messages']['text'] . '</a>';
+	        $message   = str_replace( '%url%', $link_tag_url, $this->prefs['messages']['error'] );
+			$balance = $this->core->get_users_balance( $EM_Booking->person->ID, $this->mycred_type );
+			$price   = $this->core->number( $EM_Booking->booking_price );
+
+			if ($balance < $price) {
+
+				return $message;
+			} 
+
+			else {
+				return $text;
+			}
+
+			return $text;
+
+		}
+
+
 
 		/**
 		 * Add Currency
@@ -140,7 +199,8 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 		 */
 		public function use_gateway() {
 
-			if ( $this->prefs['setup'] == 'off' ) return false;
+
+			if($this->prefs['setup'] == 'off') return false;
 
 			return true; 
 
@@ -168,15 +228,17 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 		public function can_pay( $EM_Booking ) {
 
 			$EM_Event = $EM_Booking->get_event();
+			$users_balance = $this->core->get_users_balance( $EM_Booking->person->ID, $this->mycred_type );
 
 			// You cant pay for free events
-			if ( $EM_Event->is_free() ) return false;
+			if ( $EM_Event->is_free()  ) return false;
 
 			// Only pending events can be paid for
 			if ( $EM_Event->get_bookings()->has_open_time() ) {
 
 				$balance = $this->core->get_users_balance( $EM_Booking->person->ID, $this->mycred_type );
-				if ( $balance <= 0 ) return false;
+
+				if ( $balance < 0 ) return false;
 
 				$price   = $this->core->number( $EM_Booking->booking_price );
 				if ( $price == 0 ) return true;
@@ -184,8 +246,11 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 				if ( ! $this->single_currency() ) {
 					$exchange_rate = $this->prefs['rate'];
 					$price         = $this->core->number( $exchange_rate * $price );
+
+					
 				}
 
+			
 				if ( $balance - $price < 0 ) return false;
 
 				return true;
@@ -196,6 +261,22 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 
 		}
 
+		public function em_booking_get_status($status,$data) {
+
+			global $mycred;
+			$user_selected_point_type = get_option('mycred_eventsmanager_gateway_prefs' )['type'];
+			$users_balance = mycred_get_users_balance( $data->person_id, $user_selected_point_type );
+
+			if(get_option('dbem_bookings_approval') == 0 && ! $this->has_paid( $data )) {
+
+				$status = 'Pending';
+
+			}
+
+			return $status;
+
+		}
+
 		/**
 		 * Has Paid
 		 * Checks if the user has paid for booking
@@ -203,6 +284,7 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 		 * @version 1.2
 		 */
 		public function has_paid( $EM_Booking ) {
+
 
 			if ( $this->core->has_entry( 'ticket_purchase', $EM_Booking->event->post_id, $EM_Booking->person->ID, array( 'ref_type' => 'post', 'bid' => (int) $EM_Booking->booking_id ), $this->mycred_type ) ) return true;
 
@@ -226,14 +308,18 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 			// Get Booking
 			$booking_id = absint( $_POST['booking_id'] );
 			$booking    = em_get_booking( $booking_id );
-
+			
 			// User
 			if ( $this->core->exclude_user( $booking->person->ID ) ) die( 'ERROR_2' );
+
 
 			// User can not pay for this
 			if ( ! $this->can_pay( $booking ) ) {
 
-				$message = $this->prefs['messages']['error'];
+				 $link_tag_url = '<a href="'.esc_url($this->prefs['messages']['url']).  '" class="insufficient-balance-booking-link">' . $this->prefs['messages']['text'] . '</a>';
+	             $message   = str_replace( '%url%', $link_tag_url, $this->prefs['messages']['error'] );
+
+				// $message =
 				$status  = 'ERROR';
 
 				// Let others play
@@ -263,8 +349,10 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 				);
 
 				// Update Booking if approval is required (with option to disable this feature)
-				if ( get_option( 'dbem_bookings_approval' ) == 1 && apply_filters( 'mycred_em_approve_on_pay', true, $booking, $this ) )
-					$booking->approve();
+				if ( get_option( 'dbem_bookings_approval' ) == 1 || get_option( 'dbem_bookings_approval' ) == 0 && apply_filters( 'mycred_em_approve_on_pay', true, $booking, $this ) ) {
+					$booking->approve() ;
+					
+				}
 
 				$message = $this->prefs['messages']['success'];
 				$status  = 'OK';
@@ -410,10 +498,23 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 		 */
 		public function add_pay_button( $cancel_link = '', $EM_Booking ) {
 
+
+			?>
+
+			<style>
+
+				a.mycred-show-pay {
+					display: inline-block !important;
+				}
+
+			</style>
+
+			<?php
+			
 			global $mycred_em_pay;
 
 			$mycred_em_pay = false;
-			if ( $this->can_pay( $EM_Booking ) && ! $this->has_paid( $EM_Booking ) ) {
+			if ( ! $this->has_paid( $EM_Booking ) ) {
 
 				if ( ! empty( $cancel_link ) )
 					$cancel_link .= ' &bull; ';
@@ -435,13 +536,16 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 		 */
 		public function payment_box( $EM_Booking ) {
 
+
 			global $mycred_em_pay;
+
 
 			if ( $mycred_em_pay && is_object( $EM_Booking ) ) {
 
 				$balance = $this->core->get_users_balance( $EM_Booking->person->ID, $this->mycred_type );
 
-				if ( $balance <= 0 ) return;
+				if ( $balance < 0 ) return;
+
 
 				$price   = $EM_Booking->booking_price;
 				if ( $price == 0 ) return;
@@ -451,8 +555,8 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 					$price         = $this->core->number( $exchange_rate * $price );
 				}
 
-				if ( $balance-$price < 0 ) return;
-
+			
+			
 ?>
 <tr id="mycred-payment-<?php echo esc_html( $EM_Booking->booking_id ); ?>" style="display: none;">
 	<td colspan="5">
@@ -468,10 +572,18 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 				<td class="info"><?php esc_html_e( 'Total Cost', 'mycred' ); ?></td>
 				<td class="amount"><?php echo esc_html( $this->core->format_creds( $price ) ); ?></td>
 			</tr>
-			<tr>
-				<td class="info"><?php esc_html_e( 'Balance After Payment', 'mycred' ); ?></td>
-				<td class="amount"><?php echo esc_html( $this->core->format_creds( $balance-$price ) ); ?></td>
+			<?php if($balance <= $price): ?>
+			<tr> 
+				<td class="info"><?php esc_html_e( 'Balance Required', 'mycred' ); ?></td>
+				<td class="amount"><?php echo esc_html( $this->core->format_creds( $price-$balance ) ); ?></td>
 			</tr>
+		<?php endif ?>
+		<?php if($balance > $price): ?>
+			<tr> 
+				<td class="info"><?php esc_html_e( 'Balance After Payment', 'mycred' ); ?></td>
+				<td class="amount"><?php echo esc_html($this->core->format_creds($balance-$price)); ?></td>
+			</tr>
+		<?php endif ?>
 			<tr>
 				<td colspan="2" class="action" style="text-align: right;">
 					<input type="hidden" name="mycred-booking-<?php echo esc_attr( $EM_Booking->booking_id ); ?>" value="<?php echo esc_attr( $EM_Booking->booking_id ); ?>" />
@@ -481,15 +593,11 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 			</tr>
 		</table>
 		<p id="mycred-message-<?php echo esc_attr( $EM_Booking->booking_id ); ?>"></p>
-
 			<?php do_action( 'mycred_em_after_payment_box', $this ); ?>
-
 	</td>
 </tr>
 <?php
-
 			}
-
 		}
 
 		/**
@@ -512,6 +620,8 @@ jQuery(function($) {
 	$( 'a.mycred-show-pay' ).click(function() {
 		var box = $(this).attr( 'data-booking' );
 		$( 'tr#mycred-payment-' + box ).toggle();
+
+		
 	});
 
 	$( 'input.mycred-pay' ).click(function() {
@@ -572,7 +682,11 @@ jQuery(function($) {
 		 */
 		public function settings_page() {
 
-			if ( $this->prefs['setup'] == 'multi' )
+			global $allowedtags;
+
+			$url = str_replace( '%url%',$this->prefs['messages']['error'], $this->prefs['messages']['url'] );
+
+			if ( $this->prefs['setup'] == 'multi' || $this->prefs['setup'] == 'single' )
 				$box = 'display: block;';
 			else
 				$box = 'display: none;';
@@ -691,16 +805,31 @@ jQuery(function($) {
 			<tr valign="top">
 				<th scope="row"><?php esc_html_e( 'Insufficient Funds', 'mycred' ); ?></th>
 				<td>
-					<input type="text" name="mycred_gateway[messages][error]" id="mycred-gateway-messages-error" style="width: 95%;" value="<?php echo esc_attr( $this->prefs['messages']['error'] ); ?>" /><br />
+					<input type="text" name="mycred_gateway[messages][error]" id="mycred-gateway-messages-error"  style="width: 95%;" value="<?php echo esc_attr($this->prefs['messages']['error'])   ?>" /><br />
 					<span class="description"><?php esc_html_e( 'No HTML allowed!', 'mycred' ); ?><br /><?php echo esc_html( $this->core->available_template_tags( array( 'general' ) ) ); ?></span>
 				</td>
 			</tr>
+			<tr valign="top">
+				<th scope="row"><?php esc_html_e( 'URL', 'mycred' ); ?></th>
+				<td>
+					<input type="text" placeholder="https://" name="mycred_gateway[messages][url]" id="mycred-gateway-messages-url" style="width: 100%;" value="<?php echo esc_attr($url); ?>" /><br />
+					
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row"><?php esc_html_e( 'Text', 'mycred' ); ?></th>
+				<td>
+					<input type="text" placeholder="" name="mycred_gateway[messages][text]" id="mycred-gateway-messages-text" style="width: 100%;" value="<?php echo esc_attr($this->prefs['messages']['text']); ?>" /><br />
+					
+				</td>
+			</tr>
 		</table>
-
 		<?php do_action( 'mycred_em_after_settings', $this ); ?>
 
 <script type="text/javascript">
 jQuery(function($){
+
+
 
 	$( 'input[name="mycred_gateway[setup]"]' ).change(function(){
 		if ( $(this).val() == 'multi' ) {
@@ -772,11 +901,14 @@ jQuery(function($){
 			// Messages
 			$new_settings['messages']['success'] = isset( $_POST['mycred_gateway']['messages']['success'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['success'] ) ) : '';
 			$new_settings['messages']['error']   = isset( $_POST['mycred_gateway']['messages']['error'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['error'] ) ) : '';
+			$new_settings['messages']['url']   = isset( $_POST['mycred_gateway']['messages']['url'] ) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['url'] ) ) : '';
+			$new_settings['messages']['text']   = isset($_POST['mycred_gateway']['messages']['text']) ? sanitize_text_field( wp_unslash( $_POST['mycred_gateway']['messages']['text'] ) ) : '';
 
 			// Save Settings
 			$current     = $this->prefs;
-			$this->prefs = mycred_apply_defaults( $current, $new_settings );
-			update_option( 'mycred_eventsmanager_gateway_prefs', $this->prefs );
+
+			$this->prefs = mycred_apply_defaults($current,$new_settings);
+			update_option('mycred_eventsmanager_gateway_prefs',$this->prefs);
 
 			// Let others play
 			do_action( 'mycred_em_save_settings', $this );
