@@ -32,7 +32,7 @@ if ( ! function_exists( 'mycred_render_my_badges' ) ) :
 
         ob_start();
 
-        echo '<div class="mycred-users-badges">';
+        echo '<div class="mycred-users-badges mycred-' . esc_attr( $css_classes ) . '">';
 
         foreach ( $all_badges as $badge_id ) {
 
@@ -249,6 +249,6 @@ if( !function_exists( 'mycred_render_badges_list' ) ) :
         <?php
         $content = ob_get_clean();
 
-        return apply_filters( 'mycred_badges_list', $content, $atts );
+        return apply_filters( 'mycred_badges_list', $content );
     }
 endif;

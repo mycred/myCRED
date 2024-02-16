@@ -86,6 +86,10 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 			if ( function_exists( 'buddypress' ) )
 				add_action( 'mycred_bp_user_activated', array( $this, 'verified_signup' ) );
 
+			// Hook into user activation
+			if ( class_exists('ARMember') )
+				add_action( 'arm_after_add_new_user', array( $this, 'verified_signup' ), 10, 2 );
+
 			// Register Shortcodes
 			add_filter( 'mycred_affiliate_link_' . $this->mycred_type, array( $this, 'shortcode_affiliate_link' ), 10, 2 );
 			add_filter( 'mycred_affiliate_id_' . $this->mycred_type,   array( $this, 'shortcode_affiliate_id' ), 10, 2 );
@@ -358,7 +362,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 				if ( $this->ref_counts( $user_id, $IP, 'signup' ) ) {
 
 					// Award when users account gets activated
-					if ( function_exists( 'buddypress' ) || class_exists( 'pw_new_user_approve' ) ) {
+					if ( function_exists( 'buddypress' ) || class_exists( 'pw_new_user_approve' ) || class_exists( 'ARMember' ) ) {
 
 						mycred_add_user_meta( $new_user_id, 'referred_by_', $this->mycred_type, $user_id, true );
 						mycred_add_user_meta( $new_user_id, 'referred_by_IP_', $this->mycred_type, $IP, true );
@@ -401,7 +405,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		 * @since 1.5
 		 * @version 1.0
 		 */
-		public function verified_signup( $user_id ) {
+		public function verified_signup( $user_id, $post = array() ) {
 
 			if( ! is_object($user_id) ) {
 				$user_id = $user_id;
@@ -757,13 +761,13 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 <div class="hook-instance">
 	<h3><?php esc_html_e( 'Referral Links', 'mycred' ); ?></h3>
 	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<div class="col-lg-12 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'setup' => 'links' ) ) ); ?>-numeric"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'setup' => 'links' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'setup' => 'links' ) ) ); ?>-numeric" <?php checked( $prefs['setup']['links'], 'numeric' ); ?> value="numeric" /> <?php esc_html_e( 'Assign numeric referral IDs to each user.', 'mycred' ); ?></label>
 				<span class="description"><?php printf( '%s: %s', esc_html__( 'Example', 'mycred' ), esc_url( add_query_arg( array( $this->ref_key => 1 ), home_url( '/' ) ) ) ); ?></span>
 			</div>
 		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<div class="col-lg-12 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'setup' => 'links' ) ) ); ?>-username"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'setup' => 'links' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'setup' => 'links' ) ) ); ?>-username" <?php checked( $prefs['setup']['links'], 'username' ); ?> value="username" /> <?php esc_html_e( 'Assign usernames as IDs for each user.', 'mycred' ); ?></label>
 				<span class="description"><?php printf( '%s: %s', esc_html__( 'Example', 'mycred' ), esc_url( add_query_arg( array( $this->ref_key => 'john+doe' ), home_url( '/' ) ) ) ); ?></span>
@@ -781,7 +785,7 @@ if ( ! class_exists( 'myCRED_Hook_Affiliate' ) ) :
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label><?php esc_html_e( 'Available Shortcodes', 'mycred' ); ?></label>
-				<p class="form-control-static"><a href="http://codex.mycred.me/shortcodes/mycred_affiliate_link/" target="_blank">[mycred_affiliate_link]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_affiliate_id/" target="_blank">[mycred_affiliate_id]</a></p>
+				<p class="form-control-static"><a href="http://codex.mycred.me/shortcodes/mycred_affiliate_link/" target="_blank">[mycred_affiliate_link]</a> <a href="http://codex.mycred.me/shortcodes/mycred_affiliate_id/" target="_blank">[mycred_affiliate_id]</a></p>
 			</div>
 		</div>
 	</div>

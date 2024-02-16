@@ -8,6 +8,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.0
  */
 if ( ! class_exists( 'myCRED_License' ) ) :
+	#[AllowDynamicProperties]
 	class myCRED_License {
 
 		// Plugin Version

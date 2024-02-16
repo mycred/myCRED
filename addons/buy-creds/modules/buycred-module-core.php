@@ -62,7 +62,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 			add_action( 'mycred_after_core_prefs',     array( $this, 'after_general_settings' ) );
 			add_filter( 'mycred_save_core_prefs',      array( $this, 'sanitize_extra_settings' ), 90, 3 );
 
-			add_action('pre_get_comments',             array( $this, 'hide_buycred_transactions' ) );
+			add_action( 'pre_get_comments',             array( $this, 'hide_buycred_transactions' ) );
 
 		}
 
@@ -383,238 +383,258 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 			$settings          = mycred_get_buycred_settings();
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><strong>buy</strong>CRED</h4>
-<div class="body" style="display:none;">
+<div class="mycred-ui-accordion">
+	<div class="mycred-ui-accordion-header">
+        <h4 class="mycred-ui-accordion-header-title">
+            <span class="dashicons dashicons-mycred-buycred static mycred-ui-accordion-header-icon"></span>
+            <label><strong>buy</strong>CRED</label>
+        </h4>
+        <div class="mycred-ui-accordion-header-actions hide-if-no-js">
+            <button type="button" aria-expanded="true">
+                <span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+	<div class="body mycred-ui-accordion-body" style="display:none;">
 
-	<div class="row">
-		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-			<h3><?php esc_html_e( 'Sale Setup', 'mycred' ); ?></h3>
-<?php
+		<div class="row">
+			<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+				<h3><?php esc_html_e( 'Sale Setup', 'mycred' ); ?></h3>
+	<?php
 
-			foreach ( $this->point_types as $type_id => $label ) {
+				foreach ( $this->point_types as $type_id => $label ) {
 
-				$mycred     = mycred( $type_id );
-				$sale_setup = mycred_get_buycred_sale_setup( $type_id );
+					$mycred     = mycred( $type_id );
+					$sale_setup = mycred_get_buycred_sale_setup( $type_id );
 
-?>
-			<div class="row">
-				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-
-					<div class="form-group">
-						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><?php echo esc_html( $mycred->plural() ); ?></label>
-						<div class="checkbox" style="padding-top: 4px;">
-							<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><input type="checkbox" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][enabled]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"<?php if ( in_array( $type_id, $settings['types'] ) ) echo ' checked="checked"'; ?> value="<?php echo esc_attr( $type_id ); ?>" /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
-						</div>
-					</div>
-
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-
-					<div class="form-group">
-						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-min"><?php esc_html_e( 'Minimum Amount', 'mycred' ); ?></label>
-						<input type="text" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][min]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-min" class="form-control" placeholder="<?php echo esc_attr( $mycred->get_lowest_value() ); ?>" value="<?php echo esc_attr( $sale_setup['min'] ); ?>" />
-					</div>
-
-				</div>
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-					<div class="form-group">
-						<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-max"><?php esc_html_e( 'Maximum', 'mycred' ); ?></label>
-						<div class="row">
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-								<input type="text" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][max]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-max" class="form-control" placeholder="<?php esc_attr_e( 'No limit', 'mycred' ); ?>" value="<?php echo esc_attr( $sale_setup['max'] ); ?>" />
-							</div>
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-								<?php mycred_purchase_limit_dropdown( 'mycred_pref_core[buy_creds][types][' . $type_id . '][time]', 'buycred-type-' . $type_id . '-time', $sale_setup['time'] ); ?>
-							</div>
-						</div>
-					</div>
-
-				</div>
-			</div>
-<?php
-
-			}
-
-?>
-			<hr />
-			<div class="form-group">
-				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( 'custom_log' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'custom_log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'custom_log' ) ); ?>"<?php checked( $settings['custom_log'], 1 ); ?> value="1" /> <?php echo esc_html( $this->core->template_tags_general( __( 'Create a dedicated log for purchases.', 'mycred' ) ) ); ?></label>
-				</div>
-			</div>
-		</div>
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<h3><?php esc_html_e( 'Checkout', 'mycred' ); ?></h3>
-
-			<div class="form-group">
-
+	?>
 				<div class="row">
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-center">
-						<label for="<?php echo esc_attr( $this->field_id( 'checkout-full' ) ); ?>">
-							<img src="<?php echo esc_url( plugins_url( 'assets/images/checkout-full.png', MYCRED_PURCHASE ) ); ?>" alt="" style="max-width: 100%; height: auto;" />
-							<input type="radio" name="<?php echo esc_attr( $this->field_name( 'checkout' ) ); ?>"<?php checked( $settings['checkout'], 'page' ); ?> id="<?php echo esc_attr( $this->field_id( 'checkout-full' ) ); ?>" value="page" /> Full Page
-						</label>
+					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+
+						<div class="form-group">
+							<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><?php echo esc_html( $mycred->plural() ); ?></label>
+							<div class="checkbox" style="padding-top: 4px;">
+								<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"><input type="checkbox" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][enabled]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-enabled"<?php if ( in_array( $type_id, $settings['types'] ) ) echo ' checked="checked"'; ?> value="<?php echo esc_attr( $type_id ); ?>" /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
+							</div>
+						</div>
+
 					</div>
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-center">
-						<label for="<?php echo esc_attr( $this->field_id( 'checkout-popup' ) ); ?>">
-							<img src="<?php echo esc_url( plugins_url( 'assets/images/checkout-popup.png', MYCRED_PURCHASE ) ); ?>" alt="" style="max-width: 100%; height: auto;" />
-							<input type="radio" name="<?php echo esc_attr( $this->field_name( 'checkout' ) ); ?>"<?php checked( $settings['checkout'], 'popup' ); ?> id="<?php echo esc_attr( $this->field_id( 'checkout-popup' ) ); ?>" value="popup" /> Popup
-						</label>
+					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+
+						<div class="form-group">
+							<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-min"><?php esc_html_e( 'Minimum Amount', 'mycred' ); ?></label>
+							<input type="text" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][min]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-min" class="form-control" placeholder="<?php echo esc_attr( $mycred->get_lowest_value() ); ?>" value="<?php echo esc_attr( $sale_setup['min'] ); ?>" />
+						</div>
+
 					</div>
+					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+						<div class="form-group">
+							<label for="buycred-type-<?php echo esc_attr( $type_id ); ?>-max"><?php esc_html_e( 'Maximum', 'mycred' ); ?></label>
+							<div class="row">
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+									<input type="text" name="mycred_pref_core[buy_creds][types][<?php echo esc_attr( $type_id ); ?>][max]" id="buycred-type-<?php echo esc_attr( $type_id ); ?>-max" class="form-control" placeholder="<?php esc_attr_e( 'No limit', 'mycred' ); ?>" value="<?php echo esc_attr( $sale_setup['max'] ); ?>" />
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+									<?php mycred_purchase_limit_dropdown( 'mycred_pref_core[buy_creds][types][' . $type_id . '][time]', 'buycred-type-' . $type_id . '-time', $sale_setup['time'] ); ?>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+	<?php
+
+				}
+
+	?>
+				
+				<div class="form-group">
+					<div class="checkbox">
+						<label for="<?php echo esc_attr( $this->field_id( 'custom_log' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'custom_log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'custom_log' ) ); ?>"<?php checked( $settings['custom_log'], 1 ); ?> value="1" /> <?php echo esc_html( $this->core->template_tags_general( __( 'Create a dedicated log for purchases.', 'mycred' ) ) ); ?></label>
+					</div>
+				</div>
+				<hr />
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<h3><?php esc_html_e( 'Checkout', 'mycred' ); ?></h3>
+
+				<div class="form-group">
+
+					<div class="row">
+						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-center">
+							<label for="<?php echo esc_attr( $this->field_id( 'checkout-full' ) ); ?>">
+								<img src="<?php echo esc_url( plugins_url( 'assets/images/checkout-full.png', MYCRED_PURCHASE ) ); ?>" alt="" style="max-width: 100%; height: auto;" />
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( 'checkout' ) ); ?>"<?php checked( $settings['checkout'], 'page' ); ?> id="<?php echo esc_attr( $this->field_id( 'checkout-full' ) ); ?>" value="page" /> Full Page
+							</label>
+						</div>
+						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-center">
+							<label for="<?php echo esc_attr( $this->field_id( 'checkout-popup' ) ); ?>">
+								<img src="<?php echo esc_url( plugins_url( 'assets/images/checkout-popup.png', MYCRED_PURCHASE ) ); ?>" alt="" style="max-width: 100%; height: auto;" />
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( 'checkout' ) ); ?>"<?php checked( $settings['checkout'], 'popup' ); ?> id="<?php echo esc_attr( $this->field_id( 'checkout-popup' ) ); ?>" value="popup" /> Popup
+							</label>
+						</div>
+					</div>
+
 				</div>
 
 			</div>
-
 		</div>
-	</div>
 
-	<h3><?php esc_html_e( 'Redirects', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<h3><?php esc_html_e( 'Redirects', 'mycred' ); ?></h3>
+		<div class="row">
+		
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+					<div class="form-group">
+						<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'Where should users be redirected to upon successfully completing a purchase. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
+					</div>
+				</div>	
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+					<div class="form-group">
+						<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'Where should users be redirected to if they cancel a transaction. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
+					</div>
+				</div>
+		  
 
-			<div class="form-group">
-				<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'Where should users be redirected to upon successfully completing a purchase. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
-			</div>
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( array( 'thankyou' => 'page' ) ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
-<?php
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
-			// Thank you page dropdown
-			$thankyou_args = array(
-				'name'             => $this->field_name( array( 'thankyou' => 'page' ) ),
-				'id'               => $this->field_id( array( 'thankyou' => 'page' ) ) . '-id',
-				'selected'         => $settings['thankyou']['page'],
-				'show_option_none' => __( 'Select', 'mycred' ),
-				'class'            => 'form-control',
-				'echo'             => 0
-			);
-			echo wp_kses( 
-				wp_dropdown_pages( $thankyou_args ),
-				array(
-					'select' => array(
-						'id' => array(),
-						'name' => array(),
-						'class' => array()
-					),
-					'option' => array(
-						'value' => array(),
-						'selected' => array()
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( array( 'thankyou' => 'page' ) ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
+		<?php
+
+				// Thank you page dropdown
+				$thankyou_args = array(
+					'name'             => $this->field_name( array( 'thankyou' => 'page' ) ),
+					'id'               => $this->field_id( array( 'thankyou' => 'page' ) ) . '-id',
+					'selected'         => $settings['thankyou']['page'],
+					'show_option_none' => __( 'Select', 'mycred' ),
+					'class'            => 'form-control',
+					'echo'             => 0
+				);
+				echo wp_kses( 
+					wp_dropdown_pages( $thankyou_args ),
+					array(
+						'select' => array(
+							'id' => array(),
+							'name' => array(),
+							'class' => array()
+						),
+						'option' => array(
+							'value' => array(),
+							'selected' => array()
+						)
 					)
-				)
-			);
-
-?>
-			</div>
+				);
+				
+				
+?>			</div>
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'thankyou' => 'custom' ) ) ); ?>"><?php esc_html_e( 'Redirect to URL', 'mycred' ); ?></label>
 				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'thankyou' => 'custom' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'thankyou' => 'custom' ) ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['thankyou']['custom'] ); ?>" />
+				</div>
+				<?php if ( $uses_buddypress ) : ?>
+				<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
+				<?php endif; ?>
 			</div>
-			<?php if ( $uses_buddypress ) : ?>
-			<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
-			<?php endif; ?>
 
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( array( 'cancelled' => 'page' ) ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
+	<?php
 
-			<div class="form-group">
-				<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'Where should users be redirected to if they cancel a transaction. You can nominate a specific URL or a page.', 'mycred' ); ?></span></p>
-			</div>
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( array( 'cancelled' => 'page' ) ) ); ?>"><?php esc_html_e( 'Redirect to Page', 'mycred' ); ?></label>
-<?php
-
-			// Thank you page dropdown
-			$thankyou_args = array(
-				'name'             => $this->field_name( array( 'cancelled' => 'page' ) ),
-				'id'               => $this->field_id( array( 'cancelled' => 'page' ) ) . '-id',
-				'selected'         => $settings['cancelled']['page'],
-				'show_option_none' => __( 'Select', 'mycred' ),
-				'class'            => 'form-control',
-				'echo'             => 0
-			);
-			echo wp_kses( 
-				wp_dropdown_pages( $thankyou_args ),
-				array(
-					'select' => array(
-						'id' => array(),
-						'name' => array(),
-						'class' => array()
-					),
-					'option' => array(
-						'value' => array(),
-						'selected' => array()
+				// Thank you page dropdown
+				$thankyou_args = array(
+					'name'             => $this->field_name( array( 'cancelled' => 'page' ) ),
+					'id'               => $this->field_id( array( 'cancelled' => 'page' ) ) . '-id',
+					'selected'         => $settings['cancelled']['page'],
+					'show_option_none' => __( 'Select', 'mycred' ),
+					'class'            => 'form-control',
+					'echo'             => 0
+				);
+				echo wp_kses( 
+					wp_dropdown_pages( $thankyou_args ),
+					array(
+						'select' => array(
+							'id' => array(),
+							'name' => array(),
+							'class' => array()
+						),
+						'option' => array(
+							'value' => array(),
+							'selected' => array()
+						)
 					)
-				)
-			);
+				);
 
-?>
-			</div>
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( array( 'cancelled' => 'custom' ) ) ); ?>"><?php esc_html_e( 'Redirect to URL', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'cancelled' => 'custom' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'cancelled' => 'custom' ) ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['cancelled']['custom'] ); ?>" />
-			</div>
-			<?php if ( $uses_buddypress ) : ?>
-			<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
-			<?php endif; ?>
-
-		</div>
-	</div>
-
-	<h3><?php esc_html_e( 'Templates', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'login' ) ); ?>"><?php esc_html_e( 'Login Message', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'login' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'login' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['login'] ); ?>" />
-				<p><span class="description"><?php esc_html_e( 'Message to show in shortcodes when viewed by someone who is not logged in.', 'mycred' ); ?></span></p>
-			</div>
-
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['log'] ); ?>" />
-				<p><span class="description"><?php echo wp_kses_post( $this->core->available_template_tags( array( 'general' ), '%gateway%' ) ); ?></span></p>
-			</div>
-
-		</div>
-	</div>
-
-	<h3><?php esc_html_e( 'Gifting', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-			<div class="form-group">
-				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'members' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'gifting' => 'members' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'members' ) ) ); ?>"<?php checked( $settings['gifting']['members'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Allow users to buy %_plural% for other users.', 'mycred' ) ) ); ?></label>
+	?>
 				</div>
-				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'authors' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'gifting' => 'authors' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'authors' ) ) ); ?>"<?php checked( $settings['gifting']['authors'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Allow users to buy %_plural% for content authors.', 'mycred' ) ) ); ?></label>
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( array( 'cancelled' => 'custom' ) ) ); ?>"><?php esc_html_e( 'Redirect to URL', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'cancelled' => 'custom' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'cancelled' => 'custom' ) ) ); ?>" placeholder="https://" class="form-control" value="<?php echo esc_attr( $settings['cancelled']['custom'] ); ?>" />
 				</div>
+				<?php if ( $uses_buddypress ) : ?>
+				<p style="margin-top: 0;"><span class="description"><?php esc_html_e( 'You can use %profile% for the base URL of the users profile.', 'mycred' ); ?></span></p>
+				<?php endif; ?>
+
 			</div>
-
 		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'gifting' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['gifting']['log'] ); ?>" />
-				<p><span class="description"><?php echo wp_kses_post( $this->core->available_template_tags( array( 'general', 'user' ) ) ); ?></span></p>
+		<h3><?php esc_html_e( 'Templates', 'mycred' ); ?></h3>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'login' ) ); ?>"><?php esc_html_e( 'Login Message', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'login' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'login' ) ); ?>" class="form-control" value="<?php echo esc_attr( $settings['login'] ); ?>" />
+					<p><span class="description"><?php esc_html_e( 'Message to show in shortcodes when viewed by someone who is not logged in.', 'mycred' ); ?></span></p>
+				</div>
+
 			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['log'] ); ?>" />
+					<p><span class="description"><?php echo wp_kses_post( $this->core->available_template_tags( array( 'general' ), '%gateway%' ) ); ?></span></p>
+				</div>
+
+			</div>
 		</div>
-	</div>
 
-	<h3 style="margin-bottom: 0;"><?php esc_html_e( 'Available Shortcodes', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<p><a href="http://codex.mycred.me/shortcodes/mycred_buy/" target="_blank">[mycred_buy]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_buy_form/" target="_blank">[mycred_buy_form]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_buy_pending/" target="_blank">[mycred_buy_pending]</a></p>
+		<h3><?php esc_html_e( 'Gifting', 'mycred' ); ?></h3>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+				<div class="form-group">
+					<div class="checkbox">
+						<label for="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'members' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'gifting' => 'members' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'members' ) ) ); ?>"<?php checked( $settings['gifting']['members'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Allow users to buy %_plural% for other users.', 'mycred' ) ) ); ?></label>
+					</div>
+					<div class="checkbox">
+						<label for="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'authors' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'gifting' => 'authors' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'authors' ) ) ); ?>"<?php checked( $settings['gifting']['authors'], 1 ); ?> value="1" /> <?php echo wp_kses_post( $this->core->template_tags_general( __( 'Allow users to buy %_plural% for content authors.', 'mycred' ) ) ); ?></label>
+					</div>
+				</div>
+
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( array( 'gifting' => 'log' ) ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'gifting' => 'log' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $settings['gifting']['log'] ); ?>" />
+					<p><span class="description"><?php echo wp_kses_post( $this->core->available_template_tags( array( 'general', 'user' ) ) ); ?></span></p>
+				</div>
+
+			</div>
 		</div>
-	</div>
 
+		<h3 style="margin-bottom: 0;"><?php esc_html_e( 'Available Shortcodes', 'mycred' ); ?></h3>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<p><a href="http://codex.mycred.me/shortcodes/mycred_buy/" target="_blank">[mycred_buy]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_buy_form/" target="_blank">[mycred_buy_form]</a>, <a href="http://codex.mycred.me/shortcodes/mycred_buy_pending/" target="_blank">[mycred_buy_pending]</a></p>
+			</div>
+		</div>
+
+	</div>
 </div>
 <?php
 
@@ -747,9 +767,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 		 */
 		public function settings_header() {
 
-			wp_enqueue_style( 'mycred-admin' );
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-forms' );
 
 		}
 
@@ -802,38 +820,51 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 						$column_class = 'col-lg-4 col-md-4 col-sm-12 col-xs-12';
 
 ?>
-			<h4><span class="dashicons <?php echo esc_attr( $data['icon'] ); ?><?php if ( $this->is_active( $key ) ) { if ( $sandbox_mode ) echo ' debug'; else echo ' active'; } else echo ' static'; ?>"></span><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></h4>
-			<div class="body" style="display: none;">
-
-				<div class="row">
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<div>&nbsp;</div>
-							<label for="buycred-gateway-<?php echo esc_attr( $key ); ?>"><input type="checkbox" name="mycred_pref_buycreds[active][]" id="buycred-gateway-<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $key ); ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<?php if ( $has_test_mode ) : ?>
-						<div class="form-group">
-							<div>&nbsp;</div>
-							<label for="buycred-gateway-<?php echo esc_attr( $key ); ?>-sandbox"><input type="checkbox" name="mycred_pref_buycreds[gateway_prefs][<?php echo esc_attr( $key ); ?>][sandbox]" id="buycred-gateway-<?php echo esc_attr( $key ); ?>-sandbox" value="<?php echo esc_attr( $key ); ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Sandbox Mode', 'mycred' ); ?></label>
-						</div>
-						<?php endif; ?>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" style="text-align: right;">
-						<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && $has_documentation ) : ?>
-						<div class="form-group">
-							<div>&nbsp;</div>
-							<a href="<?php echo esc_url( $has_documentation ); ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
-						</div>
-						<?php endif; ?>
+			<div class="mycred-ui-accordion">
+				<div class="mycred-ui-accordion-header">
+					<h4 class="mycred-ui-accordion-header-title">
+						<span class="dashicons <?php echo esc_attr( $data['icon'] ); ?><?php if ( $this->is_active( $key ) ) { if ( $sandbox_mode ) echo ' debug'; else echo ' active'; } else echo ' static'; ?> mycred-ui-accordion-header-icon"></span>
+						<label><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></label>
+					</h4>
+					<div class="mycred-ui-accordion-header-actions hide-if-no-js">
+						<button type="button" aria-expanded="true">
+							<span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+						</button>
 					</div>
 				</div>
-				<hr />
+				<div class="body mycred-ui-accordion-body" style="display: none;">
 
-				<?php $this->call( 'preferences', $data['callback'] ); ?>
+					<div class="row">
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<div>&nbsp;</div>
+								<label for="buycred-gateway-<?php echo esc_attr( $key ); ?>"><input type="checkbox" name="mycred_pref_buycreds[active][]" id="buycred-gateway-<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $key ); ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Enable', 'mycred' ); ?></label>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<?php if ( $has_test_mode ) : ?>
+							<div class="form-group">
+								<div>&nbsp;</div>
+								<label for="buycred-gateway-<?php echo esc_attr( $key ); ?>-sandbox"><input type="checkbox" name="mycred_pref_buycreds[gateway_prefs][<?php echo esc_attr( $key ); ?>][sandbox]" id="buycred-gateway-<?php echo esc_attr( $key ); ?>-sandbox" value="<?php echo esc_attr( $key ); ?>"<?php if ( $sandbox_mode ) echo ' checked="checked"'; ?> /> <?php esc_html_e( 'Sandbox Mode', 'mycred' ); ?></label>
+							</div>
+							<?php endif; ?>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" style="text-align: right;">
+							<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && $has_documentation ) : ?>
+							<div class="form-group">
+								<div>&nbsp;</div>
+								<a href="<?php echo esc_url( $has_documentation ); ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
+							</div>
+							<?php endif; ?>
+						</div>
+					</div>
+					<hr />
+					<br />
 
-				<input type="hidden" name="mycred_pref_buycreds[installed]" value="<?php echo esc_attr( $key ); ?>" />
+					<?php $this->call( 'preferences', $data['callback'] ); ?>
+
+					<input type="hidden" name="mycred_pref_buycreds[installed]" value="<?php echo esc_attr( $key ); ?>" />
+				</div>
 			</div>
 <?php
 
@@ -868,32 +899,32 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 			$more_gateways_tab = apply_filters( 'mycred_buycred_more_gateways_tab', $more_gateways_tab );
 
-			if( MYCRED_SHOW_PREMIUM_ADDONS )
-			{
+			if( MYCRED_SHOW_PREMIUM_ADDONS ) {
+
 				include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
-				foreach( $more_gateways_tab as $key => $gateway )
-				{
+				foreach( $more_gateways_tab as $key => $gateway ) {
 
-					if ( isset( $gateway['plugin'] ) && is_plugin_active( $gateway['plugin'] ) )
-						continue;
+					if ( isset( $gateway['plugin'] ) && is_plugin_active( $gateway['plugin'] ) ) continue;
 
-					$disabled_class = ( isset( $gateway['status'] ) && $gateway['status'] == 'disabled' )  ? 'disabled-tab' : '';
+					$disabled_class = ( isset( $gateway['status'] ) && $gateway['status'] == 'disabled' ) ? 'disabled' : ''; 
 
-					$content = "
-					<h4 class='ui-accordion-header ui-corner-top ui-accordion-header-collapsed ui-corner-all ui-state-default ui-accordion-icons buycred-cashcred-more-tab-btn {$disabled_class}' data-url='{$gateway['url']}'>
-						<span class='ui-accordion-header-icon ui-icon ui-icon-triangle-1-e'></span>
-						<span class='{$gateway['icon']}'></span>
-								{$gateway['text']}";
+					?>
 
-						if( array_key_exists( 'additional_text', $gateway )  && !empty( $gateway['additional_text'] ) )
-							$content .= "<span class='additional-text'>{$gateway['additional_text']}</span>";
-					
-					$content .= "</h4>
-						<div class='body' style='display:none; padding: 0px; border: none;'>
-					</div>";
+<div class="mycred-ui-accordion <?php esc_attr_e( $disabled_class );?>">
+	<div class="mycred-ui-accordion-header buycred-cashcred-more-tab-btn" data-url="<?php esc_attr_e( $gateway['url'] );?>">
+		<h4 class="mycred-ui-accordion-header-title">
+			<span class="dashicons <?php esc_html_e( $gateway['icon'] );?> static mycred-ui-accordion-header-icon"></span>
+			<label><?php esc_html_e( $gateway['text'] ); ?></label>
+			<?php if( array_key_exists( 'additional_text', $gateway )  && ! empty( $gateway['additional_text'] ) ): ?>
+			<span class="mycred-ui-badge"><?php esc_html_e( $gateway['additional_text'] );?></span>
+			<?php endif;?>
+		</h4>
+	</div>
+	<div class="body" style="display:none; padding: 0px; border: none;"></div>
+</div>
 
-					echo wp_kses_post( $content );
+					<?php
 				}
 			}
 ?>
@@ -902,7 +933,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Module' ) ) :
 
 		<?php do_action( 'mycred_after_buycreds_page', $this ); ?>
 
-		<p><?php submit_button( __( 'Update Settings', 'mycred' ), 'primary large', 'submit', false ); ?></p>
+		<?php submit_button( __( 'Update Settings', 'mycred' ), 'mycred-ui-mt20 mycred-ui-btn-purple', 'submit', false ); ?>
 
 	</form>
 
@@ -1498,7 +1529,20 @@ jQuery(function($) {
 		 */
 		public function hide_buycred_transactions( $query ) {
 
-		    $query->query_vars['type__not_in'] = 'buycred';
+		    if ( empty( $query->query_vars['type__in'] ) ) {
+
+				if( ! empty( $query->query_vars['type__not_in'] ) && is_array( $query->query_vars['type__not_in'] ) ) {
+
+					array_push( $query->query_vars['type__not_in'], 'buycred' );
+
+				}
+				else {
+						
+					$query->query_vars['type__not_in'] = array( 'buycred' );
+
+				}
+
+			}
 		    
 		}
 

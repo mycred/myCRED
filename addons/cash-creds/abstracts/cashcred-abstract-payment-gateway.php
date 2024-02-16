@@ -8,6 +8,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.3
  */
 if ( ! class_exists( 'myCRED_Cash_Payment_Gateway' ) ) :
+	#[AllowDynamicProperties]
 	abstract class myCRED_Cash_Payment_Gateway {
 
 		/**
@@ -137,23 +138,20 @@ if ( ! class_exists( 'myCRED_Cash_Payment_Gateway' ) ) :
 				if ( ! isset( $this->prefs['exchange'][ $type_id ] ) )
 					$this->prefs['exchange'][ $type_id ] = 1;
 
-				$content .= '
-<table>
-	<tr>
-		<td style="min-width: 100px;"><div class="form-control-static">1 ' . esc_html( $mycred->singular() ) . '</div></td>
-		<td style="width: 10px;"><div class="form-control-static">=</div></td>
-		<td><input type="text" name="' . $this->field_name( array( 'exchange' => $type_id ) ) . '" id="' . $this->field_id( array( 'exchange' => $type_id ) ) . '" value="' . esc_attr( $this->prefs['exchange'][ $type_id ] ) . '" size="8" /> ';
+				$content .= '<div class="cashcred_gateway_field">
+
+		<div class="form-control-static cashcred_exchange_rate_label">1 ' . esc_html( $mycred->singular() ) . '</div></td>
+		<div class="form-control-static">=</div>
+		<input type="text" name="' . $this->field_name( array( 'exchange' => $type_id ) ) . '" id="' . $this->field_id( array( 'exchange' => $type_id ) ) . '" value="' . esc_attr( $this->prefs['exchange'][ $type_id ] ) . '" size="8" class="form-control form-control-width" /> ';
 
 
 		if ( isset( $this->prefs['currency'] ) )
-			$content .= '<span class="mycred-gateway-' . $this->id . '-currency">' . ( ( $this->prefs['currency'] == '' ) ? __( 'Select currency', 'mycred' ) : esc_attr( $this->prefs['currency'] ) ) . '</span>';
+			$content .= '<span class="mycred-gateway-buycred mycred-gateway-' . $this->id . '-currency">' . ( ( $this->prefs['currency'] == '' ) ? __( 'Select currency', 'mycred' ) : esc_attr( $this->prefs['currency'] ) ) . '</span>';
 
 		else
-			$content .= '<span>' . esc_attr( $default ) . '</span>';
+			$content .= '<span class="mycred-gateway-buycred>' . esc_attr( $default ) . '</span>';
 
-		$content .= '</td>
-	</tr>
-</table>';
+		$content .= '</div>';
 
 			}
 			

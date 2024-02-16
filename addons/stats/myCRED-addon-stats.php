@@ -354,97 +354,109 @@ jQuery(function($){
 			if ( empty( $prefs['color_negative'] ) ) $prefs['color_negative'] = $colors['negative'];
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Statistics', 'mycred' ); ?></h4>
-<div class="body" style="display:none;">
-
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-			<h3><?php esc_html_e( 'Statistics Color', 'mycred' ); ?></h3>
-			<div class="row">
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-					<div class="form-group">
-						<label for="<?php echo esc_attr( $this->field_id( 'color_positive' ) ); ?>"><?php esc_html_e( 'Positive Values', 'mycred' ); ?></label>
-						<input type="text" name="<?php echo esc_attr( $this->field_name( 'color_positive'  )); ?>" id="<?php echo esc_attr( $this->field_id( 'color_positive' ) ); ?>" value="<?php echo esc_attr( $prefs['color_positive'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
-					</div>
-
-				</div>
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-					<div class="form-group">
-						<label for="<?php echo esc_attr( $this->field_id( 'color_negative' ) ); ?>"><?php esc_html_e( 'Negative Values', 'mycred' ); ?></label>
-						<input type="text" name="<?php echo esc_attr( $this->field_name( 'color_negative' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'color_negative' ) ); ?>" value="<?php echo esc_attr( $prefs['color_negative'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
-					</div>
-
-				</div>
-			</div>
-
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-<?php
-
-			if ( $mycred->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) :
-
-				$cache_options = mycred_get_stats_cache_times();
-
-?>
-
-			<h3><?php esc_html_e( 'Optimization', 'mycred' ); ?></h3>
-			<p><span class="description"><?php esc_html_e( 'Disabling these features can improve render time of your charts, especially if you are showing a large number of charts on a single page. You can also select to disable these features when using the chart shortcodes.', 'mycred' ); ?></span></p>
-			<div class="row">
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-					<div class="form-group">
-						<div class="checkbox">
-							<label for="<?php echo esc_attr( $this->field_id( 'animate' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'animate' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'animate' ) ); ?>"<?php checked( $prefs['animate'], 1 ); ?> value="1" /> <?php esc_html_e( 'Animate Charts', 'mycred' ); ?></label>
-						</div>
-					</div>
-
-				</div>
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-					<div class="form-group">
-						<div class="checkbox">
-							<label for="<?php echo esc_attr( $this->field_id( 'bezier' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'bezier' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bezier' ) ); ?>"<?php checked( $prefs['bezier'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use Bezier Curves', 'mycred' ); ?></label>
-						</div>
-					</div>
-
-				</div>
-			</div>
-
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'caching' ) ); ?>"><?php esc_html_e( 'Caching', 'mycred' ); ?></label>
-				<select name="<?php echo esc_attr( $this->field_name( 'caching' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching' ) ); ?>" class="form-control">
-<?php
-
-				foreach ( $cache_options as $value => $label ) {
-					echo '<option value="' . esc_attr( $value ) . '"';
-					if ( $prefs['caching'] == $value ) echo ' selected="selected"';
-					echo '>' . esc_html( $label ) . '</option>';
-				}
-
-?>
-				</select>
-			</div>
-
-			<?php endif; ?>
-
+<div class="mycred-ui-accordion">
+	<div class="mycred-ui-accordion-header">
+		<h4 class="mycred-ui-accordion-header-title">
+			<span class="dashicons dashicons-chart-area static mycred-ui-accordion-header-icon"></span>
+			<label><?php esc_html_e( 'Statistics', 'mycred' ); ?></label>
+		</h4>
+		<div class="mycred-ui-accordion-header-actions hide-if-no-js">
+			<button type="button" aria-expanded="true">
+				<span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+			</button>
 		</div>
 	</div>
+	<div class="body mycred-ui-accordion-body" style="display:none;">
 
-<?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) : ?>
-<script type="text/javascript">
-jQuery(document).ready(function($){
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
-	// Load wp color picker
-	$( '.wp-color-picker-field' ).wpColorPicker();
-	
-});
-</script>
-<?php endif; ?>
+				<h3><?php esc_html_e( 'Statistics Color', 'mycred' ); ?></h3>
+				<div class="row">
+					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 
+						<div class="form-group">
+							<label for="<?php echo esc_attr( $this->field_id( 'color_positive' ) ); ?>"><?php esc_html_e( 'Positive Values', 'mycred' ); ?></label>
+							<input type="text" name="<?php echo esc_attr( $this->field_name( 'color_positive'  )); ?>" id="<?php echo esc_attr( $this->field_id( 'color_positive' ) ); ?>" value="<?php echo esc_attr( $prefs['color_positive'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
+						</div>
+
+					</div>
+					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+						<div class="form-group">
+							<label for="<?php echo esc_attr( $this->field_id( 'color_negative' ) ); ?>"><?php esc_html_e( 'Negative Values', 'mycred' ); ?></label>
+							<input type="text" name="<?php echo esc_attr( $this->field_name( 'color_negative' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'color_negative' ) ); ?>" value="<?php echo esc_attr( $prefs['color_negative'] ); ?>" class="form-control <?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) echo ' wp-color-picker-field" data-default-color="#dedede'; ?>" />
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+	<?php
+
+				if ( $mycred->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) :
+
+					$cache_options = mycred_get_stats_cache_times();
+
+	?>
+
+				<h3><?php esc_html_e( 'Optimization', 'mycred' ); ?></h3>
+				<p><span class="description"><?php esc_html_e( 'Disabling these features can improve render time of your charts, especially if you are showing a large number of charts on a single page. You can also select to disable these features when using the chart shortcodes.', 'mycred' ); ?></span></p>
+				<div class="row">
+					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+						<div class="form-group">
+							<div class="checkbox">
+								<label for="<?php echo esc_attr( $this->field_id( 'animate' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'animate' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'animate' ) ); ?>"<?php checked( $prefs['animate'], 1 ); ?> value="1" /> <?php esc_html_e( 'Animate Charts', 'mycred' ); ?></label>
+							</div>
+						</div>
+
+					</div>
+					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+						<div class="form-group">
+							<div class="checkbox">
+								<label for="<?php echo esc_attr( $this->field_id( 'bezier' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'bezier' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bezier' ) ); ?>"<?php checked( $prefs['bezier'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use Bezier Curves', 'mycred' ); ?></label>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'caching' ) ); ?>"><?php esc_html_e( 'Caching', 'mycred' ); ?></label>
+					<select name="<?php echo esc_attr( $this->field_name( 'caching' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching' ) ); ?>" class="form-control">
+	<?php
+
+					foreach ( $cache_options as $value => $label ) {
+						echo '<option value="' . esc_attr( $value ) . '"';
+						if ( $prefs['caching'] == $value ) echo ' selected="selected"';
+						echo '>' . esc_html( $label ) . '</option>';
+					}
+
+	?>
+					</select>
+				</div>
+
+				<?php endif; ?>
+
+			</div>
+		</div>
+
+	<?php if ( MYCRED_STATS_COLOR_TYPE == 'hex' ) : ?>
+	<script type="text/javascript">
+	jQuery(document).ready(function($){
+
+		// Load wp color picker
+		$( '.wp-color-picker-field' ).wpColorPicker();
+		
+	});
+	</script>
+	<?php endif; ?>
+
+	</div>
 </div>
 <?php
 

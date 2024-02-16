@@ -160,7 +160,7 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 				'add_new'             => '',
 				'edit_item'           => __( 'Edit buyCred Pending Payment', 'mycred' ),
 				'update_item'         => '',
-				'search_items'        => '',
+				'search_items'        => 'Search',
 				'not_found'           => __( 'Not found in Trash', 'mycred' ),
 				'not_found_in_trash'  => __( 'Not found in Trash', 'mycred' ),
 			);
@@ -428,7 +428,6 @@ if ( ! class_exists( 'buyCRED_Pending_Payments' ) ) :
 			if ( $post_type !== MYCRED_BUY_KEY ) return;
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-forms' );
 
 			add_filter( 'postbox_classes_buycred_payment_buycred-pending-payment',  array( $this, 'metabox_classes' ) );
 			add_filter( 'postbox_classes_buycred_payment_buycred-pending-comments', array( $this, 'metabox_classes' ) );

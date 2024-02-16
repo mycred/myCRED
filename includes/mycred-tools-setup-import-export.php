@@ -19,8 +19,8 @@ class myCRED_Setup_Import_Export
         <?php
             if( ! empty( $this->mycred_tools_import_export->core_point_types ) ) :?> 
                 <div>
-                    <div>
-                        <label class="mycred-switch1">
+                    <div class="mycred-toggle-wrapper">
+                        <label class="mycred-toggle">
                             <input type="checkbox" value="all-points" name="all_points" id="all-points">
                             <span class="slider round"></span>
                         </label> 
@@ -28,38 +28,40 @@ class myCRED_Setup_Import_Export
                     </div>
                     <?php foreach( $this->mycred_tools_import_export->core_point_types as $key => $value ):?>
                         <ol>
-                            <li>
-                                <label class="mycred-switch1">
+                            <li class="mycred-toggle-wrapper">
+                                <label class="mycred-toggle">
                                     <input type="checkbox" value="<?php echo esc_attr( $key );?>" name="point_type" id="<?php echo esc_attr( $key );?>-point">
                                     <span class="slider round"></span>
                                 </label> 
                                 <label for="<?php echo esc_attr( $key );?>-point"><b><?php echo esc_html( $value );?></b></labal>
                             </li>
                             <ol>
-                                <li>
-                                    <label class="mycred-switch1">
+                                <li class="mycred-toggle-wrapper">
+                                    <label class="mycred-toggle">
                                         <input type="checkbox" value="<?php echo esc_attr( $key );?>" name="hooks" id="<?php echo esc_attr( $key );?>-hooks">
                                         <span class="slider round"></span>
                                     </label> 
-                                    <label for="<?php echo esc_attr( $key );?>-hooks">Hooks</labal>
+                                    <label for="<?php echo esc_attr( $key );?>-hooks"><strong>Hooks</strong></labal>
                                 </li>
-                                <li>
-                                    <label class="mycred-switch1">
+                                <?php if ( class_exists( 'myCRED_Ranks_Module' ) ) :?>
+                                <li class="mycred-toggle-wrapper">
+                                    <label class="mycred-toggle">
                                         <input type="checkbox" value="<?php echo esc_attr( $key );?>" name="ranks" id="<?php echo esc_attr( $key );?>-ranks">
                                         <span class="slider round"></span>
                                     </label> 
-                                    <label for="<?php echo esc_attr( $key );?>-ranks">Ranks</labal>
+                                    <label for="<?php echo esc_attr( $key );?>-ranks"><strong>Ranks</strong></labal>
                                 </li>
+                                <?php endif;?>
                             </ol>
                         </ol>
                     <?php endforeach;?>
                 </div>
             <?php endif;?>
 
-            <?php if( !empty( $this->mycred_tools_import_export->get_badge_categories() ) ):?>
+            <?php if( class_exists( 'myCRED_Badge_Module' ) && !empty( $this->mycred_tools_import_export->get_badge_categories() ) ):?>
                 <ul>
-                    <li>
-                        <label class="mycred-switch1">
+                    <li class="mycred-toggle-wrapper">
+                        <label class="mycred-toggle">
                             <input type="checkbox" value="all-achievements" name="all_achievements" id="all-achievements">
                             <span class="slider round"></span>
                         </label> 
@@ -67,8 +69,8 @@ class myCRED_Setup_Import_Export
                     </li>
                     <ol>
                     <?php foreach( $this->mycred_tools_import_export->get_badge_categories() as $category ):?>
-                        <li>
-                            <label class="mycred-switch1">
+                        <li class="mycred-toggle-wrapper">
+                            <label class="mycred-toggle">
                                 <input type="checkbox" value="<?php echo esc_attr( $category->cat_ID );?>" name="achievements" id="cate-<?php echo esc_attr( $category->cat_ID );?>">
                                 <span class="slider round"></span>
                             </label> 
@@ -80,19 +82,19 @@ class myCRED_Setup_Import_Export
 
                         foreach( $badges as $badge ):?>
                         <ol>
-                            <li>
-                                <label class="mycred-switch1">
+                            <li class="mycred-toggle-wrapper">
+                                <label class="mycred-toggle">
                                     <input type="checkbox" value="<?php echo esc_attr( $badge->ID );?>" name="badge_<?php echo esc_attr( $category->cat_ID );?>" id="badge-<?php echo esc_attr( $badge->ID );?>-<?php echo esc_attr( $category->cat_ID );?>">
                                     <span class="slider round"></span>
                                 </label> 
                                 <label for="badge-<?php echo esc_attr( $badge->ID );?>-<?php echo esc_attr( $category->cat_ID );?>"><b><?php echo esc_html( $badge->post_title );?></b></label>
                             </li>
-                            <li>
-                                <label class="mycred-switch1">
+                            <li class="mycred-toggle-wrapper">
+                                <label class="mycred-toggle">
                                     <input type="checkbox" value="<?php echo esc_attr( $badge->ID );?>" name="levels_<?php echo esc_attr( $category->cat_ID );?>" id="level-<?php echo esc_attr( $badge->ID );?>-<?php echo esc_attr( $category->cat_ID );?>">
                                     <span class="slider round"></span>
                                 </label> 
-                                <label for="level-<?php echo esc_attr( $badge->ID );?>-<?php echo esc_attr( $category->cat_ID );?>">Levels</label>
+                                <label for="level-<?php echo esc_attr( $badge->ID );?>-<?php echo esc_attr( $category->cat_ID );?>"><strong>Levels</strong></label>
                             </li>
                         </ol>
                         <?php endforeach;?>
@@ -107,8 +109,8 @@ class myCRED_Setup_Import_Export
 
             if ( ! empty( $un_cat_badges ) ):?>
                 <ul>
-                    <li>
-                        <label class="mycred-switch1">
+                    <li class="mycred-toggle-wrapper">
+                        <label class="mycred-toggle">
                             <input type="checkbox" value="uncat-achievements" name="uncat_achievements" id="uncat-achievements">
                             <span class="slider round"></span>
                         </label> 
@@ -116,36 +118,42 @@ class myCRED_Setup_Import_Export
                     </li>
                     <?php foreach( $un_cat_badges as $data ):?>
                     <ol>
-                        <li>
-                            <label class="mycred-switch1">
+                        <li class="mycred-toggle-wrapper">
+                            <label class="mycred-toggle">
                                 <input type="checkbox" value="<?php echo esc_attr( $data['ID'] ); ?>" name="badge" id="uncat-badge-<?php echo esc_attr( $data['ID'] ); ?>">
                                 <span class="slider round"></span>
                             </label> 
                             <label for="uncat-badge-<?php echo esc_attr( $data['ID'] ); ?>"><b><?php echo esc_html( get_the_title( $data['ID'] ) ); ?></b></label>
                         </li>
-                        <li>
-                            <label class="mycred-switch1">
+                        <li class="mycred-toggle-wrapper">
+                            <label class="mycred-toggle">
                                 <input type="checkbox" value="<?php echo esc_attr( $data['ID'] ); ?>" name="levels" id="uncat-level-<?php echo esc_attr( $data['ID'] ); ?>">
                                 <span class="slider round"></span>
                             </label> 
-                            <label for="uncat-level-<?php echo esc_attr( $data['ID'] ); ?>">Levels</label>
+                            <label for="uncat-level-<?php echo esc_attr( $data['ID'] ); ?>"><strong>Levels</strong></label>
                         </li>
                     </ol>
                     <?php endforeach;?>
                 </ul>
             <?php endif;?>
 
-            <button class="button button-primary" id="export-raw">
-                <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Setup', 'mycred' ); ?>
-            </button>
+            <div>
+                <button class="button mycred-ui-btn-purple button-primary" id="export-raw">
+                    <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Setup', 'mycred' ); ?>
+                </button>
+                <span class="mycred-spinner spinner"></span>
+            </div>
         </form>
 
         <form action="" enctype="multipart/form-data" class="mycred-tools-setup-import">
             <h3><?php esc_html_e( 'Import', 'mycred' ); ?></h3>
             <input type="file" id="import-file" name="file" accept=".json" />
-            <button class="button button-primary", id="import">
-                <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import Setup','mycred' ); ?>
-            </button>
+            <span>
+                <button class="button mycred-ui-btn-purple button-primary" id="import">
+                    <span class="dashicons dashicons-database-import  v-align-middle"></span> <?php esc_html_e( 'Import Setup','mycred' ); ?>
+                </button>
+                <span class="mycred-spinner spinner"></span>
+            </span>
             <p><i>
                 <?php esc_html_e( 'Accepts JSON format.', 'mycred' ); ?>
             </i></p>
@@ -392,7 +400,7 @@ class myCRED_Setup_Import_Export
 
                     $option_name = $pt_key == MYCRED_DEFAULT_TYPE_KEY ? 'mycred_pref_hooks' : "mycred_pref_hooks_{$pt_key}";
 
-			        mycred_update_option( $option_name, unserialize( $hooks ) );
+                    mycred_update_option( $option_name, unserialize( $hooks ) );
                 }
 
                 //Import Ranks

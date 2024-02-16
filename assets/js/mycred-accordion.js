@@ -12,11 +12,12 @@ jQuery(function($) {
 			active_box = parseInt( myCRED.active, 10 );
 	}
 
-	$( "#accordion" ).accordion({ collapsible: true, header: "h4", heightStyle: "content", active: active_box });
+	$( "#accordion" ).accordion({ collapsible: true, header: ".mycred-ui-accordion-header", heightStyle: "content", active: active_box });
 
 	$( document ).on( 'click', '.buycred-cashcred-more-tab-btn', function(){
 		var $url = $( this ).data( 'url' );
 		window.open( $url, '_blank');
-	} ) 
+	});
+
 });
 

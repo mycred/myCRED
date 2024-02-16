@@ -406,7 +406,7 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 				<td class="column-ctype"><?php echo esc_html( mycred_get_point_type_name( $entry->point_type, false ) ); ?></td>
 				<td class="column-actions">
 					<?php if( $entry->gateway_id != 'bank' ):?>
-						<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo esc_html( $pay_now ); ?></a> &bull; 
+						<a class="mycred-buycred-action-button" href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo esc_html( $pay_now ); ?></a> &bull; 
 					<?php endif; ?>
 					<a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo esc_html( $cancel ); ?></a>
 				</td>
@@ -432,7 +432,7 @@ if ( ! function_exists( 'mycred_render_pending_purchases' ) ) :
 				<td class="column-cost"><?php echo esc_html( $buycred->adjust_column_content( 'cost', $entry->payment_id ) ); ?></td>
 				<td class="column-actions">
 					<?php if( $entry->gateway_id != 'bank' ):?>
-						<a href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo esc_html( $pay_now ); ?></a> &bull; 
+						<a class="mycred-buycred-action-button" href="<?php echo esc_url( $entry->pay_now_url ); ?>"><?php echo esc_html( $pay_now ); ?></a> &bull; 
 					<?php endif; ?>
 					<a href="<?php echo esc_url( $entry->cancel_url ); ?>"><?php echo esc_html( $cancel ); ?></a>
 				</td>

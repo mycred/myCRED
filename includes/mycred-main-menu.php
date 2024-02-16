@@ -25,7 +25,7 @@ if ( ! class_exists( 'myCRED_Main_Menu' ) ):
 				$mycred->get_point_editor_capability(),
 				MYCRED_MAIN_SLUG,
 				'',
-				'dashicons-mycred'
+				'dashicons-mycred-main'
 			);
 
 			mycred_add_main_submenu(
@@ -43,7 +43,6 @@ if ( ! class_exists( 'myCRED_Main_Menu' ) ):
 				$modules['type'][ MYCRED_DEFAULT_TYPE_KEY ]['settings']->scripts_and_styles();
 				$modules['type'][ MYCRED_DEFAULT_TYPE_KEY ]['settings']->settings_header();
 
-				wp_enqueue_style( 'mycred-admin' );
 				wp_enqueue_script( 'mycred-accordion' );
 			
 			}

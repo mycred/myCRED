@@ -240,10 +240,10 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 ?>
 <div class="row ledger header">
-	<div class="col-md-3 col-sm-12"><strong><?php esc_html_e( 'Date', 'mycred' ); ?></strong></div>
-	<div class="col-md-3 col-sm-12"><strong><?php esc_html_e( 'Time', 'mycred' ); ?></strong></div>
-	<div class="col-md-3 col-sm-12"><strong><?php esc_html_e( 'Reference', 'mycred' ); ?></strong></div>
-	<div class="col-md-3 col-sm-12"><strong><?php esc_html_e( 'Entry', 'mycred' ); ?></strong></div>
+	<div class="col-md-2 col-sm-12"><strong><?php esc_html_e( 'Date', 'mycred' ); ?></strong></div>
+	<div class="col-md-2 col-sm-12"><strong><?php esc_html_e( 'Time', 'mycred' ); ?></strong></div>
+	<div class="col-md-4 col-sm-12"><strong><?php esc_html_e( 'Reference', 'mycred' ); ?></strong></div>
+	<div class="col-md-4 col-sm-12"><strong><?php esc_html_e( 'Entry', 'mycred' ); ?></strong></div>
 </div>
 <?php
 
@@ -265,10 +265,10 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 
 ?>
 <div class="row ledger">
-	<div class="col-md-3 col-sm-12"><?php echo esc_html( $date );?></div>
-	<div class="col-md-3 col-sm-12"><?php echo esc_html( $time );?></div>
-	<div class="col-md-3 col-sm-12"><?php echo esc_html( $ref );?></div>
-	<div class="col-md-3 col-sm-12"><?php echo esc_html( $entry );?></div>
+	<div class="col-md-2 col-sm-12"><?php echo esc_html( $date );?></div>
+	<div class="col-md-2 col-sm-12"><?php echo esc_html( $time );?></div>
+	<div class="col-md-4 col-sm-12"><?php echo esc_html( $ref );?></div>
+	<div class="col-md-4 col-sm-12"><?php echo esc_html( $entry );?></div>
 </div>
 <?php
 
@@ -320,7 +320,7 @@ if ( ! class_exists( 'myCRED_Management_Module' ) ) :
 						'ledgertoken' => wp_create_nonce( 'mycred-get-ledger' ),
 						'defaulttype' => MYCRED_DEFAULT_TYPE_KEY,
 						'title'       => esc_attr__( 'Edit Users Balance', 'mycred' ),
-						'close'       => esc_attr__( 'Close', 'mycred' ),
+						'close'       => '✕',
 						'working'     => esc_attr__( 'Processing...', 'mycred' ),
 						'ref'         => $this->manual_reference,
 						'loading'     => '<div id="mycred-processing"><div class="loading-indicator"></div></div>'
@@ -729,7 +729,6 @@ jQuery(function($){
 
 ?>
 <div id="edit-mycred-balance">
-	<?php if ( $name == 'myCRED' ) : ?><img id="mycred-token-sitting" class="hidden-sm hidden-xs" src="<?php echo esc_url( plugins_url( 'assets/images/token-sitting.png', myCRED_THIS ) ); ?>" alt="Token looking on" /><?php endif; ?>
 	<div class="mycred-container">
 		<form class="form" method="post" action="" id="mycred-editor-form">
 			<input type="hidden" name="mycred_manage_balance[type]" value="" id="mycred-edit-balance-of-type" />
@@ -766,49 +765,64 @@ jQuery(function($){
 				<div class="col-sm-2 col-xs-12">
 					<div class="form-group">
 						<label><?php esc_html_e( 'Amount', 'mycred' ); ?></label>
-						<input type="text" name="mycred_manage_balance[amount]" id="mycred-editor-amount" size="8" placeholder="0" value="" />
+						<input type="text" name="mycred_manage_balance[amount]" id="mycred-editor-amount" class="form-control" placeholder="0" />
 						<span class="description"><?php esc_html_e( 'A positive or negative value', 'mycred' ); ?>.</span>
 					</div>
 				</div>
 				<div class="col-sm-5 col-xs-12">
 					<div class="form-group">
 						<label><?php esc_html_e( 'Reference', 'mycred' ); ?></label>
-						<select name="mycred_manage_balance[ref]" id="mycred-editor-reference">
-<?php
+						<select name="mycred_manage_balance[ref]" id="mycred-editor-reference" class="form-control">
+						<?php
+							foreach ( $references as $ref_id => $ref_label ) {
+								echo '<option value="' . esc_attr( $ref_id ). '"';
+								if ( $ref_id == $this->manual_reference ) echo ' selected="selected"';
+								echo '>' . esc_html( $ref_label ) . '</option>';
+							}
 
-				foreach ( $references as $ref_id => $ref_label ) {
-					echo '<option value="' . esc_attr( $ref_id ). '"';
-					if ( $ref_id == $this->manual_reference ) echo ' selected="selected"';
-					echo '>' . esc_html( $ref_label ) . '</option>';
-				}
-
-				echo '<option value="mycred_custom">' . esc_html__( 'Log under a custom reference', 'mycred' ) . '</option>';
-
-?>
+							echo '<option value="mycred_custom">' . esc_html__( 'Log under a custom reference', 'mycred' ) . '</option>';
+						?>
 						</select>
 					</div>
-					<div id="mycred-custom-reference-wrapper">
-						<input type="text" name="mycred_manage_balance[custom]" id="mycred-editor-custom-reference" placeholder="<?php esc_attr_e( 'lowercase without empty spaces', 'mycred' ); ?>" class="regular-text" value="" />
+					<div id="mycred-custom-reference-wrapper" style="display: none;">
+						<input type="text" name="mycred_manage_balance[custom]" id="mycred-editor-custom-reference" placeholder="<?php esc_attr_e( 'lowercase without empty spaces', 'mycred' ); ?>" class="form-control regular-text" value="" />
 					</div>
 				</div>
 				<div class="col-sm-5 col-xs-12">
 					<div class="form-group">
 						<label><?php esc_html_e( 'Log Entry', 'mycred' ); ?></label>
-						<input type="text" name="mycred_manage_balance[entry]" id="mycred-editor-entry" placeholder="<?php esc_attr_e( 'optional', 'mycred' ); ?>" class="regular-text" value="" />
+						<input type="text" name="mycred_manage_balance[entry]" id="mycred-editor-entry" placeholder="<?php esc_attr_e( 'optional', 'mycred' ); ?>" class="form-control regular-text" />
 						<span class="description"><?php echo wp_kses_post( $mycred->available_template_tags( array( 'general', 'amount' ) ) ); ?></span>
 					</div>
 				</div>
 			</div>
 
 			<div class="row last">
-				<div class="col-sm-2 col-xs-3"><input type="submit" id="mycred-editor-submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Update', 'mycred' ); ?>" /></div>
+				<div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+					<input type="submit" id="mycred-editor-submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Update', 'mycred' ); ?>" />
+					<div class="mycred-editor-results-wrapper">
+						<span id="mycred-editor-indicator" class="spinner"></span>
+						<span id="mycred-editor-results"></span>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 mycred-ui-text-right">
+					<button type="button" class="button button-secondary button-large" id="load-users-mycred-history"><?php esc_html_e( 'Recent Activity', 'mycred' ); ?></button>
+				</div>
+			</div>
+
+			<!-- <div class="row last">
+				<div class="col-sm-2 col-xs-3">
+					<input type="submit" id="mycred-editor-submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Update', 'mycred' ); ?>" />
+				</div>
 				<div class="col-sm-1 col-xs-1"><span id="mycred-editor-indicator" class="spinner"></span></div>
 				<div class="col-sm-6 col-xs-4" id="mycred-editor-results"></div>
-				<div class="col-sm-3 col-xs-4 text-right"><button type="button" class="button button-secondary button-large" id="load-users-mycred-history"><?php esc_html_e( 'Recent Activity', 'mycred' ); ?></button></div>
-			</div>
+				<div class="col-sm-3 col-xs-4 mycred-ui-text-right">
+					<button type="button" class="button button-secondary button-large" id="load-users-mycred-history"><?php esc_html_e( 'Recent Activity', 'mycred' ); ?></button>
+				</div>
+			</div> -->
 		</form>
 
-		<div id="mycred-users-mini-ledger">
+		<div id="mycred-users-mini-ledger" style="display: none;">
 			<div class="border">
 				<div id="mycred-processing"><div class="loading-indicator"></div></div>
 			</div>

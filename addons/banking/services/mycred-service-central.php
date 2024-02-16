@@ -119,7 +119,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Central' ) ) :
 			<div class="col-sm-4">
 				<div class="form-group">
 					<label for="<?php echo esc_attr( $this->field_id( 'bank_id' ) ); ?>"><?php esc_html_e( 'Select Central Deposit Account', 'mycred' ); ?></label>
-					<select name="<?php echo esc_attr( $this->field_name( 'bank_id' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bank_id' ) ); ?>" class="form-control mycred_bank_id_select2" style="width:100%;">
+					<select name="<?php echo esc_attr( $this->field_name( 'bank_id' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'bank_id' ) ); ?>" class="form-control mycred-ui-form mycred_bank_id_select2" style="width:100%;">
 						<?php if ( ! empty( $this->prefs['bank_id'] ) ): ?>
 						<option value="<?php echo esc_attr( $user->ID );?>" selected="selected">
 							<?php echo esc_html( '#'. $user->ID .' - '. $user->display_name . ' (' . $user->user_email . ')' );?>

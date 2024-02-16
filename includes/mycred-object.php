@@ -8,6 +8,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.1
  */
 if ( ! class_exists( 'myCRED_Account' ) ) :
+	#[AllowDynamicProperties]
 	class myCRED_Account extends myCRED_Object {
 
 		/**
@@ -328,6 +329,7 @@ endif;
  * @version 1.0
  */
 if ( ! class_exists( 'myCRED_History' ) ) :
+	#[AllowDynamicProperties]
 	class myCRED_History extends myCRED_Object {
 
 		/**

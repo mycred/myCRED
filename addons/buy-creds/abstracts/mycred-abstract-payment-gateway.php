@@ -8,6 +8,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.3
  */
 if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
+	#[AllowDynamicProperties]
 	abstract class myCRED_Payment_Gateway {
 
 		/**
@@ -589,23 +590,20 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 				if ( ! isset( $this->prefs['exchange'][ $type_id ] ) )
 					$this->prefs['exchange'][ $type_id ] = 1;
 
-				$content .= '
-<table>
-	<tr>
-		<td style="min-width: 100px;"><div class="form-control-static">1 ' . esc_html( $mycred->singular() ) . '</div></td>
-		<td style="width: 10px;"><div class="form-control-static">=</div></td>
-		<td><input type="text" name="' . $this->field_name( array( 'exchange' => $type_id ) ) . '" id="' . $this->field_id( array( 'exchange' => $type_id ) ) . '" value="' . esc_attr( $this->prefs['exchange'][ $type_id ] ) . '" size="8" /> ';
+				$content .= '<div class="buycred_gateway_field">
+
+		<div class="form-control-static mycred_exchange_rate_label">1 ' . esc_html( $mycred->singular() ) . '</div>
+		<div class="form-control-static">=</div>
+		<input type="text" name="' . $this->field_name( array( 'exchange' => $type_id ) ) . '" id="' . $this->field_id( array( 'exchange' => $type_id ) ) . '" value="' . esc_attr( $this->prefs['exchange'][ $type_id ] ) . '" size="8" class="form-control form-control-width" /> ';
 
 
 		if ( isset( $this->prefs['currency'] ) )
-			$content .= '<span class="mycred-gateway-' . $this->id . '-currency">' . ( ( $this->prefs['currency'] == '' ) ? __( 'Select currency', 'mycred' ) : esc_attr( $this->prefs['currency'] ) ) . '</span>';
+			$content .= '<span class="mycred-gateway-buycred mycred-gateway-' . $this->id . '-currency">' . ( ( $this->prefs['currency'] == '' ) ? __( 'Select currency', 'mycred' ) : esc_attr( $this->prefs['currency'] ) ) . '</span>';
 
 		else
-			$content .= '<span>' . esc_attr( $default ) . '</span>';
+			$content .= '<span class="mycred-gateway-buycred">' . esc_attr( $default ) . '</span>';
 
-		$content .= '</td>
-	</tr>
-</table>';
+		$content .= '</div>';
 
 			}
 
@@ -635,7 +633,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 
 			// Make sure we are not adding more then one pending item
 			$check = mycred_get_page_by_title( $post_title, ARRAY_A, 'buycred_payment' );
-			if ( $check === NULL || ( isset( $check['post_status'] ) && $check['post_status'] == 'trash' ) ) {
+			if ( $check === NULL || empty( $check ) || ( isset( $check['post_status'] ) && $check['post_status'] == 'trash' ) ) {
 
 				// Generate new id and trash old request
 				if ( isset( $check['post_status'] ) && $check['post_status'] == 'trash' ) {
@@ -1206,7 +1204,6 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 
 	<link rel="stylesheet" href="<?php echo esc_url( plugins_url( 'assets/css/gateway.css', MYCRED_PURCHASE ) ); ?>" type="text/css" media="all" />
 	<link rel="stylesheet" href="<?php echo esc_url( plugins_url( 'assets/css/bootstrap-grid.css', myCRED_THIS ) ); ?>" type="text/css" media="all" />
-	<link rel="stylesheet" href="<?php echo esc_url( plugins_url( 'assets/css/mycred-forms.css', myCRED_THIS ) ); ?>" type="text/css" media="all" />
 	<?php do_action( 'mycred_buycred_page_header', $title, $reload, $this->id ); ?>
 
 </head>

@@ -9,8 +9,8 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.0
  */
 if ( ! class_exists( 'myCRED_walkthroug' ) ) :
+	#[AllowDynamicProperties]
 	class myCRED_walkthroug {
-
 
         /**
 		 * Construct
@@ -30,44 +30,42 @@ if ( ! class_exists( 'myCRED_walkthroug' ) ) :
 		 */
 		public function load() {
 
-            wp_register_style( 'mycred-tourguide-style', plugins_url( 'assets/css/tourguide.css', myCRED_THIS ),      array(), myCRED_VERSION , 'all' );
+            wp_register_style( 'mycred-tourguide-style', plugins_url( 'assets/css/tourguide.css', myCRED_THIS ),    array(), myCRED_VERSION , 'all' );
+            wp_register_script( 'mycred-tourguide-script', plugins_url( 'assets/js/tourguide.min.js', myCRED_THIS ), array( 'jquery' ), myCRED_VERSION , true );
 
-            wp_register_script( 'mycred-tourguide-script', plugins_url( 'assets/js/tourguide.min.js',myCRED_THIS ), array( 'jquery' ), myCRED_VERSION , true );
+			$step = isset( $_GET['mycred_tour_guide'] ) ? intval($_GET['mycred_tour_guide']) : '';
 
+			$redirect_url = '';
 
-				$step = isset( $_GET['mycred_tour_guide'] ) ? intval($_GET['mycred_tour_guide']) : '';
+			if( $step == 1 ) {
 
-				$redirect_url = '';
+				$redirect_url = admin_url('admin.php?page=mycred&mycred_tour_guide=2');
 
-				if( $step == 1 ) {
+			}
+			else if( $step == 2 ) {
 
-					$redirect_url = admin_url('admin.php?page=mycred&mycred_tour_guide=2');
+				$redirect_url = admin_url('admin.php?page=mycred-hooks&mycred_tour_guide=3');
 
-				}
-				else if( $step == 2 ) {
+			}
+			else if( $step == 3 ){
 
-					$redirect_url = admin_url('admin.php?page=mycred-hooks&mycred_tour_guide=3');
+				$redirect_url = admin_url('admin.php?page=mycred-addons&mycred_tour_guide=4');
 
-				}
-				else if( $step == 3 ){
+			}
+			
+			wp_localize_script(
+				'mycred-tourguide-script',
+				'mycred_tour_guide',
+				array(
+					'step' => $step,
+					'redirect_url' => $redirect_url
+				)
+			);
 
-					$redirect_url = admin_url('admin.php?page=mycred-addons&mycred_tour_guide=4');
+			wp_enqueue_script( 'mycred-tourguide-script' );
+			wp_enqueue_style( 'mycred-tourguide-style' );
 
-				}
-				
-				wp_localize_script(
-					'mycred-tourguide-script',
-					'mycred_tour_guide',
-					array(
-						'step' => $step,
-						'redirect_url' => $redirect_url
-					)
-				);
-				wp_enqueue_script( 'mycred-tourguide-script' );
+    	}
 
-				
-				wp_enqueue_style( 'mycred-tourguide-style' );
-    }
-
-}
+	}
 endif;

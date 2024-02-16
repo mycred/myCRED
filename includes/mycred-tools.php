@@ -26,15 +26,11 @@ class myCRED_Tools {
 
 	public function admin_enqueue_scripts() {
 
-		wp_enqueue_style( MYCRED_SLUG . '-admin' );
-
 		wp_enqueue_script( MYCRED_SLUG . '-select2-script' );
 
 		wp_enqueue_style( MYCRED_SLUG . '-select2-style' );
 
 		wp_enqueue_script( MYCRED_SLUG . '-tools-script', plugins_url( 'assets/js/mycred-tools.js', __DIR__ ), 'jquery', myCRED_VERSION, true );
-
-		wp_enqueue_style( MYCRED_SLUG . '-buttons' );
 
 		wp_localize_script( 
 			MYCRED_SLUG . '-tools-script',
@@ -68,6 +64,8 @@ class myCRED_Tools {
 	 * @since 2.4.4.1 `$capability` check added
 	 */
 	public function tools_sub_menu() {
+
+		$this->menu_fallback();
 
 		$mycred     = new myCRED_Settings();
 		$capability = $mycred->get_point_admin_capability();
@@ -109,14 +107,16 @@ class myCRED_Tools {
 			</div>
 			<div class="clear"></div>
 			<div class="mycred-tools-main-nav">
-				<h2 class="nav-tab-wrapper">
-					<a href="<?php echo esc_url( admin_url('admin.php?page=mycred-tools') ) ?>" class="nav-tab <?php echo !isset( $_GET['mycred-tools'] ) ? 'nav-tab-active' : ''; ?>">Bulk Assign</a>
-					<a href="<?php echo esc_url( $import_export ) ?>" class="nav-tab <?php echo ( isset( $_GET['mycred-tools'] ) && in_array( $_GET['mycred-tools'], $pages ) ) ? 'nav-tab-active' : ''; ?>">Import/Export</a>
-					<!-- <a href="<?php //echo $logs_cleanup ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'logs-cleanup' ) ? 'nav-tab-active' : ''; ?>">Logs Cleanup</a>
-					<a href="<?php //echo $reset_data ?>" class="nav-tab <?php //echo ( isset( $_GET['mycred-tools'] ) && $_GET['mycred-tools'] == 'reset-data' ) ? 'nav-tab-active' : ''; ?>">Reset Data</a> -->
-				</h2>
+				<ul class="subsubsub">
+					<li>
+						<a href="<?php echo esc_url( admin_url('admin.php?page=mycred-tools') ) ?>" class="<?php echo !isset( $_GET['mycred-tools'] ) ? 'current' : ''; ?>">Bulk Assign</a>|
+					</li>
+					<li>
+						<a href="<?php echo esc_url( $import_export ) ?>" class="<?php echo ( isset( $_GET['mycred-tools'] ) && in_array( $_GET['mycred-tools'], $pages ) ) ? 'current' : ''; ?>">Import/Export</a>
+					</li>
+				</ul>
+				<div class="clear"></div>
 			</div>
-		
 		<?php
 
 		if ( isset( $_GET['mycred-tools'] ) ) {
@@ -478,6 +478,34 @@ class myCRED_Tools {
 			die;
 		}
 	}
+
+	public function menu_fallback() {
+
+		if ( ! empty( $_GET['page'] ) && $_GET['page'] == 'mycred-tools' ) {
+			
+			if ( ! empty( $_GET['mycred-tools'] ) ) {
+				
+				if ( 
+					( $_GET['mycred-tools'] == 'badges' && ! class_exists( 'myCRED_Badge' ) ) ||
+					( $_GET['mycred-tools'] == 'ranks' && ! class_exists( 'myCRED_Ranks_Module' ) )
+				) {
+					
+					$args = array(
+						'page'         => MYCRED_SLUG . '-tools',
+						'mycred-tools' => 'points'
+					);
+
+					wp_safe_redirect( add_query_arg( $args, admin_url( 'admin.php' ) ) );
+					exit;
+
+				}
+
+			}
+
+		}
+
+	}
+
 }
 endif;
 

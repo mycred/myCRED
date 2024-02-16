@@ -45,11 +45,16 @@ wpWidgets = {
 		});
 
 		$(document.body).bind('click.widgets-toggle', function(e) {
+
 			var target = $(e.target),
 				css = { 'z-index': 100 },
 				widget, inside, targetWidth, widgetWidth, margin;
 
-			if ( target.parents('.widget-top').length && ! target.parents('#available-widgets').length ) {
+			if ( ! target.parents('#available-widgets').length && target.hasClass('arrow-round') ) {
+				wpWidgets.save( target.closest('div.widget'), 1, 1, 0 );
+				e.preventDefault();
+			}
+			else if ( target.parents('.widget-top').length && ! target.parents('#available-widgets').length ) {
 				widget = target.closest('div.widget');
 				inside = widget.children('.widget-inside');
 				targetWidth = parseInt( widget.find('input.widget-width').val(), 10 ),
@@ -332,51 +337,31 @@ wpWidgets = {
 			li.data( 'sidebarId', id );
 		});
 
-		$( '#available-widgets .widget .widget-title' ).on( 'click.widgets-chooser', function() {
+		$( '#available-widgets .widget .widget-title-action' ).on( 'click', '.arrow-round', function() {
+			
 			var $widget = $(this).closest( '.widget' );
-
+			
 			if ( $widget.hasClass( 'widget-in-question' ) || $( '#widgets-left' ).hasClass( 'chooser' ) ) {
 				self.closeChooser();
-			} else {
+			} 
+			else {
 				// Open the chooser
 				self.clearWidgetSelection();
 				$( '#widgets-left' ).addClass( 'chooser' );
 				$widget.addClass( 'widget-in-question' ).children( '.widget-description' ).after( chooser );
 
-				chooser.slideDown( 300, function() {
-					selectSidebar.find('.widgets-chooser-selected').focus();
-				});
-
 				selectSidebar.find( 'li' ).on( 'focusin.widgets-chooser', function() {
 					selectSidebar.find('.widgets-chooser-selected').removeClass( 'widgets-chooser-selected' );
 					$(this).addClass( 'widgets-chooser-selected' );
 				} );
-			}
-		});
 
-		// Add event handlers
-		chooser.on( 'click.widgets-chooser', function( event ) {
-			var $target = $( event.target );
-
-			if ( $target.hasClass('button-primary') ) {
 				self.addWidget( chooser );
 				self.closeChooser();
-			} else if ( $target.hasClass('button-secondary') ) {
-				self.closeChooser();
 			}
-		}).on( 'keyup.widgets-chooser', function( event ) {
-			if ( event.which === $.ui.keyCode.ENTER ) {
-				if ( $( event.target ).hasClass('button-secondary') ) {
-					// Close instead of adding when pressing Enter on the Cancel button
-					self.closeChooser();
-				} else {
-					self.addWidget( chooser );
-					self.closeChooser();
-				}
-			} else if ( event.which === $.ui.keyCode.ESCAPE ) {
-				self.closeChooser();
-			}
+
 		});
+
+		
 	},
 
 	saveOrder : function( sidebarId ) {
@@ -607,8 +592,11 @@ wpWidgets = {
 		$( sidebar.target ).css( 'min-height', '' );
 		this.hoveredSidebar = null;
 	}
+
+
 };
 
 $document.ready( function(){ wpWidgets.init(); } );
 
 })(jQuery);
+

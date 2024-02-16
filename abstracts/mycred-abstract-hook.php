@@ -8,6 +8,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.3.2
  */
 if ( ! class_exists( 'myCRED_Hook' ) ) :
+	#[AllowDynamicProperties]
 	abstract class myCRED_Hook {
 
 		/**
@@ -351,7 +352,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 				$hide = 'hidden';
 
 			// The limit value field
-			$output  = '<div class="h2"><input type="' . $hide . '" size="8" class="mini" name="' . $name . '" id="' . $id . '" value="' . $selected[0] . '" />';
+			$output  = '<div class="h2"><input type="' . $hide . '" size="8" class="form-control hook-input-width mini" name="' . $name . '" id="' . $id . '" value="' . $selected[0] . '" />';
 
 			// Get limit options
 			$options = $this->get_limit_types();
@@ -367,7 +368,7 @@ if ( ! class_exists( 'myCRED_Hook' ) ) :
 			$id      = apply_filters( 'mycred_hook_limit_id_by', $id, $this );
 
 			// Generate dropdown menu
-			$output .= '<select name="' . $name . '" id="' . $id . '" class="limit-toggle">';
+			$output .= '<select name="' . $name . '" id="' . $id . '" class="form-control hook-select-width limit-toggle">';
 			foreach ( $options as $value => $label ) {
 				$output .= '<option value="' . $value . '"';
 				if ( $selected[1] == $value ) $output .= ' selected="selected"';

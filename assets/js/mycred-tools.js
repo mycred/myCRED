@@ -5,6 +5,7 @@ jQuery(document).ready(function() {
     $selector.select2();
 
     $selector.on("select2:select", function(e) {
+
         if (e.params.data.id == 'points') {
             jQuery('.bulk-award-point').fadeIn();
             jQuery('.bulk-award-badge').fadeOut();
@@ -13,22 +14,21 @@ jQuery(document).ready(function() {
             jQuery('.tools-bulk-assign-award-btn').addClass('award-points');
             jQuery('.tools-bulk-assign-award-btn').removeClass('award-badges');
             jQuery('.tools-bulk-assign-award-btn').removeClass('award-ranks');
-            jQuery('.tools-bulk-assign-award-btn').html(`Update <span class="dashicons dashicons-update mycred-button1"></span> `);
-        } else if (e.params.data.id == 'badges') {
+            jQuery('.tools-bulk-assign-award-btn').html(`Update`);
+        } 
+        else if (e.params.data.id == 'badges') {
             jQuery('.bulk-award-badge').fadeIn();
             jQuery('.bulk-award-point').fadeOut();
             jQuery('.bulk-award-rank').fadeOut();
             jQuery('.tools-bulk-assign-award-btn').after(
-                `<button class="button button-large large button-primary tools-revoke-btn" style="margin-left: 10px;">
-                    <span class="dashicons dashicons-update mycred-button1"></span> 
-                    Revoke
-                </button>`
+                `<button class="button button-large large button-primary tools-revoke-btn" style="margin-left: 10px;">Revoke</button>`
             );
-            jQuery('.tools-bulk-assign-award-btn').html(`<span class="dashicons dashicons-update mycred-button1"></span> Award`);
+            jQuery('.tools-bulk-assign-award-btn').html(`Award`);
             jQuery('.tools-bulk-assign-award-btn').addClass('award-badges');
             jQuery('.tools-bulk-assign-award-btn').removeClass('award-points');
             jQuery('.tools-bulk-assign-award-btn').removeClass('award-ranks');
-        } else if (e.params.data.id == 'ranks') {
+        } 
+        else if (e.params.data.id == 'ranks') {
             jQuery('.bulk-award-rank').fadeIn();
             jQuery('.bulk-award-point').fadeOut();
             jQuery('.bulk-award-badge').fadeOut();
@@ -36,8 +36,9 @@ jQuery(document).ready(function() {
             jQuery('.tools-bulk-assign-award-btn').addClass('award-ranks');
             jQuery('.tools-bulk-assign-award-btn').removeClass('award-points');
             jQuery('.tools-bulk-assign-award-btn').removeClass('award-badges');
-            jQuery('.tools-bulk-assign-award-btn').html(`Update <span class="dashicons dashicons-update mycred-button1"></span>`);
+            jQuery('.tools-bulk-assign-award-btn').html(`Update`);
         }
+
     });
 
     //Log Entry
@@ -165,11 +166,11 @@ jQuery(document).ready(function() {
 
             },
             beforeSend: function() {
-                jQuery('.tools-bulk-assign-award-btn').find('span').css('display', 'inherit');
+                jQuery('.tools-bulk-assign-award-btn').closest('td').find('span.mycred-spinner').addClass('is-active');
             },
             success: function(data) {
 
-                jQuery('.tools-bulk-assign-award-btn').find('span').hide();
+                jQuery('.tools-bulk-assign-award-btn').closest('td').find('span.mycred-spinner').removeClass('is-active');
 
                 if (data.success === true && $pointsToAward < 0) {
                     alert(mycredTools.successfullyDeducted);
@@ -220,11 +221,11 @@ jQuery(document).ready(function() {
                 user_roles: $user_roles,
             },
             beforeSend: function() {
-                jQuery('.tools-revoke-btn').find('span').css('display', 'inherit');
+                jQuery('.tools-revoke-btn').closest('td').find('span.mycred-spinner').addClass('is-active');
             },
             success: function(data) {
 
-                jQuery('.tools-revoke-btn').find('span').hide();
+                jQuery('.tools-revoke-btn').closest('td').find('span.mycred-spinner').removeClass('is-active');
 
                 if (data.success === true) {
                     alert(mycredTools.successfullyRevoked);
@@ -563,11 +564,9 @@ function mycredToolsDowloadCSV(data, fileName, fileFormat = 'csv') {
 }
 
 function mycredToolsAddLoader(parentIdentifier) {
-    jQuery(`${parentIdentifier} span`).removeClass();
-    jQuery(`${parentIdentifier} span`).addClass('dashicons dashicons-update mycred-button1').css('display', 'inherit');
+    jQuery(`${parentIdentifier}`).parent().find('span.mycred-spinner').addClass('is-active');
 }
 
 function mycredToolsRemoveLoader(parentIdentifier, iconIdentifier) {
-    jQuery(`${parentIdentifier} span`).removeClass();
-    jQuery(`${parentIdentifier} span`).addClass(iconIdentifier);
+    jQuery(`${parentIdentifier}`).parent().find('span.mycred-spinner').removeClass('is-active');
 }

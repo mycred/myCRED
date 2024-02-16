@@ -250,78 +250,144 @@ if ( ! class_exists( 'myCRED_Caching_Module' ) ) :
 		public function after_general_settings( $mycred = NULL ) {
 
 ?>
-<h4 <?php echo get_current_screen()->base != 'toplevel_page_mycred-main' ? '' : 'style="display:none"';?>><span class="dashicons dashicons-admin-tools static"></span><?php esc_html_e( 'Optimization', 'mycred' ); ?></h4>
-<div class="body" style="display:none;">
-
-	<?php if ( $this->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) : ?>
-	<div class="row">
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label><?php esc_html_e( 'History', 'mycred' ); ?></label>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'caching-off' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'history' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching-off' ) ); ?>"<?php checked( $this->caching['history'], 'off' ); ?> value="off" /> <?php esc_html_e( 'No caching', 'mycred' ); ?></label>
-				</div>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'caching-event' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'history' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching-event' ) ); ?>"<?php checked( $this->caching['history'], 'event' ); ?> value="event" /> <?php esc_html_e( 'Clear cache each time a users balance changes', 'mycred' ); ?></label>
-				</div>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'caching-day' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'history' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching-day' ) ); ?>"<?php checked( $this->caching['history'], 'day' ); ?> value="day" /> <?php esc_html_e( 'Clear cache once a day', 'mycred' ); ?></label>
-				</div>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'caching-manual' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'history' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching-manual' ) ); ?>"<?php checked( $this->caching['history'], 'manual' ); ?> value="manual" /> <?php esc_html_e( 'Clear cache manually', 'mycred' ); ?></label>
-				</div>
-				<hr />
-				<button type="button" data-cache="history" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button clear-type-cache-button"<?php if ( $this->caching['history'] == 'off' ) echo ' disabled="disabled"'; ?> id=""><?php esc_html_e( 'Clear Cache Now', 'mycred' ); ?></button>
-			</div>
-		</div>
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label><?php esc_html_e( 'Leaderboards', 'mycred' ); ?></label>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-off' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'leaderboards' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-off' ) ); ?>"<?php checked( $this->caching['leaderboards'], 'off' ); ?> value="off" /> <?php esc_html_e( 'No caching', 'mycred' ); ?></label>
-				</div>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-event' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'leaderboards' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-event' ) ); ?>"<?php checked( $this->caching['leaderboards'], 'event' ); ?> value="event" /> <?php esc_html_e( 'Clear cache each time a users balance changes', 'mycred' ); ?></label>
-				</div>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-day' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'leaderboards' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-day' ) ); ?>"<?php checked( $this->caching['leaderboards'], 'day' ); ?> value="day" /> <?php esc_html_e( 'Clear cache once a day', 'mycred' ); ?></label>
-				</div>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-manual' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'leaderboards' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-manual' ) ); ?>"<?php checked( $this->caching['leaderboards'], 'manual' ); ?> value="manual" /> <?php esc_html_e( 'Clear cache manually', 'mycred' ); ?></label>
-				</div>
-				<hr />
-				<button type="button" data-cache="leaderboards" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button clear-type-cache-button"<?php if ( $this->caching['leaderboards'] == 'off' ) echo ' disabled="disabled"'; ?> id=""><?php esc_html_e( 'Clear Cache Now', 'mycred' ); ?></button>
-			</div>
-		</div>
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'auto-delete' ) ); ?>"><?php esc_html_e( 'Auto Delete Log Entries', 'mycred' ); ?></label>
-				<?php if ( ! MYCRED_ENABLE_LOGGING ) : ?>
-				<p><span class="description"><?php esc_html_e( 'Log disabled', 'mycred' ); ?></span></p>
-				<?php else : ?>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'autodelete' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'auto-delete' ) ); ?>" value="<?php echo esc_attr( $this->caching['autodelete'] ); ?>" placeholder="days" class="form-control" />
-				<p><span class="description"><?php printf( esc_html__( "Option to automatically delete log entries after certain number of days. Please read the %s before using this feature as it's use has consequences! Use zero to disable.", 'documentation', 'mycred' ), sprintf( '<a href="http://codex.mycred.me/chapter-i/caching/" target="_blank">%s</a>', esc_html__( 'documentation', 'mycred' ) ) ); ?></span></p>
-				<?php endif; ?>
-			</div>
+<div class="mycred-ui-accordion" <?php echo get_current_screen()->base != 'toplevel_page_mycred-main' ? '' : 'style="display:none"';?>>
+	<div class="mycred-ui-accordion-header">
+		<h4 class="mycred-ui-accordion-header-title">
+			<span class="dashicons dashicons-admin-tools static mycred-ui-accordion-header-icon"></span>
+			<label><?php esc_html_e( 'Optimization', 'mycred' ); ?></label>
+		</h4>
+		<div class="mycred-ui-accordion-header-actions hide-if-no-js">
+			<button type="button" aria-expanded="true">
+				<span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+			</button>
 		</div>
 	</div>
-	<?php else : ?>
-	<div class="row">
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'auto-delete' ) ); ?>"><?php esc_html_e( 'Auto Delete Log Entries', 'mycred' ); ?></label>
-				<?php if ( ! MYCRED_ENABLE_LOGGING ) : ?>
-				<p><span class="description"><?php esc_html_e( 'Log disabled', 'mycred' ); ?></span></p>
-				<?php else : ?>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'autodelete' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'auto-delete' ) ); ?>" value="<?php echo esc_attr( $this->caching['autodelete'] ); ?>" placeholder="days" class="form-control" />
-				<p><span class="description"><?php printf( esc_html__( "Option to automatically delete log entries after certain number of days. Please read the %s before using this feature as it's use has consequences! Use zero to disable.", 'documentation', 'mycred' ), sprintf( '<a href="http://codex.mycred.me/chapter-i/caching/" target="_blank">%s</a>', esc_html__( 'documentation', 'mycred' ) ) ); ?></span></p>
-				<?php endif; ?>
+	<div class="body mycred-ui-accordion-body" style="display:none;">
+
+		<?php if ( $this->mycred_type == MYCRED_DEFAULT_TYPE_KEY ) : ?>
+		<div class="row">
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<div class="form-group mycred-optimization-cache-options">
+					<label class="mb-3"><?php esc_html_e( 'History', 'mycred' ); ?></label>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'caching-off' ) ); ?>">
+							<div>
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'history' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching-off' ) ); ?>"<?php checked( $this->caching['history'], 'off' ); ?> value="off" />
+							</div>
+							<div>
+								<?php esc_html_e( 'No caching', 'mycred' ); ?>
+							</div>		
+						</label>
+					</div>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'caching-event' ) ); ?>">
+							<div>
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'history' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching-event' ) ); ?>"<?php checked( $this->caching['history'], 'event' ); ?> value="event" />
+							</div>
+							<div>
+								<?php esc_html_e( 'Clear cache each time a users balance changes', 'mycred' ); ?>
+							</div>
+						</label>
+					</div>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'caching-day' ) ); ?>">
+							<div>
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'history' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching-day' ) ); ?>"<?php checked( $this->caching['history'], 'day' ); ?> value="day" />
+							</div>
+							<div>
+								<?php esc_html_e( 'Clear cache once a day', 'mycred' ); ?>
+							</div>
+						</label>
+					</div>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'caching-manual' ) ); ?>">
+							<div>
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'history' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'caching-manual' ) ); ?>"<?php checked( $this->caching['history'], 'manual' ); ?> value="manual" />
+							</div>
+							<div>
+								<?php esc_html_e( 'Clear cache manually', 'mycred' ); ?>
+							</div>
+						</label>
+					</div>
+					<hr class="mb-3 mt-3" />
+					<button type="button" data-cache="history" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button clear-type-cache-button"<?php if ( $this->caching['history'] == 'off' ) echo ' disabled="disabled"'; ?> id=""><?php esc_html_e( 'Clear Cache Now', 'mycred' ); ?></button>
+				</div>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<div class="form-group mycred-optimization-cache-options">
+					<label class="mb-3"><?php esc_html_e( 'Leaderboards', 'mycred' ); ?></label>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-off' ) ); ?>">
+							<div>
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'leaderboards' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-off' ) ); ?>"<?php checked( $this->caching['leaderboards'], 'off' ); ?> value="off" />
+							</div> 
+							<div>
+								<?php esc_html_e( 'No caching', 'mycred' ); ?>
+							</div>
+						</label>
+					</div>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-event' ) ); ?>">
+							<div>
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'leaderboards' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-event' ) ); ?>"<?php checked( $this->caching['leaderboards'], 'event' ); ?> value="event" />
+							</div>
+							<div><?php esc_html_e( 'Clear cache each time a users balance changes', 'mycred' ); ?></div>
+						</label>
+					</div>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-day' ) ); ?>">
+							<div>
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'leaderboards' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-day' ) ); ?>"<?php checked( $this->caching['leaderboards'], 'day' ); ?> value="day" />
+							</div>
+							<div>
+								<?php esc_html_e( 'Clear cache once a day', 'mycred' ); ?>
+							</div>
+						</label>
+					</div>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-manual' ) ); ?>">
+							<div>
+								<input type="radio" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'leaderboards' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'leaderboard-caching-manual' ) ); ?>"<?php checked( $this->caching['leaderboards'], 'manual' ); ?> value="manual" />
+							</div>
+							<div>
+								<?php esc_html_e( 'Clear cache manually', 'mycred' ); ?>
+							</div>
+						</label>
+					</div>
+					<hr class="mb-3 mt-3" />
+					<button type="button" data-cache="leaderboards" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button clear-type-cache-button"<?php if ( $this->caching['leaderboards'] == 'off' ) echo ' disabled="disabled"'; ?> id=""><?php esc_html_e( 'Clear Cache Now', 'mycred' ); ?></button>
+				</div>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'auto-delete' ) ); ?>"><?php esc_html_e( 'Auto Delete Log Entries', 'mycred' ); ?></label>
+					<?php if ( ! MYCRED_ENABLE_LOGGING ) : ?>
+					<p><span class="description"><?php esc_html_e( 'Log disabled', 'mycred' ); ?></span></p>
+					<?php else : ?>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'autodelete' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'auto-delete' ) ); ?>" value="<?php echo esc_attr( $this->caching['autodelete'] ); ?>" placeholder="days" class="form-control" />
+					<p><span class="description"><?php printf( esc_html__( "Option to automatically delete log entries after certain number of days. Please read the %s before using this feature as it's use has consequences! Use zero to disable.", 'documentation', 'mycred' ), sprintf( '<a href="http://codex.mycred.me/chapter-i/caching/" target="_blank">%s</a>', esc_html__( 'documentation', 'mycred' ) ) ); ?></span></p>
+					<?php endif; ?>
+				</div>
 			</div>
 		</div>
-		<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12"></div>
-	</div>
-	<?php endif; ?>
+		<?php else : ?>
+		<div class="row">
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'auto-delete' ) ); ?>"><?php esc_html_e( 'Auto Delete Log Entries', 'mycred' ); ?></label>
+					<?php if ( ! MYCRED_ENABLE_LOGGING ) : ?>
+					<p><span class="description"><?php esc_html_e( 'Log disabled', 'mycred' ); ?></span></p>
+					<?php else : ?>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'caching', 'autodelete' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'auto-delete' ) ); ?>" value="<?php echo esc_attr( $this->caching['autodelete'] ); ?>" placeholder="days" class="form-control" />
+					<p><span class="description"><?php printf( esc_html__( "Option to automatically delete log entries after certain number of days. Please read the %s before using this feature as it's use has consequences! Use zero to disable.", 'documentation', 'mycred' ), sprintf( '<a href="http://codex.mycred.me/chapter-i/caching/" target="_blank">%s</a>', esc_html__( 'documentation', 'mycred' ) ) ); ?></span></p>
+					<?php endif; ?>
+				</div>
+			</div>
+			<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12"></div>
+		</div>
+		<?php endif; ?>
 
+	</div>
 </div>
 <?php
 

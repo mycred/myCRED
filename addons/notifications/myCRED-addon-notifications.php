@@ -187,53 +187,65 @@ if ( ! class_exists( 'myCRED_Notifications_Module' ) ) :
 			$prefs = $this->notifications;
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Notifications', 'mycred' ); ?></h4>
-<div class="body" style="display:none;">
+<div class="mycred-ui-accordion">
+	<div class="mycred-ui-accordion-header">
+        <h4 class="mycred-ui-accordion-header-title">
+            <span class="dashicons dashicons-bell static mycred-ui-accordion-header-icon"></span>
+            <label><?php esc_html_e( 'Notifications', 'mycred' ); ?></label>
+        </h4>
+        <div class="mycred-ui-accordion-header-actions hide-if-no-js">
+            <button type="button" aria-expanded="true">
+                <span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+	<div class="body mycred-ui-accordion-body" style="display:none;">
 
-	<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'template' ) ); ?>"><?php esc_html_e( 'Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'template' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'template' ) ); ?>" value="<?php echo esc_attr( $prefs['template'] ); ?>" class="form-control" />
-				<p><span class="description"><?php esc_html_e( 'Use %entry% to show the log entry in the notice and %amount% for the amount.', 'mycred' ); ?></span> <a href="javascript:void(0);" id="retore-default-notice"><?php esc_html_e( 'Restore to default', 'mycred' ); ?></a></p>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'life' ) ); ?>"><?php esc_html_e( 'Transient Lifespan', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'life' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'life' ) ); ?>" value="<?php echo absint( $prefs['life'] ); ?>" class="form-control" />
-				<p><span class="description"><?php esc_html_e( 'The number of days a users notification is saved before being automatically deleted.', 'mycred' ); ?></span></p>
-			</div>
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'duration' ) ); ?>"><?php esc_html_e( 'Duration', 'mycred' ); ?></label>
-				<input type="number" name="<?php echo esc_attr( $this->field_name( 'duration' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'duration' ) ); ?>" value="<?php echo absint( $prefs['duration'] ); ?>" class="form-control" min="0" max="60" />
-				<p><span class="description"><?php esc_html_e( 'Number of seconds before a notice is automatically removed after being shown to user. Use zero to disable.', 'mycred' ); ?></span></p>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( 'use_css' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'use_css' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'use_css' ) ); ?>" <?php checked( $prefs['use_css'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use the included CSS Styling for notifications.', 'mycred' ); ?></label>
+		<h3><?php esc_html_e( 'Setup', 'mycred' ); ?></h3>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'template' ) ); ?>"><?php esc_html_e( 'Template', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'template' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'template' ) ); ?>" value="<?php echo esc_attr( $prefs['template'] ); ?>" class="form-control" />
+					<p><span class="description"><?php esc_html_e( 'Use %entry% to show the log entry in the notice and %amount% for the amount.', 'mycred' ); ?></span> <a href="javascript:void(0);" id="retore-default-notice"><?php esc_html_e( 'Restore to default', 'mycred' ); ?></a></p>
 				</div>
 			</div>
 		</div>
-	</div>
-	<?php if ( MYCRED_SHOW_PREMIUM_ADDONS ) : ?>
-	<hr />
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<p><strong>Tip:</strong> <?php printf( 'The %s add-on allows you to further style and customize notifications.', sprintf( '<a href="https://mycred.me/store/notifications-plus-add-on/" target="_blank">%s</a>', 'Notifications Plus' ) ); ?></p>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'life' ) ); ?>"><?php esc_html_e( 'Transient Lifespan', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'life' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'life' ) ); ?>" value="<?php echo absint( $prefs['life'] ); ?>" class="form-control" />
+					<p><span class="description"><?php esc_html_e( 'The number of days a users notification is saved before being automatically deleted.', 'mycred' ); ?></span></p>
+				</div>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'duration' ) ); ?>"><?php esc_html_e( 'Duration', 'mycred' ); ?></label>
+					<input type="number" name="<?php echo esc_attr( $this->field_name( 'duration' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'duration' ) ); ?>" value="<?php echo absint( $prefs['duration'] ); ?>" class="form-control" min="0" max="60" />
+					<p><span class="description"><?php esc_html_e( 'Number of seconds before a notice is automatically removed after being shown to user. Use zero to disable.', 'mycred' ); ?></span></p>
+				</div>
+			</div>
 		</div>
-	</div>
-	<?php endif; ?>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<div class="checkbox">
+						<label for="<?php echo esc_attr( $this->field_id( 'use_css' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'use_css' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'use_css' ) ); ?>" <?php checked( $prefs['use_css'], 1 ); ?> value="1" /> <?php esc_html_e( 'Use the included CSS Styling for notifications.', 'mycred' ); ?></label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php if ( MYCRED_SHOW_PREMIUM_ADDONS ) : ?>
+		<hr />
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<p><strong>Tip:</strong> <?php printf( 'The %s add-on allows you to further style and customize notifications.', sprintf( '<a href="https://mycred.me/store/notifications-plus-add-on/" target="_blank">%s</a>', 'Notifications Plus' ) ); ?></p>
+			</div>
+		</div>
+		<?php endif; ?>
 
+	</div>
 </div>
 <script type="text/javascript">
 jQuery(function($) {

@@ -147,7 +147,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
                                         <div class="form-group">
                                             <label for="<?php echo esc_attr( $this->field_id( 'start_from' ) ); ?>"><?php esc_html_e( 'Starting from', 'mycred' ); ?></label>
                                         
-                                            <input type="date" name="<?php echo esc_attr( $this->field_name( 'start_from' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'start_from' ) ); ?>" value="<?php echo ! empty( $prefs['start_from'] ) ? esc_attr( $prefs['start_from'] ) : ''; ?>" class="mycred-input-date">
+                                            <input type="date" class="form-control" name="<?php echo esc_attr( $this->field_name( 'start_from' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'start_from' ) ); ?>" value="<?php echo ! empty( $prefs['start_from'] ) ? esc_attr( $prefs['start_from'] ) : ''; ?>" class="mycred-input-date">
                                         </div>
                                         <p>
                                             <span class="description"><?php esc_html_e( 'Enter the start date for schedule.', 'mycred' ); ?></span>
@@ -156,7 +156,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="<?php echo esc_attr( $this->field_id( 'schedule' ) ); ?>"><?php esc_html_e( 'Interval (in days)', 'mycred' ); ?></label>
-                                            <input type="number" name="<?php echo esc_attr( $this->field_name( 'schedule' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'schedule' ) ); ?>" value="<?php echo ! empty( $prefs['schedule'] ) ? esc_attr( $prefs['schedule'] ) : ''; ?>" min="1">
+                                            <input type="number" class="form-control" name="<?php echo esc_attr( $this->field_name( 'schedule' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'schedule' ) ); ?>" value="<?php echo ! empty( $prefs['schedule'] ) ? esc_attr( $prefs['schedule'] ) : ''; ?>" min="1">
                                         </div>
                                         <p>
                                             <span class="description"><?php esc_html_e( 'Deposit points after x days interval.', 'mycred' ); ?></span>
@@ -168,17 +168,17 @@ if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
                                 <div class="form-group">
                                     <label for="<?php echo esc_attr( $this->field_id( 'points' ) ); ?>"><?php esc_html_e( 'Amount', 'mycred' ); ?></label>
                                 
-                                    <input type="number" name="<?php echo esc_attr( $this->field_name( 'points' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'points' ) ); ?>" value="<?php echo ! empty( $prefs['points']  ) ? esc_attr( $prefs['points'] ) : ''; ?>"  min="1"> 
+                                    <input type="number" class="form-control" name="<?php echo esc_attr( $this->field_name( 'points' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'points' ) ); ?>" value="<?php echo ! empty( $prefs['points']  ) ? esc_attr( $prefs['points'] ) : ''; ?>"  min="1"> 
                                 </div>
                                 <p>
                                     <span class="description"><?php esc_html_e( 'The amount of points to be scheduled.', 'mycred' ); ?></span>
                                 </p>
                             </div>
                             <div class="col-sm-5">
-                                <div class="form-group">
+                                <div class="form-group mycred-toggle-wrapper m-row">
                                     <label for="<?php echo esc_attr( $this->field_id( 'recurring' ) ); ?>"><?php esc_html_e( 'Recurring', 'mycred' ); ?></label>
-                                    <label class="mycred-switch1">
-                                        <input type="checkbox" id="<?php echo esc_attr( $this->field_id( 'recurring' ) ); ?>" name="<?php echo esc_attr( $this->field_name( 'recurring' ) ); ?>" <?php echo $prefs['recurring'] == 'on' ? 'checked' : '';?>> 
+                                    <label class="mycred-toggle" style="margin-bottom: 22px;">
+                                        <input type="checkbox" id="<?php echo esc_attr( $this->field_id( 'recurring' ) ); ?>" name="<?php echo esc_attr( $this->field_name( 'recurring' ) ); ?>" <?php echo $prefs['recurring'] == 'on' ? 'checked' : '';?>>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -212,7 +212,7 @@ if ( ! class_exists( 'myCRED_Banking_Service_Schedule_Deposit' ) ) :
 
         }
 
-        public function mycred_after_email_banking_triggers($post) {
+        public function mycred_after_email_banking_triggers( $post ) {
             
             // Get trigger
             $email         = mycred_get_email_notice( $post->ID );

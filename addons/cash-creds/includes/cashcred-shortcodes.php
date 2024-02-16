@@ -60,10 +60,10 @@ if ( ! function_exists( 'mycred_render_cashcred' ) ) :
 	?>
 <div id="cashcred">
 	<ul class="cashcred-nav-tabs">
-		<li id="tab1" class="active"><?php esc_html_e( 'Withdraw Request', 'mycred' ); ?></li>
-		<li id="tab2"><?php esc_html_e( 'Approved Requests', 'mycred' ); ?></li>
-		<li id="tab3"><?php esc_html_e( 'Cancelled Requests', 'mycred' ); ?></li>
-		<li id="tab4"><?php esc_html_e( 'Payment Settings', 'mycred' ); ?></li>
+		<li id="tab1" class="active button"><?php esc_html_e( 'Withdraw Request', 'mycred' ); ?></li>
+		<li id="tab2" class="button"><?php esc_html_e( 'Approved Requests', 'mycred' ); ?></li>
+		<li id="tab3" class="button"><?php esc_html_e( 'Cancelled Requests', 'mycred' ); ?></li>
+		<li id="tab4" class="button"><?php esc_html_e( 'Payment Settings', 'mycred' ); ?></li>
 	</ul>
 	<div id="cashcred_tab_content">
 		<!--------First tab--------->

@@ -13,6 +13,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 
 		if ( ! class_exists( 'WC_Payment_Gateway' ) || class_exists( 'WC_Gateway_myCRED' ) ) return;
 
+		#[AllowDynamicProperties]
 		class WC_Gateway_myCRED extends WC_Payment_Gateway {
 
 			public $mycred;

@@ -563,14 +563,16 @@ endif;
 add_action( 'init', 'mycred_remote_init' );
 
 /**
- * Remote Enable / Disable Settings
+ * Remote API Settings Page
  * @since 1.3
  * @version 1.0
  */
-if ( ! function_exists( 'mycred_remote_activate_row' ) ) :
-	function mycred_remote_activate_row( $mycred_general ) {
+if ( ! function_exists( 'mycred_remote_settings_page' ) ) :
+	function mycred_remote_settings_page( $mycred_general ) {
 
-		$settings         = mycred_get_remote();
+		$settings   = mycred_get_remote();
+		$key_length = strlen( $settings['key'] );
+
 		$block            = '';
 		$disabled_message = '';
 
@@ -583,71 +585,73 @@ if ( ! function_exists( 'mycred_remote_activate_row' ) ) :
 			$disabled_message = __( 'Click Update Settings to load the Remote API settings.', 'mycred' );
 
 ?>
-<label class="subheader" for=""><?php esc_html_e( 'Allow Remote Access', 'mycred' ); ?></label>
-<ol id="myCRED-actions-cred">
-	<li>
-		<input type="checkbox" name="mycred_pref_core[allow_remote]" id="myCRED-General-remote"<?php if ( $settings['enabled'] ) echo ' checked="checked"'; echo wp_kses_post( $block ); ?> value="1" /> <?php if ( ! empty( $disabled_message ) ) { ?><span class="description"><?php echo esc_html( $disabled_message ); ?></span><?php } ?></li>
-</ol>
-<?php
 
-	}
-endif;
-add_action( 'mycred_management_prefs', 'mycred_remote_activate_row' );
-
-/**
- * Remote API Settings Page
- * @since 1.3
- * @version 1.0
- */
-if ( ! function_exists( 'mycred_remote_settings_page' ) ) :
-	function mycred_remote_settings_page( $mycred_general ) {
-
-		$settings = mycred_get_remote();
-		if ( ! $settings['enabled'] ) return;
-	
-		$key_length = strlen( $settings['key'] );
-
-?>
-<h4><span class="dashicons dashicons-cloud <?php if ( empty( $settings['key'] ) ) echo 'static'; else echo 'active'; ?>"></span><?php esc_html_e( 'Remote Access', 'mycred' ); ?></h4>
-<div class="body" style="display:none;">
-	<label class="subheader"><?php esc_html_e( 'API Key', 'mycred' ); ?></label>
-	<ol id="myCRED-remote-api-key" class="inline">
-		<li>
-			<label><?php esc_html_e( 'Key', 'mycred' ); ?></label>
-			<div class="h2"><input type="text" name="mycred_pref_core[remote][key]" id="myCRED-remote-key" value="<?php echo esc_attr( $settings['key'] ); ?>" style="width:90%;" placeholder="<?php esc_attr_e( '16, 24 or 32 characters', 'mycred' ); ?>" /></div>
-			<span class="description"><?php esc_html_e( 'Required for this feature to work!<br />Minimum 12 characters.', 'mycred' ); ?></span>
-		</li>
-		<li>
-			<label><?php esc_html_e( 'Key Length', 'mycred' ); ?></label>
-			<div class="h2" style="line-height: 30px; color:<?php if ( $key_length == 0 ) echo 'gray'; elseif ( $key_length >= 12 ) echo 'green'; ?>">(<span id="mycred-length-counter"><?php echo esc_html( $key_length ); ?></span>)</span></div>
-		</li>
-		<li>
-			<label>&nbsp;</label><br />
-			<input type="button" id="mycred-generate-api-key" value="<?php esc_attr_e( 'Generate New Key', 'mycred' ); ?>" class="button button-large button-primary" />
-		</li>
-		<li class="block"><p><strong><?php esc_html_e( 'Warning!', 'mycred' ); ?></strong> <?php echo esc_html( $mycred_general->core->template_tags_general( __( 'Keep this key safe! Those you share this key with will be able to remotely deduct / add / transfer %plural%!', 'mycred' ) ) ); ?></p></li>
-	</ol>
-	<label class="subheader"><?php esc_html_e( 'Incoming URI', 'mycred' ); ?></label>
-	<ol id="myCRED-remote-api-uri">
-		<li>
-			<div class="h2"><?php echo esc_url( site_url() . '/' ); ?> <input type="text" name="mycred_pref_core[remote][uri]" id="myCRED-remote-uri" value="<?php echo esc_attr( $settings['uri'] ); ?>" /> /</div>
-			<span class="description"><?php esc_html_e( 'The incoming call address. Remote calls made to any other URL will be ignored.', 'mycred' ); ?></span>
-		</li>
-	</ol>
-	<label class="subheader" for=""><?php esc_html_e( 'Debug Mode', 'mycred' ); ?></label>
-	<ol id="myCRED-remote-api-debug-mode">
-		<li>
-			<input type="checkbox" name="mycred_pref_core[remote][debug]" id="myCRED-remote-debug-mode"<?php if ( $settings['debug'] ) echo ' checked="checked"'; ?> value="1" /> <span class="description"><?php esc_html_e( 'Remember to disable when not used to prevent mischievous calls from learning about your setup!', 'mycred' ); ?></span></li>
-	</ol>
-
-	<?php do_action( 'mycred_after_remote_prefs', $mycred_general ); ?>
-
+<div class="mycred-ui-accordion">
+    <div class="mycred-ui-accordion-header">
+        <h4 class="mycred-ui-accordion-header-title">
+            <span class="dashicons dashicons-cloud mycred-ui-accordion-header-icon <?php if ( empty( $settings['key'] ) ) echo 'static'; else echo 'active'; ?>"></span>
+            <label><?php esc_html_e( 'Remote Access', 'mycred' ); ?></label>
+        </h4>
+        <div class="mycred-ui-accordion-header-actions hide-if-no-js">
+            <button type="button" aria-expanded="true">
+                <span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+	<div class="body mycred-ui-accordion-body" style="display:none;">
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="mycred-toggle-wrapper">
+                    <label for="yCRED-General-remote"><strong><?php esc_html_e( 'Enable', 'mycred' ); ?></strong></label>
+                    <label class="mycred-toggle">
+                        <input type="checkbox" name="mycred_pref_core[allow_remote]" id="myCRED-General-remote" value="1" <?php if ( $settings['enabled'] ) echo ' checked="checked"'; echo wp_kses_post( $block ); ?> />
+                        <span class="slider round"></span>
+                    </label> 
+                </div>
+			</div>
+		</div>
+		<hr class="mb-4">
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<h3><?php esc_html_e( 'API Key', 'mycred' ); ?></h3>
+				<div class="mycred-remote-key-wrapper">
+					<div class="form-group">
+						<label for="myCRED-remote-key"><?php esc_html_e( 'Key', 'mycred' ); ?></label>
+						<input type="text" name="mycred_pref_core[remote][key]" id="myCRED-remote-key" value="<?php echo esc_attr( $settings['key'] ); ?>" placeholder="<?php esc_attr_e( '12, 16, 24 or 32 characters', 'mycred' ); ?>" class="form-control" />
+						<p><?php esc_html_e( 'A minimum of 12 characters is required.', 'mycred' ); ?></p>
+						<div style="color:<?php if ( $key_length == 0 ) echo 'gray'; elseif ( $key_length >= 12 ) echo 'green'; ?>">(<span id="mycred-length-counter"><?php echo esc_html( $key_length ); ?></span>)</span>
+						</div>
+					</div>
+					<input type="button" id="mycred-generate-api-key" value="<?php esc_attr_e( 'Generate New Key', 'mycred' ); ?>" class="button button-large button-primary" />
+				</div>
+				<div class="m-alert m-alert-warning"><strong><?php esc_html_e( 'Warning!', 'mycred' ); ?></strong> <?php echo esc_html( $mycred_general->core->template_tags_general( __( 'Keep this key safe! Those you share this key with will be able to remotely deduct / add / transfer %plural%!', 'mycred' ) ) ); ?></div>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<h3><?php esc_html_e( 'Incoming URI', 'mycred' ); ?></h3>
+				<div class="form-group">
+					<label for="myCRED-remote-uri"><?php esc_html_e( 'URI', 'mycred' ); ?></label>
+					<div class="mycred-remote-uri-wrapper">
+						<?php echo esc_url( site_url() . '/' ); ?> <input type="text" name="mycred_pref_core[remote][uri]" id="myCRED-remote-uri" value="<?php echo esc_attr( $settings['uri'] ); ?>" /> /
+					</div>
+					<p>The incoming call address. Remote calls made to any other URL will be ignored.</p>
+				</div>
+			</div>
+		</div>
+		<hr class="mb-4">
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<h3><?php esc_html_e( 'Debug Mode', 'mycred' ); ?></h3>
+				<input type="checkbox" name="mycred_pref_core[remote][debug]" id="myCRED-remote-debug-mode"<?php if ( $settings['debug'] ) echo ' checked="checked"'; ?> value="1" /> <span class="description"><?php esc_html_e( 'Remember to disable when not used to prevent mischievous calls from learning about your setup!', 'mycred' ); ?></span>
+			</div>
+		</div>
+		<?php do_action( 'mycred_after_remote_prefs', $mycred_general ); ?>
+	</div>
 </div>
 <?php
 
 	}
 endif;
-add_action( 'mycred_after_management_prefs', 'mycred_remote_settings_page' );
+add_action( 'mycred_after_core_prefs', 'mycred_remote_settings_page' );
 
 /**
  * Remote API Settings Save
@@ -660,39 +664,28 @@ if ( ! function_exists( 'mycred_remote_save_settings' ) ) :
 		$current    = mycred_get_remote();
 		$new_remote = array();
 
-		// Enabled
-		if ( isset( $post['allow_remote'] ) ) {
-
+		if ( isset( $post['allow_remote'] ) )
 			$new_remote['enabled'] = 1;
-
-			if ( isset( $post['remote']['key'] ) )
-				$new_remote['key'] = sanitize_text_field( $post['remote']['key'] );
-			else
-				$new_remote['key'] = $current['key'];
-
-			if ( isset( $post['remote']['uri'] ) )
-				$new_remote['uri'] = sanitize_text_field( $post['remote']['uri'] );
-			else
-				$new_remote['uri'] = $current['uri'];
-
-			if ( isset( $post['remote']['debug'] ) )
-				$new_remote['debug'] = 1;
-			else
-				$new_remote['debug'] = 0;
-	
-			// Let others play
-			$new_remote = apply_filters( 'mycred_remote_save_prefs', $new_remote, $current, $post, $mycred_general );
-
-		}
-		// Disabled
-		else {
-
+		else
 			$new_remote['enabled'] = 0;
-			$new_remote['key']     = $current['key'];
-			$new_remote['uri']     = $current['uri'];
-			$new_remote['debug']   = $current['debug'];
 
-		}
+		if ( isset( $post['remote']['key'] ) )
+			$new_remote['key'] = sanitize_text_field( $post['remote']['key'] );
+		else
+			$new_remote['key'] = $current['key'];
+
+		if ( isset( $post['remote']['uri'] ) )
+			$new_remote['uri'] = sanitize_text_field( $post['remote']['uri'] );
+		else
+			$new_remote['uri'] = $current['uri'];
+
+		if ( isset( $post['remote']['debug'] ) )
+			$new_remote['debug'] = 1;
+		else
+			$new_remote['debug'] = 0;
+
+		// Let others play
+		$new_remote = apply_filters( 'mycred_remote_save_prefs', $new_remote, $current, $post, $mycred_general );
 	
 		update_option( 'mycred_pref_remote', $new_remote );
 	

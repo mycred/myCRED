@@ -269,7 +269,7 @@ jQuery(function($) {
 		 * Setup Editor Window
 		 */
 		myCREDEditorModal.dialog({
-			dialogClass : 'mycred-edit-logentry',
+			dialogClass : 'mycred-edit-logentry mycred-ui-wrap',
 			draggable   : true,
 			autoOpen    : false,
 			title       : myCREDLog.title,
@@ -303,7 +303,7 @@ jQuery(function($) {
 			mycred_reset_editor();
 
 			myCREDUsertoShow.append( $( myCREDRow + ' td.column-username strong' ).text() );
-			myCREDDatetoShow.append( $( myCREDRow + ' td.column-time time' ).text() );
+			myCREDDatetoShow.append( $( myCREDRow + ' td.column-time > span' ).text() );
 			myCREDOldEntrytoShow.append( $( myCREDRow + ' td.column-entry' ).text() );
 			myCREDNewEntrytoShow.val( $( myCREDRow + ' td.column-entry' ).data( 'raw' ) );
 

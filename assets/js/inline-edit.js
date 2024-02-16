@@ -15,7 +15,7 @@ jQuery(function($) {
 	 */
 	$(document).ready( function() {
 		$('#edit-mycred-balance').dialog({
-			dialogClass : 'mycred-update-balance',
+			dialogClass : 'mycred-update-balance mycred-ui-wrap',
 			draggable   : true,
 			autoOpen    : false,
 			title       : myCREDedit.title,

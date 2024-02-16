@@ -167,8 +167,8 @@ if ( ! class_exists( 'myCRED_Install' ) ) :
 
             $hooks = mycred_get_option( 'mycred_pref_core', false );
 
-            if ( is_array( $hooks ) && in_array( $key, $hooks ) )
-                if ( $hooks['uninstall'][$key] == 1 )
+            if ( is_array( $hooks ) )
+                if ( array_key_exists( 'uninstall', $hooks ) && array_key_exists( $key, $hooks['uninstall'] ) && $hooks['uninstall'][$key] == 1 )
                     return true;
 
             return false;

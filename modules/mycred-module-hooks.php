@@ -230,7 +230,6 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 			$option_id = apply_filters( 'mycred_option_id', 'mycred_pref_hooks' );
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-forms' );
 
 			wp_localize_script(
 				'mycred-widgets',
@@ -292,8 +291,9 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 #sidebar-active .widget-inside form .widget-control-actions { padding-top: 12px; border-top: 1px dashed #dedede; margin-top: 12px; }
 .form .radio { margin-bottom: 12px; }
 </style>
+
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php esc_html_e( 'Hooks', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-ii/setup-hooks/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<h1><?php esc_html_e( 'Hooks', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-ii/setup-hooks/" class="mycred-ui-info-btn" target="_blank"><p><?php esc_html_e( 'Documentation', 'mycred' ); ?></p></a><?php endif; ?></h1>
 	<div class="widget-liquid-left">
 		<div id="widgets-left">
 			<div id="available-widgets" class="widgets-holder-wrap">
@@ -320,11 +320,14 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 				foreach ( $installed as $key => $data ) {
 
 ?>
-						<div id="widget-mycred-hook_<?php echo esc_attr( $key ); ?>" class="widget ui-draggable"<?php if ( $this->is_active( $key ) ) echo ' style="display: none;"'; ?>>
+						<div id="widget-mycred-hook_<?php echo esc_attr( $key ); ?>" class="widget ui-draggable"<?php if ( $this->is_active( $key ) ) echo ' style="display: none;"'; ?> title="<?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?>">
 							<div class="widget-top">
-								<div class="widget-title-action"></div>
+								<div class="widget-title-action">
+ 									<div class="dashicons-mycred-hook arrow-round"></div>
+								</div>
 								<div class="widget-title ui-draggable-handle">
 									<h3><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></h3>
+								
 								</div>
 							</div>
 							<div class="widget-inside mycred-metabox">
@@ -342,7 +345,7 @@ if ( ! class_exists( 'myCRED_Hooks_Module' ) ) :
 											<a class="widget-control-remove" href="#remove"><?php esc_html_e( 'Delete', 'mycred' ); ?></a> | <a class="widget-control-close" href="#close"><?php esc_html_e( 'Close', 'mycred' ); ?></a><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && array_key_exists( 'documentation', $data ) && ! empty( $data['documentation'] ) ) : ?> | <a class="hook-documentation" href="<?php echo esc_url( $data['documentation'] ); ?>" target="_blank">Hook Documentation</a><?php endif; ?>
 										</div>
 										<div class="alignright">
-											<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo esc_attr( $key ); ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
+											<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo esc_attr( $key ); ?>-__i__-savewidget" class="button button-primary widget-control-save right mycred-ui-btn-purple" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
 											<span class="spinner"></span>
 										</div>
 										<br class="clear" />
@@ -440,7 +443,9 @@ jQuery(function($) {
 ?>
 				<div id="widget-mycred-hook_<?php echo esc_attr( $key ); ?>" class="widget" style="z-index: auto;">
 					<div class="widget-top">
-						<div class="widget-title-action"></div>
+						<div class="widget-title-action">
+							<div class="dashicons-mycred-hook arrow-round"></div>
+						</div>
 						<div class="widget-title ui-draggable-handle">
 							<h3><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></h3>
 						</div>
@@ -460,7 +465,7 @@ jQuery(function($) {
 									<a class="widget-control-remove" href="#remove"><?php esc_html_e( 'Delete', 'mycred' ); ?></a> | <a class="widget-control-close" href="#close"><?php esc_html_e( 'Close', 'mycred' ); ?></a><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' && array_key_exists( 'documentation', $data ) && ! empty( $data['documentation'] ) ) : ?>  | <a class="hook-documentation" href="<?php echo esc_url( $data['documentation'] ); ?>" target="_blank">Hook Documentation</a><?php endif; ?>
 								</div>
 								<div class="alignright">
-									<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo esc_attr( $key ); ?>-__i__-savewidget" class="button button-primary widget-control-save right" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
+									<input type="submit" name="savewidget" id="widget-mycred-hook-<?php echo esc_attr( $key ); ?>-__i__-savewidget" class="button button-primary widget-control-save right mycred-ui-btn-purple" value="<?php esc_attr_e( 'Save', 'mycred' ); ?>" />
 									<span class="spinner"></span>
 								</div>
 								<br class="clear" />

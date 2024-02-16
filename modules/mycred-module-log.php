@@ -548,7 +548,6 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			}
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-edit-log' );
 
 			wp_localize_script(
 				'mycred-edit-log',
@@ -556,7 +555,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				array(
 					'ajaxurl'    => admin_url( 'admin-ajax.php' ),
 					'title'      => esc_attr__( 'Edit Log Entry', 'mycred' ),
-					'close'      => esc_attr__( 'Close', 'mycred' ),
+					'close'      => '✕',
 					'working'    => esc_attr__( 'Processing...', 'mycred' ),
 					'messages'   => array(
 						'delete'     => esc_attr__( 'Are you sure you want to delete this log entry? This can not be undone!', 'mycred' ),
@@ -644,7 +643,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 ?>
 <div class="wrap" id="myCRED-wrap">
-	<h1><?php esc_html_e( 'Log', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/the-log/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<h1><?php esc_html_e( 'Log', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/the-log/" class="mycred-ui-info-btn" target="_blank"><p><?php esc_html_e( 'Documentation', 'mycred' ); ?></p></a><?php endif; ?></h1>
 <?php
 
 			// This requirement is only checked on activation. If the library is disabled
@@ -656,14 +655,13 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			if ( ! in_array( 'mcrypt', $extensions ) && ! defined( 'MYCRED_DISABLE_PROTECTION' ) )
 				echo '<div id="message" class="error below-h2"><p>' . esc_html__( 'Warning. The required Mcrypt PHP Library is not installed on this server! Certain hooks and shortcodes will not work correctly!', 'mycred' ) . '</p></div>';
 
-			// Filter by dates
-			$log->filter_dates( admin_url( 'admin.php?page=' . $this->screen_id ) );
+			
 
 ?>
 
 	<?php do_action( 'mycred_top_log_page', $this ); ?>
 
-	<form method="get" action="">
+	<form method="get" action="" id="posts-filter">
 		<input type="hidden" name="page" value="<?php echo esc_attr( $this->screen_id ); ?>" />
 <?php
 
@@ -684,10 +682,14 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 			if ( array_key_exists( 'paged', $search_args ) )
 				echo '<input type="hidden" name="paged" value="' . esc_attr( $search_args['paged'] ) . '" />';
+			
+			?>
+			<div class="mycred-log-navigation"><?php
+				// Filter by dates
+				$log->filter_dates( admin_url( 'admin.php?page=' . $this->screen_id ) );
+				$log->search(); ?>
+			</div>
 
-			$log->search();
-
-?>
 		<input type="hidden" name="ctype" value="<?php if ( array_key_exists( 'ctype', $search_args ) ) echo esc_attr( $search_args['ctype'] ); else echo esc_attr( $this->mycred_type ); ?>" />
 
 		<?php do_action( 'mycred_above_log_table', $this ); ?>
@@ -761,7 +763,7 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 
 	<?php do_action( 'mycred_top_my_log_page', $this ); ?>
 
-	<form method="get" action="" name="mycred-mylog-form" novalidate>
+	<form method="get" action="" name="mycred-mylog-form" novalidate id="posts-filter">
 		<input type="hidden" name="page" value="<?php echo esc_attr( $get_page ); ?>" />
 <?php
 
@@ -984,11 +986,10 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 ?>
 <div id="edit-mycred-log-entry" style="display: none;">
 	<div class="mycred-container">
-		<?php if ( $name == 'myCRED' ) : ?><img id="mycred-token-sitting" class="hidden-sm hidden-xs" src="<?php echo esc_url( plugins_url( 'assets/images/token-sitting.png', myCRED_THIS ) ); ?>" alt="Token looking on" /><?php endif; ?>
 		<form class="form" method="post" action="" id="mycred-editor-form">
 			<input type="hidden" name="mycred_manage_log[id]" value="" id="mycred-edit-log-id" />
 
-			<div class="row">
+			<div class="row mycred-ui-mb12">
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 					<label><?php esc_html_e( 'User', 'mycred' ); ?></label>
 					<div id="mycred-user-to-show"></div>
@@ -1003,11 +1004,11 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 				</div>
 				<div class="col-lg-4 col-md-4 col-sm-8 col-xs-12">
 					<label><?php esc_html_e( 'Reference', 'mycred' ); ?></label>
-					<select name="mycred_manage_log[ref]" id="mycred-referece-to-show"></select>
+					<select name="mycred_manage_log[ref]" class="form-control" id="mycred-referece-to-show"></select>
 				</div>
 			</div>
 
-			<div class="row">
+			<div class="row mycred-ui-mb12">
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" id="mycred-old-entry-to-show-wrapper">
 					<label><?php esc_html_e( 'Original Entry', 'mycred' ); ?></label>
 					<div id="mycred-old-entry-to-show"></div>
@@ -1020,15 +1021,18 @@ if ( ! class_exists( 'myCRED_Log_Module' ) ) :
 			</div>
 
 			<div class="row last">
-				<div class="col-lg-2 col-md-3 col-sm-12 col-xs-12 text-center">
+				<div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
 					<a href="javascript:void(0);" class="button button-primary button-large mycred-delete-row" id="mycred-delete-entry-in-editor" data-id=""><?php esc_html_e( 'Delete Entry', 'mycred' ); ?></a>
+					<div class="mycred-editor-results-wrapper">
+						<span id="mycred-editor-indicator" class="spinner"></span>
+						<span id="mycred-editor-results"></span>
+					</div>
 				</div>
-				<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12"><span id="mycred-editor-indicator" class="spinner"></span></div>
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" id="mycred-editor-results"></div>
-				<div class="col-lg-3 col-md-2 col-sm-11 col-xs-12 text-right">
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 mycred-ui-text-right">
 					<input type="submit" id="mycred-editor-submit" class="button button-secondary button-large" value="<?php esc_attr_e( 'Update Entry', 'mycred' ); ?>" />
 				</div>
 			</div>
+			
 		</form>
 	</div>
 </div>

@@ -8,6 +8,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.1
  */
 if ( ! class_exists( 'myCRED_Service' ) ) :
+	#[AllowDynamicProperties]
 	abstract class myCRED_Service {
 
 		// Service ID

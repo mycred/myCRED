@@ -538,9 +538,6 @@ function mycred_about_page() {
 					<ul>
 						<li><strong>NEW</strong> – Added compatibility for Gravity Forms payment forms. Points will be rewarded when payment is successfully received.</li>
 						<li><strong>FIX</strong> – PHP and Javascript warnings have been resolved.</li>
-						<li><strong>FIX</strong> – Fixed security vulnerabilities.</li>
-						<li><strong>TWEAK</strong> – Update bitpay library.</li>
-						<li><strong>TWEAK</strong> – Introduce filter to add extra fields in cashcred payment gateways.</li>
 					</ul>
 				</div>
 			</div><!-- /.mycred-change-log -->

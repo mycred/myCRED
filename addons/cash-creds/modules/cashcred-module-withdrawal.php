@@ -491,7 +491,6 @@ if ( ! class_exists( 'cashCRED_Pending_Payments' ) ) :
 			if ( $post_type !== MYCRED_CASHCRED_KEY ) return;
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-forms' );
 
 			add_filter( 'postbox_classes_buycred_payment_buycred-pending-payment',  array( $this, 'metabox_classes' ) );
 			add_filter( 'postbox_classes_buycred_payment_cashcred-comments', array( $this, 'metabox_classes' ) );

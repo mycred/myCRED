@@ -8,6 +8,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.6
  */
 if ( ! class_exists( 'myCRED_Settings' ) ) :
+	#[AllowDynamicProperties]
 	class myCRED_Settings {
 
 		/**
@@ -2674,7 +2675,7 @@ if ( ! function_exists( 'mycred_types_select_from_dropdown' ) ) :
 		if ( $return )
 			return $output;
 
-		echo wp_kses( $output, $allowed_html) ;
+		echo wp_kses( $output, $allowed_html );
 
 	}
 endif;
@@ -3138,7 +3139,14 @@ if ( ! function_exists( 'mycred_get_page_by_title' ) ) :
 		if ( $override )
 			switch_to_blog( get_network()->site_id );
 
-		$results = get_page_by_title( $post_id, $type, $post_type );
+		$args = array(
+        'post_type'      => $post_type,
+        'name'           => $post_id,
+        'posts_per_page' => 1
+    	);
+
+    	$query = new WP_Query( $args );
+    	$results = $query->get_posts();
 
 		if ( $override )
 			restore_current_blog();
@@ -4801,4 +4809,34 @@ if ( ! function_exists( 'mycred_override_open_badge' ) ) :
 		}
 
 	}
+endif;
+
+// @todo start new development for MyCred New UI.
+
+if ( ! function_exists( 'mycred_checkbox_radio_fields' ) ) :
+    function mycred_checkbox_radio_fields( $args = array(), $return = false ) {
+
+        $allowed_html = array(
+            'div'   => array( 'class' => array(), 'style' => array() ),
+            'label' => array( 'for' => array(), 'class' => array() ),
+            'input' => array( 'type' => array(), 'name' => array(), 'id' => array(), 'value' => array(), 'checked' => array(), 'class' => array() ),
+            'span'  => array( 'class' => array() )
+        );
+
+        $checked = $args['checked'] ? 'checked="checked"' : '';
+
+        $html  = '<div class="' . esc_attr( $args['type'] ) . '" style="margin: 10px 0">';
+        $html .= '<label class="mycred-' . esc_attr( $args['type'] ) . '-container" for="' . esc_attr(  $args['id'] ) . '">';
+        $html .= '<input class="mycred-' . esc_attr( $args['type'] ) . '-field" type="' . esc_attr( $args['type'] ) . '" name="' . esc_attr( $args['name'] ) . '" id="' . esc_attr( $args['id'] ) . '" value="' . esc_attr( $args['value'] ) . '" ' . esc_attr( $checked ) . ' />';
+        $html .= '<span class="mycred-' . esc_attr( $args['type'] ) . '-field-checkmark"></span>&nbsp;';
+        $html .= esc_attr( $args['label'] );
+        $html .= '</label>';
+        $html .= '</div>';
+
+        if ( $return ) {
+            return $html;
+        } else {
+            echo wp_kses( $html, $allowed_html );
+        }
+    }
 endif;

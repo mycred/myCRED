@@ -4,7 +4,7 @@
 
 button.mycred-social-icons, a.mycred-social-icons, button.social-text {
     text-align: center;
-    margin: 5px 2px;
+    margin: 0 2px 5px 2px;
     cursor: pointer;
 }
 

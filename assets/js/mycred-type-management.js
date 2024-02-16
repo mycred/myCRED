@@ -184,7 +184,7 @@ jQuery(function($) {
          * Export Balances Modal
          */
         $('#export-points').dialog({
-            dialogClass: 'mycred-export-points',
+            dialogClass: 'mycred-export-points mycred-ui-wrap',
             draggable: true,
             autoOpen: false,
             title: myCREDmanage.export_title,
@@ -292,7 +292,7 @@ jQuery(function($) {
     /**
      * Generate Key Trigger
      */
-    $('#mycred-generate-api-key').click(function() {
+    jQuery('.mycred-remote-key-wrapper').on('click', '#mycred-generate-api-key', function() {
         mycred_generate_key();
     });
 

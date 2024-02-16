@@ -1,7 +1,6 @@
 <?php
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
-
 /**
  * Events Manager
  * @since 1.2
@@ -285,12 +284,12 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 		 */
 		public function has_paid( $EM_Booking ) {
 
-
-			if ( $this->core->has_entry( 'ticket_purchase', $EM_Booking->event->post_id, $EM_Booking->person->ID, array( 'ref_type' => 'post', 'bid' => (int) $EM_Booking->booking_id ), $this->mycred_type ) ) return true;
+			if ( $this->core->has_entry( 'ticket_purchase', $EM_Booking->event->post_id ?? null, $EM_Booking->person->ID, array( 'ref_type' => 'post', 'bid' => (int) $EM_Booking->booking_id ), $this->mycred_type ) ) return true;
 
 			return false;
 
 		}
+
 
 		/**
 		 * AJAX: Process Payment
@@ -311,7 +310,6 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 			
 			// User
 			if ( $this->core->exclude_user( $booking->person->ID ) ) die( 'ERROR_2' );
-
 
 			// User can not pay for this
 			if ( ! $this->can_pay( $booking ) ) {
@@ -377,11 +375,8 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 							array( 'ref_type' => 'post', 'bid' => (int) $booking_id ),
 							$this->mycred_type
 						);
-
 					}
-
 				}
-
 			}
 
 			else {
@@ -390,7 +385,6 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 			}
 
 			wp_send_json( array( 'status' => $status, 'message' => $message ) );
-
 		}
 
 		/**

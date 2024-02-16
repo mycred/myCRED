@@ -382,149 +382,78 @@ if ( ! class_exists( 'myCRED_Addons_Module' ) ) :
 			// Security
 			if ( ! $this->core->user_is_point_admin() ) wp_die( 'Access Denied' );
 
-			$installed = $this->get( true );
+			$installed = $this->get( true ); 
+		?>
 
+			<style type="text/css">
+				#myCRED-wrap > h1 { margin-bottom: 15px; }
+				.theme-browser .theme:focus, .theme-browser .theme:hover { cursor: default !important; }
+				.theme-browser .mycred-addons-element:hover .more-details { opacity: 1; }
+				.theme-browser .mycred-addons-element:hover a.more-details, .theme-browser .mycred-addons-element:hover a.more-details:hover { text-decoration: none; }
+			</style>
 
-?>
-<style type="text/css">
-#myCRED-wrap > h1 { margin-bottom: 15px; }
-.theme-browser .theme:focus, .theme-browser .theme:hover { cursor: default !important; }
-.theme-browser .theme:hover .more-details { opacity: 1; }
-.theme-browser .theme:hover a.more-details, .theme-browser .theme:hover a.more-details:hover { text-decoration: none; }
+			<script type="text/javascript">
+			jQuery(document).ready(function(jQuery){
 
-.theme-browser .mycred-addon-image .theme-screenshot { background-color: white; }
-.theme-browser .mycred-addon-image .theme-screenshot img { width: 65%; left: 70px; }
+			   	jQuery("#mycred-addons-checkbox").change(function(){
+			
+					var check = jQuery("#mycred-addons-checkbox").is(":checked");
+			
+					if ( check == true ) {
 
-.mycred-addons-switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
+						window.location.href = jQuery('.mycred-addon-switch').attr("data-activation-url");
 
-/* Hide default HTML checkbox */
-.mycred-addons-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+					}
+					else {
 
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
+						window.location.href = jQuery('.mycred-addon-switch').attr("data-deactivation-url");
 
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: lightgreen;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px lightgreen;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-.myCRED-addon-heading {
-    float: left;
-}
-
-.mycred-addon-switch {
-    float: right;
-}
-
-p.mycred-activate {
-    float: left;
-     margin: 7px 7px 0px 0px;
-}
-.clear{
-	clear: both;
-}
-.mycred-addon-outer {
-    padding: 10px 0;
-}
-</style>
-
-<script type="text/javascript">
-jQuery(document).ready(function(jQuery){
-   	jQuery("#mycred-addons-checkbox").change(function(){
-		var check = jQuery("#mycred-addons-checkbox").is(":checked");
-		if ( check == true ){
-
-			window.location.href = jQuery('.mycred-addon-switch').attr("data-activation-url");
-
-		}else{
-			window.location.href = jQuery('.mycred-addon-switch').attr("data-deactivation-url");
-
-		}
-   	});
-});
-</script>
-<?php 
-$activate_url = get_mycred_all_addon_activation_url();
-$deactivate_url = get_mycred_all_addon_deactivation_url();
-$free_addons_url = get_mycred_addon_page_url('free_addons');
-$premium_addons_url = get_mycred_addon_page_url('premium_addons');
-?>
+					}
+			
+			   	});
+			
+			});
+			</script>
+			
+			<?php 
+			
+			$activate_url = get_mycred_all_addon_activation_url();
+			$deactivate_url = get_mycred_all_addon_deactivation_url();
+			$free_addons_url = get_mycred_addon_page_url('free_addons');
+			$premium_addons_url = get_mycred_addon_page_url('premium_addons');
+			
+			?>
 <div class="wrap" id="myCRED-wrap">
 	<div class="mycred-addon-outer">	
 		<div class="myCRED-addon-heading">
-			<h1><?php esc_html_e( 'Add-ons', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-iii/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+			<h1><?php esc_html_e( 'Add-ons', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?><a href="http://codex.mycred.me/chapter-iii/" class="mycred-ui-info-btn" target="_blank"><?php esc_html_e( '', 'mycred' ); ?><p>Documentation</p></a><?php endif; ?></h1>
 		</div>
-		 <?php
-		if( !isset( $_GET['mycred_addons'] ) ){ ?>
-			<div class="mycred-addon-switch" data-activation-url="<?php echo esc_url( $activate_url ); ?>" data-deactivation-url="<?php echo esc_attr( $deactivate_url ); ?>">
-				<!-- Rounded switch -->
-				<label for="mycred-addons-checkbox" class="mycred-addons-switch">
-				  <input type="checkbox" name="mycred-addons-checkbox" id="mycred-addons-checkbox" <?php echo $this->check_all_addons() ? 'checked' : ''; ?> >
-				  <span class="slider round"></span>
-				</label>
-				<p class="mycred-activate"><?php esc_html_e( 'Activate/Deactivate All Add-ons', 'mycred' ); ?> </p>
+		<div class="mycred-addons-main-nav">
+			<div class="mycred-addons-nav-tab-wrapper">
+				<ul class="subsubsub">
+					<li>
+						<a href="<?php echo esc_url( admin_url('admin.php?page=mycred-addons') ); ?>" class="mycred-addons-nav-tab <?php echo !isset( $_GET['mycred_addons'] ) ? 'current' : ''; ?>">Built-in Addons</a>|
+					</li>
+					<li>
+						<a href="<?php echo esc_url( $free_addons_url ); ?>" class="mycred-addons-nav-tab <?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'free_addons' ) ? 'current' : ''; ?>">Free Addons</a>|
+					</li>
+					<li>
+						<a href="<?php echo esc_url( $premium_addons_url ); ?>" class="<?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'premium_addons' ) ? 'current' : ''; ?>">Premium Addons</a>
+					</li>
+				</ul>
 			</div>
-<?php 	} ?>
-		
-		<div class="clear"></div>
-		<div class="addons-main-nav">
-			<h2 class="nav-tab-wrapper">
-				<a href="<?php echo esc_url( admin_url('admin.php?page=mycred-addons') ); ?>" class="nav-tab <?php echo !isset( $_GET['mycred_addons'] ) ? 'nav-tab-active' : ''; ?>">Built-in Addons</a>
-				<a href="<?php echo esc_url( $free_addons_url ); ?>" class="nav-tab <?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'free_addons' ) ? 'nav-tab-active' : ''; ?>">Free Addons</a>
-				<a href="<?php echo esc_url( $premium_addons_url ); ?>" class="nav-tab <?php echo ( isset( $_GET['mycred_addons'] ) && $_GET['mycred_addons'] == 'premium_addons' ) ? 'nav-tab-active' : ''; ?>">Premium Addons</a>
-			</h2>
+			<?php if( !isset( $_GET['mycred_addons'] ) ):?>
+			<div class="mycred-addon-switch mycred-toggle-wrapper" data-activation-url="<?php echo esc_url( $activate_url ); ?>" data-deactivation-url="<?php echo esc_attr( $deactivate_url ); ?>">
+				<label for="mycred-addons-checkbox"><?php esc_html_e( 'Activate/Deactivate All Add-ons', 'mycred' ); ?></label>
+				<label for="mycred-addons-checkbox" class="mycred-toggle mycred-addons-switch">
+				  	<input type="checkbox" name="mycred-addons-checkbox" id="mycred-addons-checkbox" <?php echo $this->check_all_addons() ? 'checked' : ''; ?> >
+				  	<span class="slider round"></span>
+				</label>
+			</div>
+			<?php endif;?>
 		</div>
 	</div>
-<?php
+			<?php
 
 			// Messages
 			if ( isset( $_GET['activated'] ) ) {
@@ -535,11 +464,10 @@ $premium_addons_url = get_mycred_addon_page_url('premium_addons');
 				elseif ( $_GET['activated'] == 0 )
 					echo '<div id="message" class="error"><p>' . esc_html__( 'Add-on Deactivated', 'mycred' ) . '</p></div>';
 
-			}
+			} ?>
 
-?>
 	<div class="theme-browser">
-		<div class="themes">
+		<div class="mycred-addons-page">
 <?php
 
 if ( isset( $_GET['mycred_addons'] ) ) 
@@ -576,9 +504,11 @@ if ( isset( $_GET['mycred_addons'] ) )
 			if ( $data['slug'] == 'mycred-blocks' ) continue;
 
 			if ( $data['icons'] != '' ) : ?>
-			<div class="theme inactive mycred-addon-image" tabindex="0" aria-describedby="badges-action badges-name">
-				
-				<div class="theme-screenshot"> <?php
+			<div class="mycred-addons-element inactive" tabindex="0" aria-describedby="free-action free-name">
+				<div class="mycred-free-addons-title">
+					<h2 class="mycred-addons-name" ><?php echo esc_html( $data['name'] ); ?></h2>
+				</div>
+				<div class="mycred-addons-images"> <?php
 
 					if ( ! empty( $data['icons']['2x'] ) ) {
 						$img = $data['icons']['2x'];
@@ -590,14 +520,9 @@ if ( isset( $_GET['mycred_addons'] ) )
 
 				</div>
 
-				<div class="theme-id-container">
-					
-					<h2 class="theme-name" id="badges-name"><?php echo esc_html( $data['name'] ); ?></h2>
-					
-					<div class="theme-actions">
+				<div class="mycred-addons-container">
 
-					<a href="https://wordpress.org/plugins/<?php echo esc_html( $data['slug'] ); ?>" title="Install" target="_blank" class="button button-primary mycred-action badges">View</a>
-					</div>
+					<a href="https://wordpress.org/plugins/<?php echo esc_html( $data['slug'] ); ?>" title="View on Wordpress" target="_blank" class="mycred-action">View</a>
 
 				</div>
 
@@ -625,88 +550,65 @@ if ( isset( $_GET['mycred_addons'] ) )
 		$addons = json_decode( $response['body'] )->data;
 							
 		foreach ( $addons as $key => $value ) { ?>
-			<div class="theme mycred-addon-image inactive" tabindex="0" aria-describedby="badges-action badges-name">
-			
-				<div class="theme-screenshot">
+
+			<div class="mycred-addons-element inactive" tabindex="0" aria-describedby="premium-action premium-name">
+										
+				<div class="mycred-premium-addons-title">
+					<h2 class="mycred-addons-name" id="badges-name"><?php echo esc_html( $value->title ); ?></h2>
+				</div>
+				<div class="mycred-addons-images">
 					<img src="<?php echo ! empty( $value->image ) ? esc_url( $value->image ) : '' ; ?>" width="256px" alt="">
 				</div>
-
-				<div class="theme-id-container">
-					
-					<h2 class="theme-name" id="badges-name"><?php echo esc_html( $value->title ); ?></h2>
-
-					<div class="theme-actions">
-
-					<a href="<?php echo esc_url( $value->url ); ?>" title="Install" target="_blank" class="button button-primary mycred-action badges">View</a>
-					</div>
+				<div class="mycred-addons-container">
+					<a href="<?php echo esc_url( $value->url ); ?>" title="Install" target="_blank" class="mycred-action">View</a>
 
 				</div>
 
-			</div> <?php
+			</div>
+
+			<?php
 			
 		}
 	}
 }
 else
 {
+
 	// Loop though installed
-			if ( ! empty( $installed ) ) {
+	if ( ! empty( $installed ) ) {
 
-				foreach ( $installed as $key => $data ) {
+		foreach ( $installed as $key => $data ) {
 
-					$aria_action = $key . '-action';
-					$aria_name   = $key . '-name';
+			$aria_action = $key . '-action';
+			$aria_name   = $key . '-name'; ?>
 
-?>
-			<div class="theme<?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' inactive'; ?>" tabindex="0" aria-describedby="<?php echo esc_attr( $aria_action ) . ' ' . esc_attr( $aria_name ); ?>">
+			<div class="mycred-addons-element<?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' inactive'; ?>" tabindex="0" aria-describedby="<?php echo esc_attr( $aria_action ) . ' ' . esc_attr( $aria_name ); ?>"> <?php 
 
-				<?php if ( $data['screenshot'] != '' ) : ?>
+			if ( $this->is_active( $key ) ) : ?>
+				<h2 class="mycred-addons-name" id="<?php echo esc_attr( $aria_name ); ?>"><?php echo esc_html( $this->core->template_tags_general( $data['name'] ) ); ?></h2><?php 
+			else : ?>
+				<h2 class="mycred-addons-name" id="<?php echo esc_attr( $aria_name ); ?>"><?php echo esc_html( $this->core->template_tags_general( $data['name'] ) ); ?></h2><?php 
+			endif;  
 
-				<div class="theme-screenshot">
+			if ( $data['screenshot'] != '' ) : ?>
+
+				<div class="mycred-addons-images">
 					<img src="<?php echo esc_url( $data['screenshot'] ); ?>" alt="" />
-				</div>
-
-				<?php else : ?>
-
-				<div class="theme-screenshot blank"></div>
-
-				<?php endif; ?>
-
+				</div><?php 
+			else : ?>
+				<div class="theme-screenshot blank"></div><?php 
+			endif; ?>
+				
 				<a class="more-details" id="<?php echo esc_attr( $aria_action ); ?>" href="<?php echo esc_url( $data['addon_url'] ); ?>" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a>
-
-				<div class="theme-id-container">
-
-					<?php if ( $this->is_active( $key ) ) : ?>
-
-					<h2 class="theme-name" id="<?php echo esc_attr( $aria_name ); ?>"><?php echo esc_html( $this->core->template_tags_general( $data['name'] ) ); ?></h2>
-
-					<?php else : ?>
-
-					<h2 class="theme-name" id="<?php echo esc_attr( $aria_name ); ?>"><?php echo esc_html( $this->core->template_tags_general( $data['name'] ) ); ?></h2>
-
-					<?php endif; ?>
-
-					<div class="theme-actions">
+				<div class="mycred-addons-container">
 
 						<?php echo wp_kses_post( $this->activate_deactivate( $key ) ); ?>
-
-					</div>
-
 				</div>
+			</div><?php
+		}
+	}	
 
-			</div>
-	<?php
-}
-
-			
-
-				}
-
-				if ( MYCRED_SHOW_PREMIUM_ADDONS ) echo '<div class="theme add-new-theme"><a href="https://mycred.me/store/" target="_blank"><div class="theme-screenshot"><span></span></div><h2 class="theme-name">Add More Add-ons</h2></a></div><br class="clear" />';
-
-			}
-
-?>
+}?>
 		</div>
 	</div>
 </div>
@@ -732,7 +634,7 @@ else
 
 			}
 
-			return '<a href="' . esc_url_raw( $link_url ) . '" title="' . esc_attr( $link_text ) . '" class="button button-primary mycred-action ' . esc_attr( $addon_id ) . '">' . esc_html( $link_text ) . '</a>';
+			return '<a href="' . esc_url_raw( $link_url ) . '" title="' . esc_attr( $link_text ) . '" class="mycred-action ' . esc_attr( $addon_id ) . '">' . esc_html( $link_text ) . '</a>';
 
 		}
 

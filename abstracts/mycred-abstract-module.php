@@ -8,6 +8,7 @@ if ( ! defined( 'myCRED_VERSION' ) ) exit;
  * @version 1.3.5
  */
 if ( ! class_exists( 'myCRED_Module' ) ) :
+	#[AllowDynamicProperties]
 	abstract class myCRED_Module {
 
 		// Module ID (unique)
@@ -514,7 +515,6 @@ if ( ! class_exists( 'myCRED_Module' ) ) :
 			// Load Accordion
 			if ( $this->accordion ) {
 
-				wp_enqueue_style( 'mycred-admin' );
 				wp_enqueue_script( 'mycred-accordion' );
 
 ?>

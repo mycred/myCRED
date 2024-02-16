@@ -140,7 +140,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 				'title'        => __( 'General Settings', 'mycred' ),
 				'description'  => __( 'Instead of creating %_plural% out of thin-air, all payouts are made from a nominated "Central Deposit" account. Any %_plural% a user spends or loses are deposited back into this account. If the central deposit runs out of %_plural%, no %_plural% will be paid out.', 'mycred' ),
 				'cron'         => false,
-				'icon'         => 'dashicons-admin-site',
+				'icon'         => 'dashicons-bank',
 				'callback'     => array( 'myCRED_Banking_Service_Central' )
 			);
 
@@ -148,7 +148,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 				'title'        => __( 'Schedule Deposit', 'mycred' ),
 				'description'  => __( 'The admin can schedule the points deposit to the central account automatically after the specified interval.', 'mycred' ),
 				'cron'         => false,
-				'icon'         => 'dashicons-admin-site',
+				'icon'         => 'dashicons-bank',
 				'callback'     => array( 'myCRED_Banking_Service_Schedule_Deposit' )
 			);
 
@@ -179,7 +179,6 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 			$banking_icons = plugins_url( 'assets/images/gateway-icons.png', myCRED_THIS );
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-forms' );
 			wp_enqueue_style( 'mycred-select2-style' );
 			wp_enqueue_style( MYCRED_SLUG . '-buttons' );
 			wp_register_script( 'mycred-central-deposit-admin', plugins_url( 'assets/js/central-deposit-admin.js', myCRED_BANK ), array( 'jquery', 'mycred-select2-script' ), myCRED_VERSION );
@@ -230,18 +229,31 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 				foreach ( $installed as $key => $data ) {
 
 ?>
-			<h4><span class="dashicons <?php echo esc_attr( $data['icon'] ); ?><?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' static'; ?>"></span><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></h4>
-			<div class="body" style="display: none;">
-				<p><?php echo nl2br( esc_html( $this->core->template_tags_general( $data['description'] ) ) ); ?></p>
-				<label class="subheader" for="mycred-bank-service-<?php echo esc_attr( $key ); ?>"><?php esc_html_e( 'Enable', 'mycred' ); ?></label>
-				<ol>
-					<li>
-						<input type="checkbox" name="<?php echo esc_attr( $this->option_id ); ?>[active][]" id="mycred-bank-service-<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $key ); ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> />
-					</li>
-				</ol>
+			<div class="mycred-ui-accordion">
+				<div class="mycred-ui-accordion-header">
+					<h4 class="mycred-ui-accordion-header-title">
+						<span class="dashicons <?php echo esc_attr( $data['icon'] ); ?><?php if ( $this->is_active( $key ) ) echo ' active'; else echo ' static'; ?> mycred-ui-accordion-header-icon"></span>
+						<label><?php echo esc_html( $this->core->template_tags_general( $data['title'] ) ); ?></label>
+					</h4>
+					<div class="mycred-ui-accordion-header-actions hide-if-no-js">
+						<button type="button" aria-expanded="true">
+							<span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+				<div class="body mycred-ui-accordion-body" style="display: none;">
+					<p><?php echo nl2br( esc_html( $this->core->template_tags_general( $data['description'] ) ) ); ?></p>
+					<div class="mycred-toggle-wrapper">
+                        <label for="mycred-bank-service-<?php echo esc_attr( $key ); ?>"><strong><?php esc_html_e( 'Enable', 'mycred' ); ?></strong></label>
+                        <label class="mycred-toggle">
+                            <input type="checkbox" name="<?php echo esc_attr( $this->option_id ); ?>[active][]" id="mycred-bank-service-<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $key ); ?>"<?php if ( $this->is_active( $key ) ) echo ' checked="checked"'; ?> />
+                            <span class="slider round"></span>
+                        </label> 
+                    </div>
+                    <br />
+					<?php $this->call( 'preferences', $data['callback'] ); ?>
 
-				<?php $this->call( 'preferences', $data['callback'] ); ?>
-
+				</div>
 			</div>
 <?php
 
@@ -252,7 +264,7 @@ if ( ! class_exists( 'myCRED_Banking_Module' ) ) :
 
 		</div>
 
-		<?php submit_button( esc_html__( 'Update Changes', 'mycred' ), 'primary large', 'submit', false ); ?>
+		<?php submit_button( esc_html__( 'Update Changes', 'mycred' ), 'mycred-ui-btn-purple mycred-ui-mt20', 'submit', false ); ?>
 
 	</form>
 </div>

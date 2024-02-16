@@ -49,7 +49,8 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			add_action( 'wp_ajax_mycred-action-export-balances', array( $this, 'action_export_balances' ) );
 			add_action( 'wp_ajax_mycred-action-generate-key',    array( $this, 'action_generate_key' ) );
 			add_action( 'wp_ajax_mycred-action-max-decimals',    array( $this, 'action_update_log_cred_format' ) );
-			add_action( 'wp_ajax_mycred-get-users-to-exclude', array( $this, 'get_users' ) );
+			add_action( 'wp_ajax_mycred-get-users-to-exclude',   array( $this, 'get_users' ) );
+
 		}
 
 		/**
@@ -58,8 +59,6 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * @version 1.0.1
 		 */
 		public function module_admin_init() {
-
-			
 			
 			if ( isset( $_GET['do'] ) && $_GET['do'] == 'export' )
 				$this->load_export();
@@ -238,7 +237,6 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			wp_send_json_success( wp_generate_password( 16, true, true ) );
 
 		}
-
 
 		/**
          * Get Point Image
@@ -478,7 +476,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 					'uploadtitle'  		 => esc_js( esc_attr__( 'Point Type Image', 'mycred' ) ),
 					'uploadbutton' 		 => esc_js( esc_attr__( 'Use as Image', 'mycred' ) ),
 					'done'          	 => esc_attr__( 'Done!', 'mycred' ),
-					'export_close'  	 => esc_attr__( 'Close', 'mycred' ),
+					'export_close'  	 => '✕',
 					'export_title' 		 => $mycred->template_tags_general( esc_attr__( 'Export %singular% Balances', 'mycred' ) ),
 					'decimals'      	 => esc_attr__( 'In order to adjust the number of decimal places you want to use we must update your log. It is highly recommended that you backup your current log before continuing!', 'mycred' ),
 					'fieldName'		 	 => $this->field_name(),
@@ -486,10 +484,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 					)
 			);
 			wp_enqueue_script( 'mycred-type-management' );
-
-			wp_enqueue_style( 'mycred-admin' );
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-forms' );
 
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_script( 'wp-color-picker' );
@@ -542,7 +537,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 ?>
 </select>
-<p><span class="description"><?php printf( '<a href="%s">'. esc_html__( 'Click here', 'mycred' ) .'</a>'. esc_html__( ' to change your default point types setup.', 'mycred' ), esc_url( $url ) ); ?></span></p>
+<p><span class="description"><a href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Click here', 'mycred'); ?></a><?php esc_html_e( ' to change your default point types setup.', 'mycred' ); ?></span></p>
 <?php
 
 				}
@@ -614,177 +609,206 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php esc_html_e( 'Settings', 'mycred' ); if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/" target="_blank" class="page-title-action"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<h1><?php ( isset( $_GET['page'] ) && $_GET['page'] == 'mycred-main' ) ? esc_html_e( 'General Settings', 'mycred' ) : esc_html_e( 'Settings', 'mycred' );?></h1>
 
 	<?php $this->update_notice(); ?>
-
-	<?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?>
-	<p id="mycred-thank-you-text"><?php printf( esc_html__( 'Thank you for using %s. If you have a moment, please leave a %s.', 'mycred' ), esc_html__( mycred_label() ), sprintf( '<a href="https://wordpress.org/support/plugin/mycred/reviews/?rate=5#new-post" target="_blank">%s</a>', esc_html__( 'review', 'mycred' ) ) ); ?><span id="mycred-social-media"><?php echo wp_kses_post( implode( ' ',  $social  ) ); ?></span></p>
-	<?php endif; ?>
 
 	<form method="post" action="options.php" class="form" name="mycred-core-settings-form" novalidate>
 
 		<?php settings_fields( $this->settings_name ); ?>
 
 		<div class="list-items expandable-li" id="accordion">
-			<h4 <?php echo !$main_screen ? '' : 'style="display:none"';?>><span class="dashicons dashicons-admin-settings static"></span><label><?php esc_html_e( 'Core Settings', 'mycred' ); ?></label></h4>
-			<div class="body" style="display:none;">
-
-				<div class="row">
-					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-						<h3><?php esc_html_e( 'Labels', 'mycred' ); ?></h3>
-						<div class="row">
-							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for="<?php echo esc_attr( $this->field_id( array( 'name' => 'singular' ) ) ); ?>"><?php esc_html_e( 'Singular', 'mycred' ); ?></label>
-									<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'name' => 'singular' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'name' => 'singular' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->core->name['singular'] ); ?>" />
-								</div>
-							</div>
-							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for="<?php echo esc_attr( $this->field_id( array( 'name' => 'plural' ) ) ); ?>"><?php esc_html_e( 'Plural', 'mycred' ); ?></label>
-									<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'name' => 'plural' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'name' => 'plural' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->core->name['plural'] ); ?>" />
-								</div>
-							</div>
-						</div>
-						<p><span class="description"><?php esc_html_e( 'These labels are used throughout the admin area and when presenting points to your users.', 'mycred' ); ?></span></p>
-					</div>
-					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-						<h3><?php esc_html_e( 'Format', 'mycred' ); ?></h3>
-						<div class="row">
-							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for="<?php echo esc_attr( $this->field_id( 'before' ) ); ?>"><?php esc_html_e( 'Prefix', 'mycred' ); ?></label>
-									<input type="text" name="<?php echo esc_attr( $this->field_name( 'before' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'before' ) ); ?>" class="form-control" value="<?php echo esc_attr( $this->core->before ); ?>" />
-								</div>
-							</div>
-							<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for="<?php echo esc_attr( $this->field_id( array( 'format' => 'separators' ) ) ); ?>-thousand"><?php esc_html_e( 'Separators', 'mycred' ); ?></label>
-									<div class="form-inline">
-										<label>1</label> <input type="text" name="<?php echo esc_attr( $this->field_name( array( 'format' => 'separators' ) ) ); ?>[thousand]" id="<?php echo esc_attr( $this->field_id( array( 'format' => 'separators' ) ) ); ?>-thousand" placeholder="," class="form-control" size="2" value="<?php echo esc_attr( $this->core->format['separators']['thousand'] ); ?>" /> <label>000</label> <input type="text" name="<?php echo esc_attr( $this->field_name( array( 'format' => 'separators' ) ) ); ?>[decimal]" id="<?php echo esc_attr( $this->field_id( array( 'format' => 'separators' ) ) ); ?>-decimal" placeholder="." class="form-control" size="2" value="<?php echo esc_attr( $this->core->format['separators']['decimal'] ); ?>" /> <label>00</label>
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for=""><?php esc_html_e( 'Decimals', 'mycred' ); ?></label>
-									<?php $this->adjust_decimal_places(); ?>
-								</div>
-							</div>
-							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for="<?php echo esc_attr( $this->field_id( 'after' ) ); ?>"><?php esc_html_e( 'Suffix', 'mycred' ); ?></label>
-									<input type="text" name="<?php echo esc_attr( $this->field_name( 'after' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'after' ) ); ?>" class="form-control" value="<?php echo esc_attr( $this->core->after ); ?>" />
-								</div>
-							</div>
-						</div>
-						<p><span class="description"><?php esc_html_e( 'Set decimals to zero if you prefer to use whole numbers.', 'mycred' ); ?></span></p>
-						<?php if ( $this->is_main_type ) : ?>
-						<p><strong><?php esc_html_e( 'Tip', 'mycred' ); ?>:</strong> <?php esc_html_e( 'As this is your main point type, the value you select here will be the largest number of decimals your installation will support.', 'mycred' ); ?></span></p>
-						<?php endif; ?>
+			<div class="mycred-ui-accordion" <?php echo !$main_screen ? '' : 'style="display:none"';?>>
+				<div class="mycred-ui-accordion-header">
+					<h4 class="mycred-ui-accordion-header-title">
+						<span class="dashicons dashicons-admin-settings static mycred-ui-accordion-header-icon"></span>
+						<label><?php esc_html_e( 'Core Settings', 'mycred' ); ?></label>
+					</h4>
+					<div class="mycred-ui-accordion-header-actions hide-if-no-js">
+						<button type="button" aria-expanded="true">
+							<span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+						</button>
 					</div>
 				</div>
-				
-				<div class="row">
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<h3><?php esc_html_e( 'Security', 'mycred' ); ?></h3>
-						<div class="row">
-							<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for="<?php echo esc_attr( $this->field_id( array( 'caps' => 'creds' ) ) ); ?>"><?php esc_html_e( 'Point Editors', 'mycred' ); ?></label>
-									<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'caps' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'caps' => 'creds' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->core->caps['creds'] ); ?>" />
-									<p><span class="description"><?php esc_html_e( 'The capability of users who can edit balances.', 'mycred' ); ?></span></p>
-								</div>
-							</div>
-							<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for="<?php echo esc_attr( $this->field_id( array( 'caps' => 'plugin' ) ) ); ?>"><?php esc_html_e( 'Point Administrators', 'mycred' ); ?></label>
-									<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'caps' => 'plugin' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'caps' => 'plugin' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->core->caps['plugin'] ); ?>" />
-									<p><span class="description"><?php esc_html_e( 'The capability of users who can edit settings.', 'mycred' ); ?></span></p>
-								</div>
-							</div>
-							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<?php if ( ! isset( $this->core->max ) ) $this->core->max(); ?>
-									<label for="<?php echo esc_attr( $this->field_id( 'max' ) ); ?>"><?php esc_html_e( 'Max. Amount', 'mycred' ); ?></label>
-									<input type="text" name="<?php echo esc_attr( $this->field_name( 'max' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'max' ) ); ?>" class="form-control" value="<?php echo esc_attr( $this->core->max ); ?>" />
-									<p><span class="description"><?php esc_html_e( 'The maximum amount allowed to be paid out in a single instance.', 'mycred' ); ?></span></p>
-								</div>
-							</div>
-							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for="<?php echo esc_attr( $excluded_ids_args['id'] ); ?>"><?php esc_html_e( 'Exclude Users', 'mycred' ); ?></label>
-									<?php echo wp_kses( mycred_create_select2( $all_users, $excluded_ids_args, $excluded_ids ), $allowed_html ); ?>
-								</div>
-								<div class="form-group">
-									<div class="checkbox">
-										<label for="<?php echo esc_attr( $this->field_id( array( 'exclude' => 'cred_editors' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'exclude' => 'cred_editors' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'exclude' => 'cred_editors' ) ) ); ?>"<?php checked( $this->core->exclude['cred_editors'], 1 ); ?> value="1" /> <?php esc_html_e( 'Exclude point editors', 'mycred' ); ?></label>
+				<div class="body mycred-ui-accordion-body" style="display:none;">
+
+					<div class="row">
+						<div class="col-lg-5 col-md-12 col-sm-12 col-xs-12">
+							<h3><?php esc_html_e( 'Labels', 'mycred' ); ?></h3>
+							<div class="row">
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label for="<?php echo esc_attr( $this->field_id( array( 'name' => 'singular' ) ) ); ?>"><?php esc_html_e( 'Singular', 'mycred' ); ?></label>
+										<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'name' => 'singular' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'name' => 'singular' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->core->name['singular'] ); ?>" />
 									</div>
-									<div class="checkbox">
-										<label for="<?php echo esc_attr( $this->field_id( array( 'exclude' => 'plugin_editors' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'exclude' => 'plugin_editors' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'exclude' => 'plugin_editors' ) ) ); ?>"<?php checked( $this->core->exclude['plugin_editors'], 1 ); ?> value="1" /> <?php esc_html_e( 'Exclude point administrators', 'mycred' ); ?></label>
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label for="<?php echo esc_attr( $this->field_id( array( 'name' => 'plural' ) ) ); ?>"><?php esc_html_e( 'Plural', 'mycred' ); ?></label>
+										<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'name' => 'plural' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'name' => 'plural' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->core->name['plural'] ); ?>" />
 									</div>
 								</div>
 							</div>
-							<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<label for="<?php echo esc_attr( $roles_args['id'] ); ?>"><?php esc_html_e( 'Exclude by User Role', 'mycred' ); ?></label>
-									<?php echo wp_kses( mycred_create_select2( $roles, $roles_args, $excluded_roles ), $allowed_html ); ?>
+							<div class="row">
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									<p class="mt-0">
+										<span class="description"><?php esc_html_e( 'These labels are used throughout the admin area and when presenting points to your users.', 'mycred' ); ?></span>
+									</p>
+								</div>
+							</div>
+						</div>	
+						<div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
+							<div class="row">
+								<div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
+									<h3><?php esc_html_e( 'Format', 'mycred' ); ?></h3>
+									<div class="row">
+										<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+											<div class="form-group">
+												<label for="<?php echo esc_attr( $this->field_id( 'before' ) ); ?>"><?php esc_html_e( 'Prefix', 'mycred' ); ?></label>
+												<input type="text" name="<?php echo esc_attr( $this->field_name( 'before' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'before' ) ); ?>" class="form-control" value="<?php echo esc_attr( $this->core->before ); ?>" />
+											</div>
+										</div>
+										<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+											<div class="form-group">
+												<label for="<?php echo esc_attr( $this->field_id( array( 'format' => 'separators' ) ) ); ?>-thousand"><?php esc_html_e( 'Separators', 'mycred' ); ?></label>
+												<div class="form-inline">
+													<label class="inline">1</label>
+													<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'format' => 'separators' ) ) ); ?>[thousand]" id="<?php echo esc_attr( $this->field_id( array( 'format' => 'separators' ) ) ); ?>-thousand" placeholder="," class="form-control" value="<?php echo esc_attr( $this->core->format['separators']['thousand'] ); ?>" /> 
+													<label>000</label> 
+													<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'format' => 'separators' ) ) ); ?>[decimal]" id="<?php echo esc_attr( $this->field_id( array( 'format' => 'separators' ) ) ); ?>-decimal" placeholder="." class="form-control" size="2" value="<?php echo esc_attr( $this->core->format['separators']['decimal'] ); ?>" /> 
+													<label>00</label>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-5 col-md-12 col-sm-12 col-xs-12">
+									<h3>&nbsp;</h3>
+									<div class="row">
+										<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+											<div class="form-group">
+												<label for=""><?php esc_html_e( 'Decimals', 'mycred' ); ?></label>
+												<?php $this->adjust_decimal_places(); ?>
+											</div>
+										</div>
+										<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+											<div class="form-group">
+												<label for="<?php echo esc_attr( $this->field_id( 'after' ) ); ?>"><?php esc_html_e( 'Suffix', 'mycred' ); ?></label>
+												<input type="text" name="<?php echo esc_attr( $this->field_name( 'after' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'after' ) ); ?>" class="form-control" value="<?php echo esc_attr( $this->core->after ); ?>" />
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									<p class="mt-0">
+										<span class="description"><?php esc_html_e( 'Set decimals to zero if you prefer to use whole numbers.', 'mycred' ); ?>
+										</span>
+									</p>
+									<?php if ( $this->is_main_type ) : ?>
+									<p class="m-alert m-alert-info"><strong><?php esc_html_e( 'Tip', 'mycred' ); ?>:</strong> <?php esc_html_e( 'As this is your main point type, the value you select here will be the largest number of decimals your installation will support.', 'mycred' ); ?></span></p>
+									<?php endif; ?>
+								</div>
+							</div>
+
+
+						</div>					
+						
+					</div>
+					
+					<div class="row">
+						<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+							<h3><?php esc_html_e( 'Security', 'mycred' ); ?></h3>
+							<div class="row">
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label for="<?php echo esc_attr( $this->field_id( array( 'caps' => 'creds' ) ) ); ?>"><?php esc_html_e( 'Point Editors', 'mycred' ); ?></label>
+										<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'caps' => 'creds' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'caps' => 'creds' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->core->caps['creds'] ); ?>" />
+										<p><span class="description"><?php esc_html_e( 'The capability of users who can edit balances.', 'mycred' ); ?></span></p>
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label for="<?php echo esc_attr( $this->field_id( array( 'caps' => 'plugin' ) ) ); ?>"><?php esc_html_e( 'Point Administrators', 'mycred' ); ?></label>
+										<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'caps' => 'plugin' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'caps' => 'plugin' ) ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $this->core->caps['plugin'] ); ?>" />
+										<p><span class="description"><?php esc_html_e( 'The capability of users who can edit settings.', 'mycred' ); ?></span></p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+							<h3>&nbsp;</h3>
+							<div class="row">
+								<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<?php if ( ! isset( $this->core->max ) ) $this->core->max(); ?>
+										<label for="<?php echo esc_attr( $this->field_id( 'max' ) ); ?>"><?php esc_html_e( 'Max. Amount', 'mycred' ); ?></label>
+										<input type="text" name="<?php echo esc_attr( $this->field_name( 'max' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'max' ) ); ?>" class="form-control" value="<?php echo esc_attr( $this->core->max ); ?>" />
+										<p><span class="description"><?php esc_html_e( 'The maximum amount allowed to be paid out in a single instance.', 'mycred' ); ?></span></p>
+									</div>
+								</div>
+								<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label for="<?php echo esc_attr( $excluded_ids_args['id'] ); ?>"><?php esc_html_e( 'Exclude Users', 'mycred' ); ?></label>
+										<?php echo wp_kses( mycred_create_select2( $all_users, $excluded_ids_args, $excluded_ids, '100%' ), $allowed_html ); ?>
+									</div>
+									<div class="form-group">
+										<div class="checkbox">
+											<label for="<?php echo esc_attr( $this->field_id( array( 'exclude' => 'cred_editors' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'exclude' => 'cred_editors' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'exclude' => 'cred_editors' ) ) ); ?>"<?php checked( $this->core->exclude['cred_editors'], 1 ); ?> value="1" /> <?php esc_html_e( 'Exclude point editors', 'mycred' ); ?></label>
+										</div>
+										<div class="checkbox">
+											<label for="<?php echo esc_attr( $this->field_id( array( 'exclude' => 'plugin_editors' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'exclude' => 'plugin_editors' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'exclude' => 'plugin_editors' ) ) ); ?>"<?php checked( $this->core->exclude['plugin_editors'], 1 ); ?> value="1" /> <?php esc_html_e( 'Exclude point administrators', 'mycred' ); ?></label>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+									<div class="form-group">
+										<label for="<?php echo esc_attr( $roles_args['id'] ); ?>"><?php esc_html_e( 'Exclude by User Role', 'mycred' ); ?></label>
+										<?php echo wp_kses( mycred_create_select2( $roles, $roles_args, $excluded_roles, '100%' ), $allowed_html ); ?>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-				
-
-				<div class="row mycred-image-level">
-							
-					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-						<div id="mycred-image-setup" class="default-image-wrapper">
-
+					<div class="row mycred-image-level">
+						<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+							<div id="mycred-image-setup" class="default-image-wrapper">
 								<h3><?php esc_html_e( 'Point Type Image', 'mycred' ); ?></h3>
-
-							
 								<div class="point-type-image">
 									<div class="point-type-image-wrapper image-wrapper">
-										<?php
-
+									<?php
 										$attachment_id = mycred_get_default_point_image_id();
+										$image_url 	   = wp_get_attachment_url( $attachment_id );
 
-										$image_url = wp_get_attachment_url( $attachment_id );
-
-										if( property_exists( $this->core, 'attachment_id' ) && $this->get_point_image( $this->core->attachment_id , $this->field_name( 'attachment_id' )) )
+										if( property_exists( $this->core, 'attachment_id' ) && $this->get_point_image( $this->core->attachment_id , $this->field_name( 'attachment_id' )) ) {
 											echo wp_kses_post( $this->get_point_image( $this->core->attachment_id , $this->field_name( 'attachment_id' ) ) );
-										elseif( !$attachment_id )
-										{
-											?>
-											<div class="default-image-wrapper image-wrapper empty dashicons">
-											</div>
+										}
+										elseif( !$attachment_id ) { ?>
+											<div class="default-image-wrapper image-wrapper empty dashicons"></div>
 											<?php
 										}
-										else
-										{
-											
+										else {
 											echo "<img src='". esc_url( $image_url ) ."' />";
 											echo "<input type='hidden' value='". esc_attr( $attachment_id ) ."' name='".esc_attr( $this->field_name( 'attachment_id' ) )."' />";
-										}
-										?>
+										} 
+									?>
 									</div>
 									<div class="point-image-buttons">
 										<button type="button" class="button button-secondary" id="point-type-change-default-image"><?php esc_html_e( 'Change Image', 'mycred' ) ?></button>
 									</div>
 								</div>
-						</div>	
-					</div>
-				
-					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-						<h3><?php esc_html_e( 'Other Settings', 'mycred' ); ?></h3>
-						<div class="form-group">
-							<label for="<?php echo esc_attr( $this->field_id( 'delete_user' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'delete_user' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'delete_user' ) ); ?>" <?php checked( $delete_user, 1 ); ?> value="1" /> <?php esc_html_e( 'Delete log entries when user is deleted.', 'mycred' ); ?></label>
+							</div>	
 						</div>
-					</div>
-					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-						<?php do_action( 'mycred_core_prefs' . $action_hook, $this ); ?>
+						<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+							<h3><?php esc_html_e( 'Other Settings', 'mycred' ); ?></h3>
+							<div class="form-group">
+								<label for="<?php echo esc_attr( $this->field_id( 'delete_user' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'delete_user' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'delete_user' ) ); ?>" <?php checked( $delete_user, 1 ); ?> value="1" /> <?php esc_html_e( 'Delete log entries when user is deleted.', 'mycred' ); ?></label>
+							</div>
+						</div>
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+							<?php do_action( 'mycred_core_prefs' . $action_hook, $this ); ?>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -799,60 +823,72 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				$reset_block = true;
 
 ?>
-			<h4 <?php echo !$main_screen ? '' : 'style="display:none"';?>><span class="dashicons dashicons-dashboard static"></span><label><?php esc_html_e( 'Management', 'mycred' ); ?></label></h4>
-			<div class="body" style="display:none;">
+			<div class="mycred-ui-accordion" <?php echo !$main_screen ? '' : 'style="display:none"';?>>
+				<div class="mycred-ui-accordion-header">
+					<h4 class="mycred-ui-accordion-header-title">
+						<span class="dashicons dashicons-dashboard static mycred-ui-accordion-header-icon"></span>
+						<label><?php esc_html_e( 'Management', 'mycred' ); ?></label>
+					</h4>
+					<div class="mycred-ui-accordion-header-actions hide-if-no-js">
+						<button type="button" aria-expanded="true">
+							<span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+				<div class="body mycred-ui-accordion-body" style="display:none;">
 
-				<div class="row">
-					<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label>Log Table</label>
-							<h1><?php echo esc_attr( $mycred_log_table ); ?></h1>
+					<div class="row">
+						<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label>Log Table</label>
+								<h1><?php echo esc_attr( $mycred_log_table ); ?></h1>
+							</div>
 						</div>
-					</div>
-					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label><?php esc_html_e( 'Entries', 'mycred' ); ?></label>
-							<h1><?php echo esc_html( $total_rows ); ?></h1>
+						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label><?php esc_html_e( 'Entries', 'mycred' ); ?></label>
+								<h1><?php echo esc_html( $total_rows ); ?></h1>
+							</div>
 						</div>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label><?php esc_html_e( 'Actions', 'mycred' ); ?></label>
-							<div>
-								<?php if ( ( ! mycred_centralize_log() ) || ( mycred_centralize_log() && $GLOBALS['blog_id'] == 1 ) ) : ?>
-								<button type="button" id="mycred-manage-action-empty-log" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button button-large large <?php if ( $total_rows == 0 ) echo '"disabled="disabled'; else echo 'button-primary'; ?>"><?php esc_html_e( 'Empty Log', 'mycred' ); ?></button>
-								<?php endif; ?>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label><?php esc_html_e( 'Actions', 'mycred' ); ?></label>
+								<div>
+									<?php if ( ( ! mycred_centralize_log() ) || ( mycred_centralize_log() && $GLOBALS['blog_id'] == 1 ) ) : ?>
+									<button type="button" id="mycred-manage-action-empty-log" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button button-large large <?php if ( $total_rows == 0 ) echo '"disabled="disabled'; else echo 'button-primary'; ?>"><?php esc_html_e( 'Empty Log', 'mycred' ); ?></button>
+									<?php endif; ?>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label><?php esc_html_e( 'Balance Meta Key', 'mycred' ); ?></label>
-							<h1><?php echo esc_html( $this->core->cred_id ); ?></h1>
+					<div class="row">
+						<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label><?php esc_html_e( 'Balance Meta Key', 'mycred' ); ?></label>
+								<h1><?php echo esc_html( $this->core->cred_id ); ?></h1>
+							</div>
 						</div>
-					</div>
-					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label><?php esc_html_e( 'Users', 'mycred' ); ?></label>
-							<h1><?php echo esc_html( $this->core->count_members() ); ?></h1>
+						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label><?php esc_html_e( 'Users', 'mycred' ); ?></label>
+								<h1><?php echo esc_html( $this->core->count_members() ); ?></h1>
+							</div>
 						</div>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label><?php esc_html_e( 'Actions', 'mycred' ); ?></label>
-							<div>
-								<button type="button" id="mycred-manage-action-reset-accounts" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>"><?php esc_html_e( 'Set all to zero', 'mycred' ); ?></button> 
-								<button type="button" id="mycred-export-users-points" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button button-large large"><?php esc_html_e( 'Export Balances', 'mycred' ); ?></button>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label><?php esc_html_e( 'Actions', 'mycred' ); ?></label>
+								<div>
+									<button type="button" id="mycred-manage-action-reset-accounts" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button button-large large <?php if ( $reset_block ) echo '" disabled="disabled'; else echo 'button-primary'; ?>"><?php esc_html_e( 'Set all to zero', 'mycred' ); ?></button> 
+									<button type="button" id="mycred-export-users-points" data-type="<?php echo esc_attr( $this->mycred_type ); ?>" class="button button-large large"><?php esc_html_e( 'Export Balances', 'mycred' ); ?></button>
+								</div>
 							</div>
 						</div>
 					</div>
+
+					<?php do_action( 'mycred_management_prefs' . $action_hook, $this ); ?>
+
 				</div>
-
-				<?php do_action( 'mycred_management_prefs' . $action_hook, $this ); ?>
-
 			</div>
 
 			<?php do_action( 'mycred_after_management_prefs' . $action_hook, $this ); ?>
@@ -862,96 +898,108 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 			if ( $main_screen ) :
 
 ?>
-			<h4><span class="dashicons dashicons-star-filled static"></span><label><?php esc_html_e( 'Point Types', 'mycred' ); ?></label></h4>
-			<div class="body" style="display:none;">
-<?php
-
-				if ( ! empty( $this->point_types ) ) {
-
-					foreach ( $this->point_types as $type => $label ) {
-
-						if ( $type == MYCRED_DEFAULT_TYPE_KEY ) {
-
-?>
-				<div class="row">
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label><?php esc_html_e( 'Meta Key', 'mycred' ); ?></label>
-							<input type="text" disabled="disabled" class="form-control" value="<?php echo esc_attr( $type ); ?>" class="readonly" />
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label><?php esc_html_e( 'Label', 'mycred' ); ?></label>
-							<input type="text" disabled="disabled" class="form-control" value="<?php echo esc_attr( strip_tags( $label ) ); ?>" class="readonly" />
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label>&nbsp;</label>
-							<label><input type="checkbox" disabled="disabled" class="disabled" value="<?php echo esc_attr( $type ); ?>" /> <?php esc_html_e( 'Delete', 'mycred' ); ?></label>
-						</div>
+			<div class="mycred-ui-accordion">
+				<div class="mycred-ui-accordion-header">
+					<h4 class="mycred-ui-accordion-header-title">
+						<span class="dashicons dashicons-star-filled static mycred-ui-accordion-header-icon"></span>
+						<label><?php esc_html_e( 'Point Types', 'mycred' ); ?></label>
+					</h4>
+					<div class="mycred-ui-accordion-header-actions hide-if-no-js">
+						<button type="button" aria-expanded="true">
+							<span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+						</button>
 					</div>
 				</div>
-<?php
+				<div class="body mycred-ui-accordion-body" style="display:none;">
+	<?php
 
-						}
-						else {
+					if ( ! empty( $this->point_types ) ) {
 
-?>
-				<div class="row">
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label><?php esc_html_e( 'Meta Key', 'mycred' ); ?></label>
-							<input type="text" name="mycred_pref_core[types][<?php echo esc_attr( $type ); ?>][key]" value="<?php echo esc_attr( $type ); ?>" class="form-control" />
+						foreach ( $this->point_types as $type => $label ) {
+
+							if ( $type == MYCRED_DEFAULT_TYPE_KEY ) {
+
+	?>
+					<div class="row">
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label><?php esc_html_e( 'Meta Key', 'mycred' ); ?></label>
+								<input type="text" disabled="disabled" class="form-control" value="<?php echo esc_attr( $type ); ?>" class="readonly" />
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label><?php esc_html_e( 'Label', 'mycred' ); ?></label>
+								<input type="text" disabled="disabled" class="form-control" value="<?php echo esc_attr( strip_tags( $label ) ); ?>" class="readonly" />
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label>&nbsp;</label>
+								<label><input type="checkbox" disabled="disabled" class="disabled" value="<?php echo esc_attr( $type ); ?>" /> <?php esc_html_e( 'Delete', 'mycred' ); ?></label>
+							</div>
 						</div>
 					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label><?php esc_html_e( 'Label', 'mycred' ); ?></label>
-							<input type="text" name="mycred_pref_core[types][<?php echo esc_attr( $type ); ?>][label]" value="<?php echo esc_attr( strip_tags( $label ) ); ?>" class="form-control" />
+	<?php
+
+							}
+							else {
+
+	?>
+					<div class="row">
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label><?php esc_html_e( 'Meta Key', 'mycred' ); ?></label>
+								<input type="text" name="mycred_pref_core[types][<?php echo esc_attr( $type ); ?>][key]" value="<?php echo esc_attr( $type ); ?>" class="form-control" readonly />
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label><?php esc_html_e( 'Label', 'mycred' ); ?></label>
+								<input type="text" name="mycred_pref_core[types][<?php echo esc_attr( $type ); ?>][label]" value="<?php echo esc_attr( strip_tags( $label ) ); ?>" class="form-control" />
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label>&nbsp;</label>
+								<label for="mycred-point-type-<?php echo esc_attr( $type ); ?>"><input type="checkbox" name="mycred_pref_core[delete_types][]" id="mycred-point-type-<?php echo esc_attr( $type ); ?>" value="<?php echo esc_attr( $type ); ?>" /> <?php esc_html_e( 'Delete', 'mycred' ); ?></label>
+							</div>
 						</div>
 					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label>&nbsp;</label>
-							<label for="mycred-point-type-<?php echo esc_attr( $type ); ?>"><input type="checkbox" name="mycred_pref_core[delete_types][]" id="mycred-point-type-<?php echo esc_attr( $type ); ?>" value="<?php echo esc_attr( $type ); ?>" /> <?php esc_html_e( 'Delete', 'mycred' ); ?></label>
-						</div>
-					</div>
-				</div>
-<?php
+	<?php
+
+							}
 
 						}
 
 					}
 
-				}
-
-?>
-				<h3><?php esc_html_e( 'Add New Type', 'mycred' ); ?></h3>
-				<div class="row">
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label for="mycred-new-ctype-key-value"><?php esc_html_e( 'Meta Key', 'mycred' ); ?></label>
-							<input type="text" id="mycred-new-ctype-key-value" name="mycred_pref_core[types][new][key]" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
+	?>
+					<h3><?php esc_html_e( 'Add New Type', 'mycred' ); ?></h3>
+					<div class="row">
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="mycred-new-ctype-key-value"><?php esc_html_e( 'Meta Key', 'mycred' ); ?></label>
+								<input type="text" id="mycred-new-ctype-key-value" name="mycred_pref_core[types][new][key]" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="mycred-new-ctype-key-singular"><?php esc_html_e( 'Singular', 'mycred' ); ?></label>
+								<input type="text" id="mycred-new-ctype-key-singular" name="mycred_pref_core[types][new][singular]" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="mycred-new-ctype-key-label"><?php esc_html_e( 'Plural', 'mycred' ); ?></label>
+								<input type="text" id="mycred-new-ctype-key-label" name="mycred_pref_core[types][new][label]" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
+							</div>
 						</div>
 					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label for="mycred-new-ctype-key-label"><?php esc_html_e( 'Singular', 'mycred' ); ?></label>
-							<input type="text" id="mycred-new-ctype-key-singular" name="mycred_pref_core[types][new][singular]" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label for="mycred-new-ctype-key-label"><?php esc_html_e( 'Plural', 'mycred' ); ?></label>
-							<input type="text" id="mycred-new-ctype-key-label" name="mycred_pref_core[types][new][label]" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="" class="form-control" />
-						</div>
-					</div>
+					<p id="mycred-ctype-warning">
+						<strong><?php esc_html_e( 'Note This meta key must be in lowercase and only contain letters or underscore. All other characters will be deleted! make sure to add some unique prefix to this meta key to avoid any conflicts in database.', 'mycred' ); ?> <a href="https://codex.mycred.me/chapter-i/points/"><?php esc_html_e( 'Read More', 'mycred' )?></a></strong>
+					</p>
 				</div>
-				<p id="mycred-ctype-warning">
-					<strong><?php esc_html_e( 'Note This meta key must be in lowercase and only contain letters or underscore. All other characters will be deleted! make sure to add some unique prefix to this meta key to avoid any conflicts in database.', 'mycred' ); ?> <a href="https://codex.mycred.me/chapter-i/points/"><?php esc_html_e( 'Read More', 'mycred' )?></a></strong>
-				</p>
 			</div>
 <?php
 
@@ -969,7 +1017,7 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 
 		</div>
 
-		<?php submit_button( __( 'Update Settings', 'mycred' ), 'primary large', 'submit' ); ?>
+		<?php submit_button( __( 'Update Settings', 'mycred' ), 'mycred-ui-mt20 mycred-ui-btn-purple', 'submit', false ); ?>
 
 	</form>
 
@@ -1221,23 +1269,25 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * @since 2.3
 		 * @version 1.0
 		 */
-		public function get_users_by_role( $roles )
-		{
+		public function get_users_by_role( $roles ) {
+			
 			$user_ids = array();
 
-			foreach( $roles as $role )
-			{
+			foreach( $roles as $role ) {
+
 				$args = array(
 					'role'	=>	$role
 				);
 
 				$user_query = new WP_User_Query( $args );
 
-				if ( ! empty( $user_query->get_results() ) ) 
-				{
+				if ( ! empty( $user_query->get_results() ) ) {
+
 					foreach ( $user_query->get_results() as $user ) 
 						$user_ids[] = $user->ID;
+				
 				}
+			
 			}
 
 			return $user_ids;
@@ -1248,12 +1298,12 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 		 * @since 2.4.1
 		 * @version 1.0
 		 */
-		public function get_users()
-		{
+		public function get_users() {
+
 			check_ajax_referer( 'mycred-management-actions', 'token' );
 			
-			if( isset( $_GET['action'] ) && $_GET['action'] == 'mycred-get-users-to-exclude' )
-			{
+			if( isset( $_GET['action'] ) && $_GET['action'] == 'mycred-get-users-to-exclude' ) {
+
 				$search = isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '';
 
 				$results = mycred_get_users_by_name_email( $search );
@@ -1261,29 +1311,33 @@ if ( ! class_exists( 'myCRED_Settings_Module' ) ) :
 				echo json_encode( $results );
 
 				die;
+
 			}
+
 		}
 
-		public function get_excluded_users()
-		{
+		public function get_excluded_users() {
+
 			$users = array();
 
 			$user_ids = explode( ',', esc_attr( $this->core->exclude['list'] ) );
 
-			if( $user_ids[0] != '' )
-			{
-				foreach( $user_ids as $key => $user_id )
-				{
+			if( $user_ids[0] != '' ) {
+
+				foreach( $user_ids as $key => $user_id ) {
+
 					$user_data = get_userdata( $user_id );
 
 					$users[$key]['id'] = $user_data->ID;
 					$users[$key]['text'] = $user_data->user_login;
 					$users[$key]['selected'] = true;
+				
 				}
+			
 			}
 
 			return empty( $users ) ? false : $users;
 		}
+
 	}
 endif;
-

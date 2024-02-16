@@ -257,7 +257,7 @@ if ( ! function_exists( 'mycred_post_is_for_sale' ) ) :
 				// Taxonomy exclude check
 				if ( $check === 'exclude' ) {
 
-					if ( ! empty( $terms ) ) {
+					if ( ! empty( $terms )  && ! is_wp_error( $terms )) {
 						foreach ( $terms as $term ) {
 
 							if ( in_array( $term->slug, $list ) ) continue;
@@ -276,7 +276,7 @@ if ( ! function_exists( 'mycred_post_is_for_sale' ) ) :
 				// Taxonomy include check
 				else {
 
-					if ( ! empty( $terms ) ) {
+					if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
 						foreach ( $terms as $term ) {
 
 							if ( ! in_array( $term->slug, $list ) ) continue;

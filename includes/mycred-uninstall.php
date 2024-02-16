@@ -9,10 +9,11 @@ if ( !class_exists( 'myCred_Uninstall_Settings' ) ):
          * @since 2.1.1
          * @version 1.0
          */
-        public function __construct()
-        {
-            add_action( 'mycred_after_core_prefs', array( $this, 'uninstall_settings' ) );
+        public function __construct() {
+
+            add_action( 'mycred_after_core_prefs', array( $this, 'uninstall_settings' ), 9 );
             add_filter( 'mycred_save_core_prefs',  array( $this, 'sanitize_extra_settings' ), 10, 3 );
+        
         }
 
         /**
@@ -20,12 +21,13 @@ if ( !class_exists( 'myCred_Uninstall_Settings' ) ):
          * @since 2.1.1
          * @version 1.0
          */
-        public static function get_instance()
-        {
+        public static function get_instance() {
+
             if ( self::$_instance == null )
                 self::$_instance = new self();
 
             return self::$_instance;
+        
         }
 
         /**
@@ -36,35 +38,65 @@ if ( !class_exists( 'myCred_Uninstall_Settings' ) ):
         public function uninstall_settings()
         {
             ?>
-            <h4>
-                <span class="dashicons dashicons-trash"></span>
-                Uninstall
-            </h4>
-            <div class="body" style="display:none;">
-                <div class="row">
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <div class="form-group">
-                            <label>Remove</label>
-                            <div class="radio" style="margin: 10px 0;">
-                                <label for="mycred-uninstall-types"><input type="checkbox" name="mycred_pref_core[uninstall][types]" <?php echo $this->checked( 'types' ) ? 'checked' : ''; ?> id="mycred-uninstall-types" value="1"> All Point Types</label>
-                            </div>
-                            <div class="radio" style="margin: 10px 0;">
-                                <label for="mycred-uninstall-logs"><input type="checkbox" name="mycred_pref_core[uninstall][logs]" <?php echo $this->checked( 'logs' ) ? 'checked' : ''; ?> id="mycred-uninstall-logs" value="1"> All Logs</label>
-                            </div>
-                            <div class="radio" style="margin: 10px 0;">
-                                <label for="mycred-uninstall-users-data"><input type="checkbox" name="mycred_pref_core[uninstall][users]" <?php echo $this->checked( 'users' ) ? 'checked' : ''; ?> id="mycred-uninstall-users-data" value="1"> All Users' Data</label>
-                            </div>
-                            <div class="radio" style="margin: 10px 0;">
-                                <label for="mycred-uninstall-addon-settings"><input type="checkbox" name="mycred_pref_core[uninstall][addon]" <?php echo $this->checked( 'addon' ) ? 'checked' : ''; ?> id="mycred-uninstall-addon-settings" value="1"> All Addon's Settings</label>
-                            </div>
-                            <div class="radio" style="margin: 10px 0;">
-                                <label for="mycred-uninstall-hooks"><input type="checkbox" name="mycred_pref_core[uninstall][hooks]" <?php echo $this->checked( 'hooks' ) ? 'checked' : ''; ?> id="mycred-uninstall-hooks" value="1"> All Hook's Settings</label>
-                            </div>
-                            <div class="radio" style="margin: 10px 0;">
-                                <label for="mycred-uninstall-badges"><input type="checkbox" name="mycred_pref_core[uninstall][badges]" <?php echo $this->checked( 'badges' ) ? 'checked' : ''; ?> id="mycred-uninstall-badges" value="1"> All Badges</label>
-                            </div>
-                            <div class="radio" style="margin: 10px 0;">
-                                <label for="mycred-uninstall-ranks"><input type="checkbox" name="mycred_pref_core[uninstall][ranks]" <?php echo $this->checked( 'ranks' ) ? 'checked' : ''; ?> id="mycred-uninstall-ranks" value="1"> All Ranks</label>
+            <div class="mycred-ui-accordion">
+                <div class="mycred-ui-accordion-header">
+                    <h4 class="mycred-ui-accordion-header-title">
+                        <span class="dashicons dashicons-trash static mycred-ui-accordion-header-icon"></span>
+                        <label><?php esc_html_e( 'Uninstall', 'mycred' ); ?></label>
+                    </h4>
+                    <div class="mycred-ui-accordion-header-actions hide-if-no-js">
+                        <button type="button" aria-expanded="true">
+                            <span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="body mycred-ui-accordion-body" style="display:none;">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <label>Remove</label>
+                                <div class="radio" style="margin: 10px 0;">
+                                    <label for="mycred-uninstall-types">
+                                        <input type="checkbox" name="mycred_pref_core[uninstall][types]" <?php echo $this->checked( 'types' ) ? 'checked' : ''; ?> id="mycred-uninstall-types" value="1">
+                                        All Point Types
+                                    </label>
+                                </div>
+                                <div class="radio" style="margin: 10px 0;">
+                                    <label for="mycred-uninstall-logs">
+                                        <input type="checkbox" name="mycred_pref_core[uninstall][logs]" <?php echo $this->checked( 'logs' ) ? 'checked' : ''; ?> id="mycred-uninstall-logs" value="1">
+                                        All Logs
+                                    </label>
+                                </div>
+                                <div class="radio" style="margin: 10px 0;">
+                                    <label for="mycred-uninstall-users-data">
+                                        <input type="checkbox" name="mycred_pref_core[uninstall][users]" <?php echo $this->checked( 'users' ) ? 'checked' : ''; ?> id="mycred-uninstall-users-data" value="1">
+                                    All Users' Data
+                                </label>
+                                </div>
+                                <div class="radio" style="margin: 10px 0;">
+                                    <label for="mycred-uninstall-addon-settings">
+                                        <input type="checkbox" name="mycred_pref_core[uninstall][addon]" <?php echo $this->checked( 'addon' ) ? 'checked' : ''; ?> id="mycred-uninstall-addon-settings" value="1">
+                                        All Addon's Settings
+                                    </label>
+                                </div>
+                                <div class="radio" style="margin: 10px 0;">
+                                    <label for="mycred-uninstall-hooks">
+                                        <input type="checkbox" name="mycred_pref_core[uninstall][hooks]" <?php echo $this->checked( 'hooks' ) ? 'checked' : ''; ?> id="mycred-uninstall-hooks" value="1">
+                                        All Hook's Settings
+                                    </label>
+                                </div>
+                                <div class="radio" style="margin: 10px 0;">
+                                    <label for="mycred-uninstall-badges">
+                                        <input type="checkbox" name="mycred_pref_core[uninstall][badges]" <?php echo $this->checked( 'badges' ) ? 'checked' : ''; ?> id="mycred-uninstall-badges" value="1">
+                                        All Badges
+                                    </label>
+                                </div>
+                                <div class="radio" style="margin: 10px 0;">
+                                    <label for="mycred-uninstall-ranks">
+                                        <input type="checkbox" name="mycred_pref_core[uninstall][ranks]" <?php echo $this->checked( 'ranks' ) ? 'checked' : ''; ?> id="mycred-uninstall-ranks" value="1">
+                                        All Ranks
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -85,7 +117,7 @@ if ( !class_exists( 'myCred_Uninstall_Settings' ) ):
         {
             $hooks = mycred_get_option( 'mycred_pref_core', false );
 
-            if ( is_array( $hooks ) && in_array( $key, $hooks ) )
+            if ( is_array( $hooks ) )
                 if ( array_key_exists( 'uninstall', $hooks ) && array_key_exists( $key, $hooks['uninstall'] ) && $hooks['uninstall'][$key] == 1 )
                     return true;
 

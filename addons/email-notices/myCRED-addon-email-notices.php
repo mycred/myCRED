@@ -423,9 +423,9 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			elseif ( $column_name == 'mycred-email-ctype' ) {
 
 				echo '<p>';
-				if ( empty( $email->point_types ) )
+				if ( empty( $email->point_types ) || empty( $email->point_types[0] ) ) {
 					esc_html_e( 'No point types selected', 'mycred' );
-
+				}
 				else {
 					$types = array();
 					foreach ( $email->point_types as $type_key ) {
@@ -499,16 +499,12 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		public function enqueue_scripts() {
 
 			$screen = get_current_screen();
-			// Commonly used
-			if ( $screen->id == 'edit-' . MYCRED_EMAIL_KEY || $screen->id == MYCRED_EMAIL_KEY )
-				wp_enqueue_style( 'mycred-admin' );
 
 			// Edit Email Notice Styling
 			if ( $screen->id == MYCRED_EMAIL_KEY ) {
 
 				wp_enqueue_style( 'mycred-email-edit-notice' );
 				wp_enqueue_style( 'mycred-bootstrap-grid' );
-				wp_enqueue_style( 'mycred-forms' );
 
 				wp_enqueue_script( 'mycred-edit-email', plugins_url( 'assets/js/edit-email.js', myCRED_EMAIL ), array( 'jquery' ), myCRED_EMAIL_VERSION, true );
 
@@ -831,11 +827,7 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 				<div><?php esc_html_e( 'The log entry', 'mycred' ); ?></div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<div><?php printf( esc_html__( 'You can also use %s.', 'mycred' ), '<a href="http://codex.mycred.me/category/template-tags/temp-user/" target="_blank">' . esc_html__( 'user related template tags', 'mycred' ) . '</a>' ); ?></div>
-			</div>
-		</div>
+		
 	</div>
 </div>
 <div class="row">
@@ -878,6 +870,13 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 		</div>
 	</div>
 </div>
+<hr> 
+   <div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div><?php printf( esc_html__( 'You can also use %s.', 'mycred' ), '<a href="http://codex.mycred.me/category/template-tags/temp-user/" target="_blank">' . esc_html__( 'user related template tags', 'mycred' ) . '</a>' ); ?></div>
+			</div>
+	</div>
+</hr>
 <?php
 
 		}
@@ -1263,109 +1262,121 @@ if ( ! class_exists( 'myCRED_Email_Notice_Module' ) ) :
 			$this->emailnotices = mycred_apply_defaults( $this->default_prefs, $this->emailnotices );
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Email Notices', 'mycred' ); ?></h4>
-<div class="body" style="display:none;">
+<div class="mycred-ui-accordion">
+	<div class="mycred-ui-accordion-header">
+        <h4 class="mycred-ui-accordion-header-title">
+            <span class="dashicons dashicons-email static mycred-ui-accordion-header-icon"></span>
+            <label><?php esc_html_e( 'Email Notices', 'mycred' ); ?></label>
+        </h4>
+        <div class="mycred-ui-accordion-header-actions hide-if-no-js">
+            <button type="button" aria-expanded="true">
+                <span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+	<div class="body mycred-ui-accordion-body" style="display:none;">
 
-	<div class="row">
-		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-			<h3><?php esc_html_e( 'Format', 'mycred' ); ?></h3>
-			<div class="form-group">
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'use_html' => 'no' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'use_html' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'use_html' => 'no' ) ) ); ?>" <?php checked( $this->emailnotices['use_html'], 0 ); ?> value="0" /> <?php esc_html_e( 'Plain Text', 'mycred' ); ?></label>
+		<div class="row">
+			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+				<h3><?php esc_html_e( 'Format', 'mycred' ); ?></h3>
+				<div class="form-group">
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( array( 'use_html' => 'no' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'use_html' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'use_html' => 'no' ) ) ); ?>" <?php checked( $this->emailnotices['use_html'], 0 ); ?> value="0" /> <?php esc_html_e( 'Plain Text', 'mycred' ); ?></label>
+					</div>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( array( 'use_html' => 'yes' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'use_html' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'use_html' => 'yes' ) ) ); ?>" <?php checked( $this->emailnotices['use_html'], 1 ); ?> value="1" /> HTML</label>
+					</div>
 				</div>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'use_html' => 'yes' ) ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'use_html' ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'use_html' => 'yes' ) ) ); ?>" <?php checked( $this->emailnotices['use_html'], 1 ); ?> value="1" /> HTML</label>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+				<h3><?php esc_html_e( 'Schedule', 'mycred' ); ?></h3>
+				<div class="form-group">
+					<?php if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) : ?>
+					<input type="hidden" name="<?php echo esc_attr( $this->field_name( 'send' ) ); ?>" value="" />
+					<p class="form-control-static"><?php esc_html_e( 'WordPress Cron is disabled. Emails will be sent immediately.', 'mycred' ); ?></p>
+					<?php else : ?>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'send' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>" <?php checked( $this->emailnotices['send'], '' ); ?> value="" /> <?php esc_html_e( 'Send emails immediately', 'mycred' ); ?></label>
+					</div>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>-hourly"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'send' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>-hourly" <?php checked( $this->emailnotices['send'], 'hourly' ); ?> value="hourly" /> <?php esc_html_e( 'Send emails once an hour', 'mycred' ); ?></label>
+					</div>
+					<div class="radio">
+						<label for="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>-daily"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'send' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>-daily" <?php checked( $this->emailnotices['send'], 'daily' ); ?> value="daily" /> <?php esc_html_e( 'Send emails once a day', 'mycred' ); ?></label>
+					</div>
+					<?php endif; ?>
+				</div>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<h3><?php esc_html_e( 'Advanced', 'mycred' ); ?></h3>
+				<div class="form-group">
+					<div class="checkbox">
+						<label for="<?php echo esc_attr( $this->field_id( array( 'filter' => 'subject' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'filter' => 'subject' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'filter' => 'subject' ) ) ); ?>" <?php checked( $this->emailnotices['filter']['subject'], 1 ); ?> value="1" /> <?php esc_html_e( 'Filter Email Subjects', 'mycred' ); ?></label>
+					</div>
+					<div class="checkbox">
+						<label for="<?php echo esc_attr( $this->field_id( array( 'filter' => 'content' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'filter' => 'content' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'filter' => 'content' ) ) ); ?>" <?php checked( $this->emailnotices['filter']['content'], 1 ); ?> value="1" /> <?php esc_html_e( 'Filter Email Body', 'mycred' ); ?></label>
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-			<h3><?php esc_html_e( 'Schedule', 'mycred' ); ?></h3>
-			<div class="form-group">
-				<?php if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) : ?>
-				<input type="hidden" name="<?php echo esc_attr( $this->field_name( 'send' ) ); ?>" value="" />
-				<p class="form-control-static"><?php esc_html_e( 'WordPress Cron is disabled. Emails will be sent immediately.', 'mycred' ); ?></p>
-				<?php else : ?>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'send' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>" <?php checked( $this->emailnotices['send'], '' ); ?> value="" /> <?php esc_html_e( 'Send emails immediately', 'mycred' ); ?></label>
-				</div>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>-hourly"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'send' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>-hourly" <?php checked( $this->emailnotices['send'], 'hourly' ); ?> value="hourly" /> <?php esc_html_e( 'Send emails once an hour', 'mycred' ); ?></label>
-				</div>
-				<div class="radio">
-					<label for="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>-daily"><input type="radio" name="<?php echo esc_attr( $this->field_name( 'send' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'send' ) ); ?>-daily" <?php checked( $this->emailnotices['send'], 'daily' ); ?> value="daily" /> <?php esc_html_e( 'Send emails once a day', 'mycred' ); ?></label>
-				</div>
-				<?php endif; ?>
-			</div>
-		</div>
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<h3><?php esc_html_e( 'Advanced', 'mycred' ); ?></h3>
-			<div class="form-group">
-				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'filter' => 'subject' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'filter' => 'subject' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'filter' => 'subject' ) ) ); ?>" <?php checked( $this->emailnotices['filter']['subject'], 1 ); ?> value="1" /> <?php esc_html_e( 'Filter Email Subjects', 'mycred' ); ?></label>
-				</div>
-				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( array( 'filter' => 'content' ) ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( array( 'filter' => 'content' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'filter' => 'content' ) ) ); ?>" <?php checked( $this->emailnotices['filter']['content'], 1 ); ?> value="1" /> <?php esc_html_e( 'Filter Email Body', 'mycred' ); ?></label>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<div class="checkbox">
+						<label for="<?php echo esc_attr( $this->field_id( 'override' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'override' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'override' ) ); ?>" <?php checked( $this->emailnotices['override'], 1 ); ?> value="1" /> <?php esc_html_e( 'SMTP Debug. Enable if you are experiencing issues with wp_mail() or if you use a SMTP plugin for emails.', 'mycred' ); ?></label>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<div class="checkbox">
-					<label for="<?php echo esc_attr( $this->field_id( 'override' ) ); ?>"><input type="checkbox" name="<?php echo esc_attr( $this->field_name( 'override' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'override' ) ); ?>" <?php checked( $this->emailnotices['override'], 1 ); ?> value="1" /> <?php esc_html_e( 'SMTP Debug. Enable if you are experiencing issues with wp_mail() or if you use a SMTP plugin for emails.', 'mycred' ); ?></label>
-				</div>
-			</div>
-		</div>
-	</div>
 
-	<h3 style="margin-bottom: 0;"><?php esc_html_e( 'Available Shortcodes', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<p><a href="http://codex.mycred.me/shortcodes/mycred_email_subscriptions/" target="_blank">[mycred_email_subscriptions]</a></p>
+		<h3 style="margin-bottom: 0;"><?php esc_html_e( 'Available Shortcodes', 'mycred' ); ?></h3>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<p><a href="http://codex.mycred.me/shortcodes/mycred_email_subscriptions/" target="_blank">[mycred_email_subscriptions]</a></p>
+			</div>
 		</div>
-	</div>
 
-	<h3><?php esc_html_e( 'Defaults', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( array( 'from' => 'name' ) ) ); ?>"><?php esc_html_e( 'Senders Name:', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'from' => 'name' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'from' => 'name' ) ) ); ?>" value="<?php echo esc_attr( $this->emailnotices['from']['name'] ); ?>" class="form-control" />
+		<h3><?php esc_html_e( 'Defaults', 'mycred' ); ?></h3>
+		<div class="row">
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( array( 'from' => 'name' ) ) ); ?>"><?php esc_html_e( 'Senders Name:', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'from' => 'name' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'from' => 'name' ) ) ); ?>" value="<?php echo esc_attr( $this->emailnotices['from']['name'] ); ?>" class="form-control" />
+				</div>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( array( 'from' => 'email' ) ) ); ?>"><?php esc_html_e( 'Senders Email:', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'from' => 'email' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'from' => 'email' ) ) ); ?>" value="<?php echo esc_attr( $this->emailnotices['from']['email'] ); ?>" class="form-control" />
+				</div>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( array( 'from' => 'reply_to' ) ) ); ?>"><?php esc_html_e( 'Reply-To:', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'from' => 'reply_to' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'from' => 'reply_to' ) ) ); ?>" value="<?php echo esc_attr( $this->emailnotices['from']['reply_to'] ); ?>" class="form-control" />
+				</div>
 			</div>
 		</div>
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( array( 'from' => 'email' ) ) ); ?>"><?php esc_html_e( 'Senders Email:', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'from' => 'email' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'from' => 'email' ) ) ); ?>" value="<?php echo esc_attr( $this->emailnotices['from']['email'] ); ?>" class="form-control" />
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'content' ) ); ?>"><?php esc_html_e( 'Default Email Content', 'mycred' ); ?></label>
+					<textarea rows="10" cols="50" name="<?php echo esc_attr( $this->field_name( 'content' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'content' ) ); ?>" class="form-control"><?php echo esc_attr( $this->emailnotices['content'] ); ?></textarea>
+					<p><span class="description"><?php esc_html_e( 'Default email content.', 'mycred' ); ?></span></p>
+				</div>
 			</div>
 		</div>
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( array( 'from' => 'reply_to' ) ) ); ?>"><?php esc_html_e( 'Reply-To:', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( array( 'from' => 'reply_to' ) ) ); ?>" id="<?php echo esc_attr( $this->field_id( array( 'from' => 'reply_to' ) ) ); ?>" value="<?php echo esc_attr( $this->emailnotices['from']['reply_to'] ); ?>" class="form-control" />
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'styling' ) ); ?>"><?php esc_html_e( 'Default CSS Styling', 'mycred' ); ?></label>
+					<textarea rows="10" cols="50" name="<?php echo esc_attr( $this->field_name( 'styling' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'styling' ) ); ?>" class="form-control"><?php echo esc_attr( $this->emailnotices['styling'] ); ?></textarea>
+					<p><span class="description"><?php esc_html_e( 'Default email CSS styling. Note that if you intend to send HTML emails, you should use inline CSS styling for best results.', 'mycred' ); ?></span></p>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'content' ) ); ?>"><?php esc_html_e( 'Default Email Content', 'mycred' ); ?></label>
-				<textarea rows="10" cols="50" name="<?php echo esc_attr( $this->field_name( 'content' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'content' ) ); ?>" class="form-control"><?php echo esc_attr( $this->emailnotices['content'] ); ?></textarea>
-				<p><span class="description"><?php esc_html_e( 'Default email content.', 'mycred' ); ?></span></p>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'styling' ) ); ?>"><?php esc_html_e( 'Default CSS Styling', 'mycred' ); ?></label>
-				<textarea rows="10" cols="50" name="<?php echo esc_attr( $this->field_name( 'styling' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'styling' ) ); ?>" class="form-control"><?php echo esc_attr( $this->emailnotices['styling'] ); ?></textarea>
-				<p><span class="description"><?php esc_html_e( 'Default email CSS styling. Note that if you intend to send HTML emails, you should use inline CSS styling for best results.', 'mycred' ); ?></span></p>
-			</div>
-		</div>
-	</div>
 
+	</div>
 </div>
 <?php
 

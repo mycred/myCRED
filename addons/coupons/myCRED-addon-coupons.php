@@ -383,8 +383,8 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 			if ( $post_type !== MYCRED_COUPON_KEY ) return;
 
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-forms' );
 			wp_enqueue_style( MYCRED_SLUG . '-buttons' );
+			
 			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-setup',        array( $this, 'metabox_classes' ) );
 			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-limits',       array( $this, 'metabox_classes' ) );
 			add_filter( 'postbox_classes_' . MYCRED_COUPON_KEY . '_mycred-coupon-requirements', array( $this, 'metabox_classes' ) );
@@ -535,7 +535,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 			<div class="form-group">
 				<label for=""><?php esc_html_e( 'Value', 'mycred' ); ?></label>
 				<input type="text" name="mycred_coupon[value]" class="form-control" id="mycred-coupon-value" value="<?php echo esc_attr( $mycred->number( $coupon->value ) ); ?>" />
-				<span class="description"><?php echo esc_html( $mycred->template_tags_general( __( 'The amount of %plural% a user receives when redeeming this coupon.', 'mycred' ) ) ); ?></span>
+				<p class="description"><?php echo esc_html( $mycred->template_tags_general( __( 'The amount of %plural% a user receives when redeeming this coupon.', 'mycred' ) ) ); ?></p>
 			</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -543,8 +543,8 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				<label for=""><?php esc_html_e( 'Point Type', 'mycred' ); ?></label>
 				<?php if ( count( $this->point_types ) > 1 ) : ?>
 
-					<?php wp_kses( mycred_types_select_from_dropdown( 'mycred_coupon[type]', 'mycred-coupon-type', $coupon->point_type, false, ' class="form-control"' ), $allowed_html ); ?><br />
-					<span class="description"><?php esc_html_e( 'Select the point type that this coupon is applied.', 'mycred' ); ?></span>
+					<?php mycred_types_select_from_dropdown( 'mycred_coupon[type]', 'mycred-coupon-type', $coupon->point_type, false, ' class="form-control"' ); ?><br />
+					<p class="description"><?php esc_html_e( 'Select the point type that this coupon is applied.', 'mycred' ); ?></p>
 
 				<?php else : ?>
 
@@ -558,7 +558,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 			<div class="form-group">
 				<label for=""><?php esc_html_e( 'Expire', 'mycred' ); ?></label>
 				<input type="text" name="mycred_coupon[expires]" class="form-control" id="mycred-coupon-expire" maxlength="10" value="<?php echo esc_attr( $coupon->expires ); ?>" placeholder="YYYY-MM-DD" />
-				<span class="description"><?php esc_html_e( 'Optional date when this coupon expires. Expired coupons will be trashed.', 'mycred' ); ?></span>
+				<p class="description"><?php esc_html_e( 'Optional date when this coupon expires. Expired coupons will be trashed.', 'mycred' ); ?></p>
 			</div>
 		</div>
 	</div>
@@ -594,7 +594,7 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 			<div class="form-group">
 				<label for="mycred-coupon-global"><?php esc_html_e( 'Global Maximum', 'mycred' ); ?></label>
 				<input type="text" name="mycred_coupon[global]" class="form-control" id="mycred-coupon-global" value="<?php echo absint( $coupon->max_global ); ?>" />
-				<span class="description">
+				<p class="description">
 					<?php
 					printf( 
 						'%s <a href="%s">%s</a>' ,
@@ -603,14 +603,14 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 						esc_html__( 'Description', 'mycred' ) 
 					); 
 					?>
-				</span>
+				</p>
 			</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="mycred-coupon-user"><?php esc_html_e( 'User Maximum', 'mycred' ); ?></label>
 				<input type="text" name="mycred_coupon[user]" class="form-control" id="mycred-coupon-user" value="<?php echo absint( $coupon->max_user ); ?>" />
-				<span class="description"><?php esc_html_e( 'The maximum number of times this coupon can be used by a user. If 0 is selected then the coupon will not work.', 'mycred' ); ?></span>
+				<p class="description"><?php esc_html_e( 'The maximum number of times this coupon can be used by a user. If 0 is selected then the coupon will not work.', 'mycred' ); ?></p>
 			</div>
 		</div>
 	</div>
@@ -659,10 +659,10 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				<label for="mycred-coupon-min_balance"><?php esc_html_e( 'Minimum Balance', 'mycred' ); ?></label>
 				<div>
 					<input type="text" name="mycred_coupon[min_balance]" <?php if ( count( $this->point_types ) > 1 ) echo 'size="8"'; else echo ' style="width: 99%;"'; ?> id="mycred-coupon-min_balance" value="<?php echo esc_attr( $mycred->number( $coupon->requires_min['value'] ) ); ?>" />
-					<?php echo wp_kses( mycred_types_select_from_dropdown( 'mycred_coupon[min_balance_type]', 'mycred-coupon-min_balance_type', $coupon->requires_min_type, true, ' style="vertical-align: top;"' ), $allowed_html ); ?>
+					<?php mycred_types_select_from_dropdown( 'mycred_coupon[min_balance_type]', 'mycred-coupon-min_balance_type', $coupon->requires_min_type, false, ' style="vertical-align: top;"' ); ?>
 
 				</div>
-				<span class="description"><?php esc_html_e( 'Optional minimum balance a user must have in order to use this coupon. Use zero to disable.', 'mycred' ); ?></span>
+				<p class="description"><?php esc_html_e( 'Optional minimum balance a user must have in order to use this coupon. Use zero to disable.', 'mycred' ); ?></p>
 			</div>
 		</div>
 	</div>
@@ -672,9 +672,9 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				<label for="mycred-coupon-max_balance"><?php esc_html_e( 'Maximum Balance', 'mycred' ); ?></label>
 				<div>
 					<input type="text" name="mycred_coupon[max_balance]" <?php if ( count( $this->point_types ) > 1 ) echo 'size="8"'; else echo ' style="width: 99%;"'; ?> id="mycred-coupon-max_balance" value="<?php echo esc_attr( $mycred->number( $coupon->requires_max['value'] ) ); ?>" />
-					<?php echo wp_kses( mycred_types_select_from_dropdown( 'mycred_coupon[max_balance_type]', 'mycred-coupon-max_balance_type', $coupon->requires_max_type, true, ' style="vertical-align: top;"' ), $allowed_html ); ?>
+					<?php mycred_types_select_from_dropdown( 'mycred_coupon[max_balance_type]', 'mycred-coupon-max_balance_type', $coupon->requires_max_type, false, ' style="vertical-align: top;"' ); ?>
 				</div>
-				<span class="description"><?php esc_html_e( 'Optional maximum balance a user can have in order to use this coupon. Use zero to disable.', 'mycred' ); ?></span>
+				<p class="description"><?php esc_html_e( 'Optional maximum balance a user can have in order to use this coupon. Use zero to disable.', 'mycred' ); ?></p>
 			</div>
 		</div>
 	</div>
@@ -692,21 +692,37 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 			
 			wp_enqueue_script( 'mycred-coupon-badge-rank-js' );
 			wp_enqueue_style( 'mycred-coupon-badge-rank-style' );
-			$types_ids = mycred_get_post_meta( $post->ID, 'reward' );
-			$check_enable_disable = mycred_get_post_meta( $post->ID, 'check', true );
-			$enable_disable = ! empty( $check_enable_disable );
-			$coupon = mycred_get_coupon( $post->ID );
-			$manual_rank = '';
+
+			$rewards     = mycred_get_post_meta( $post->ID, 'reward', true );
+			$is_enabled  = ! empty( mycred_get_post_meta( $post->ID, 'check', true ) );
+			$coupon      = mycred_get_coupon( $post->ID );
+			$badge_ids   = array();
+			$ranks 		 = array();
+			$manual_rank = false;
 			
 			if( class_exists( 'myCRED_Badge' ) ) {
-				$badge_id = mycred_get_badge_ids();
-			}
-			if( class_exists( 'myCRED_Ranks_Module' ) ){
-				$ranks = mycred_get_ranks();
-				$manual_rank = mycred_manual_ranks( $coupon->point_type );
+				
+				$badge_ids = mycred_get_badge_ids();
+			
 			}
 
-			$allowed_html = array(
+			if( class_exists( 'myCRED_Ranks_Module' ) ) {
+
+				$manual_rank = mycred_manual_ranks( $coupon->point_type );
+
+				if ( $manual_rank ) $ranks = mycred_get_ranks();
+		
+			}
+
+	 		wp_localize_script( 
+	 			'mycred-coupon-badge-rank-js', 
+	 			'mycred_coupon_object', 
+	 			array( 
+	 				'html' => $this->rewards_html( $coupon, $badge_ids, $ranks, '', '' ) 
+	 			) 
+	 		);
+
+	 		$allowed_html = array(
 				'input' => array(
 					'type'  => array(),
 					'value' => array(),
@@ -740,177 +756,145 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 					'class' => array()
 				),
 			);
-			ob_start(); ?>
-			<div class="mycred-border" >
-				<div class="row">
-					<div class="mycred-title"><button type="button" class="dashicons-before dashicons-no-alt close-button" ></button><?php 
-						esc_html_e( 'Reward', 'mycred' ); ?>	 
-					</div>
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label for="mycred-select-coupon-reward"><?php esc_html_e( 'Select Reward Type : ', 'mycred' ); ?></label>
-							<div class="mycred-select-coupon-reward" >
-		                        <select name="mycred_coupon[reward][types][]" class="mycred-select-coupon-rewards"><?php
-		                        	if( class_exists( 'myCRED_Badge' ) && ( empty( $ranks ) || ! empty( $badge_id ) ) ){ ?>
-		                        		<option value="mycred_coupon_badges" ><?php esc_html_e( 'Badges', 'mycred' ); ?></option>
-		                        <?php } 
-		                        	if( class_exists( 'myCRED_Ranks_Module' ) && $manual_rank && ( ! empty( $ranks ) || empty( $badge_id ) ) ) { ?>
-		                        	<option value="mycred_coupon_ranks" ><?php esc_html_e( 'Ranks', 'mycred' ); ?></option>
-								<?php } ?>
-								</select>    
-		                    </div>
-						</div>
-					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<div class="ids show-badges" >
-								<label for="mycred-select-coupon" id="change-text"><?php echo class_exists( 'myCRED_Badge' ) && ( empty( $ranks ) || ! empty( $badge_id ) ) ? esc_html_e( 'Badges : ', 'mycred' ) : esc_html_e( 'Ranks : ', 'mycred' ); ?></label>
-								<div class="mycred-select-coupon"><?php
-		                        	if( ! empty( $badge_id ) || ! empty( $ranks ) ){?>	
-			                        	<select name="mycred_coupon[reward][ids][]" class="mycred-select-ids"><?php
-				                        	if( class_exists( 'myCRED_Badge' ) ) {
-					                        	foreach ($badge_id as $key => $value) {
-					                        		$badges = mycred_get_badge( $value );?>
-					                        		<option value="<?php echo esc_attr( $value );?>"><?php esc_html_e( $badges->title ) ?></option><?php
-					                        	 }
-				                        	}
-				                        	if( class_exists( 'myCRED_Ranks_Module' ) && empty($badge_id) ) {
-					                        	foreach ( $ranks as $key => $value ) { ?>
-					                        		<option value="<?php echo esc_attr( $value->post_id );?>"><?php esc_html_e( $value->post->post_title ) ?></option><?php
-					                        	} 
-					                        }?>
-				                        </select><?php 
-				                    } ?> 	
-			                    </div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			
-			<?php $html = ob_get_clean(); ?>
-
+			?>
 			<div class="mycred-badge-rank-hide-show">
-				<div class="mycred-switch">
+				<div class="mycred-toggle-wrapper">
 					<label><strong><?php esc_html_e( 'Enable this to assign badge/ranks through coupon.', 'mycred' ); ?></strong></label>
-					<label class="mycred-switch1">
-	                    <input type="checkbox" id="mycred-check" name="mycred_coupon[check]" <?php echo $enable_disable == true ? 'checked' : ''; ?>>
+					<label class="mycred-toggle">
+	                    <input type="checkbox" id="mycred-check" name="mycred_coupon[check]" <?php echo $is_enabled ? 'checked' : ''; ?>>
 	                    <span class="slider round"></span>
 	                </label>
 	            </div>
 			</div>
-				<div class="form mycred-coupon-form" <?php echo $enable_disable == true ? 'style="display: block;"' : 'style="display: none;"' ?> >
-					<label class="mycred-rank-msg">
-						<strong><?php esc_html_e( 'You can only assign Ranks when Ranks are set to Manual Mode.: ', 'mycred' ); ?></strong>
-					</label><?php
-					if( ! empty( $types_ids ) ) {
-						foreach ( $types_ids[0] as $keys => $values ) {
-							echo wp_kses( $this->mycred_coupon_badge_rank_html( $values['types'], $values['ids'], $manual_rank ), $allowed_html );	
-						} 
+			<div class="form mycred-coupon-form" <?php echo $is_enabled ? 'style="display: block;"' : 'style="display: none;"' ?>>
+				<?php if( ! $manual_rank ): ?>
+				<label class="mycred-rank-msg">
+					<strong><?php esc_html_e( 'You can only assign Ranks when Ranks are set to Manual Mode.', 'mycred' ); ?></strong>
+				</label>
+				<?php endif;?>
+				<?php
+					if( empty( $badge_ids ) && empty( $ranks ) ) {
+
+						echo wp_kses( '<div class="myc-notice">'. __( 'In order to set a reward, you must create a Badge or a Rank.', 'mycred' ) .'</div>', $allowed_html );
+
+					}
+					elseif( ! empty( $rewards ) ) {
+						
+						foreach ( $rewards as $reward ) {
+
+							echo wp_kses( 
+								$this->rewards_html( $coupon, $badge_ids, $ranks, $reward['types'], $reward['ids'] ),  
+								$allowed_html
+							);
+
+						}
+					
 					}
 					else {
-						echo wp_kses( $html, $allowed_html );
-					}?>
 					
-					<div><button type="button" class="mycred-addmore-button button-secondary">Add More</button></div>
-				</div><?php
+						echo wp_kses( 
+							$this->rewards_html( $coupon, $badge_ids, $ranks ),  
+							$allowed_html
+						);
+					
+					}
+				?>
+				<?php if( ! empty( $badge_ids ) || ! empty( $ranks ) ): ?>
+				<button type="button" class="mycred-addmore-button button button-secondary">Add More</button>
+				<?php endif;?>
+			</div>
+			<?php
 
-	 		wp_localize_script( 'mycred-coupon-badge-rank-js', 'mycred_coupon_object', 
-            	array( 
-		            'html' => $html,
-		        )
-		    );
 		}
 
-		public function mycred_coupon_badge_rank_html( $types, $ids, $manual_rank ){ 
+		public function rewards_html( $coupon, $badge_ids, $ranks, $type = '', $id = '' ) {
 
-			$selected_type = '';
-			
-			if( class_exists( 'myCRED_Badge' ) ) {
-				$badge_id = mycred_get_badge_ids();
+			$selected_type = ! empty( $type ) ? ( $type == 'mycred_coupon_badges' ? 'badge' : 'rank' ) : '';
+
+			if ( empty( $selected_type ) ) {
+				
+				if ( ! empty( $badge_ids ) ) 
+					$selected_type = 'badge';
+				elseif ( ! empty( $ranks ) ) 
+					$selected_type = 'rank';
+
 			}
-			if( class_exists( 'myCRED_Ranks_Module' ) ){
-				$ranks = mycred_get_ranks();
+			
+			if( empty( $ranks ) ) {
+				
+				if ( $selected_type == 'rank' && ! empty( $badge_ids ) ) $selected_type = 'badge';
+			
 			}
 			
+			if( empty( $badge_ids ) ) {
+				
+				if ( $selected_type == 'badge' && ! empty( $ranks ) ) $selected_type = 'rank';
+			
+			}
+			
+			ob_start();
 			?>
 
-			<div class="mycred-border" >
+			<div class="mycred-border">
 				<div class="row">
-					<div class="mycred-title"><button type="button" class="dashicons-before dashicons-no-alt close-button" ></button><?php 
-						esc_html_e( 'Reward', 'mycred' ); ?>
+					<div class="mycred-title">
+						<span><?php esc_html_e( 'Reward', 'mycred' );?></span>
+						<button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close close-button" title="✕">✕</button>
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 						<div class="form-group">
-							<label for="mycred-select-coupon-reward"><?php esc_html_e( 'Select Reward Type : ', 'mycred' ); ?></label>
+							<label for="mycred-select-coupon-reward" class="inline"><?php esc_html_e( 'Select Reward Type : ', 'mycred' ); ?></label>
 							<div class="mycred-select-coupon-reward">
-		                        <select name="mycred_coupon[reward][types][]" class="mycred-select-coupon-rewards"><?php 
-
-		                        if ( class_exists( 'myCRED_Badge' ) ) { 
-
-		                        	if ( $types == 'mycred_coupon_badges' ) $selected_type = 'badge';
-		                        	
-		                        	?>
-		                        	<option value="mycred_coupon_badges" <?php echo $types == 'mycred_coupon_badges' ? 'selected="selected"' : ''; ?>><?php esc_html_e( 'Badges', 'mycred' ); ?></option>
-		                  <?php }
-		                  		else {
-		                  			if ( $types == 'mycred_coupon_badges' && class_exists( 'myCRED_Ranks_Module' ) && $manual_rank ) $selected_type = 'rank';
-		                  		}
-		                        if( class_exists( 'myCRED_Ranks_Module' ) && $manual_rank ) { 
-
-		                        	if ( $types == 'mycred_coupon_ranks' ) $selected_type = 'rank';
-		                        	?>
-		                        	<option value="mycred_coupon_ranks" <?php echo  $types == 'mycred_coupon_ranks' ? 'selected="selected"' : ''; ?>><?php esc_html_e( 'Ranks', 'mycred' ); ?></option>
-		                        <?php } 
-		                        else{
-		                        	if ( $types == 'mycred_coupon_ranks' && class_exists( 'myCRED_Badge' ) ) $selected_type = 'badge';
-		                        } ?>
-
-
+		                        <select name="mycred_coupon[reward][types][]" class="mycred-select-coupon-rewards">
+		                        <?php if ( ! empty( $badge_ids ) ) :?>
+		                        	<option value="mycred_coupon_badges" <?php echo $selected_type == 'badge' ? 'selected="selected"' : ''; ?>><?php esc_html_e( 'Badges', 'mycred' ); ?></option>
+		                        <?php endif;?>
+								<?php if ( ! empty( $ranks ) ) :?>
+		                        	<option value="mycred_coupon_ranks" <?php echo $selected_type == 'rank' ? 'selected="selected"' : ''; ?>><?php esc_html_e( 'Ranks', 'mycred' ); ?></option>
+		                        <?php endif;?>
 								</select>    
 		                    </div>
 						</div>
 					</div>
-					
 				</div>
-
 				<div class="row">
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 						<div class="form-group">
 							<div class="ids show-badges" >
-								<label for="mycred-select-coupon" id="change-text"><?php ( ! empty( $badge_id ) && $types == 'mycred_coupon_badges' ) ? esc_html_e( 'Badges : ', 'mycred' ) : esc_html_e( 'Ranks : ', 'mycred' ); ?></label>
-								<div class="mycred-select-coupon"><?php
-		                        	
-		                        	if( ! empty( $badge_id ) || ! empty( $ranks ) ){?>
+								<label for="mycred-select-coupon" id="change-text" class="inline"><?php ( $selected_type == 'badge' && ! empty( $badge_ids ) ) ? esc_html_e( 'Badges : ', 'mycred' ) : esc_html_e( 'Ranks : ', 'mycred' ); ?></label>
+								<div class="mycred-select-coupon">
+		                        	<select name="mycred_coupon[reward][ids][]" class="mycred-select-ids">
+		                        	<?php
+			                        	if( $selected_type == 'badge' ) {
+
+				                        	foreach ( $badge_ids as $badge_id ) {
+				                        		$badge = mycred_get_badge( $badge_id );?>
+				                        		<option value="<?php echo esc_attr( $badge_id ); ?>" <?php echo $id == $badge_id ? 'selected="selected"' : ''; ?>><?php echo esc_html( $badge->title ) ?></option><?php
+				                        	}
+
+				                        }
+				                        elseif( $selected_type == 'rank' ) { 
 			                        	
-			                        	<select name="mycred_coupon[reward][ids][]" class="mycred-select-ids"><?php
-				                        	
-				                        	if( $selected_type == 'badge' ){
-					                        	foreach ($badge_id as $key => $value) {
-					                        		$badges = mycred_get_badge( $value );?>
-					                        		<option value="<?php echo esc_attr( $value ); ?>" <?php echo  $ids == $value ? 'selected="selected"' : ''; ?>><?php esc_html_e( $badges->title ) ?></option><?php
-					                        	}
-					                        }elseif( $selected_type == 'rank'  ) { 
-					                        	
-						                        	foreach ( $ranks as $key => $value ) { ?>
-						                        		<option value="<?php echo esc_attr( $value->post_id ); ?>" <?php echo  $ids == $value->post_id ? 'selected="selected"' : ''; ?>><?php esc_html_e( $value->post->post_title ) ?></option><?php
-						                        	}
-						                        }
-					                         ?>
+				                        	foreach ( $ranks as $rank ) { ?>
+				                        		<option value="<?php echo esc_attr( $rank->post_id ); ?>" <?php echo $id == $rank->post_id ? 'selected="selected"' : ''; ?>><?php echo esc_html( $rank->post->post_title ) ?></option><?php
+				                        	}
 				                        
-				                        </select><?php
-
-			                        }?>	
-
+				                        }
+				                    ?>
+			                        </select>
 			                    </div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div><?php
+			</div>
+			<?php
+
+			$html = ob_get_clean();
+
+			return $html;
+
 		}
 
 
@@ -1053,75 +1037,87 @@ if ( ! class_exists( 'myCRED_Coupons_Module' ) ) :
 				$prefs = mycred_apply_defaults( $this->default_prefs, $this->coupons );
 
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Coupons', 'mycred' ); ?></h4>
-<div class="body" style="display:none;">
+<div class="mycred-ui-accordion">
+	<div class="mycred-ui-accordion-header">
+        <h4 class="mycred-ui-accordion-header-title">
+            <span class="dashicons dashicons-tickets-alt static mycred-ui-accordion-header-icon"></span>
+            <label><?php esc_html_e( 'Coupons', 'mycred' ); ?></label>
+        </h4>
+        <div class="mycred-ui-accordion-header-actions hide-if-no-js">
+            <button type="button" aria-expanded="true">
+                <span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+	<div class="body mycred-ui-accordion-body" style="display:none;">
 
-	<h3><?php esc_html_e( 'Message Templates', 'mycred' ); ?></h3>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'invalid' ) ); ?>"><?php esc_html_e( 'Invalid Coupon Message', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'invalid' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'invalid' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['invalid'] ); ?>" />
-				<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when users try to use a coupon that does not exists.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+		<h3><?php esc_html_e( 'Message Templates', 'mycred' ); ?></h3>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'invalid' ) ); ?>"><?php esc_html_e( 'Invalid Coupon Message', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'invalid' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'invalid' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['invalid'] ); ?>" />
+					<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when users try to use a coupon that does not exists.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+				</div>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'expired' ) ); ?>"><?php esc_html_e( 'Expired Coupon Message', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'expired' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'expired' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['expired'] ); ?>" />
+					<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when users try to use that has expired.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+				</div>
 			</div>
 		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'expired' ) ); ?>"><?php esc_html_e( 'Expired Coupon Message', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'expired' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'expired' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['expired'] ); ?>" />
-				<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when users try to use that has expired.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'min' ) ); ?>"><?php esc_html_e( 'Minimum Balance Message', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'min' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'min' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['min'] ); ?>" />
+					<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when a user does not meet the minimum balance requirement. (if used)', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+				</div>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'max' ) ); ?>"><?php esc_html_e( 'Maximum Balance Message', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'max' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'max' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['max'] ); ?>" />
+					<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when a user does not meet the maximum balance requirement. (if used)', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'min' ) ); ?>"><?php esc_html_e( 'Minimum Balance Message', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'min' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'min' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['min'] ); ?>" />
-				<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when a user does not meet the minimum balance requirement. (if used)', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'user_limit' ) ); ?>"><?php esc_html_e( 'User Limit Message', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'user_limit' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'user_limit' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['user_limit'] ); ?>" />
+					<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when the user limit has been reached for the coupon.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+				</div>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'excluded' ) ); ?>"><?php esc_html_e( 'Excluded Message', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'excluded' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'excluded' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['excluded'] ); ?>" />
+					<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when a user is excluded from the point type the coupon gives.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+				</div>
 			</div>
 		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'max' ) ); ?>"><?php esc_html_e( 'Maximum Balance Message', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'max' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'max' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['max'] ); ?>" />
-				<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when a user does not meet the maximum balance requirement. (if used)', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'success' ) ); ?>"><?php esc_html_e( 'Success Message', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'success' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'success' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['success'] ); ?>" />
+					<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when a coupon was successfully deposited to a users account.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general', 'amount' ) ) ) ); ?></span></p>
+				</div>
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $this->field_name( 'log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" />
+					<p><span class="description"><?php printf( '%s %s', esc_html__( 'Log entry for successful coupon redemption. Use %coupon% to show the coupon code.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general', 'amount' ) ) ) ); ?></span></p>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'user_limit' ) ); ?>"><?php esc_html_e( 'User Limit Message', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'user_limit' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'user_limit' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['user_limit'] ); ?>" />
-				<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when the user limit has been reached for the coupon.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
-			</div>
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'excluded' ) ); ?>"><?php esc_html_e( 'Excluded Message', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'excluded' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'excluded' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['excluded'] ); ?>" />
-				<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when a user is excluded from the point type the coupon gives.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general' ) ) ) ); ?></span></p>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'success' ) ); ?>"><?php esc_html_e( 'Success Message', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'success' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'success' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['success'] ); ?>" />
-				<p><span class="description"><?php printf( '%s %s', esc_html__( 'Message to show when a coupon was successfully deposited to a users account.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general', 'amount' ) ) ) ); ?></span></p>
-			</div>
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>"><?php esc_html_e( 'Log Template', 'mycred' ); ?></label>
-				<input type="text" name="<?php echo esc_attr( $this->field_name( 'log' ) ); ?>" id="<?php echo esc_attr( $this->field_id( 'log' ) ); ?>" class="form-control" placeholder="<?php esc_attr_e( 'Required', 'mycred' ); ?>" value="<?php echo esc_attr( $prefs['log'] ); ?>" />
-				<p><span class="description"><?php printf( '%s %s', esc_html__( 'Log entry for successful coupon redemption. Use %coupon% to show the coupon code.', 'mycred' ), wp_kses_post( $this->available_template_tags( array( 'general', 'amount' ) ) ) ); ?></span></p>
-			</div>
-		</div>
-	</div>
 
+	</div>
 </div>
 <?php
 

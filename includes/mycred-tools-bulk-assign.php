@@ -30,38 +30,38 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
         if( class_exists( 'myCRED_Ranks_Module' ) ) $award_type['ranks'] = __( 'Ranks', 'mycred' );
 
         $award_args = array(
-            'class'	=>	'bulk-award-type',
-            'name'	=>	'bulk_award_type',
-            'id'	=>	'bulk-award-type'
+            'class' =>  'bulk-award-type',
+            'name'  =>  'bulk_award_type',
+            'id'    =>  'bulk-award-type'
         );
 
         $point_types = mycred_get_types();
 
         $pt_args = array(
-            'name'	=> 'bulk_award_pt', 
-            'id'	=>	'bulk-award-pt', 
-            'class'	=>	'bulk-award-pt'
+            'name'  => 'bulk_award_pt', 
+            'id'    =>  'bulk-award-pt', 
+            'class' =>  'bulk-award-pt'
         );
 
         $user_args = array(
-            'users'	=>	array(
-                'name'	=>	'bulk_users',
-                'class'	=>	'bulk-users',
-                'id'	=>	'bulk-users'
+            'users' =>  array(
+                'name'  =>  'bulk_users',
+                'class' =>  'bulk-users',
+                'id'    =>  'bulk-users'
             ),
-            'roles'	=>	array(
-                'name'	=>	'bulk_roles',
-                'class'	=>	'bulk-roles',
-                'id'	=>	'bulk-roles'
+            'roles' =>  array(
+                'name'  =>  'bulk_roles',
+                'class' =>  'bulk-roles',
+                'id'    =>  'bulk-roles'
             ),
         );
 
         //Badges
         $badges_args = array(
-            'name'		=> 	'bulk_badges', 
-            'id'		=>	'bulk-badges', 
-            'class'		=>	'bulk-badges',
-            'multiple'	=>	'multiple'
+            'name'      =>  'bulk_badges', 
+            'id'        =>  'bulk-badges', 
+            'class'     =>  'bulk-badges',
+            'multiple'  =>  'multiple'
         );
 
         $badges = array();
@@ -75,9 +75,9 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
 
         //Ranks
         $ranks_args = array(
-            'name'		=> 	'bulk_ranks', 
-            'id'		=>	'bulk-ranks', 
-            'class'		=>	'bulk-ranks'
+            'name'      =>  'bulk_ranks', 
+            'id'        =>  'bulk-ranks', 
+            'class'     =>  'bulk-ranks'
         );
 
         $ranks = array();
@@ -99,28 +99,13 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
 
         ?>
         <h1>Award/ Revoke</h1>
-        <form class="mycred-tools-ba-award-form">
+        <form class="mycred-tools-ba-award-form form">
             <table width="" class="mycred-tools-ba-award-table" cellpadding="10">
                 <thead>
                     <tr>
                         <td><label for=""><?php esc_html_e( 'Select Type', 'mycred' ) ?></label></td>
                         <td>
-                            <?php echo wp_kses(
-                                    mycred_create_select2( $award_type, $award_args ),
-                                    array(
-                                        'select' => array(
-                                            'id' => array(),
-                                            'class' => array(),
-                                            'name' => array(),
-                                            'style' => array()
-                                        ),
-                                        'option' => array(
-                                            'value' => array(),
-                                            'selected' => array()
-                                        ),
-                                    )
-                                ); 
-                            ?>
+                         <?php mycred_create_select_field( $award_type, array(), $award_args ); ?>
                         </td>
                     </tr>
                 </thead>
@@ -130,7 +115,7 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                     <tr>
                         <td><label for=""><?php esc_html_e( 'Points to Award/ Revoke', 'mycred' ) ?></label></td>
                         <td>
-                            <input type="number" name="bulk_award_point">
+                            <input type="number" name="bulk_award_point" class="form-control">
                         </td>
                     </tr>
 
@@ -149,29 +134,15 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                     <tr>
                         <td><label for=""><?php esc_html_e( 'Select Point Type', 'mycred' ) ?></label></td>
                         <td>
-                            <?php echo wp_kses(
-                                    mycred_create_select2( $point_types, $pt_args ),
-                                    array(
-                                        'select' => array(
-                                            'id' => array(),
-                                            'name' => array(),
-                                            'class' => array(),
-                                            'style' => array()
-                                        ),
-                                        'option' => array(
-                                            'value' => array(),
-                                            'selected' => array()
-                                        ),
-                                    )
-                                ); 
-                            ?>        
+                         <?php mycred_create_select_field( $point_types, array(), $pt_args ); ?>
+                            
                         </td>
                     </tr>
 
                     <tr>
                         <td><label for=""><?php esc_html_e( 'Enable to Log Entry', 'mycred' ) ?></label></td>
                         <td>
-                            <label class="mycred-switch1">
+                            <label class="mycred-toggle">
                                 <input type="checkbox" value="1" class="log-entry">
                                 <span class="slider round"></span>
                             </label>
@@ -190,7 +161,7 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                     <tr class="log-entry-row">
                         <td><label for=""><?php esc_html_e( 'Log Entry', 'mycred' ) ?></label></td>
                         <td>
-                            <input type="text" name="log_entry_text">
+                            <input type="text" name="log_entry_text" class="form-control">
                             <p><i>
                                 <?php esc_html_e( 'Enter Text for log entry.', 'mycred' ) ?>
                             </i></p>
@@ -229,22 +200,7 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                     <tr>
                         <td><label for=""><?php esc_html_e( 'Select Rank', 'mycred' ) ?></label></td>
                         <td>
-                            <?php echo wp_kses(
-                                    mycred_create_select2( $ranks, $ranks_args ),
-                                    array(
-                                        'select' => array(
-                                            'id' => array(),
-                                            'name' => array(),
-                                            'class' => array(),
-                                            'style' => array()
-                                        ),
-                                        'option' => array(
-                                            'value' => array(),
-                                            'selected' => array()
-                                        ),
-                                    )
-                                ); 
-                            ?>
+                            <?php mycred_create_select_field( $ranks, array(), $ranks_args, true );?>
                         </td>
                     </tr>
                     <tr class="bulk-award-rank">
@@ -269,16 +225,16 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                         'td'    => array(
                             'class'     => array()
                         ),
-                        'label'	=> array(
-                            'class'	    => array(),
+                        'label' => array(
+                            'class'     => array(),
                             'for'       => array()
                         ),
                         'input' => array(
-                            'type'  	=> array(),
-                            'value' 	=> array(),
-                            'name'  	=> array(),
-                            'class'		=> array(),
-                            'id'		=> array(),
+                            'type'      => array(),
+                            'value'     => array(),
+                            'name'      => array(),
+                            'class'     => array(),
+                            'id'        => array(),
                             'checked'   => array()
                         ),
                         'span'	=> array(
@@ -292,8 +248,8 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                             'multiple'   => array()
                         ),
                         'option' => array(
-                            'value'    	=> array(),
-                            'selected' 	=> array()
+                            'value'     => array(),
+                            'selected'  => array()
                         )
                     ); 
                 
@@ -302,11 +258,9 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
                 <!-- Award Button -->
                 <tbody>
                 <tr>
-                    <td>
-                        <button class="button button-large large button-primary tools-bulk-assign-award-btn award-points">
-                            <span class="dashicons dashicons-update mycred-button1"></span> 
-                            Update
-                        </button>
+                    <td colspan="2">
+                        <button class="button button-primary tools-bulk-assign-award-btn award-points">Update</button>
+                        <span class="mycred-spinner spinner"></span> 
                     </td>
                 </tr>
                 </tbody>
@@ -336,24 +290,24 @@ class myCRED_Tools_Bulk_Assign extends myCRED_Tools
         }
 
         $roles_args = array(
-            'name'		=>	$args['roles']['name'],
-            'id'		=>	$args['roles']['id'],
-            'class'		=>	$args['roles']['class'],
-            'multiple'	=>	'multiple'
+            'name'      =>  $args['roles']['name'],
+            'id'        =>  $args['roles']['id'],
+            'class'     =>  $args['roles']['class'],
+            'multiple'  =>  'multiple'
         );
 
-		$content = '';
-		
-		$content .= 
-		'<tr>
-			<td><label for="">Award/ Revoke to All Users</label></td>
-			<td>
-				<label class="mycred-switch1">
-					<input type="checkbox" name="" class="award-to-all">
-					<span class="slider round"></span>
-				</label>
-			</td>
-		</tr>
+        $content = '';
+        
+        $content .= 
+        '<tr>
+            <td><label for="">Award/ Revoke to All Users</label></td>
+            <td>
+                <label class="mycred-toggle">
+                    <input type="checkbox" name="" class="award-to-all">
+                    <span class="slider round"></span>
+                </label>
+            </td>
+        </tr>
 
         <tr class="users-row">
             <td class="tb-zero-padding">

@@ -386,107 +386,119 @@ jQuery(function($) {
 			$export_formats         = mycred_get_export_formats();
 			$export_formats['both'] = __( 'Make both format options available.', 'mycred' );
 ?>
-<h4><span class="dashicons dashicons-admin-plugins static"></span><?php esc_html_e( 'Exports', 'mycred' ); ?></h4>
-<div class="body" style="display: none;">
-
-	<div class="row">
-		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label class="mycred-export-prefs-front-end"><?php esc_html_e( 'Front End Exports', 'mycred' ); ?></label>
-				<select name="mycred_pref_core[export][front]" id="mycred-export-prefs-front-end" class="form-control">
-<?php
-
-			foreach ( $enabled_disabled as $value => $label ) {
-				echo '<option value="' . esc_attr( $value ). '"';
-				if ( $this->export['front'] == $value ) echo ' selected="selected"';
-				echo '>' . esc_html( $label ). '</option>';
-			}
-
-?>
-				</select>
-			</div>
-		</div>
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="mycred-export-prefs-front-end-format"><?php esc_html_e( 'Export Format', 'mycred' ); ?></label>
-				<select name="mycred_pref_core[export][front_format]" id="mycred-export-prefs-front-end-format" class="form-control">
-<?php
-
-			foreach ( $export_formats as $value => $label ) {
-				echo '<option value="' . esc_attr( $value ) . '"';
-				if ( $this->export['front_format'] == $value ) echo ' selected="selected"';
-				echo '>' . esc_html( $label ) . '</option>';
-			}
-
-?>
-				</select>
-			</div>
-		</div>
-		<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="mycred-export-prefs-front-end-name"><?php esc_html_e( 'File Name', 'mycred' ); ?></label>
-				<input type="text" class="form-control" name="mycred_pref_core[export][front_name]" id="mycred-export-prefs-front-end-name" value="<?php echo esc_attr( $this->export['front_name'] ); ?>" />
-				<p><span class="description"><?php echo '<code>%point_type%</code> = ' . esc_html__( 'Point Type', 'mycred' ) . ', <code>%username%</code> = ' . esc_html__( 'Username', 'mycred' ); ?></span></p>
-			</div>
+<div class="mycred-ui-accordion">
+	<div class="mycred-ui-accordion-header">
+		<h4 class="mycred-ui-accordion-header-title">
+			<span class="dashicons dashicons-database-export static mycred-ui-accordion-header-icon"></span>
+			<label><?php esc_html_e( 'Exports', 'mycred' ); ?></label>
+		</h4>
+		<div class="mycred-ui-accordion-header-actions hide-if-no-js">
+			<button type="button" aria-expanded="true">
+				<span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+			</button>
 		</div>
 	</div>
+	<div class="body mycred-ui-accordion-body" style="display: none;">
 
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<p><span class="description"><?php echo wp_kses_post( str_replace( 'mycred_history', '<a href="http://codex.mycred.me/shortcodes/mycred_history/" target="_blank">mycred_history</a>', esc_html__( 'If enabled, users will only be able to export their own log entries! Export tools becomes available wherever you are using the mycred_history shortcode or in the users profile.', 'mycred' ) ) ); ?></span></p>
-		</div>
-	</div>
+		<div class="row">
+			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label class="mycred-export-prefs-front-end"><?php esc_html_e( 'Front End Exports', 'mycred' ); ?></label>
+					<select name="mycred_pref_core[export][front]" id="mycred-export-prefs-front-end" class="form-control">
+	<?php
 
-	<div class="row">
-		<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label class="mycred-export-prefs-admin-end"><?php esc_html_e( 'Back End Exports', 'mycred' ); ?></label>
-				<select name="mycred_pref_core[export][admin]" id="mycred-export-prefs-admin-end" class="form-control">
-<?php
+				foreach ( $enabled_disabled as $value => $label ) {
+					echo '<option value="' . esc_attr( $value ). '"';
+					if ( $this->export['front'] == $value ) echo ' selected="selected"';
+					echo '>' . esc_html( $label ). '</option>';
+				}
 
-			foreach ( $enabled_disabled as $value => $label ) {
-				echo '<option value="' . esc_attr( $value ) . '"';
-				if ( $this->export['admin'] == $value ) echo ' selected="selected"';
-				echo '>' . esc_html( $label ) . '</option>';
-			}
+	?>
+					</select>
+				</div>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="mycred-export-prefs-front-end-format"><?php esc_html_e( 'Export Format', 'mycred' ); ?></label>
+					<select name="mycred_pref_core[export][front_format]" id="mycred-export-prefs-front-end-format" class="form-control">
+	<?php
 
-?>
-				</select>
+				foreach ( $export_formats as $value => $label ) {
+					echo '<option value="' . esc_attr( $value ) . '"';
+					if ( $this->export['front_format'] == $value ) echo ' selected="selected"';
+					echo '>' . esc_html( $label ) . '</option>';
+				}
+
+	?>
+					</select>
+				</div>
+			</div>
+			<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="mycred-export-prefs-front-end-name"><?php esc_html_e( 'File Name', 'mycred' ); ?></label>
+					<input type="text" class="form-control" name="mycred_pref_core[export][front_name]" id="mycred-export-prefs-front-end-name" value="<?php echo esc_attr( $this->export['front_name'] ); ?>" />
+					<p><span class="description"><?php echo '<code>%point_type%</code> = ' . esc_html__( 'Point Type', 'mycred' ) . ', <code>%username%</code> = ' . esc_html__( 'Username', 'mycred' ); ?></span></p>
+				</div>
 			</div>
 		</div>
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="mycred-export-prefs-admin-end-format"><?php esc_html_e( 'Export Format', 'mycred' ); ?></label>
-				<select name="mycred_pref_core[export][admin_format]" id="mycred-export-prefs-admin-end-format" class="form-control">
-<?php
 
-			foreach ( $export_formats as $value => $label ) {
-				echo '<option value="' . esc_attr( $value ) . '"';
-				if ( $this->export['admin_format'] == $value ) echo ' selected="selected"';
-				echo '>' . esc_attr( $label ) . '</option>';
-			}
-
-?>
-				</select>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<p><span class="description"><?php echo wp_kses_post( str_replace( 'mycred_history', '<a href="http://codex.mycred.me/shortcodes/mycred_history/" target="_blank">mycred_history</a>', esc_html__( 'If enabled, users will only be able to export their own log entries! Export tools becomes available wherever you are using the mycred_history shortcode or in the users profile.', 'mycred' ) ) ); ?></span></p>
 			</div>
 		</div>
-		<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-			<div class="form-group">
-				<label for="mycred-export-prefs-admin-end-name"><?php esc_html_e( 'File Name', 'mycred' ); ?></label>
-				<input type="text" class="form-control" name="mycred_pref_core[export][admin_name]" id="mycred-export-prefs-admin-end-name" value="<?php echo esc_attr( $this->export['admin_name'] ); ?>" />
-				<p><span class="description"><?php echo '<code>%point_type%</code> = ' . esc_html__( 'Point Type', 'mycred' ) . ', <code>%username%</code> = ' . esc_html__( 'Username', 'mycred' ); ?></span></p>
+
+		<div class="row">
+			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label class="mycred-export-prefs-admin-end"><?php esc_html_e( 'Back End Exports', 'mycred' ); ?></label>
+					<select name="mycred_pref_core[export][admin]" id="mycred-export-prefs-admin-end" class="form-control">
+	<?php
+
+				foreach ( $enabled_disabled as $value => $label ) {
+					echo '<option value="' . esc_attr( $value ) . '"';
+					if ( $this->export['admin'] == $value ) echo ' selected="selected"';
+					echo '>' . esc_html( $label ) . '</option>';
+				}
+
+	?>
+					</select>
+				</div>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="mycred-export-prefs-admin-end-format"><?php esc_html_e( 'Export Format', 'mycred' ); ?></label>
+					<select name="mycred_pref_core[export][admin_format]" id="mycred-export-prefs-admin-end-format" class="form-control">
+	<?php
+
+				foreach ( $export_formats as $value => $label ) {
+					echo '<option value="' . esc_attr( $value ) . '"';
+					if ( $this->export['admin_format'] == $value ) echo ' selected="selected"';
+					echo '>' . esc_attr( $label ) . '</option>';
+				}
+
+	?>
+					</select>
+				</div>
+			</div>
+			<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+				<div class="form-group">
+					<label for="mycred-export-prefs-admin-end-name"><?php esc_html_e( 'File Name', 'mycred' ); ?></label>
+					<input type="text" class="form-control" name="mycred_pref_core[export][admin_name]" id="mycred-export-prefs-admin-end-name" value="<?php echo esc_attr( $this->export['admin_name'] ); ?>" />
+					<p><span class="description"><?php echo '<code>%point_type%</code> = ' . esc_html__( 'Point Type', 'mycred' ) . ', <code>%username%</code> = ' . esc_html__( 'Username', 'mycred' ); ?></span></p>
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<p><span class="description"><?php esc_html_e( 'Raw format should be used when you intend to use the export tool to backup or import entries in another installation. Formatted exports reflect what users see in their history archive.', 'mycred' ); ?></span></p>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<p><span class="description"><?php esc_html_e( 'Raw format should be used when you intend to use the export tool to backup or import entries in another installation. Formatted exports reflect what users see in their history archive.', 'mycred' ); ?></span></p>
+			</div>
 		</div>
+
+		<?php do_action( 'mycred_after_export_prefs', $this ); ?>
+
 	</div>
-
-	<?php do_action( 'mycred_after_export_prefs', $this ); ?>
-
 </div>
 <?php
 

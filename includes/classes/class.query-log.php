@@ -82,23 +82,23 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			 * If fields is set to anything but "all", the results table can not be used.
 			 *
 
-				 // Everything (default)
-				 fields=all
-				 ids=0 (depreciated)
+			 // Everything (default)
+			 fields=all
+			 ids=0 (depreciated)
 
-				 // Return entry ids
-				 fields=ids
-				 ids=1 (depreciated)
+			 // Return entry ids
+			 fields=ids
+			 ids=1 (depreciated)
 
-				 // Column
-				 fields=user_id
-				 'fields' => array( 'user_id' )
+			 // Column
+			 fields=user_id
+			 'fields' => array( 'user_id' )
 
-				 // Multiple columns
-				 fields=id,user_id,creds
-				 'fields' => array( 'id', 'user_id', 'creds' )
+			 // Multiple columns
+			 fields=id,user_id,creds
+			 'fields' => array( 'id', 'user_id', 'creds' )
 
-			 */
+			*/
 			$select        = '*';
 			$get_results   = true;
 			$get_column    = false;
@@ -1156,7 +1156,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 ?>
 	</select>
-	<input type="submit" class="button action" id="doaction" value="<?php esc_html_e( 'Apply', 'mycred' ); ?>" />
+	<input type="submit" class="button action" value="<?php esc_html_e( 'Apply', 'mycred' ); ?>" />
 </div>
 <?php
 
@@ -1190,14 +1190,6 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 			}
 
-			// Filter by user
-			if ( $this->core->user_is_point_editor() && ! $is_profile && $this->num_rows > 0 ) {
-
-				echo '<input type="text" class="form-control" name="user" id="myCRED-user-filter" size="22" placeholder="' . esc_attr__( 'User ID, Username, Email or Nicename', 'mycred' ) . '" value="' . ( ( isset( $_GET['user'] ) ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['user'] ) ) ) : '' ) . '" /> ';
-				$show = true;
-
-			}
-
 			// Filter Order
 			if ( $this->num_rows > 0 ) {
 
@@ -1215,6 +1207,14 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 			}
 
+			// Filter by user
+			if ( $this->core->user_is_point_editor() && ! $is_profile && $this->num_rows > 0 ) {
+
+				echo '<input type="text" class="form-control" name="user" id="myCRED-user-filter" size="22" placeholder="' . esc_attr__( 'User ID, Username, Email or Nicename', 'mycred' ) . '" title="' . esc_attr__( 'User ID, Username, Email or Nicename', 'mycred' ) . '" value="' . ( ( isset( $_GET['user'] ) ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['user'] ) ) ) : '' ) . '" /> ';
+				$show = true;
+
+			}
+
 			// Let others play
 			if ( has_action( 'mycred_filter_log_options' ) ) {
 				do_action( 'mycred_filter_log_options', $this );
@@ -1222,7 +1222,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			}
 
 			if ( $show === true )
-				echo '<input type="submit" class="btn btn-default button button-secondary" value="' . esc_attr__( 'Filter', 'mycred' ) . '" />';
+				echo '<input type="submit" class="button" value="' . esc_attr__( 'Filter', 'mycred' ) . '" />';
 
 			echo '</div>';
 
@@ -1266,7 +1266,6 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 	<?php $this->pagination( $location, $id ); ?>
 
 </div>
-<br class="clear" />
 <?php
 
 		}
@@ -1416,9 +1415,9 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			}
 	
 			if ( $disable_first ) {
-				$page_links[] = '<span class="tablenav-pages-navspan" aria-hidden="true">&laquo;</span>';
+				$page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&laquo;</span>';
 			} else {
-				$page_links[] = sprintf( "<a class='first-page' href='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
+				$page_links[] = sprintf( "<a class='first-page button' href='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
 					esc_url( remove_query_arg( 'paged', $current_url ) ),
 					__( 'First page' ),
 					'&laquo;'
@@ -1426,9 +1425,9 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			}
 	
 			if ( $disable_prev ) {
-				$page_links[] = '<span class="tablenav-pages-navspan" aria-hidden="true">&lsaquo;</span>';
+				$page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&lsaquo;</span>';
 			} else {
-				$page_links[] = sprintf( "<a class='prev-page' href='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
+				$page_links[] = sprintf( "<a class='prev-page button' href='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
 					esc_url( add_query_arg( 'paged', max( 1, $current-1 ), $current_url ) ),
 					__( 'Previous page' ),
 					'&lsaquo;'
@@ -1449,9 +1448,9 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			$page_links[]     = $total_pages_before . sprintf( _x( '%1$s of %2$s', 'paging' ), $html_current_page, $html_total_pages ) . $total_pages_after;
 	
 			if ( $disable_next ) {
-				$page_links[] = '<span class="tablenav-pages-navspan" aria-hidden="true">&rsaquo;</span>';
+				$page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&rsaquo;</span>';
 			} else {
-				$page_links[] = sprintf( "<a class='next-page' href='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
+				$page_links[] = sprintf( "<a class='next-page button' href='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
 					esc_url( add_query_arg( 'paged', min( $total_pages, $current+1 ), $current_url ) ),
 					__( 'Next page' ),
 					'&rsaquo;'
@@ -1459,9 +1458,9 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 			}
 	
 			if ( $disable_last ) {
-				$page_links[] = '<span class="tablenav-pages-navspan" aria-hidden="true">&raquo;</span>';
+				$page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span>';
 			} else {
-				$page_links[] = sprintf( "<a class='last-page' href='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
+				$page_links[] = sprintf( "<a class='last-page button' href='%s'><span class='screen-reader-text'>%s</span><span aria-hidden='true'>%s</span></a>",
 					esc_url( add_query_arg( 'paged', $total_pages, $current_url ) ),
 					__( 'Last page' ),
 					'&raquo;'
@@ -1476,7 +1475,8 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 	
 			if ( $total_pages ) {
 				$page_class = $total_pages < 2 ? ' one-page' : '';
-			} else {
+			} 
+			else {
 				$page_class = ' no-pages';
 			}
 	
@@ -1487,6 +1487,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 						'class' => array()
 					),
 					'span' => array(
+						'id' => array(),
 						'class' => array(),
 						'aria-hidden' => array()
 					),
@@ -1535,7 +1536,6 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 						'tbody' => array(
 							'id' => array()
 						),
-						'tfoot' => array(),
 						'tr' => array(
 							'class' => array(),
 							'id' => array()
@@ -1656,27 +1656,6 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 
 			$output .= '
 	</tbody>
-	<tfoot>
-		<tr>';
-
-			// Table footer
-			foreach ( $this->headers as $col_id => $col_title ) {
-
-				$class = '';
-				if ( $col_id != 'username' && in_array( $col_id, $this->hidden_headers ) )
-					$class = ' hidden';
-
-				if ( $col_id == 'cb' )
-					$output .= '<td class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-2">' . __( 'Select all', 'mycred' ) . '</label><input type="checkbox" id="cb-select-all-2" /></td>';
-
-				else
-					$output .= '<th scope="col" class="manage-column' . ( ( $col_id == 'username' ) ? ' column-primary' : '' ) . ' column-' . $col_id . $class . '">' . $col_title . '</th>';
-
-			}
-
-			$output .= '
-		</tr>
-	</tfoot>
 </table>';
 
 			if ( ! $this->is_admin )
@@ -1769,7 +1748,7 @@ if ( ! class_exists( 'myCRED_Query_Log' ) ) :
 					case 'time' :
 
 						$content = $time = apply_filters( 'mycred_log_date', date_i18n( $date_format, $log_entry->time ), $log_entry->time, $log_entry );
-						$content = '<time>' . $content . '</time>';
+						$content = '<span>' . $content . '</span>';
 
 						if ( $this->is_admin && empty( $_REQUEST['time'] ) ) {
 
@@ -1946,8 +1925,8 @@ jQuery(function($) {
 ?>
 <p class="search-box">
 	<label class="screen-reader-text"><?php esc_html_e( 'Search Log', 'mycred' ); ?>:</label>
-	<input type="search" name="s" value="<?php echo esc_attr( $serarch_string ); ?>" placeholder="<?php esc_attr_e( 'search log entries', 'mycred' ); ?>" />
-	<input type="submit" id="search-submit" class="button button-medium button-secondary" value="<?php esc_attr_e( 'Search Log', 'mycred' ); ?>" />
+	<input type="search" name="s" value="<?php echo esc_attr( $serarch_string ); ?>" placeholder="<?php esc_attr_e( 'search log entries...', 'mycred' ); ?>" />
+	<input type="submit" id="search-submit" class="button" value="<?php esc_attr_e( 'Search Log', 'mycred' ); ?>" />
 </p>
 <?php
 
@@ -2011,9 +1990,7 @@ jQuery(function($) {
 
 					if ( isset( $_GET['show'] ) && $_GET['show'] == $sorting_id ) echo ' class="current"';
 					elseif ( ! isset( $_GET['show'] ) && $sorting_id == '' ) echo ' class="current"';
-
 					echo '>' . esc_html( $sorting_name ) . '</a>';
-					if ( $count != $total ) echo ' | ';
 					echo '</li>';
 
 				}

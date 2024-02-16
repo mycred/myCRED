@@ -99,7 +99,7 @@ jQuery(function($) {
 		 * Setup Editor Window
 		 */
 		myCREDEditorModal.dialog({
-			dialogClass : 'mycred-update-balance',
+			dialogClass : 'mycred-update-balance mycred-ui-wrap',
 			draggable   : true,
 			autoOpen    : false,
 			title       : myCREDedit.title,
@@ -165,7 +165,7 @@ jQuery(function($) {
 				myCREDCustomRefWrap.slideDown();
 
 			else {
-				myCREDCustomRefWrap.slideUp();
+				myCREDCustomRefWrap.hide();
 				myCREDCustomRef.val( '' );
 			}
 

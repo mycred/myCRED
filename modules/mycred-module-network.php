@@ -204,9 +204,7 @@ if ( ! class_exists( 'myCRED_Network_Module' ) ) :
 		 */
 		public function admin_page_header() {
 
-			wp_enqueue_style( 'mycred-admin' );
 			wp_enqueue_style( 'mycred-bootstrap-grid' );
-			wp_enqueue_style( 'mycred-forms' );
 
 			wp_localize_script( 'mycred-accordion', 'myCRED', array( 'active' => 0 ) );
 
@@ -239,7 +237,7 @@ h4.ui-accordion-header:before { content: "<?php esc_attr_e( 'click to open', 'my
 
 ?>
 <div class="wrap mycred-metabox" id="myCRED-wrap">
-	<h1><?php printf( esc_html__( '%s Network', 'mycred' ), esc_html( $name ) ); ?><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/multisites/" class="page-title-action" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a><?php endif; ?></h1>
+	<h1><?php printf( esc_html__( '%s Network', 'mycred' ), esc_html( $name ) ); ?><?php if ( MYCRED_DEFAULT_LABEL === 'myCRED' ) : ?> <a href="http://codex.mycred.me/chapter-i/multisites/" class="mycred-ui-info-btn" target="_blank"></a><?php endif; ?></h1>
 <?php
 
 			if ( wp_is_large_network() ) {
@@ -268,64 +266,74 @@ h4.ui-accordion-header:before { content: "<?php esc_attr_e( 'click to open', 'my
 
 		<div class="list-items expandable-li" id="accordion">
 
-			<h4><span class="dashicons dashicons-admin-settings static"></span><label><?php esc_html_e( 'Settings', 'mycred' ); ?></label></h4>
-			<div class="body" style="display: none;">
-
-				<div class="row">
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-						<h3><?php esc_html_e( 'Master Template', 'mycred' ); ?></h3>
-						<p><a href="http://codex.mycred.me/chapter-i/multisites/master-template/" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a></p>
-						<div class="row">
-							<div class="col-xs-6">
-								<div class="form-group">
-									<label for="mycred-network-overwrite-enabled"><input type="radio" name="mycred_network[master]" id="mycred-network-overwrite-enabled" <?php checked( (int) $this->settings['master'], 1 ); ?> value="1" /> <?php esc_html_e( 'Enabled', 'mycred' ); ?></label>
-								</div>
-							</div>
-							<div class="col-xs-6">
-								<div class="form-group">
-									<label for="mycred-network-overwrite-disabled"><input type="radio" name="mycred_network[master]" id="mycred-network-overwrite-disabled" <?php checked( (int) $this->settings['master'], 0 ); ?> value="0" /> <?php esc_html_e( 'Disabled', 'mycred' ); ?></label>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-						<h3><?php esc_html_e( 'Central Logging', 'mycred' ); ?></h3>
-						<p><a href="http://codex.mycred.me/chapter-i/multisites/central-logging/" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a></p>
-						<div class="row">
-							<div class="col-xs-6">
-								<div class="form-group">
-									<label for="mycred-network-overwrite-log-enabled"><input type="radio" name="mycred_network[central]" id="mycred-network-overwrite-log-enabled" <?php checked( (int) $this->settings['central'], 1 ); ?> value="1" /> <?php esc_html_e( 'Enabled', 'mycred' ); ?></label>
-								</div>
-							</div>
-							<div class="col-xs-6">
-								<div class="form-group">
-									<label for="mycred-network-overwrite-log-disabled"><input type="radio" name="mycred_network[central]" id="mycred-network-overwrite-log-disabled" <?php checked( (int) $this->settings['central'], 0 ); ?> value="0" /> <?php esc_html_e( 'Disabled', 'mycred' ); ?></label>
-								</div>
-							</div>
-						</div>
+			<div class="mycred-ui-accordion">
+				<div class="mycred-ui-accordion-header">
+					<h4 class="mycred-ui-accordion-header-title">
+						<span class="dashicons dashicons-admin-settings static mycred-ui-accordion-header-icon"></span>
+						<label><?php esc_html_e( 'Settings', 'mycred' ); ?></label>
+					</h4>
+					<div class="mycred-ui-accordion-header-actions hide-if-no-js">
+						<button type="button" aria-expanded="true">
+							<span class="mycred-ui-toggle-indicator" aria-hidden="true"></span>
+						</button>
 					</div>
 				</div>
-
-				<h3><?php esc_html_e( 'Site Block', 'mycred' ); ?></h3>
-				<div class="row">
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="form-group">
-							<label for="mycred-network-block"><?php esc_html_e( 'Blog IDs', 'mycred' ); ?></label>
-							<input type="text" name="mycred_network[block]" id="mycred-network-block" value="<?php echo esc_attr( $this->settings['block'] ); ?>" class="form-control" />
-							<p><span class="description"><?php printf( esc_html__( 'Comma separated list of blog ids where %s is to be disabled.', 'mycred' ), esc_html( $name ) ); ?></span></p>
+				<div class="body mycred-ui-accordion-body" style="display:none;">
+					<div class="row">
+						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							<h3><?php esc_html_e( 'Master Template', 'mycred' ); ?></h3>
+							<p><a href="http://codex.mycred.me/chapter-i/multisites/master-template/" class="mycred-ui-color-purple" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a></p>
+							<div class="row">
+								<div class="col-xs-6">
+									<div class="form-group">
+										<label for="mycred-network-overwrite-enabled"><input type="radio" name="mycred_network[master]" id="mycred-network-overwrite-enabled" <?php checked( (int) $this->settings['master'], 1 ); ?> value="1" /> <?php esc_html_e( 'Enabled', 'mycred' ); ?></label>
+									</div>
+								</div>
+								<div class="col-xs-6">
+									<div class="form-group">
+										<label for="mycred-network-overwrite-disabled"><input type="radio" name="mycred_network[master]" id="mycred-network-overwrite-disabled" <?php checked( (int) $this->settings['master'], 0 ); ?> value="0" /> <?php esc_html_e( 'Disabled', 'mycred' ); ?></label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							<h3><?php esc_html_e( 'Central Logging', 'mycred' ); ?></h3>
+							<p><a href="http://codex.mycred.me/chapter-i/multisites/central-logging/" class="mycred-ui-color-purple" target="_blank"><?php esc_html_e( 'Documentation', 'mycred' ); ?></a></p>
+							<div class="row">
+								<div class="col-xs-6">
+									<div class="form-group">
+										<label for="mycred-network-overwrite-log-enabled"><input type="radio" name="mycred_network[central]" id="mycred-network-overwrite-log-enabled" <?php checked( (int) $this->settings['central'], 1 ); ?> value="1" /> <?php esc_html_e( 'Enabled', 'mycred' ); ?></label>
+									</div>
+								</div>
+								<div class="col-xs-6">
+									<div class="form-group">
+										<label for="mycred-network-overwrite-log-disabled"><input type="radio" name="mycred_network[central]" id="mycred-network-overwrite-log-disabled" <?php checked( (int) $this->settings['central'], 0 ); ?> value="0" /> <?php esc_html_e( 'Disabled', 'mycred' ); ?></label>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
+
+					<h3><?php esc_html_e( 'Site Block', 'mycred' ); ?></h3>
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="mycred-network-block"><?php esc_html_e( 'Blog IDs', 'mycred' ); ?></label>
+								<input type="text" name="mycred_network[block]" id="mycred-network-block" value="<?php echo esc_attr( $this->settings['block'] ); ?>" class="form-control" />
+								<p><span class="description"><?php printf( esc_html__( 'Comma separated list of blog ids where %s is to be disabled.', 'mycred' ), esc_html( $name ) ); ?></span></p>
+							</div>
+						</div>
+					</div>
+
+					<?php do_action( 'mycred_network_prefs', $this ); ?>
 				</div>
-
-				<?php do_action( 'mycred_network_prefs', $this ); ?>
-
 			</div>
 
 			<?php do_action( 'mycred_after_network_prefs', $this ); ?>
 
 		</div>
 
-		<?php submit_button( __( 'Save Network Settings', 'mycred' ), 'primary large', 'submit' ); ?>
+		<?php submit_button( __( 'Save Network Settings', 'mycred' ), 'mycred-ui-mt20 mycred-ui-btn-purple', 'submit', false ); ?>
 
 	</form>	
 <?php

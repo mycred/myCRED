@@ -44,9 +44,12 @@ if ( ! class_exists( 'myCRED_buyCRED_Reward_Hook' ) ) :
 		 */
 		public function assign_buycred_reward( $result, $request, $mycred ) {
 
+			// If the result was declined
+			if ( $result === false ) return $result;
+
 			extract( $request );
 
-			if ( ! $result || strpos( $ref, 'buy_creds_with' ) === false ) return $result;;
+			if ( ! $result || strpos( $ref, 'buy_creds_with' ) === false ) return $result;
 
 			// Make sure user is not excluded
 			if ( $this->core->exclude_user( $user_id ) ) return;
@@ -86,6 +89,7 @@ if ( ! class_exists( 'myCRED_buyCRED_Reward_Hook' ) ) :
 				        $data,
 						$this->mycred_type
 					);
+
 				}
 				
 			}

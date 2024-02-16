@@ -5,31 +5,24 @@
  * @since 1.0
  * @version 1.0
  */
-
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-
 if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
     Class myCRED_Connect_Membership {
-
         /**
          * Construct
          */
         public function __construct() {
-
             add_action( 'admin_menu',        array( $this, 'mycred_membership_menu' ) );
             add_action( 'admin_menu',        array( $this, 'mycred_treasures' ) );
             add_action( 'admin_menu',        array( $this, 'mycred_support' ) );
             add_action( 'admin_init',        array( $this, 'add_styles' ) );
             add_filter( 'admin_footer_text', array( $this, 'mycred_admin_footer_text') );
-        
         }
 
         public function add_styles() {
-
-            wp_register_style('admin-subscription-css', plugins_url( 'assets/css/admin-subscription.css', myCRED_THIS ), array(), '1.2', 'all');
             
             if( isset($_GET['page']) && $_GET['page'] == 'mycred-membership' ) {
                 wp_enqueue_style( 'mycred-bootstrap-grid' );
@@ -41,9 +34,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
 
             elseif( isset($_GET['page']) && $_GET['page'] == 'mycred-support' ) {
                 wp_enqueue_style( 'mycred-bootstrap-grid' );
-            }
-            
-            wp_enqueue_style('admin-subscription-css');
+            }         
 
         }
 
@@ -52,22 +43,16 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
             global $typenow;
 
             if( isset($_GET['page']) && $_GET['page'] == 'mycred-support' ) {
-
                     $mycred_footer_text = sprintf( __( 'Thank you for being a <a href="%1$s" target="_blank">myCred </a>user! Please give your <a href="%2$s" target="_blank">%3$s</a> rating on WordPress.org', 'mycred' ),
                         'https://mycred.me',
                         'https://wordpress.org/support/plugin/mycred/reviews/?rate=5#new-post',
                         '&#9733;&#9733;&#9733;&#9733;&#9733;'
                     );
-
                   return str_replace( '</span>', '', $footer_text ) . ' | ' . $mycred_footer_text . '</span>';
-
             }
             else {
-
                 return $footer_text;
-
             }
-
         }
 
         /**
@@ -112,55 +97,39 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
          public function mycred_support_callback() {
 
             $references  = mycred_get_all_references();
-
             ?>
-            
             <div class="wrap mycred-support-page-container">
                 <h1 class="wp-heading-inline">myCred Help and Support</h1>
-                
                 <div class="mycred-support-page-content">
-                    
                     <h2>About myCred:</h2>
                     <p>myCred is an intelligent and adaptive points management system that allows you to build and manage a broad range of digital rewards including points, ranks and, badges on your WordPress-powered website.</p>
-
                     <hr>
-
                     <h2>Documentation:</h2>
                     <p>For complete information about myCred and its collection of add-ons, visit the <a target="_blank" href="http://codex.mycred.me/">official documentation</a>.</p>
                     <hr>
-
                     <h2>Help/Support:</h2>
                     <p>Connect with us for support or feature enhancements - myCred Support Forums or <a target="_blank" href="https://objectsws.atlassian.net/servicedesk/customer/portal/7/group/7/create/46">Open a support ticket</a>.</p>
                     <hr>
-
                     <h2>Suggestion:</h2>
                     <p>If you have suggestions for myCred and their addons, feel free to add them <a target="_blank" href="https://app.loopedin.io/mycred">here</a>.</p>
                     <hr>
-
                     <h2>Free add-ons</h2>
                     <p>Power your WordPress website with 30+ free add-ons for myCred - enhance your website's functionality with our free add-ons for store gateways, third-party bridges, and gamification. <a target="_blank" href="https://mycred.me/product-category/freebies/">Visit our complete collection</a>.</p>
                     <hr>
-                    
                     <h2>Premium add-ons</h2>
                     <p>Enjoy the best that myCred has to offer with our collection of premium add-ons that enable you to perform complex tasks such as buy or sell points in exchange for real money or create a points management system for your WooCommerce store. <a target="_blank" href="https://mycred.me/store/">View our premium add-ons</a>.</p>
                     <hr>
-                    
                     <h2>Customization:</h2>
                     <p>If you need to build a custom feature, simply <a href="https://objectsws.atlassian.net/servicedesk/customer/portal/11/create/92">submit a request</a> on our myCred website.</p>
                     <hr>
-                    
                     <h2>myCred Log References:</h2>
                     <div class="row mycred-all-references-list">
                         <?php foreach ( $references as $key => $entry ):?>   
                         <div class="col-md-6 mb-2"><code><?php echo esc_html( $key );?></code> - <?php echo esc_html( $entry );?></div>
                         <?php endforeach;?>
                     </div>
-
                 </div>
-                
             </div>
-
-           
            <?php
         }
 
@@ -255,6 +224,7 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                                 </div>
                             </div>
                         </div>
+                        <div class="clear"></div>
                     </div>
                 </div>
             </div>        
@@ -265,36 +235,50 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
          * Membership menu callback
          */
         public function mycred_membership_callback() {
+
             $user_id = get_current_user_id();
+            
             $this->mycred_save_license();
-            $membership_key = get_option( 'mycred_membership_key' );
-            if( !isset( $membership_key )  && !empty( $membership_key ) )
-                $membership_key = '';
-                global $license_valid_check;
-                global $license_empty_check;
+
+            $membership_key = get_option( 'mycred_membership_key', '' );
+            $is_valid_key   = false;
+
+            if ( ! empty( $membership_key ) ) {
+
+                $is_valid_key = mycred_is_valid_license_key( $membership_key );
+            
+            }
+
+            global $license_msg;
+           
             ?>
-            <div class="wrap">
+            <div class="wrap" id="myCRED-wrap">
                 <div class="mmc_welcome">
                     <div class="mmc_welcome_content">
-                        <?php 
-                            
-                            if ( isset( $license_empty_check ) && 'empty' == $license_empty_check ) {
-
-                                echo '<div class="mycred_license_valid_check error notice is-dismissible"><div class="mycred_valid_message"><strong>Please Enter a License Key</strong>.</div></div>';   
-                            } elseif ( isset( $license_valid_check ) && true == $license_valid_check   ) {
-
-                                echo '<div class="mycred_license_valid_check updated notice is-dismissible"><div class="mycred_valid_message"><strong>The License Key is Valid</strong>.</div></div>';
-                            } elseif ( isset( $license_valid_check ) && false == $license_valid_check ) {
-
-                                echo '<div class="mycred_license_valid_check error notice is-dismissible"><div class="mycred_valid_message"><strong>The License Key is Invalid</strong>.</div></div>';   
-                            }
-                            ?>
-                        <div class="mmc_title"><strong><?php esc_html_e( 'Welcome to myCred Premium Club', 'mycred' ); ?></strong></div>
+                        <?php if ( ! empty( $license_msg ) && $license_msg == 'empty' ) :?>
+                            <div class="mycred_license_valid_check error notice is-dismissible">
+                                <div class="mycred_valid_message">
+                                    <strong>Please Enter a License Key.</strong>
+                                </div>
+                            </div>
+                        <?php elseif ( ! empty( $license_msg ) && $license_msg == 'invalid' ) :?>
+                            <div class="mycred_license_valid_check error notice is-dismissible">
+                                <div class="mycred_valid_message">
+                                    <strong>The License Key is Invalid.</strong>
+                                </div>
+                            </div>
+                        <?php elseif ( ! empty( $license_msg ) && $license_msg == 'valid' ) :?>
+                            <div class="mycred_license_valid_check updated notice is-dismissible">
+                                <div class="mycred_valid_message">
+                                    <strong>The License Key is Valid.</strong>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <div class="mmc_title"><?php esc_html_e( 'Welcome to myCred Premium Club', 'mycred' ); ?></div>
                         <form action="#" method="post">
                         <?php 
-                           
                             wp_nonce_field( 'myCredLicense-nonce', 'mycred-license-nonce' );
-                            if(mycred_is_valid_license_key( $membership_key )) {
+                            if( $is_valid_key ) {
                                 echo '<span class="dashicons dashicons-yes-alt membership-license-activated"></span>';
                             } 
                             else {
@@ -302,21 +286,17 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
                                 echo '<span class="dashicons dashicons-dismiss membership-license-inactive"></span>';
                             }      
                         ?>
-                        
                             <input type="text" name="mmc_lincense_key" class="mmc_lincense_key" placeholder="<?php esc_attr_e( 'Add Your License key', 'mycred' ); ?>" value="<?php echo esc_attr( $membership_key );?>">
-                            <input type="submit" name="mmc_save_license" class="mmc_save_license button-primary" value="Save"/>
-                            <div class="mmc_license_link"><a href="https://mycred.me/redirect-to-membership/" target="_blank"><span class="dashicons dashicons-editor-help"></span><?php esc_html_e('Click here to get your License Key','mycred') ?></a>
-                            </div>
-                            <div class="mmc_license_link">
-                                
-
-                            </div>
+                            <input type="submit" class="mmc_save_license button-primary" style="<?php echo $is_valid_key ? 'background: #5e2ced' : 'background:#b91514'; ?>"value="Save"/>
                         </form>
+                        <div class="mmc_license_link">
+                            <a href="https://mycred.me/redirect-to-membership/" target="_blank">
+                                <?php esc_html_e('Click here to get your License Key','mycred') ?>
+                                <span class="dashicons dashicons-editor-help"></span>
+                            </a>
+                        </div>
                     </div>
-                    
                 </div>
-
-                
             </div>
             <?php
         }
@@ -326,32 +306,35 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
          */
         public function mycred_save_license() {
             
-            if ( isset( $_POST['mmc_lincense_key'] ) && isset( $_POST['mycred-license-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mycred-license-nonce'] ) ), 'myCredLicense-nonce' ) ) {
+            if ( 
+                isset( $_POST['mmc_lincense_key'] ) && 
+                isset( $_POST['mycred-license-nonce'] ) && 
+                wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mycred-license-nonce'] ) ), 'myCredLicense-nonce' ) 
+            ) {
 
                 $license_key = sanitize_text_field( wp_unslash( $_POST['mmc_lincense_key'] ) );
 
-                if( isset( $license_key ) ) {
-                    update_option( 'mycred_membership_key', $license_key );
-                    mycred_is_valid_license_key( $license_key, true );
-                    global $license_valid_check;
-                    if ( true == mycred_is_valid_license_key( $license_key, true ) ) {
-                        $license_valid_check = true;
-                    }
-                    else {
-                        $license_valid_check = false;
-                    }
+                update_option( 'mycred_membership_key', $license_key );
+
+                global $license_msg;
+
+                if( ! empty( $license_key ) ) {
+
+                    $is_valid    = mycred_is_valid_license_key( $license_key, true );
+                    $license_msg = 'invalid'; 
+
+                    if ( $is_valid ) 
+                        $license_msg = 'valid'; 
+
                     $this->removeLicenseTransients();
 
                 }
-                
-            }
-            if ( isset( $_POST['mmc_save_license'] ) ) {
+                else {
 
-                $license_key_check = isset( $_POST['mmc_lincense_key'] ) ? $_POST['mmc_lincense_key'] : '';
-                global $license_empty_check; 
-                if( '' == $license_key_check ) {
-                    $license_empty_check = 'empty';
+                    $license_msg = 'empty';
+
                 }
+                
             }
             
         }
@@ -362,29 +345,21 @@ if ( ! class_exists( 'myCRED_Connect_Membership' ) ) :
             $update_data = get_site_transient( 'update_plugins' );
 
             foreach ( $addons as $addon ) {
-
                 if ( isset( $update_data->response[ $addon . '/' . $addon . '.php' ] ) ) {
                     unset( $update_data->response[ $addon . '/' . $addon . '.php' ] );
                 }
-
                 if ( isset( $update_data->no_update[ $addon . '/' . $addon . '.php' ] ) ) {
                     unset( $update_data->no_update[ $addon . '/' . $addon . '.php' ] );
                 }
-
                 if ( isset( $update_data->checked[ $addon . '/' . $addon . '.php' ] ) ) {
                     unset( $update_data->checked[ $addon . '/' . $addon . '.php' ] );
-                }
-                    
+                }       
                 $transient_key = 'mcl_' . md5( $addon );
                 delete_site_transient( $transient_key );
-
             }
-
             set_site_transient( 'update_plugins', $update_data );
-
         }
 
     }
 endif;
-
 $myCRED_Connect_Membership = new myCRED_Connect_Membership();

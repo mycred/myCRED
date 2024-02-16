@@ -9,6 +9,19 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
         $this->core_point_types = mycred_get_types();
         
         add_action( 'wp_ajax_mycred-tools-import-export', array( $this,'import_export' ) );
+        add_filter( 'mycred_log_time',    array( $this, 'import_csv_log_time' ) );
+    }
+    
+    public function import_csv_log_time($time) {
+
+        global $import_points;
+
+        if (!empty($import_points->timestamp) ) {
+            return $import_points->timestamp;
+        }
+        
+        return $time;
+
     }
 
     public function get_header()
@@ -79,7 +92,8 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
         );
             
         $uf_attr = array(
-            'id'    =>  'tools-uf-import-export'
+            'id' => 'tools-uf-import-export',
+            'style' => 'width: 168px;'
         );
 
         $pt_options = $this->core_point_types;
@@ -90,38 +104,44 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
         );
 
         ?>
-        <div class="mycred-tools-import-export">
+        <div class="mycred-tools-import-export form">
             <h3><?php esc_html_e( 'User Points','mycred' ); ?></h3>
             <table>
                 <tr>
-                    <td><h4><?php esc_html_e( 'CSV File','mycred' ); ?></h4></td>
+                    <td rowspan="2"><h4><?php esc_html_e( 'CSV File','mycred' ); ?></h4></td>
                     <td>
-                        <form method="post" enctype="multipart/form-data">
+                        <form method="post" enctype="multipart/form-data" class="mycred-upload-file">
+                            <label class="import-file" for="import-file">
+                                <span class="dashicons dashicons-upload"></span>
+                                Upload File
+                            </label>
                             <input type="file" id="import-file" name="file" accept=".csv" />
-                            <button class="button button-primary", id="import">
+                            <button class="button mycred-ui-btn-purple button-primary" id="import">
                                 <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import User Points','mycred' ); ?>
                             </button>
+                            <span class="mycred-spinner spinner"></span>
                         </form>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        
-                    </td>
-                    <td>
-                        <button class="button button-secondary" id="download-raw-template-csv">
+                        <button class="button mycred-ui-mr5" id="download-raw-template-csv">
                             <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Raw Template','mycred' ); ?>
                         </button>
 
-                        <button class="button button-secondary" id="download-formatted-template-csv">
+                        <button class="button" id="download-formatted-template-csv">
                             <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Formatted Template','mycred' ); ?>
                         </button>
+                        <span class="mycred-spinner spinner"></span>
                     </td>
-                </tr>
                 <tr>
+                    <td>
+                        
+                    </td>
                     <td>
                         <i><?php esc_html_e( 'Only raw  format can be Import.', 'mycred' ) ?></i>
                     </td>
+                </tr>
                 </tr>
             </table>
             <h1><?php esc_html_e( 'Export','mycred' ); ?></h1>
@@ -132,7 +152,7 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                     <?php esc_html_e( 'Select Point Types to be Exported','mycred' ); ?>
                     </td>
                     <td>
-                        <button class="button button-secondary" id="select-all-pt">
+                        <button class="button" id="select-all-pt">
                             <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Select/ Deselect All','mycred' ); ?>
                         </button>
                     </td>
@@ -161,30 +181,18 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
             <div class="mycred-container">
                 <label><?php esc_html_e( 'User Field in Exported File', 'mycred' );?></label>
-                <?php echo wp_kses(
-                        mycred_create_select2( $uf_options, $uf_attr ),
-                        array(
-                            'select' => array(
-                                'id' => array(),
-                                'style' => array()
-                            ),
-                            'option' => array(
-                                'value' => array(),
-                                'selected' => array()
-                            ),
-                        )
-                    );
-                ?>
+                <?php mycred_create_select_field( $uf_options, array(), $uf_attr ); ?>
             </div>
 
             <div class="mycred-container">
-                <button class="button button-primary" id="export-raw">
+                <button class="button button-primary mycred-ui-mr5" id="export-raw">
                     <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Raw', 'mycred' ); ?>
                 </button>
 
                 <button class="button button-primary" id="export-formatted">
                     <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Formatted', 'mycred' ); ?>
                 </button>
+                <span class="mycred-spinner spinner"></span>
             </div>
         </div>
         <?php
@@ -192,6 +200,8 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
     public function get_badge_page()
     {
+
+        
         $uf_options = array(
             'id'        =>  __( 'ID','mycred' ),
             'user_name' =>  __( 'Username','mycred' ),
@@ -235,45 +245,39 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
         );
 
         ?>
-        <div class="mycred-tools-import-export">
+        <div class="mycred-tools-import-export form">
             <h3><?php esc_html_e( 'User Badges','mycred' ); ?></h3>
             <table>
                 <tr>
-                    <td><h4><?php esc_html_e( 'CSV File','mycred' ); ?></h4></td>
+                    <td rowspan="2"><h4><?php esc_html_e( 'CSV File','mycred' ); ?></h4></td>
                     <td>
-                        <form method="post" enctype="multipart/form-data">
+                        <form method="post" enctype="multipart/form-data" class="mycred-upload-file">
+                            <label class="import-file" for="import-file">
+                                <span class="dashicons dashicons-upload"></span>
+                                Upload File
+                            </label>
                             <input type="file" id="import-file" name="file" accept=".csv" />
-                            <?php echo wp_kses(
-                                    mycred_create_select2( $type_options, $type_attr ),
-                                    array(
-                                        'select' => array(
-                                            'id' => array(),
-                                            'style' => array()
-                                        ),
-                                        'option' => array(
-                                            'value' => array(),
-                                            'selected' => array()
-                                        ),
-                                    )
-                                ); 
+                            <?php mycred_create_select_field( $type_options, array(), $type_attr, true ); 
                             ?>
-                            <button class="button button-primary", id="import">
+                            <button class="button button-primary mycred-ui-ml5" id="import">
                                 <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import User Badges','mycred' ); ?>
                             </button>
+                            <span class="mycred-spinner spinner"></span>
                         </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button class="button" id="download-raw-template-csv">
+                            <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Raw Template','mycred' ); ?>
+                        </button>
+                        <span class="mycred-spinner spinner"></span>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         
                     </td>
-                    <td>
-                        <button class="button button-secondary" id="download-raw-template-csv">
-                            <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Raw Template','mycred' ); ?>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
                     <td>
                         <i><?php esc_html_e( 'Only raw format can be Import.', 'mycred' ) ?></i>
                     </td>
@@ -287,7 +291,7 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                     <?php esc_html_e( 'Select Badges to be Exported','mycred' ); ?>
                     </td>
                     <td>
-                        <button class="button button-secondary" id="select-all-pt">
+                        <button class="button" id="select-all-pt">
                             <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Select/ Deselect All','mycred' ); ?>
                         </button>
                     </td>
@@ -302,6 +306,7 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                             'select' => array(
                                 'id' => array(),
                                 'style' => array(),
+                                'height'    => '15px',
                                 'multiple' => array()
                             ),
                             'option' => array(
@@ -315,37 +320,13 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
             <div class="mycred-container">
                 <label><?php esc_html_e( 'User Field in Exported File', 'mycred' ); ?></label>
-                <?php echo wp_kses(
-                        mycred_create_select2( $uf_options, $uf_attr ),
-                        array(
-                            'select' => array(
-                                'id' => array(),
-                                'style' => array()
-                            ),
-                            'option' => array(
-                                'value' => array(),
-                                'selected' => array()
-                            ),
-                        )
-                    ); 
+                <?php mycred_create_select_field( $uf_options, array(), $uf_attr, true ); 
                 ?>
             </div>
 
             <div class="mycred-container">
                 <label><?php esc_html_e( 'Badge Fields in Exported File', 'mycred' ); ?></label>
-                <?php echo wp_kses(
-                        mycred_create_select2( $badges_fields_options, $badges_fields_attr ),
-                        array(
-                            'select' => array(
-                                'id' => array(),
-                                'style' => array()
-                            ),
-                            'option' => array(
-                                'value' => array(),
-                                'selected' => array()
-                            ),
-                        )
-                    ); 
+                <?php mycred_create_select_field( $badges_fields_options, array(), $badges_fields_attr, true ); 
                 ?>
             </div>
 
@@ -353,6 +334,7 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                 <button class="button button-primary" id="export-raw">
                     <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Raw', 'mycred' ); ?>
                 </button>
+                <span class="mycred-spinner spinner"></span>
             </div>
         </div>
         <?php
@@ -408,45 +390,39 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
             );
 
             ?>
-            <div class="mycred-tools-import-export">
+            <div class="mycred-tools-import-export form">
                 <h3><?php esc_html_e( 'User Ranks','mycred' ); ?></h3>
                 <table>
                     <tr>
-                        <td><h4><?php esc_html_e( 'CSV File','mycred' ); ?></h4></td>
+                        <td rowspan="2"><h4><?php esc_html_e( 'CSV File','mycred' ); ?></h4></td>
                         <td>
-                            <form method="post" enctype="multipart/form-data">
+                            <form method="post" enctype="multipart/form-data" class="mycred-upload-file">
+                                <label class="import-file" for="import-file">
+                                    <span class="dashicons dashicons-upload"></span>
+                                    Upload File
+                                </label>
                                 <input type="file" id="import-file" name="file" accept=".csv" />
-                                <?php echo wp_kses(
-                                        mycred_create_select2( $type_options, $type_attr ),
-                                        array(
-                                            'select' => array(
-                                                'id' => array(),
-                                                'style' => array()
-                                            ),
-                                            'option' => array(
-                                                'value' => array(),
-                                                'selected' => array()
-                                            ),
-                                        )
-                                    ); 
+                                <?php mycred_create_select_field( $type_options, array(), $type_attr, true ); 
                                 ?>
-                                <button class="button button-primary", id="import">
+                                <button class="button button-primary mycred-ui-ml5" id="import">
                                     <span class="dashicons dashicons-database-import v-align-middle"></span> <?php esc_html_e( 'Import User Ranks','mycred' ); ?>
                                 </button>
+                                <span class="mycred-spinner spinner"></span>
                             </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button class="button" id="download-raw-template-csv">
+                                <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Raw Template','mycred' ); ?>
+                            </button>
+                            <span class="mycred-spinner spinner"></span>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             
                         </td>
-                        <td>
-                            <button class="button button-secondary" id="download-raw-template-csv">
-                                <span class="dashicons dashicons-download v-align-middle"></span> <?php esc_html_e( 'Download Raw Template','mycred' ); ?>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
                         <td>
                             <i><?php esc_html_e( 'Make sure Ranks\' Behaviour is set to Manual Mode, Only Raw format can be Import.', 'mycred' ) ?></i>
                         </td>
@@ -488,37 +464,13 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
                 <div class="mycred-container">
                     <label><?php esc_html_e( 'User Field in Exported File', 'mycred' ); ?></label>
-                    <?php echo wp_kses(
-                            mycred_create_select2( $uf_options, $uf_attr ),
-                            array(
-                                'select' => array(
-                                    'id' => array(),
-                                    'style' => array()
-                                ),
-                                'option' => array(
-                                    'value' => array(),
-                                    'selected' => array()
-                                ),
-                            )
-                        ); 
+                    <?php mycred_create_select_field( $uf_options, array(), $uf_attr, true ); 
                     ?>
                 </div>
 
                 <div class="mycred-container">
                     <label><?php esc_html_e( 'Rank Fields in Exported File', 'mycred' ); ?></label>
-                    <?php echo wp_kses(
-                            mycred_create_select2( $ranks_fields_options, $ranks_fields_attr ),
-                            array(
-                                'select' => array(
-                                    'id' => array(),
-                                    'style' => array()
-                                ),
-                                'option' => array(
-                                    'value' => array(),
-                                    'selected' => array()
-                                ),
-                            )
-                        ); 
+                    <?php mycred_create_select_field( $ranks_fields_options, array(), $ranks_fields_attr, true ); 
                     ?>
                 </div>
 
@@ -526,6 +478,7 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                     <button class="button button-primary" id="export-raw">
                         <span class="dashicons dashicons-database-export v-align-middle"></span> <?php esc_html_e( 'Export Raw', 'mycred' ); ?>
                     </button>
+                    <span class="mycred-spinner spinner"></span>
                 </div>
             </div>
             <?php
@@ -979,7 +932,10 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                         
                         continue;
                     }
+                    
+                    global $import_points;
 
+                    $import_points->timestamp = $data[6];
 
                     //Add Creds
                     $id = $data[0];

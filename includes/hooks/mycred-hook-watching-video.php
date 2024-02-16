@@ -333,7 +333,7 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
+		<div class="col-lg-9 col-md-6 col-sm-12 col-xs-12">
 			<div class="form-group">
 				<label for="<?php echo esc_attr( $this->field_id( array( 'logic' => 'play' ) ) ); ?>"><?php esc_html_e( 'Award Logic', 'mycred' ); ?></label>
 				<div class="checkbox">
@@ -347,7 +347,7 @@ if ( ! class_exists( 'myCRED_Hook_Video_Views' ) ) :
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+		<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">
 			<div id="<?php echo esc_attr( $this->field_id( array( 'logic-option-interval' ) ) ); ?>"<?php if ( $prefs['logic'] != 'interval' ) echo ' style="display: none;"';?>>
 				<div class="form-group">
 					<label for="<?php echo esc_attr( $this->field_id( 'interval' ) ); ?>"><?php esc_html_e( 'Intervals', 'mycred' ); ?></label>
