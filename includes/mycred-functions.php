@@ -3140,18 +3140,19 @@ if ( ! function_exists( 'mycred_get_page_by_title' ) ) :
 			switch_to_blog( get_network()->site_id );
 
 		$args = array(
-        'post_type'      => $post_type,
-        'name'           => $post_id,
-        'posts_per_page' => 1
+	        'post_type'      => $post_type,
+	        'name'           => $post_id,
+	        'posts_per_page' => 1
     	);
 
-    	$query = new WP_Query( $args );
+    	$query 	 = new WP_Query( $args );
     	$results = $query->get_posts();
+    	$page 	 = isset( $results[0] ) ? $results[0] : null;
 
 		if ( $override )
 			restore_current_blog();
 
-		return $results;
+		return $page;
 
 	}
 endif;

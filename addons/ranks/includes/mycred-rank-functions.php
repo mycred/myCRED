@@ -820,3 +820,28 @@ if( ! function_exists( 'mycred_get_users_current_rank_id' ) ):
 
 	}
 endif;
+
+/**
+ * Returns allowed tags for shortcode's wrap attribute
+ * @since 2.6.2
+ * @version 1.0
+ */
+if( ! function_exists( 'mycred_sanitize_rank_wrap_tag' ) ):
+	function mycred_sanitize_rank_wrap_tag( $tag ) {
+
+		$sanitized_tag = '';
+
+		// Define allowed HTML tags for the wrap attribute
+        $allowed_tags = apply_filters( 
+        	'mycred_rank_allowed_wrap_tags', 
+        	array( 'div', 'span', 'ul', 'li', 'ol', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ) 
+        );
+
+        if( in_array( strtolower( $tag ), $allowed_tags ) ) {
+            $sanitized_tag = $tag;
+        }
+
+		return $sanitized_tag;
+
+	}
+endif;

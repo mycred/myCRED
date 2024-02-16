@@ -3,7 +3,7 @@ Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
 Tested up to: 6.4.1
-Stable tag: 2.6.1
+Stable tag: 2.6.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -304,6 +304,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.6.2 =
+Bug fixes.
+
 = 2.6.1 =
 Bug fixes.
 
@@ -425,6 +428,11 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.6.2 =
+- **TWEAK** - Code improvement.
+- **FIX** - Import points tool was not working.
+- **FIX** - buyCred gateways were not able to make automatic pay-outs.
 
 = 2.6.1 =
 - **FIX** - Fixed mycred_load_coupon shortcode issues.

@@ -3,7 +3,7 @@
  * Plugin Name: myCred
  * Plugin URI: https://mycred.me
  * Description: An adaptive points management system for WordPress powered websites.
- * Version: 2.6.1
+ * Version: 2.6.2
  * Tags: point, credit, loyalty program, engagement, reward, woocommerce rewards
  * Author: myCred
  * Author URI: https://mycred.me
@@ -20,7 +20,7 @@ if ( ! class_exists( 'myCRED_Core' ) ) :
 	final class myCRED_Core {
 
 		// Plugin Version
-		public $version             = '2.6.1';
+		public $version             = '2.6.2';
 
 		// Instnace
 		protected static $_instance = NULL;

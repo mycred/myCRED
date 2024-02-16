@@ -633,7 +633,7 @@ if ( ! class_exists( 'myCRED_Payment_Gateway' ) ) :
 
 			// Make sure we are not adding more then one pending item
 			$check = mycred_get_page_by_title( $post_title, ARRAY_A, 'buycred_payment' );
-			if ( $check === NULL || empty( $check ) || ( isset( $check['post_status'] ) && $check['post_status'] == 'trash' ) ) {
+			if ( $check === NULL || ( isset( $check['post_status'] ) && $check['post_status'] == 'trash' ) ) {
 
 				// Generate new id and trash old request
 				if ( isset( $check['post_status'] ) && $check['post_status'] == 'trash' ) {

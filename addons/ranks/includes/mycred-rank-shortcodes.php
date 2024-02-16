@@ -155,6 +155,8 @@ if ( ! function_exists( 'mycred_render_users_of_rank' ) ) :
 
 		$output       = '';
 
+		$wrap         = mycred_sanitize_rank_wrap_tag( $wrap );
+
 		if ( $row_template === NULL || empty( $row_template ) )
 			$row_template = '<p class="user-row">%user_profile_link% with %balance% %_plural%</p>';
 
@@ -228,6 +230,8 @@ if ( ! function_exists( 'mycred_render_users_of_all_ranks' ) ) :
 		if ( ! is_user_logged_in() && $login != '' )
 			return $mycred->template_tags_general( $login );
 
+		$wrap      = mycred_sanitize_rank_wrap_tag( $wrap );
+
 		$output    = '';
 		$all_ranks = mycred_get_ranks( 'publish', '-1', 'DESC', $ctype );
 
@@ -291,7 +295,8 @@ if ( ! function_exists( 'mycred_render_rank_list' ) ) :
 		), $atts, MYCRED_SLUG . '_list_ranks' );
 
 		extract( $atts );
-
+		
+		$wrap      = mycred_sanitize_rank_wrap_tag( $wrap );
 		$output    = '';
 		$all_ranks = mycred_get_ranks( 'publish', '-1', strtoupper( $order ), $ctype );
 

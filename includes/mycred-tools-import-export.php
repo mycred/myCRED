@@ -4,20 +4,23 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 {
     public $core_point_types;
 
-    public function __construct()
-    {
+    public function __construct() {
+
         $this->core_point_types = mycred_get_types();
         
         add_action( 'wp_ajax_mycred-tools-import-export', array( $this,'import_export' ) );
-        add_filter( 'mycred_log_time',    array( $this, 'import_csv_log_time' ) );
+        add_filter( 'mycred_log_time',                    array( $this, 'import_csv_log_time' ) );
+    
     }
     
-    public function import_csv_log_time($time) {
+    public function import_csv_log_time( $time ) {
 
-        global $import_points;
+        global $import_points_timestamp;
 
-        if (!empty($import_points->timestamp) ) {
-            return $import_points->timestamp;
+        if ( ! empty( $import_points_timestamp ) ) {
+
+            return $import_points_timestamp;
+        
         }
         
         return $time;
@@ -933,9 +936,9 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
                         continue;
                     }
                     
-                    global $import_points;
+                    global $import_points_timestamp;
 
-                    $import_points->timestamp = $data[6];
+                    $import_points_timestamp = $data[6];
 
                     //Add Creds
                     $id = $data[0];
@@ -1032,8 +1035,7 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
         }
     }
 
-    public function import_export()
-    {
+    public function import_export() {
 
         check_ajax_referer( 'mycred-tools', 'token' );
 
@@ -1047,11 +1049,10 @@ class myCRED_Tools_Import_Export extends myCRED_Setup_Import_Export
 
         }
 
-        if( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-tools-import-export' )
-        {
+        if( isset( $_POST['action'] ) && $_POST['action'] == 'mycred-tools-import-export' ) {
+            
             //Export Raw points 
-            if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'points' && isset( $_POST['request'] ) && $_POST['request'] == 'export' )
-            {
+            if( isset( $_POST['request_tab'] ) && $_POST['request_tab'] == 'points' && isset( $_POST['request'] ) && $_POST['request'] == 'export' ) {
 
                 $point_types = isset( $_POST['types'] ) ? sanitize_text_field( wp_unslash( $_POST['types'] ) ) : json_encode( array( MYCRED_DEFAULT_TYPE_KEY ) );
                 $point_types = json_decode( $point_types );
