@@ -4754,13 +4754,14 @@ if ( ! function_exists( 'mycred_badge_plus_show_main_image_with_social_icons' ) 
 		$content = '';
 
 		$image_url = $earned_image_url;
+		$mycred = mycred();
 
 		if ( ! empty( $image_url ) ) {
 
 			$content .= '<div class="mycred-badge-image-wrapper">';
 
 			$content .= '<img src="' . $image_url . '" class="mycred-badge-image" alt="Badge Image">';
-			$mycred = mycred();
+			
 
 			//If user has earned badge, show user sharing badge option
             if( 

@@ -1285,7 +1285,7 @@ if ( ! class_exists( 'myCRED_Sell_Content_Module' ) ) :
 #mycred-sell-content-setup .inside .row { margin-bottom: 0; }
 #mycred-sell-content-setup .inside .container-fluid { padding-left: 0; padding-right: 0; }
 #mycred-sell-content-setup .inside .row .col-lg-12 .form-group { padding: 12px 12px 10px 12px; background-color: white; border-bottom: 1px solid #ddd; }
-#mycred-sell-content-types .point-type-setup .cover { border-bottom: 1px solid #ddd; }
+#mycred-sell-content-types .point-type-setup .cover { border-bottom: 1px solid #ddd; padding: 0px 10px; }
 #mycred-sell-content-types .point-type-setup .cover > .row { padding-top: 6px; padding-bottom: 12px; }
 #mycred-sell-content-types .point-type-setup:last-child .cover { border-bottom: none; }
 </style>

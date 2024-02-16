@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 6.4.1
-Stable tag: 2.6.2
+Tested up to: 6.4.3
+Stable tag: 2.6.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -42,12 +42,9 @@ Join the myCred membership club today and take advantage of premium services tha
 
 [Check the package pricing page for the add-on list](https://mycred.me/membership/)
 
-= Recent Update - myCred v2.6 =
-With the recent v2.6 update, we have worked on the backend side of the plugin to make it seamless and more user-friendly. The recent update includes: 
-
-- **IMPROVED UI** - The user interface for admins has been improved massively 
-- **CODE OPTIMIZATION** - To improve plugin performance, we have done code optimization for a smooth and reliable point management system
-- **PHP 8.2** - myCred and all its addons are fully compatible with PHP 8.2
+= Recent Update – myCred v2.6.3 = 
+= WooCommerce Cart & Checkout Block Compatibility = 
+With the recent update rolled out by WooCommerce, myCred has aligned itself with the same. myCred is now compatible with WooCommerce’s cart & checkout block compatibility, making it easier for users to fill out the checkout page seamlessly.
 
 = Features =
 = Point Management =
@@ -304,6 +301,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.6.3 =
+Bug fixes and improvements.
+
 = 2.6.2 =
 Bug fixes.
 
@@ -428,6 +428,10 @@ The banking module have been replaced by Central deposite module, and interest r
 * Japanese - Mochizuki Hiroshi
 
 == Changelog ==
+
+= 2.6.3 =
+- **TWEAK** - Added compatibility for WooCommerce cart and checkout blocks.
+- **FIX** - Expiry time was not displayed correctly in the mycred_sales_history shortcode.
 
 = 2.6.2 =
 - **TWEAK** - Code improvement.

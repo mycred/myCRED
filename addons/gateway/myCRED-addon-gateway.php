@@ -7,18 +7,24 @@
 if ( ! defined( 'myCRED_VERSION' ) ) exit;
 
 define( 'myCRED_GATE',               __FILE__ );
+define( 'myCRED_GATE_VERSION',       '1.4' );
 define( 'myCRED_GATE_DIR',           myCRED_ADDONS_DIR . 'gateway/' );
 define( 'myCRED_GATE_ASSETS_DIR',    myCRED_GATE_DIR . 'assets/' );
 define( 'myCRED_GATE_CART_DIR',      myCRED_GATE_DIR . 'carts/' );
 define( 'myCRED_GATE_EVENT_DIR',     myCRED_GATE_DIR . 'event-booking/' );
 define( 'myCRED_GATE_MEMBER_DIR',    myCRED_GATE_DIR . 'membership/' );
 define( 'myCRED_GATE_AFFILIATE_DIR', myCRED_GATE_DIR . 'affiliate/' );
+define( 'myCRED_GATE_BLOCKS_DIR', 	 myCRED_GATE_CART_DIR . 'block-compatibility/' );
+
 
 /**
  * Supported Carts
  */
 require_once myCRED_GATE_CART_DIR . 'mycred-woocommerce.php';
 require_once myCRED_GATE_CART_DIR . 'mycred-wpecommerce.php';
+
+// WooCommerce blocks compatibility file
+require_once myCRED_GATE_BLOCKS_DIR . 'mycred-woo-block-compatibility.php';
 
 /**
  * Event Espresso

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "mycred-woocommerce/mycred-woo-cart-block",
+  "version": "1.0.0",
+  "title": "myCred WooCommerce",
+  "category": "woocommerce",
+  "attributes": {
+    "lock": {
+      "type": "object",
+      "default": {
+        "remove": true,
+        "move": true
+      }
+    }
+  },
+  "textdomain": "mycred-woocommerce",
+  "editorScript": "file:./build/index.js"
+}

@@ -81,9 +81,7 @@ if ( ! class_exists( 'myCRED_Hook_Anniversary' ) ) :
 						$date_joined,
 						$this->mycred_type
 					);
-
 				}
-
 			}
 
 			mycred_update_user_meta( $user_id, 'anniversary-' . $this->mycred_type, '', $today );

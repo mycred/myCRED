@@ -439,7 +439,7 @@ if ( ! class_exists( 'myCRED_Espresso_Gateway' ) ) :
 			global $org_options;
 
 			$exchange_message = sprintf(
-				__( 'How many %s is 1 %s worth?', 'mycred' ),
+				__( 'How many %1$s is 1 %2$s worth?', 'mycred' ),
 				$this->core->plural(),
 				$org_options['currency_symbol']
 			);

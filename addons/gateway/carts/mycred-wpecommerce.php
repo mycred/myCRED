@@ -349,7 +349,13 @@ if ( ! function_exists( 'mycred_wpecom_gateway_settings' ) ) :
 		$mycred = mycred( $type );
 
 		// Get current currency
-		$currency_data     = $wpdb->get_results( "SELECT * FROM `" . WPSC_TABLE_CURRENCY_LIST . "` ORDER BY `country` ASC", ARRAY_A );
+		$currency_data = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM %s ORDER BY country ASC",
+				WPSC_TABLE_CURRENCY_LIST
+			),
+			ARRAY_A
+		);
 		$selected_currency = esc_attr( get_option( 'currency_type' ) );
 
 		foreach ( $currency_data as $currency ) {
@@ -387,7 +393,7 @@ if ( ! function_exists( 'mycred_wpecom_gateway_settings' ) ) :
 		$output .= '
 <tr>
 	<td width="150">' . __( 'Exchange Rate', 'mycred' ) . '</td>
-	<td><input type="text" name="mycred_gateway[rate]" value="' . esc_attr( $mycred_wpecom_settings['rate'] ) . '" style="width:50px;" /><br /><span class="description">' . sprintf( __( 'How much is 1 %s worth in %s', 'mycred' ), $selected_currency, $mycred->plural() ) . '</span></td>
+	<td><input type="text" name="mycred_gateway[rate]" value="' . esc_attr( $mycred_wpecom_settings['rate'] ) . '" style="width:50px;" /><br /><span class="description">' . sprintf( __( 'How much is 1 %1$s worth in %2$s', 'mycred' ), $selected_currency, $mycred->plural() ) . '</span></td>
 </tr>
 <tr>
 	<td colspan="2"><strong>' . __( 'Profit Sharing', 'mycred' ) . '</strong></td>

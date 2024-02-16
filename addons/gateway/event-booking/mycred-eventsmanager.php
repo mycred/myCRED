@@ -37,10 +37,10 @@ if ( ! class_exists( 'myCRED_Events_Manager_Gateway' ) && defined( 'EM_VERSION' 
 					'link'   => __( 'Pay', 'mycred' )
 				),
 				'messages' => array(
-					'text'   => __( '', 'mycred' ),
+					'text'   => '',
 					'success' => __( 'Thank you for your payment!', 'mycred' ),
 					'error'   => __( "I'm sorry but you can not pay for these tickets using %_plural%", 'mycred' ),
-					'url'   => __( '', 'mycred' )
+					'url'   => ''
 				)
 			);
 
@@ -685,7 +685,7 @@ jQuery(function($) {
 			else
 				$box = 'display: none;';
 
-			$exchange_message = sprintf( __( 'How many %s is 1 %s worth?', 'mycred' ), $this->core->plural(), em_get_currency_symbol() );
+			$exchange_message = sprintf( __( 'How many %1$s is 1 %2$s worth?', 'mycred' ), $this->core->plural(), em_get_currency_symbol() );
 			$mycred_types     = mycred_get_types();
 
 ?>

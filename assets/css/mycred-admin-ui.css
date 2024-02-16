@@ -1088,6 +1088,7 @@ a.mycred-action {
     border-radius: 10px;
     border-color: #c5c5c5;
     font-weight: 300;
+    width: 100%;
 }
 
 #sidebar-active .widget-inside .form .form-group span.description{

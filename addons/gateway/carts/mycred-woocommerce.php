@@ -77,7 +77,7 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 
 				// Actions
 				add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-				add_action( 'woocommerce_thankyou_mycred',                              array( $this, 'thankyou_page' ) );
+				// add_action( 'woocommerce_thankyou_mycred',                              array( $this, 'thankyou_page' ) );
 
 			}
 
@@ -473,16 +473,16 @@ if ( ! function_exists( 'mycred_init_woo_gateway' ) ) :
 
 			}
 
-			/**
-			 * Thank You Page
-			 * @since 0.1
-			 * @version 1.0
-			 */
-			function thankyou_page() {
+			// /**
+			//  * Thank You Page
+			//  * @since 0.1
+			//  * @version 1.0
+			//  */
+			// function thankyou_page() {
 
-				$thankyou_msg = apply_filters( 'mycred_woo_thank_you_message', '<p>' . __( 'Your account has successfully been charged.', 'mycred' ) . '</p>' );
-				echo wp_kses_post( $thankyou_msg );
-			}
+			// 	$thankyou_msg = apply_filters( 'mycred_woo_thank_you_message', '<p>' . __( 'Your account has successfully been charged.', 'mycred' ) . '</p>' );
+			// 	echo wp_kses_post( $thankyou_msg );
+			// }
 
 		}
 

@@ -257,7 +257,7 @@ if ( ! function_exists( 'mycred_render_sell_history' ) ) :
 					 		$time_change = $days - $date;
 							$expires_in  = mycred_seconds_to_time( $time_change );
 
-							if( $expires < $time_change ){
+							if( $expires_in < $time_change ){
 							
 								$expires = sprintf( _x( 'Purchase expires in %s', 'e.g. 10 hours', 'mycred' ), $expires_in. ' ' );
 							
