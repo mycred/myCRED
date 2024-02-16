@@ -193,7 +193,11 @@ if ( ! function_exists( 'mycred_get_coupon_post' ) ) :
 
 		if ( $code == '' ) return false;
 
-		return apply_filters( 'mycred_get_coupon_by_code', mycred_get_page_by_title( strtoupper( $code ), 'OBJECT', MYCRED_COUPON_KEY ), $code );
+		$coupon_post = mycred_get_page_by_title( strtoupper( $code ), 'OBJECT', MYCRED_COUPON_KEY );
+
+		if ( empty( $coupon_post[0]->ID ) ) return false;
+
+		return apply_filters( 'mycred_get_coupon_by_code', $coupon_post[0], $code );
 
 	}
 endif;

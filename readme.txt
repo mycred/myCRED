@@ -2,8 +2,8 @@
 Contributors: mycred,wpexpertsio
 Tags: badges, gamification, loyalty, points, rewards
 Requires at least: 4.8
-Tested up to: 6.3.2
-Stable tag: 2.6
+Tested up to: 6.4.1
+Stable tag: 2.6.1
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -133,8 +133,8 @@ You can achieve the following features by using a dedicated log for your points 
 Central Deposit is a built-in add-on that allows the admin to nominate any available user account to become the primary account from where all point-related transactions are managed.
 
 * **Central Deposit Account** - The admin can choose any existing user account to become a central deposit account that controls all points and their transactions.
-* **Centralized Transaction Mangement** - Any points spent or earned are recorded in a point log that can be accessed from the userâ€™s myCred admin dashboard.
-* **Ignore Manual Adjustments** - After a central deposit account is nominated, the admin can not add points to the customerâ€™s account manually.
+* **Centralized Transaction Mangement** - Any points spent or earned are recorded in a point log that can be accessed from the user's myCred admin dashboard.
+* **Ignore Manual Adjustments** - After a central deposit account is nominated, the admin can not add points to the customer's account manually.
 * **Set Starting from** - Setup the starting date 
 * **Interval (in days)** - Deposit points after x days interval.
 * **Amount** - The amount of points to be scheduled.
@@ -304,6 +304,9 @@ You can find a list of [frequently asked questions](https://mycred.me/about/faq/
 
 == Upgrade Notice ==
 
+= 2.6.1 =
+Bug fixes.
+
 = 2.6 =
 Improvements.
 
@@ -423,6 +426,9 @@ The banking module have been replaced by Central deposite module, and interest r
 
 == Changelog ==
 
+= 2.6.1 =
+- **FIX** - Fixed mycred_load_coupon shortcode issues.
+
 = 2.6 =
 - **IMPROVEMENT** - Modern and easy to use UI to manage myCred points system.
 - **TWEAK** - Optimized for performance and security.
@@ -446,7 +452,7 @@ The banking module have been replaced by Central deposite module, and interest r
 - **NEW** - Introduced new shortcode mycred_my_chart_gain_loss.
 - **TWEAK** - Added database indexes to ensure maximum performance on the myCred Log table.
 - **TWEAK** - Moved the Open badge setting to the separate open badge tab.
-- **FIX** - Ranks-related email notification events are not triggered when the admin adjusts the userâ€™s points manually.
+- **FIX** - Ranks-related email notification events are not triggered when the admin adjusts the user's points manually.
 - **FIX** - Issue fixed regarding myCred Events Manager Payment Gateway.
 
 = 2.4.10 =
