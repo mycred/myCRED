@@ -421,7 +421,10 @@ if ( ! function_exists( 'mycred_get_woo_product_reward' ) ) :
 
 			// If the variation has no value set, but the parent box has a value set, enforce the parent value
 			// If the variation is set to zero however, it indicates we do not want to reward that variation
-			if ( $value == '' && $parent_reward_setup[ $point_type ] != '' && $parent_reward_setup[ $point_type ] != 0 )
+			if ( $value == '' && 
+			     isset( $parent_reward_setup[ $point_type ] ) &&  
+			     $parent_reward_setup[ $point_type ] != '' && 
+			     $parent_reward_setup[ $point_type ] != 0 )
 				$reward_setup[ $point_type ] = $parent_reward_setup[ $point_type ];
 
 		}
